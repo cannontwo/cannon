@@ -4,6 +4,7 @@ project(Cannon)
 # Compilation configuration
 ADD_DEFINITIONS(
   -Wall
+  -pedantic
   -g
   -O2
 )
@@ -29,6 +30,7 @@ ENDIF()
 
 set(CMAKE_CXX_STANDARD 11)
 
+# Clang Tidy
 find_program (CLANG_TIDY_EXE NAMES "clang-tidy")
 if(CLANG_TIDY_EXE)
     set(CMAKE_CXX_CLANG_TIDY "${CLANG_TIDY_EXE};-format-style=file;-header-filter='${CMAKE_SOURCE_DIR}/*'" CACHE STRING "" FORCE)
@@ -37,24 +39,19 @@ else()
     set(CMAKE_CXX_CLANG_TIDY "" CACHE STRING "" FORCE) # clear it
 endif()
 
-# Packages
+# OMPL
 find_package(OMPL REQUIRED)
-find_package(Eigen3 3.3 REQUIRED)
-
-# Targets
-file(GLOB_RECURSE SOURCES ${PROJECT_SOURCE_DIR}/cannon/*.cpp)
-
-include_directories(${OMPL_INCLUDE_DIRS} ${EIGEN3_INCLUDE_DIR})
+include_directories(${OMPL_INCLUDE_DIRS})
 link_directories(${OMPL_LIBRARY_DIRS})
 add_definitions(${OMPL_DEFINITIONS})
+list(APPEND LIBRARIES ${OMPL_LIBRARIES})
 
-add_library(cannon ${SOURCES})
-target_link_libraries(cannon ${OMPL_LIBRARIES})
+# Eigen
+find_package(Eigen3 3.3 REQUIRED)
+include_directories(${EIGEN3_INCLUDE_DIR})
+
+add_subdirectory(cannon)
 target_include_directories(cannon PUBLIC "${PROJECT_SOURCE_DIR}")
-
-add_executable(compile_test tests/compile.test.cpp)
-target_link_libraries(compile_test cannon)
-target_include_directories(compile_test PUBLIC "${PROJECT_SOURCE_DIR}")
 
 # Find unit tests
 file( GLOB_RECURSE TEST_SOURCES cannon/*.test.cpp )
@@ -65,3 +62,11 @@ foreach (test_source ${TEST_SOURCES})
   add_test(${testname} ${testname})
 endforeach(test_source  ${TEST_SOURCES})
 
+# Find integration tests
+file( GLOB_RECURSE INTEG_TEST_SOURCES tests/*.cpp )
+foreach (test_source ${INTEG_TEST_SOURCES})
+  get_filename_component( testname ${test_source} NAME_WE)
+  add_executable( ${testname} ${test_source} )
+  target_link_libraries( ${testname} cannon)
+  target_include_directories( ${testname} PUBLIC "${PROJECT_SOURCE_DIR}")
+endforeach (test_source ${INTEG_TEST_SOURCES})
