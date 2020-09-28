@@ -50,8 +50,8 @@ list(APPEND LIBRARIES ${OMPL_LIBRARIES})
 find_package(Eigen3 3.3 REQUIRED)
 include_directories(${EIGEN3_INCLUDE_DIR})
 
+include_directories("${PROJECT_SOURCE_DIR}")
 add_subdirectory(cannon)
-target_include_directories(cannon PUBLIC "${PROJECT_SOURCE_DIR}")
 
 # Find unit tests
 file( GLOB_RECURSE TEST_SOURCES cannon/*.test.cpp )
