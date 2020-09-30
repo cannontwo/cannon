@@ -14,7 +14,12 @@ namespace cannon {
       public:
         Logger(std::ostream& os, const Level& l = Level::info) : os_(os), level_(l) {}
 
-        void log(const std::string& s, const Level& l = Level::info);
+        template <typename T>
+        void log(const T& t, const Level& l = Level::info) {
+          if (l >= level_) {
+            os_ << l << t << std::endl;
+          }
+        }
 
         void set_level(const Level& l);
 

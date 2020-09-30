@@ -11,7 +11,8 @@
 namespace cannon {
   namespace log {
 
-    // Singleton registry
+    // Singleton registry. Taking inspiration from
+    // https://github.com/gabime/spdlog/blob/master/include/spdlog/details/registry.h
     class Registry {
       public:
         Registry() {
@@ -26,7 +27,14 @@ namespace cannon {
 
         void add_logger(std::shared_ptr<Logger> l);
 
-        void log(const std::string& s, const Level& level = Level::info);
+
+        // TODO Make variadic
+        template <typename T>
+        void log(const T& t, const Level& level = Level::info) {
+          for (auto l : loggers_) {
+            l->log(t, level);
+          }
+        }
 
       private:
         std::vector<std::shared_ptr<Logger>> loggers_;
@@ -35,10 +43,26 @@ namespace cannon {
     // Free functions
     void add_logger(std::shared_ptr<Logger> l);
     void add_logger(std::ostream &os, const Level &level = Level::info);
-    void log(const std::string &s, const Level& level = Level::info);
-    void log_info(const std::string &s);
-    void log_warning(const std::string &s);
-    void log_error(const std::string &s);
+    
+    template <typename T>
+    void log(const T& t, const Level& level = Level::info) {
+      Registry::instance().log(t, level);
+    }
+
+    template <typename T>
+    void log_info(const T &t) {
+      log(t, Level::info);
+    }
+
+    template <typename T>
+    void log_warning(const T &t) {
+      log(t, Level::warning);
+    }
+
+    template <typename T>
+    void log_error(const T &t) {
+      log(t, Level::error);
+    }
 
   } // namespace log
 } // namespace cannon
