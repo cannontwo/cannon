@@ -4,7 +4,6 @@ project(Cannon)
 # Compilation configuration
 ADD_DEFINITIONS(
   -Wall
-  -pedantic
   -g
   -O2
 )
@@ -47,8 +46,23 @@ add_definitions(${OMPL_DEFINITIONS})
 list(APPEND LIBRARIES ${OMPL_LIBRARIES})
 
 # Eigen
-find_package(Eigen3 3.3 REQUIRED)
+find_package(Eigen3 REQUIRED)
 include_directories(${EIGEN3_INCLUDE_DIR})
+
+# OpenGL
+find_package(OpenGL 3.3 REQUIRED)
+include_directories(${OPENGL_INCLUDE_DIRS})
+list(APPEND LIBRARIES ${OPENGL_LIBRARIES})
+
+# GLFW
+find_package(GLFW3 REQUIRED)
+include_directories(${GLFW3_INCLUDE_DIR})
+list(APPEND LIBRARIES ${GLFW3_LIBRARY})
+
+# GLAD
+add_library(GLAD "thirdparty/glad/src/glad.c")
+include_directories("thirdparty/glad/include")
+list(APPEND LIBRARIES GLAD)
 
 include_directories("${PROJECT_SOURCE_DIR}")
 add_subdirectory(cannon)
@@ -59,14 +73,16 @@ foreach (test_source ${TEST_SOURCES})
   get_filename_component( testname ${test_source} NAME_WE)
   add_executable( ${testname} ${test_source} )
   target_link_libraries( ${testname} cannon)
-  add_test(${testname} ${testname})
+  set_target_properties(${testname} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/unit_tests")
+  add_test(${testname} "unit_tests/${testname}")
 endforeach(test_source  ${TEST_SOURCES})
 
-# Find integration tests
+# Find scripts
 file( GLOB_RECURSE SCRIPT_SOURCES scripts/*.cpp )
 foreach (script_source ${SCRIPT_SOURCES})
   get_filename_component( scriptname ${script_source} NAME_WE)
   add_executable( ${scriptname} ${script_source} )
   target_link_libraries( ${scriptname} cannon)
   target_include_directories( ${scriptname} PUBLIC "${PROJECT_SOURCE_DIR}")
+  set_target_properties(${scriptname} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/scripts")
 endforeach (script_source ${SCRIPT_SOURCES})
