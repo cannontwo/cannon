@@ -5,6 +5,9 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
+// TODO
+//#include <cannon/graphics/input_handlers.hpp>
+
 namespace cannon {
   namespace graphics {
 
@@ -14,6 +17,7 @@ namespace cannon {
 
     // Callbacks
     void framebuffer_size_callback(GLFWwindow* window, int width, int height);
+    void process_input(GLFWwindow* window);
 
     class Window {
       public:
@@ -43,9 +47,15 @@ namespace cannon {
         template <typename F>
         void render_loop(F f) {
           while (!glfwWindowShouldClose(window)) {
+            process_input(window);
+
+            glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+            glClear(GL_COLOR_BUFFER_BIT);
+
+            f();
+
             glfwSwapBuffers(window);
             glfwPollEvents();
-            f();
           }
         }
 
