@@ -1,6 +1,7 @@
 list(APPEND GRAPHICS_SOURCES 
   window.cpp
   vertex_buffer.cpp
+  element_buffer.cpp
   vertex_shader.cpp
   fragment_shader.cpp
   shader_program.cpp

@@ -14,6 +14,14 @@ void Window::register_callbacks() {
   glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 }
 
+void Window::set_wireframe_mode() {
+  glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+}
+
+void Window::set_fill_mode() {
+  glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+}
+
 // Free functions
 void cannon::graphics::init_glfw() {
   glfwInit();

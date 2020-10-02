@@ -43,6 +43,9 @@ namespace cannon {
         void make_current();
         void set_viewport(unsigned x, unsigned y, unsigned width, unsigned height);
         void register_callbacks();
+        
+        void set_wireframe_mode();
+        void set_fill_mode();
 
         template <typename F>
         void render_loop(F f) {

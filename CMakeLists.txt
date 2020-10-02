@@ -49,6 +49,11 @@ list(APPEND LIBRARIES ${OMPL_LIBRARIES})
 find_package(Eigen3 REQUIRED)
 include_directories(${EIGEN3_INCLUDE_DIR})
 
+# CGAL
+find_package(CGAL REQUIRED)
+include_directories(${CGAL_INCLUDE_DIRS})
+list(APPEND LIBRARIES ${CGAL_LIBRARIES})
+
 # OpenGL
 find_package(OpenGL 3.3 REQUIRED)
 include_directories(${OPENGL_INCLUDE_DIRS})

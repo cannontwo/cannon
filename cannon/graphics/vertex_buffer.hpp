@@ -4,6 +4,8 @@
 #include <glad/glad.h>
 #include <Eigen/Dense>
 
+#include <cannon/graphics/vertex_array_object.hpp>
+
 using namespace Eigen;
 
 namespace cannon {
@@ -11,12 +13,15 @@ namespace cannon {
     
     class VertexBuffer {
       public:
-        VertexBuffer() {
-          glGenBuffers(1, &vertex_buffer_object_);
+        VertexBuffer() = delete;
+
+        VertexBuffer(VertexArrayObject& vao) : vao_(vao) {
+          vao_.bind();
+          glGenBuffers(1, &gl_vertex_buffer_object_);
         }
 
         ~VertexBuffer() {
-          glDeleteBuffers(1, &vertex_buffer_object_);
+          glDeleteBuffers(1, &gl_vertex_buffer_object_);
         }
 
         void bind();
@@ -24,7 +29,8 @@ namespace cannon {
         void buffer(MatrixX3f vertices);
 
       private:
-        unsigned int vertex_buffer_object_;
+        unsigned int gl_vertex_buffer_object_;
+        VertexArrayObject& vao_;
     };
 
   } // namespace graphics

@@ -2,6 +2,7 @@
 
 #include <cannon/graphics/window.hpp>
 #include <cannon/graphics/vertex_buffer.hpp>
+#include <cannon/graphics/element_buffer.hpp>
 #include <cannon/graphics/vertex_shader.hpp>
 #include <cannon/graphics/fragment_shader.hpp>
 #include <cannon/graphics/shader_program.hpp>
@@ -12,7 +13,7 @@ using namespace cannon::graphics;
 using namespace cannon::log;
 
 void render_func() {
-  glDrawArrays(GL_TRIANGLES, 0, 3);
+  glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 }
 
 int main() {
@@ -20,23 +21,29 @@ int main() {
 
   auto w = create_window();
 
-  
-  MatrixX3f vertices(3, 3);
-  vertices << -0.5f, -0.5f, 0.0f,
+  MatrixX3f vertices(4, 3);
+  vertices <<  0.5f, 0.5f, 0.0f, 
                0.5f, -0.5f, 0.0f,
-               0.0f, 0.5f, 0.0f;
+              -0.5f, -0.5f, 0.0f,
+              -0.5f, 0.5f, 0.0f;
+
+  MatrixX3u indices(2, 3);
+  indices << 0, 1, 3,
+             1, 2, 3;
 
   VertexArrayObject vao;
-  VertexBuffer buf(vao);
+  VertexBuffer vbuf(vao);
+  ElementBuffer ebuf(vao);
 
-  // Eigen stores matrices in column-major format, so we transpose because
-  // OpenGL expects row-major
-  buf.buffer(vertices); 
-  buf.bind();
+  vbuf.buffer(vertices); 
+  vbuf.bind();
 
+  ebuf.buffer(indices);
+  ebuf.bind();
+
+  vao.bind();
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
   glEnableVertexAttribArray(0);
-  buf.unbind();
 
   const char* v_src = BASIC_VERTEX_SHADER.c_str();
   const char* f_src = BASIC_FRAGMENT_SHADER.c_str();
@@ -50,7 +57,10 @@ int main() {
   program.link();
   program.activate();
 
-  buf.bind();
+  vbuf.bind();
+  ebuf.bind();
+  w.set_wireframe_mode();
   w.render_loop(render_func);
-  buf.unbind();
+  vbuf.unbind();
+  ebuf.unbind();
 }
