@@ -42,8 +42,6 @@ int main() {
   ebuf.bind();
 
   vao.bind();
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
-  glEnableVertexAttribArray(0);
 
   const char* v_src = BASIC_VERTEX_SHADER.c_str();
   const char* f_src = BASIC_FRAGMENT_SHADER.c_str();
@@ -59,8 +57,15 @@ int main() {
 
   vbuf.bind();
   ebuf.bind();
-  w.set_wireframe_mode();
-  w.render_loop(render_func);
+  //w.set_wireframe_mode();
+  w.render_loop([&program] {
+    float t = glfwGetTime();
+    float g = (sin(t) / 2.0f) + 0.5f;
+    Vector4f v;
+    v << 0.0f, g, 0.0f, 1.0f;
+    program.set_uniform("uColor", v);
+    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+  });
   vbuf.unbind();
   ebuf.unbind();
 }

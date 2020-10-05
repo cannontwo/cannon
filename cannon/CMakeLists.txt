@@ -14,3 +14,11 @@ target_link_libraries(cannon
   logic
   graphics
   ${LIBRARIES})
+
+# Copy shaders
+ADD_CUSTOM_COMMAND(
+  TARGET cannon POST_BUILD
+  COMMAND ${CMAKE_COMMAND} -E copy_directory
+    ${CMAKE_CURRENT_SOURCE_DIR}/graphics/shaders ${CMAKE_CURRENT_BINARY_DIR}/../shaders
+  COMMENT "Copying shaders" VERBATIM
+  )

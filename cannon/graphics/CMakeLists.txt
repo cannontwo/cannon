@@ -1,6 +1,7 @@
 list(APPEND GRAPHICS_SOURCES 
   window.cpp
   vertex_buffer.cpp
+  vertex_color_buffer.cpp
   element_buffer.cpp
   vertex_shader.cpp
   fragment_shader.cpp
@@ -9,4 +10,4 @@ list(APPEND GRAPHICS_SOURCES
   )
 
 add_library(graphics ${GRAPHICS_SOURCES})
-target_link_libraries(graphics ${LIBRARIES})
+target_link_libraries(graphics log ${LIBRARIES})

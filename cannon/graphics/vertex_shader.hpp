@@ -2,6 +2,9 @@
 #define CANNON_GRAPHICS_VERTEX_SHADER_H
 
 #include <string>
+#include <streambuf>
+#include <iostream>
+#include <fstream>
 #include <stdexcept>
 #include <glad/glad.h>
 
@@ -43,6 +46,9 @@ namespace cannon {
 
         friend class ShaderProgram;
     };
+
+    // Free Functions
+    VertexShader load_vertex_shader(const std::string& path);
 
     // Static shader sources
     static const std::string BASIC_VERTEX_SHADER = std::string("\

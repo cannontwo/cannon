@@ -22,4 +22,24 @@ void VertexBuffer::buffer(MatrixX3f vertices) {
 
   glBufferData(GL_ARRAY_BUFFER, sizeof(float) * tmp_vertices.size(), 
       tmp_vertices.data(), GL_STATIC_DRAW);
+
+  set_vertex_attribute_pointer();
 }
+
+void VertexBuffer::set_vertex_attribute_pointer() {
+  glVertexAttribPointer(gl_vertex_attribute_num_, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
+  glEnableVertexAttribArray(gl_vertex_attribute_num_);
+}
+
+// Free Functions
+int cannon::graphics::get_next_vertex_attribute_num() {
+  int max;
+  glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &max);
+
+  if (VERTEX_ATTRIBUTES_DECLARED >= max)
+    throw std::runtime_error("Too many vertex attributes declared");
+
+  VERTEX_ATTRIBUTES_DECLARED = VERTEX_ATTRIBUTES_DECLARED + 1;
+  return VERTEX_ATTRIBUTES_DECLARED - 1;
+}
+

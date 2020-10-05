@@ -3,6 +3,9 @@
 
 #include <string>
 #include <stdexcept>
+#include <iostream>
+#include <fstream>
+#include <streambuf>
 #include <glad/glad.h>
 
 #include <cannon/log/registry.hpp>
@@ -44,12 +47,16 @@ namespace cannon {
         friend class ShaderProgram;
     };
 
+    // Free Functions
+    FragmentShader load_fragment_shader(const std::string& path);
+
     // Static shader sources
     static const std::string BASIC_FRAGMENT_SHADER = std::string("\
       #version 330 core\n\
       out vec4 FragColor;\n\
+      uniform vec4 uColor;\n\
       void main() {\n\
-        FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n\
+        FragColor = uColor;\n\
       }\
     ");
 

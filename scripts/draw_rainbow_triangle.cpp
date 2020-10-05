@@ -1,7 +1,7 @@
 #include <glad/glad.h>
 
 #include <cannon/graphics/window.hpp>
-#include <cannon/graphics/vertex_buffer.hpp>
+#include <cannon/graphics/vertex_color_buffer.hpp>
 #include <cannon/graphics/vertex_shader.hpp>
 #include <cannon/graphics/fragment_shader.hpp>
 #include <cannon/graphics/shader_program.hpp>
@@ -21,24 +21,24 @@ int main() {
   auto w = create_window();
 
   
-  MatrixX3f vertices(3, 3);
-  vertices << -0.5f, -0.5f, 0.0f,
-               0.5f, -0.5f, 0.0f,
-               0.0f, 0.5f, 0.0f;
+  MatrixXf vertices(3, 6);
+              // positions        // colors
+  vertices << -0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f,
+               0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f,
+               0.0f, 0.5f, 0.0f, 0.0f, 0.0f, 1.0f;
 
   VertexArrayObject vao;
-  VertexBuffer buf(vao);
+  VertexColorBuffer buf(vao);
 
   // Eigen stores matrices in column-major format, so we transpose because
   // OpenGL expects row-major
   buf.buffer(vertices); 
   buf.bind();
 
-  const char* v_src = BASIC_VERTEX_SHADER.c_str();
-  const char* f_src = BASIC_FRAGMENT_SHADER.c_str();
+  buf.unbind();
 
-  VertexShader v(&v_src);
-  FragmentShader f(&f_src);
+  VertexShader v = load_vertex_shader("shaders/pass_color.vert");
+  FragmentShader f = load_fragment_shader("shaders/pass_color.frag");
 
   ShaderProgram program;
   program.attach_shader(v);

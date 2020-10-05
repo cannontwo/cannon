@@ -3,10 +3,12 @@
 
 #include <glad/glad.h>
 #include <stdexcept>
+#include <Eigen/Dense>
 
 #include <cannon/log/registry.hpp>
 
 using namespace cannon::log;
+using namespace Eigen;
 
 namespace cannon {
   namespace graphics {
@@ -28,6 +30,7 @@ namespace cannon {
 
         void link();
         void activate();
+        void set_uniform(const std::string& name, Vector4f value);
 
       private:
         unsigned int gl_shader_program_;
