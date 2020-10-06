@@ -40,6 +40,36 @@ Window cannon::graphics::create_window() {
   return Window();
 }
 
+void Window::enable_depth_test() {
+  glEnable(GL_DEPTH_TEST);
+}
+
+void Window::disable_depth_test() {
+  glDisable(GL_DEPTH_TEST);
+}
+
+void Window::save_image(const std::string &path) {
+  int num_channels = 3;
+  int stride = num_channels * width;
+  stride += (stride % 4) ? (4 - stride % 4) : 0; // Alignment
+
+  int buffer_size = stride * height;
+  std::vector<char> buffer(buffer_size);
+
+  // Configure reading
+  glPixelStorei(GL_PACK_ALIGNMENT, 4);
+  glReadBuffer(GL_FRONT);
+
+  // Read into buffer
+  glReadPixels(0, 0, width, height, GL_RGB, GL_UNSIGNED_BYTE, buffer.data());
+
+  // Write to file
+  stbi_flip_vertically_on_write(true);
+  if (stbi_write_png(path.c_str(), width, height, num_channels, buffer.data(), stride) == 0) {
+    throw std::runtime_error("Could not write OpenGL render to file");
+  }
+}
+
 // Callbacks
 void cannon::graphics::framebuffer_size_callback(GLFWwindow* window, int width, int height) {
   glViewport(0, 0, width, height);

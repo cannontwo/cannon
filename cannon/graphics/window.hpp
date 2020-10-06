@@ -1,9 +1,11 @@
 #ifndef CANNON_GRAPHICS_WINDOW_H
 #define CANNON_GRAPHICS_WINDOW_H 
 
+#include <vector>
 #include <stdexcept>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+#include <stb_image/stb_image_write.h>
 
 // TODO
 //#include <cannon/graphics/input_handlers.hpp>
@@ -21,7 +23,7 @@ namespace cannon {
 
     class Window {
       public:
-        Window(unsigned width = 800, unsigned height = 600, const std::string& name = "Test") {
+        Window(int w = 800, int h = 600, const std::string& name = "Test"): width(w), height(h) {
           window = glfwCreateWindow(width, height, name.c_str(), NULL, NULL); 
 
           if (window == NULL) {
@@ -47,13 +49,20 @@ namespace cannon {
         void set_wireframe_mode();
         void set_fill_mode();
 
+        void enable_depth_test();
+        void disable_depth_test();
+
+        void save_image(const std::string &path);
+
         template <typename F>
         void render_loop(F f) {
           while (!glfwWindowShouldClose(window)) {
             process_input(window);
 
             glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-            glClear(GL_COLOR_BUFFER_BIT);
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+            glfwGetFramebufferSize(window, &width, &height);
 
             f();
 
@@ -62,6 +71,10 @@ namespace cannon {
           }
         }
 
+        int width;
+        int height;
+
+      private:
         GLFWwindow *window;
     };
 

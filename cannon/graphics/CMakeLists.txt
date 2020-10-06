@@ -9,6 +9,7 @@ list(APPEND GRAPHICS_SOURCES
   shader_program.cpp
   vertex_array_object.cpp
   texture.cpp
+  projection.cpp
   )
 
 add_library(graphics ${GRAPHICS_SOURCES})

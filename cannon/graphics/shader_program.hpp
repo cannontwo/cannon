@@ -32,8 +32,11 @@ namespace cannon {
         void activate();
         void set_uniform(const std::string& name, int value);
         void set_uniform(const std::string& name, Vector4f value);
+        void set_uniform(const std::string& name, Matrix4f value);
 
       private:
+        int get_uniform_loc_(const std::string& name);
+
         unsigned int gl_shader_program_;
 
     };
