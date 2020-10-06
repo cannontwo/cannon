@@ -20,6 +20,15 @@ void ShaderProgram::activate() {
   glUseProgram(gl_shader_program_);
 }
 
+void ShaderProgram::set_uniform(const std::string& name, int value) {
+  int location = glGetUniformLocation(gl_shader_program_, name.c_str());
+  if (location == -1) 
+    throw std::runtime_error("Could not locate uniform");
+
+  activate();
+  glUniform1i(location, value);
+}
+
 void ShaderProgram::set_uniform(const std::string& name, Vector4f value) {
   int location = glGetUniformLocation(gl_shader_program_, name.c_str());
   if (location == -1) 

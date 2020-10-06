@@ -30,6 +30,7 @@ namespace cannon {
 
         void link();
         void activate();
+        void set_uniform(const std::string& name, int value);
         void set_uniform(const std::string& name, Vector4f value);
 
       private:

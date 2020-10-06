@@ -65,6 +65,11 @@ target_link_libraries(GLAD ${CMAKE_DL_LIBS})
 include_directories("thirdparty/glad/include")
 list(APPEND LIBRARIES GLAD)
 
+# STB_IMAGE
+add_library(STB_IMAGE "thirdparty/stb_image/stb_image.cpp")
+include_directories("thirdparty/stb_image/include")
+list(APPEND LIBRARIES STB_IMAGE)
+
 # GLFW
 find_package(GLFW3 REQUIRED)
 include_directories(${GLFW3_INCLUDE_DIR})
