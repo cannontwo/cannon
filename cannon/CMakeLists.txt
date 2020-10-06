@@ -6,6 +6,7 @@ add_subdirectory(math)
 add_subdirectory(log)
 add_subdirectory(logic)
 add_subdirectory(graphics)
+add_subdirectory(plot)
 
 add_library(cannon ${CANNON_SOURCES})
 target_link_libraries(cannon 
@@ -13,6 +14,7 @@ target_link_libraries(cannon
   log 
   logic
   graphics
+  plot
   ${LIBRARIES})
 
 # Copy shaders

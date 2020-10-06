@@ -23,11 +23,25 @@ void VertexBuffer::buffer(MatrixX3f vertices) {
   glBufferData(GL_ARRAY_BUFFER, sizeof(float) * tmp_vertices.size(), 
       tmp_vertices.data(), GL_STATIC_DRAW);
 
-  set_vertex_attribute_pointer();
+  set_vertex_attribute_pointer(3);
 }
 
-void VertexBuffer::set_vertex_attribute_pointer() {
-  glVertexAttribPointer(gl_vertex_attribute_num_, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
+void VertexBuffer::buffer(MatrixX2f vertices) {
+  bind();
+
+  // Eigen stores matrices in column-major format, so we transpose because
+  // OpenGL expects row-major
+  Matrix2Xf tmp_vertices;
+  tmp_vertices.noalias() = vertices.transpose().eval();
+
+  glBufferData(GL_ARRAY_BUFFER, sizeof(float) * tmp_vertices.size(), 
+      tmp_vertices.data(), GL_STATIC_DRAW);
+
+  set_vertex_attribute_pointer(2);
+}
+
+void VertexBuffer::set_vertex_attribute_pointer(int dim) {
+  glVertexAttribPointer(gl_vertex_attribute_num_, dim, GL_FLOAT, GL_FALSE, dim * sizeof(float), (void *)0);
   glEnableVertexAttribArray(gl_vertex_attribute_num_);
 }
 

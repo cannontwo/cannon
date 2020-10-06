@@ -24,7 +24,7 @@ float to_radians(float degrees) {
 int main() {
   init_glfw();
 
-  auto w = create_window();
+  Window w;
   w.enable_depth_test();
 
   MatrixXf vertices(8, 8);

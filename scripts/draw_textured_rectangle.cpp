@@ -21,7 +21,7 @@ void render_func() {
 int main() {
   init_glfw();
 
-  auto w = create_window();
+  Window w;
 
   MatrixXf vertices(4, 8);
                // positions      // colors         // texture coords 

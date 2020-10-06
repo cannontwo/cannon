@@ -10,6 +10,6 @@ void render_func() {
 int main() {
   init_glfw();
 
-  auto w = create_window();
+  Window w;
   w.render_loop(render_func);
 }

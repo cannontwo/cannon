@@ -6,9 +6,14 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <stb_image/stb_image_write.h>
+#include <Eigen/Dense>
+
+#include <cannon/log/registry.hpp>
 
 // TODO
 //#include <cannon/graphics/input_handlers.hpp>
+
+using namespace Eigen;
 
 namespace cannon {
   namespace graphics {
@@ -19,11 +24,15 @@ namespace cannon {
 
     // Callbacks
     void framebuffer_size_callback(GLFWwindow* window, int width, int height);
+    void debug_message_callback(GLenum source, GLenum type, GLuint id, GLenum
+        severity, GLsizei length, const GLchar *message, 
+        const void *userParam);
     void process_input(GLFWwindow* window);
 
     class Window {
       public:
         Window(int w = 800, int h = 600, const std::string& name = "Test"): width(w), height(h) {
+          init_glfw();
           window = glfwCreateWindow(width, height, name.c_str(), NULL, NULL); 
 
           if (window == NULL) {
@@ -36,6 +45,7 @@ namespace cannon {
           set_viewport(0, 0, width, height);
 
           register_callbacks();
+          set_clear_color(Vector4f(0.2f, 0.3f, 0.3f, 1.0f));
         }
 
         ~Window() {
@@ -46,6 +56,7 @@ namespace cannon {
         void set_viewport(unsigned x, unsigned y, unsigned width, unsigned height);
         void register_callbacks();
         
+        void set_clear_color(Vector4f color);
         void set_wireframe_mode();
         void set_fill_mode();
 
@@ -59,7 +70,7 @@ namespace cannon {
           while (!glfwWindowShouldClose(window)) {
             process_input(window);
 
-            glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+            glClearColor(clear_color_[0], clear_color_[1], clear_color_[2], clear_color_[3]);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
             glfwGetFramebufferSize(window, &width, &height);
@@ -76,9 +87,8 @@ namespace cannon {
 
       private:
         GLFWwindow *window;
+        Vector4f clear_color_;
     };
-
-    Window create_window();
 
   } // namespace graphics
 } // namespace cannon

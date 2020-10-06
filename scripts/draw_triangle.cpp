@@ -18,8 +18,7 @@ void render_func() {
 int main() {
   init_glfw();
 
-  auto w = create_window();
-
+  Window w;
   
   MatrixX3f vertices(3, 3);
   vertices << -0.5f, -0.5f, 0.0f,
@@ -45,8 +44,8 @@ int main() {
   program.attach_shader(f);
   program.link();
   program.activate();
+  program.set_uniform("uColor", Vector4f(1.0f, 0.0f, 0.0f, 1.0f));
 
   buf.bind();
   w.render_loop(render_func);
-  buf.unbind();
 }

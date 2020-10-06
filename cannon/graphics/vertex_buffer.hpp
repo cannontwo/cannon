@@ -31,10 +31,11 @@ namespace cannon {
 
         void bind();
         void unbind();
+        void buffer(MatrixX2f vertices);
         void buffer(MatrixX3f vertices);
 
       private:
-        void set_vertex_attribute_pointer();
+        void set_vertex_attribute_pointer(int dim);
 
         unsigned int gl_vertex_buffer_object_;
         int gl_vertex_attribute_num_;

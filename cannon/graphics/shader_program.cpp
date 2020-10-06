@@ -8,7 +8,7 @@ void ShaderProgram::link() {
   // Check for shader compilation error
   int success;
   char info[512];
-  glGetShaderiv(gl_shader_program_, GL_LINK_STATUS, &success);
+  glGetProgramiv(gl_shader_program_, GL_LINK_STATUS, &success);
   if (!success) {
     glGetShaderInfoLog(gl_shader_program_, 512, NULL, info);
     log_error(info);

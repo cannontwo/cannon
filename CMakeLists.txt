@@ -55,7 +55,7 @@ include_directories(${CGAL_INCLUDE_DIRS})
 list(APPEND LIBRARIES ${CGAL_LIBRARIES})
 
 # OpenGL
-find_package(OpenGL 3.3 REQUIRED)
+find_package(OpenGL 4.3 REQUIRED)
 include_directories(${OPENGL_INCLUDE_DIRS})
 list(APPEND LIBRARIES ${OPENGL_LIBRARIES})
 

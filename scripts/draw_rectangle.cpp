@@ -19,7 +19,7 @@ void render_func() {
 int main() {
   init_glfw();
 
-  auto w = create_window();
+  Window w;
 
   MatrixX3f vertices(4, 3);
   vertices <<  0.5f, 0.5f, 0.0f, 
