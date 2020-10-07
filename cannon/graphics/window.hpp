@@ -42,6 +42,7 @@ namespace cannon {
 
           make_current();
           init_glad();
+          glEnable(GL_MULTISAMPLE);
           set_viewport(0, 0, width, height);
 
           register_callbacks();

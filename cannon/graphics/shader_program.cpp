@@ -34,6 +34,12 @@ void ShaderProgram::set_uniform(const std::string& name, int value) {
   glUniform1i(location, value);
 }
 
+void ShaderProgram::set_uniform(const std::string& name, float value) {
+  int location = get_uniform_loc_(name);
+  activate();
+  glUniform1f(location, value);
+}
+
 void ShaderProgram::set_uniform(const std::string& name, Vector4f value) {
   int location = get_uniform_loc_(name);
   activate();

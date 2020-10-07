@@ -57,3 +57,10 @@ int cannon::graphics::get_next_vertex_attribute_num() {
   return VERTEX_ATTRIBUTES_DECLARED - 1;
 }
 
+
+std::ostream& cannon::graphics::operator<<(std::ostream& os, const VertexBuffer& buf) {
+  os << "buffer #" << buf.gl_vertex_buffer_object_ << ", attr=" << buf.gl_vertex_attribute_num_;
+
+  return os;
+}
+

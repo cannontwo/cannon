@@ -2,6 +2,11 @@
 #define CANNON_GRAPHICS_VERTEX_ARRAY_OBJECT_H 
 
 #include <glad/glad.h>
+#include <iostream>
+
+#include <cannon/log/registry.hpp>
+
+using namespace cannon::log;
 
 namespace cannon {
   namespace graphics {
@@ -21,9 +26,13 @@ namespace cannon {
         void bind();
         void unbind();
 
+        friend std::ostream& operator<<(std::ostream&, const VertexArrayObject&);
+
       private:
         unsigned int gl_vertex_array_object_;
     };
+
+    std::ostream& operator<<(std::ostream&, const VertexArrayObject&);
 
   } // namespace graphics
 } // namespace cannon

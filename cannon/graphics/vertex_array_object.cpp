@@ -9,3 +9,9 @@ void VertexArrayObject::bind() {
 void VertexArrayObject::unbind() {
   glBindVertexArray(0);
 }
+
+std::ostream& cannon::graphics::operator<<(std::ostream& os, const VertexArrayObject& vao) {
+  os << "vao #" << vao.gl_vertex_array_object_;
+
+  return os;
+}

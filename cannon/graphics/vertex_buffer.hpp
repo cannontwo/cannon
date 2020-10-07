@@ -3,10 +3,13 @@
 
 #include <glad/glad.h>
 #include <Eigen/Dense>
+#include <iostream>
 
 #include <cannon/graphics/vertex_array_object.hpp>
+#include <cannon/log/registry.hpp>
 
 using namespace Eigen;
+using namespace cannon::log;
 
 namespace cannon {
   namespace graphics {
@@ -34,6 +37,8 @@ namespace cannon {
         void buffer(MatrixX2f vertices);
         void buffer(MatrixX3f vertices);
 
+        friend std::ostream& operator<<(std::ostream&, const VertexBuffer&);
+
       private:
         void set_vertex_attribute_pointer(int dim);
 
@@ -41,6 +46,9 @@ namespace cannon {
         int gl_vertex_attribute_num_;
         VertexArrayObject& vao_;
     };
+
+    std::ostream& operator<<(std::ostream&, const VertexBuffer&);
+
 
   } // namespace graphics
 } // namespace cannon
