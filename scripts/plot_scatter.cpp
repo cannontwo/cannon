@@ -21,4 +21,5 @@ int main() {
   plotter.plot_points(pts2, Vector4f(1.0, 0.0, 0.0, 1.0), 15.0);
 
   plotter.render();
+  plotter.save("tmp.png");
 }

@@ -20,30 +20,28 @@ namespace cannon {
 
     class Plotter {
       public:
-        Plotter() : w_(), program_() {
+        Plotter() : w_(), point_program_(new ShaderProgram) {
           w_.set_clear_color(Vector4f(1.0f, 1.0f, 1.0f, 1.0f));
 
-          const char *v_src = BASIC_VERTEX_SHADER_2D.c_str();
-          const char *f_src = BASIC_FRAGMENT_SHADER.c_str();
-          log_info(v_src);
-          log_info(f_src);
+          VertexShader v = load_vertex_shader("shaders/basic_2d_pass_pos.vert");
+          FragmentShader f = load_fragment_shader("shaders/uniform_color_circle.frag");
 
-          VertexShader v(&v_src);
-          FragmentShader f(&f_src);
-
-          program_.attach_shader(v);
-          program_.attach_shader(f);
-          program_.link();
-          program_.activate();
+          point_program_->attach_shader(v);
+          point_program_->attach_shader(f);
+          point_program_->link();
+          point_program_->activate();
         }
 
         void render();
+        void save(const std::string &path);
 
         void plot_points(MatrixX2f points, Vector4f color={0.0, 0.0, 0.0, 1.0}, float size=15.0);
 
       private:
+        void draw_pass();
+
         Window w_;
-        ShaderProgram program_;
+        std::shared_ptr<ShaderProgram> point_program_;
         Axes axes_;
         std::vector<Scatter> scatter_plots_;
     };

@@ -10,13 +10,12 @@ void Scatter::add_points(MatrixX2f point) {
   buf_.buffer(points_);
 }
 
-void Scatter::draw(Matrix4f matrix) {
-  program_.activate();
-  program_.set_uniform("uColor", color_);
-  program_.set_uniform("pointSize", point_size_);
-  program_.set_uniform("matrix", matrix);
-  buf_.bind();
+void Scatter::draw() {
+  program_->activate();
+  program_->set_uniform("uColor", color_);
+  program_->set_uniform("pointSize", point_size_);
 
+  buf_.bind();
   glDrawArrays(GL_POINTS, 0, points_.rows());
 }
 
