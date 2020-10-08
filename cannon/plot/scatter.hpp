@@ -10,9 +10,11 @@
 #include <cannon/graphics/vertex_buffer.hpp>
 #include <cannon/graphics/vertex_shader.hpp>
 #include <cannon/graphics/fragment_shader.hpp>
+#include <cannon/log/registry.hpp>
 
 using namespace Eigen;
 using namespace cannon::graphics;
+using namespace cannon::log;
 
 namespace cannon {
   namespace plot {
@@ -24,6 +26,7 @@ namespace cannon {
         Scatter(MatrixX2f points, Vector4f color, float point_size) : points_(points), color_(color), point_size_(point_size), buf_(vao_)  {
           glEnable(GL_PROGRAM_POINT_SIZE);
           buf_.buffer(points_);
+          log_info(buf_);
 
           VertexShader v = load_vertex_shader("shaders/basic_2d_pass_pos.vert");
           FragmentShader f = load_fragment_shader("shaders/uniform_color_circle.frag");
@@ -31,7 +34,6 @@ namespace cannon {
           program_.attach_shader(v);
           program_.attach_shader(f);
           program_.link();
-          program_.activate();
         }
 
         void add_points(MatrixX2f point);

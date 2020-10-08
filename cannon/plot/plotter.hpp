@@ -9,6 +9,7 @@
 #include <cannon/graphics/vertex_shader.hpp>
 #include <cannon/graphics/fragment_shader.hpp>
 #include <cannon/plot/scatter.hpp>
+#include <cannon/plot/axes.hpp>
 #include <cannon/log/registry.hpp>
 
 using namespace cannon::graphics;
@@ -43,6 +44,7 @@ namespace cannon {
       private:
         Window w_;
         ShaderProgram program_;
+        Axes axes_;
         std::vector<Scatter> scatter_plots_;
     };
 

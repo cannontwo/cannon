@@ -25,11 +25,13 @@ namespace cannon {
 
         void bind();
         void unbind();
+        int get_next_vertex_attribute_num();
 
         friend std::ostream& operator<<(std::ostream&, const VertexArrayObject&);
 
       private:
         unsigned int gl_vertex_array_object_;
+        int declared_vertex_attribs_ = 0;
     };
 
     std::ostream& operator<<(std::ostream&, const VertexArrayObject&);

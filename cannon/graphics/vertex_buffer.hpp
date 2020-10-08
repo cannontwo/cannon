@@ -13,10 +13,7 @@ using namespace cannon::log;
 
 namespace cannon {
   namespace graphics {
-    static int VERTEX_ATTRIBUTES_DECLARED = 0;
 
-    int get_next_vertex_attribute_num();
-    
     class VertexBuffer {
       public:
         VertexBuffer() = delete;
@@ -25,7 +22,7 @@ namespace cannon {
           vao_.bind();
           glGenBuffers(1, &gl_vertex_buffer_object_);
 
-          gl_vertex_attribute_num_ = get_next_vertex_attribute_num();
+          gl_vertex_attribute_num_ = vao_.get_next_vertex_attribute_num();
         }
 
         ~VertexBuffer() {
@@ -48,7 +45,6 @@ namespace cannon {
     };
 
     std::ostream& operator<<(std::ostream&, const VertexBuffer&);
-
 
   } // namespace graphics
 } // namespace cannon

@@ -19,8 +19,8 @@ namespace cannon {
           vao_.bind();
           glGenBuffers(1, &gl_vertex_buffer_object_);
 
-          gl_vertex_attribute_num_ = get_next_vertex_attribute_num();
-          gl_color_attribute_num_ = get_next_vertex_attribute_num();
+          gl_vertex_attribute_num_ = vao_.get_next_vertex_attribute_num();
+          gl_color_attribute_num_ = vao_.get_next_vertex_attribute_num();
         }
 
         ~VertexColorBuffer() {

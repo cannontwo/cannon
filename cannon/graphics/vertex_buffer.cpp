@@ -46,18 +46,6 @@ void VertexBuffer::set_vertex_attribute_pointer(int dim) {
 }
 
 // Free Functions
-int cannon::graphics::get_next_vertex_attribute_num() {
-  int max;
-  glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &max);
-
-  if (VERTEX_ATTRIBUTES_DECLARED >= max)
-    throw std::runtime_error("Too many vertex attributes declared");
-
-  VERTEX_ATTRIBUTES_DECLARED = VERTEX_ATTRIBUTES_DECLARED + 1;
-  return VERTEX_ATTRIBUTES_DECLARED - 1;
-}
-
-
 std::ostream& cannon::graphics::operator<<(std::ostream& os, const VertexBuffer& buf) {
   os << "buffer #" << buf.gl_vertex_buffer_object_ << ", attr=" << buf.gl_vertex_attribute_num_;
 
