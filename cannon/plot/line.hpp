@@ -1,5 +1,5 @@
-#ifndef CANNON_PLOT_SCATTER_H
-#define CANNON_PLOT_SCATTER_H 
+#ifndef CANNON_PLOT_LINE_H
+#define CANNON_PLOT_LINE_H 
 
 #include <glad/glad.h>
 #include <Eigen/Dense>
@@ -19,23 +19,23 @@ using namespace cannon::log;
 namespace cannon {
   namespace plot {
 
-    class Scatter {
+    class Line {
       public:
-        Scatter() = delete;
+        Line() = delete;
 
-        Scatter(std::shared_ptr<ShaderProgram> program, MatrixX2f points, Vector4f color, float point_size) : points_(points), color_(color), point_size_(point_size), vao_(new VertexArrayObject), buf_(vao_), program_(program)  {
-          glEnable(GL_PROGRAM_POINT_SIZE);
+        Line(std::shared_ptr<ShaderProgram> program, MatrixX2f points, Vector4f color) : points_(points), color_(color), vao_(new VertexArrayObject), buf_(vao_), program_(program)  {
           buf_.buffer(points_);
           log_info(buf_);
         }
 
-        Scatter(Scatter& s) = delete;
+        Line(Line& s) = delete;
 
-        Scatter(Scatter&& s) : points_(s.points_), color_(s.color_),
-          point_size_(s.point_size_), vao_(s.vao_), buf_(std::move(s.buf_)),
+        Line(Line&& s) : points_(s.points_), color_(s.color_),
+          vao_(s.vao_), buf_(std::move(s.buf_)),
           program_(std::move(s.program_)) {}
 
         void add_points(MatrixX2f point);
+        void replace_points(MatrixX2f points);
 
         friend class Plotter;
 
@@ -44,7 +44,6 @@ namespace cannon {
 
         MatrixX2f points_;
         Vector4f color_;
-        float point_size_;
         std::shared_ptr<VertexArrayObject> vao_;
         VertexBuffer buf_;
         std::shared_ptr<ShaderProgram> program_;
@@ -53,4 +52,4 @@ namespace cannon {
   } // namespace plot
 } // namespace cannon
 
-#endif /* ifndef CANNON_PLOT_SCATTER_H */
+#endif /* ifndef CANNON_PLOT_LINE_H */

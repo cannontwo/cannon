@@ -18,8 +18,3 @@ void Scatter::draw() {
   buf_.bind();
   glDrawArrays(GL_POINTS, 0, points_.rows());
 }
-
-void Scatter::log() {
-  log_info(vao_);
-  log_info(buf_);
-}
