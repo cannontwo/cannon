@@ -18,8 +18,8 @@ namespace cannon {
       public:
         ElementBuffer() = delete;
 
-        ElementBuffer(VertexArrayObject& vao) : vao_(vao) {
-          vao_.bind();
+        ElementBuffer(std::shared_ptr<VertexArrayObject> vao) : vao_(vao) {
+          vao_->bind();
           glGenBuffers(1, &gl_element_buffer_object_);
         }
 
@@ -33,7 +33,7 @@ namespace cannon {
 
       private:
         unsigned int gl_element_buffer_object_;
-        VertexArrayObject& vao_;
+        std::shared_ptr<VertexArrayObject> vao_;
     };
 
   } // namespace graphics

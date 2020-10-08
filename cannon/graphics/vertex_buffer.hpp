@@ -18,12 +18,21 @@ namespace cannon {
       public:
         VertexBuffer() = delete;
 
-        VertexBuffer(VertexArrayObject& vao) : vao_(vao) {
-          vao_.bind();
+        VertexBuffer(std::shared_ptr<VertexArrayObject> vao) : vao_(vao) {
+          vao_->bind();
           glGenBuffers(1, &gl_vertex_buffer_object_);
 
-          gl_vertex_attribute_num_ = vao_.get_next_vertex_attribute_num();
+          gl_vertex_attribute_num_ = vao_->get_next_vertex_attribute_num();
         }
+
+        VertexBuffer(VertexBuffer& buf) = delete;
+
+        VertexBuffer(VertexBuffer&& buf) :
+          gl_vertex_buffer_object_(buf.gl_vertex_buffer_object_),
+          gl_vertex_attribute_num_(buf.gl_vertex_attribute_num_),
+          vao_(buf.vao_) {
+            buf.gl_vertex_buffer_object_ = -1;
+          }
 
         ~VertexBuffer() {
           glDeleteBuffers(1, &gl_vertex_buffer_object_);
@@ -41,7 +50,7 @@ namespace cannon {
 
         unsigned int gl_vertex_buffer_object_;
         int gl_vertex_attribute_num_;
-        VertexArrayObject& vao_;
+        std::shared_ptr<VertexArrayObject> vao_;
     };
 
     std::ostream& operator<<(std::ostream&, const VertexBuffer&);

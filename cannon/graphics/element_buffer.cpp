@@ -3,13 +3,13 @@
 using namespace cannon::graphics;
 
 void ElementBuffer::bind() {
-  vao_.bind();
+  vao_->bind();
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, gl_element_buffer_object_);
 }
 
 void ElementBuffer::unbind() {
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-  vao_.unbind();
+  vao_->unbind();
 }
 
 void ElementBuffer::buffer(MatrixX3u indices) {

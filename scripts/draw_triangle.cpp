@@ -25,7 +25,7 @@ int main() {
                0.5f, -0.5f, 0.0f,
                0.0f, 0.5f, 0.0f;
 
-  VertexArrayObject vao;
+  auto vao = std::make_shared<VertexArrayObject>();
   VertexBuffer buf(vao);
 
   // Eigen stores matrices in column-major format, so we transpose because

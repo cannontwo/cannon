@@ -19,6 +19,13 @@ namespace cannon {
           gl_shader_program_ = glCreateProgram();
         }
 
+        ShaderProgram(ShaderProgram& s) = delete;
+
+        ShaderProgram(ShaderProgram&& s) :
+          gl_shader_program_(s.gl_shader_program_) {
+            s.gl_shader_program_ = -1;
+          }
+
         ~ShaderProgram() {
           glDeleteProgram(gl_shader_program_);
         }

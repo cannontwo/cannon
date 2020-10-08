@@ -1,6 +1,7 @@
 #include <cannon/plot/plotter.hpp>
 
 using namespace cannon::plot;
+using namespace cannon::log;
 
 void Plotter::render() {
   program_.activate();
@@ -11,7 +12,7 @@ void Plotter::render() {
       axes_.draw();
 
       for (auto& scatter : scatter_plots_) {
-        scatter.draw();
+        scatter.draw(axes_.make_scaling_matrix());
       }
 
       // TODO

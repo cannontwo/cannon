@@ -23,7 +23,7 @@ namespace cannon {
       public:
         Scatter() = delete;
 
-        Scatter(MatrixX2f points, Vector4f color, float point_size) : points_(points), color_(color), point_size_(point_size), buf_(vao_)  {
+        Scatter(MatrixX2f points, Vector4f color, float point_size) : points_(points), color_(color), point_size_(point_size), vao_(new VertexArrayObject), buf_(vao_)  {
           glEnable(GL_PROGRAM_POINT_SIZE);
           buf_.buffer(points_);
           log_info(buf_);
@@ -34,11 +34,18 @@ namespace cannon {
           program_.attach_shader(v);
           program_.attach_shader(f);
           program_.link();
+          program_.activate();
         }
+
+        Scatter(Scatter& s) = delete;
+
+        Scatter(Scatter&& s) : points_(s.points_), color_(s.color_),
+          point_size_(s.point_size_), vao_(s.vao_), buf_(std::move(s.buf_)),
+          program_(std::move(s.program_)) {}
 
         void add_points(MatrixX2f point);
 
-        void draw();
+        void draw(Matrix4f matrix);
 
         // TODO Delete
         void log();
@@ -47,7 +54,7 @@ namespace cannon {
         MatrixX2f points_;
         Vector4f color_;
         float point_size_;
-        VertexArrayObject vao_;
+        std::shared_ptr<VertexArrayObject> vao_;
         VertexBuffer buf_;
         ShaderProgram program_;
     };

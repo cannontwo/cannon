@@ -3,13 +3,13 @@
 using namespace cannon::graphics;
 
 void VertexBuffer::bind() {
-  vao_.bind();
+  vao_->bind();
   glBindBuffer(GL_ARRAY_BUFFER, gl_vertex_buffer_object_);
 }
 
 void VertexBuffer::unbind() {
   glBindBuffer(GL_ARRAY_BUFFER, 0);
-  vao_.unbind();
+  vao_->unbind();
 }
 
 void VertexBuffer::buffer(MatrixX3f vertices) {

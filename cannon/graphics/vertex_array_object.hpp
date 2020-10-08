@@ -18,6 +18,14 @@ namespace cannon {
           bind();
         }
 
+        VertexArrayObject(VertexArrayObject& vao) = delete;
+
+        VertexArrayObject(VertexArrayObject&& vao) :
+          gl_vertex_array_object_(vao.gl_vertex_array_object_),
+          declared_vertex_attribs_(vao.declared_vertex_attribs_) {
+            vao.gl_vertex_array_object_ = -1;
+        } 
+
         ~VertexArrayObject() {
           unbind();
           glDeleteVertexArrays(1, &gl_vertex_array_object_);

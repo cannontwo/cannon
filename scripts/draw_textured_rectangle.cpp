@@ -34,7 +34,7 @@ int main() {
   indices << 0, 1, 3,
              1, 2, 3;
 
-  VertexArrayObject vao;
+  auto vao = std::make_shared<VertexArrayObject>();
   VertexColorTexBuffer vbuf(vao);
   ElementBuffer ebuf(vao);
 
@@ -43,8 +43,6 @@ int main() {
 
   ebuf.buffer(indices);
   ebuf.bind();
-
-  vao.bind();
 
   Texture t("assets/container.jpg");  
   t.bind();

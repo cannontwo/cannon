@@ -15,12 +15,12 @@ namespace cannon {
       public:
         VertexColorBuffer() = delete;
 
-        VertexColorBuffer(VertexArrayObject& vao) : vao_(vao) {
-          vao_.bind();
+        VertexColorBuffer(std::shared_ptr<VertexArrayObject> vao) : vao_(vao) {
+          vao_->bind();
           glGenBuffers(1, &gl_vertex_buffer_object_);
 
-          gl_vertex_attribute_num_ = vao_.get_next_vertex_attribute_num();
-          gl_color_attribute_num_ = vao_.get_next_vertex_attribute_num();
+          gl_vertex_attribute_num_ = vao_->get_next_vertex_attribute_num();
+          gl_color_attribute_num_ = vao_->get_next_vertex_attribute_num();
         }
 
         ~VertexColorBuffer() {
@@ -37,7 +37,7 @@ namespace cannon {
         unsigned int gl_vertex_buffer_object_;
         int gl_vertex_attribute_num_;
         int gl_color_attribute_num_;
-        VertexArrayObject& vao_;
+        std::shared_ptr<VertexArrayObject> vao_;
     };
 
   } // namespace graphics

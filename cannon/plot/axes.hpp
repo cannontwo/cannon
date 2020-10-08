@@ -21,7 +21,7 @@ namespace cannon {
 
     class Axes {
       public:
-        Axes() : x_min_(-1.0), x_max_(1.0), y_min_(-1.0), y_max_(1.0), buf_(vao_) {
+        Axes() : x_min_(-0.01), x_max_(0.01), y_min_(-0.01), y_max_(0.01), padding_(0.1), vao_(new VertexArrayObject), buf_(vao_) {
           MatrixX2f lines(4, 2);
           lines << x_min_, 0.0,
                    x_max_, 0.0,
@@ -42,14 +42,19 @@ namespace cannon {
 
         void draw();
         void update_limits(float x_min, float x_max, float y_min, float y_max);
+        Matrix4f make_scaling_matrix();
 
       private:
+        Vector2f get_scaled_padding();
+        Matrix2f get_padded_extent();
+
         float x_min_;
         float x_max_;
         float y_min_;
         float y_max_;
+        float padding_;
         ShaderProgram program_;
-        VertexArrayObject vao_;
+        std::shared_ptr<VertexArrayObject> vao_;
         VertexBuffer buf_;
 
     };

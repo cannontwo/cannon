@@ -31,7 +31,7 @@ int main() {
   indices << 0, 1, 3,
              1, 2, 3;
 
-  VertexArrayObject vao;
+  auto vao = std::make_shared<VertexArrayObject>();
   VertexBuffer vbuf(vao);
   ElementBuffer ebuf(vao);
 
@@ -40,8 +40,6 @@ int main() {
 
   ebuf.buffer(indices);
   ebuf.bind();
-
-  vao.bind();
 
   const char* v_src = BASIC_VERTEX_SHADER.c_str();
   const char* f_src = BASIC_FRAGMENT_SHADER.c_str();

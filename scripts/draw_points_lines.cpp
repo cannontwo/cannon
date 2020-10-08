@@ -19,7 +19,7 @@ int main() {
   MatrixX2f points(10, 2);
   points = MatrixX2f::Random(10, 2);
 
-  VertexArrayObject vao1;
+  auto vao1 = std::make_shared<VertexArrayObject>();
   VertexBuffer buf1(vao1);
   buf1.buffer(points);
 
@@ -29,7 +29,7 @@ int main() {
            0.0, -1.0,
            0.0, 1.0;
 
-  VertexArrayObject vao2;
+  auto vao2 = std::make_shared<VertexArrayObject>();
   VertexBuffer buf2(vao2);
   buf2.buffer(lines);
 

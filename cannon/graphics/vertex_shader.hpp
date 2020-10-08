@@ -62,8 +62,9 @@ namespace cannon {
     static const std::string BASIC_VERTEX_SHADER_2D = std::string("\
       #version 330 core\n\
       layout (location = 0) in vec2 aPos;\n\
+      uniform mat4 matrix;\n\
       void main () {\n\
-        gl_Position = vec4(aPos.x, aPos.y, 0.0, 1.0);\n\
+        gl_Position = matrix * vec4(aPos.x, aPos.y, 0.0, 1.0);\n\
       }\
     ");
 
