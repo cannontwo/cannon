@@ -21,7 +21,6 @@ void render_func() {
 }
 
 int main() {
-  init_glfw();
 
   Window w;
 
@@ -76,7 +75,11 @@ int main() {
   vbuf.bind();
   ebuf.bind();
   //w.set_wireframe_mode();
-  w.render_loop([] {
+  w.render_loop([&] {
+    program.activate();
+    t0.bind();
+    vbuf.bind();
+    ebuf.bind();
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
   });
   vbuf.unbind();

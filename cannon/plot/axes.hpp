@@ -9,6 +9,7 @@
 #include <cannon/graphics/fragment_shader.hpp>
 #include <cannon/graphics/vertex_array_object.hpp>
 #include <cannon/graphics/vertex_buffer.hpp>
+#include <cannon/graphics/font.hpp>
 #include <cannon/log/registry.hpp>
 
 using namespace Eigen;
@@ -53,9 +54,11 @@ namespace cannon {
         float y_min_;
         float y_max_;
         float padding_;
+
         ShaderProgram program_;
         std::shared_ptr<VertexArrayObject> vao_;
         VertexBuffer buf_;
+        Font font_;
 
     };
 

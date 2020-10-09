@@ -8,8 +8,6 @@ void render_func() {
 }
 
 int main() {
-  init_glfw();
-
   Window w;
   w.render_loop(render_func);
 }

@@ -26,8 +26,6 @@ float to_radians(float degrees) {
 }
 
 int main() {
-  init_glfw();
-
   Window w;
 
   MatrixXf vertices(4, 8);
@@ -81,8 +79,13 @@ int main() {
   vbuf.bind();
   ebuf.bind();
   //w.set_wireframe_mode();
-  w.render_loop([&program, &w, &model, &view] {
+  w.render_loop([&] {
     // Projection matrix
+    program.activate();
+    vbuf.bind();
+    ebuf.bind();
+    t0.bind();
+    t1.bind();
     Matrix4f projection = make_perspective_fov(to_radians(45.0f),
         (float)(w.width) / (float)(w.height), 0.1f, 100.0f);
 

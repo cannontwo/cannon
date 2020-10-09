@@ -16,7 +16,7 @@ namespace cannon {
 
     class VertexBuffer {
       public:
-        VertexBuffer() = delete;
+        VertexBuffer() : vao_(nullptr) {}
 
         VertexBuffer(std::shared_ptr<VertexArrayObject> vao) : vao_(vao) {
           vao_->bind();
@@ -38,10 +38,15 @@ namespace cannon {
           glDeleteBuffers(1, &gl_vertex_buffer_object_);
         }
 
+        void init(std::shared_ptr<VertexArrayObject> vao);
         void bind();
         void unbind();
         void buffer(MatrixX2f vertices);
         void buffer(MatrixX3f vertices);
+        void buffer(MatrixX4f vertices);
+        void replace(MatrixX2f vertices);
+        void replace(MatrixX3f vertices);
+        void replace(MatrixX4f vertices);
 
         friend std::ostream& operator<<(std::ostream&, const VertexBuffer&);
 

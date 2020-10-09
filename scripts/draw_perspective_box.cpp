@@ -22,9 +22,8 @@ float to_radians(float degrees) {
 }
 
 int main() {
-  init_glfw();
-
   Window w;
+  w.display_text(25.0, 25.0, 1.0, "Perspective box");
   w.enable_depth_test();
 
   MatrixXf vertices(8, 8);
@@ -76,7 +75,6 @@ int main() {
   program.attach_shader(v);
   program.attach_shader(f);
   program.link();
-  program.activate();
 
   // Set texture locations
   program.set_uniform("texture1", 0);
@@ -90,10 +88,8 @@ int main() {
   Affine3f view;
   view = Translation3f(0.0f, 0.0f, -3.0f);
 
-  vbuf.bind();
-  ebuf.bind();
   //w.set_wireframe_mode();
-  w.render_loop([&program, &w, &model, &view] {
+  w.render_loop([&program, &w, &model, &view, &vbuf, &ebuf, &t0, &t1] {
     // Projection matrix
     Matrix4f projection = make_perspective_fov(to_radians(45.0f),
         (float)(w.width) / (float)(w.height), 0.1f, 100.0f);
@@ -101,6 +97,11 @@ int main() {
     auto tmp_model = model * AngleAxisf((float)glfwGetTime() *
         to_radians(50.0f), Vector3f(0.5f, 1.0f, 0.0f));
 
+    vbuf.bind();
+    ebuf.bind();
+    t0.bind();
+    t1.bind();
+    program.activate();
     program.set_uniform("model", tmp_model.matrix());
     program.set_uniform("view", view.matrix());
     program.set_uniform("projection", projection);

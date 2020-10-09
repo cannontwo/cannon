@@ -75,6 +75,11 @@ find_package(GLFW3 REQUIRED)
 include_directories(${GLFW3_INCLUDE_DIR})
 list(APPEND LIBRARIES ${GLFW3_LIBRARY})
 
+# FreeType
+find_package(Freetype REQUIRED)
+include_directories(${FREETYPE_INCLUDE_DIRS})
+list(APPEND LIBRARIES ${FREETYPE_LIBRARIES})
+
 include_directories("${PROJECT_SOURCE_DIR}")
 add_subdirectory(cannon)
 

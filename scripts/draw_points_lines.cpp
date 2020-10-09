@@ -44,11 +44,12 @@ int main() {
   program.attach_shader(f);
   program.link();
   program.activate();
-  program.set_uniform("uColor", Vector4f(0.0f, 0.0f, 0.0f, 1.0f));
 
   w.set_clear_color(Vector4f(1.0, 1.0, 1.0, 1.0));
 
-  w.render_loop([&buf1, &buf2] {
+  w.render_loop([&] {
+      program.activate();
+      program.set_uniform("uColor", Vector4f(0.0f, 0.0f, 0.0f, 1.0f));
 
       buf1.bind();
       glDrawArrays(GL_POINTS, 0, 10);

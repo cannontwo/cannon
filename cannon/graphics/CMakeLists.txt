@@ -10,6 +10,8 @@ list(APPEND GRAPHICS_SOURCES
   vertex_array_object.cpp
   texture.cpp
   projection.cpp
+  font.cpp
+  character.cpp
   )
 
 add_library(graphics ${GRAPHICS_SOURCES})

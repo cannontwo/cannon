@@ -20,12 +20,72 @@ void Window::set_clear_color(Vector4f color) {
   clear_color_ = color;
 }
 
+void Window::set_text_color(Vector4f color) {
+  text_color_ = color;
+}
+
 void Window::set_wireframe_mode() {
   glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 }
 
 void Window::set_fill_mode() {
   glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+}
+
+void Window::display_text(float x, float y, float scale, const std::string &text) {
+  overlays_.push_back({x, y, scale, text});
+}
+
+void Window::init_text_shader() {
+  VertexShader v = load_vertex_shader("shaders/char_shader.vert");
+  FragmentShader f = load_fragment_shader("shaders/char_shader.frag");
+
+  text_program_.attach_shader(v);
+  text_program_.attach_shader(f);
+  text_program_.link();
+  text_program_.activate();
+
+  // Reserve space for display quads
+  MatrixX4f vertices(MatrixX4f::Zero(6, 4));
+  buf_.bind();
+  buf_.buffer(vertices);
+}
+
+void Window::draw_overlays() {
+  text_program_.activate();
+  vao_->bind();
+  text_program_.set_uniform("projection", make_orthographic(0.0f, (float)width,
+        0.0f, (float)height, -1.0, 1.0));
+  text_program_.set_uniform("textColor", text_color_);
+
+  for (auto& o : overlays_) {
+    float x = o.x;
+    std::string::const_iterator c;   
+
+    for (c = o.text.begin(); c != o.text.end(); c++) {
+      std::shared_ptr<Character> ch = font_.get_char(*c);
+
+      float xpos = x + ch->bearing[0] * o.scale;
+      float ypos = o.y - (ch->size[1] - ch->bearing[1]) * o.scale;
+      float w = ch->size[0] * o.scale;
+      float h = ch->size[1] * o.scale;
+
+      MatrixX4f vertices(6, 4);
+      vertices << xpos, ypos + h,     0.0f, 0.0f,
+                  xpos, ypos,         0.0f, 1.0f,
+                  xpos + w, ypos,     1.0f, 1.0f,
+                  xpos, ypos + h,     0.0f, 0.0f,
+                  xpos + w, ypos,     1.0f, 1.0f,
+                  xpos + w, ypos + h, 1.0f, 0.0f;
+      ch->texture.bind();
+      buf_.replace(vertices);      
+
+      glDrawArrays(GL_TRIANGLES, 0, 6);
+      
+      // Advance is stored in number of 1/64 pixels
+      x += (ch->advance >> 6) * o.scale;
+    }
+  }
 }
 
 // Free functions
@@ -42,6 +102,8 @@ void cannon::graphics::init_glad() {
   if (!gladLoadGLLoader((GLADloadproc) glfwGetProcAddress)) {
     throw std::runtime_error("Could not initialize glad");
   }
+  glEnable(GL_BLEND);
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
 void Window::enable_depth_test() {

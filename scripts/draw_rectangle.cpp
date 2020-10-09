@@ -17,8 +17,6 @@ void render_func() {
 }
 
 int main() {
-  init_glfw();
-
   Window w;
 
   MatrixX3f vertices(4, 3);
@@ -56,7 +54,10 @@ int main() {
   vbuf.bind();
   ebuf.bind();
   //w.set_wireframe_mode();
-  w.render_loop([&program] {
+  w.render_loop([&] {
+    program.activate();
+    vbuf.bind();
+    ebuf.bind();
     float t = glfwGetTime();
     float g = (sin(t) / 2.0f) + 0.5f;
     Vector4f v;

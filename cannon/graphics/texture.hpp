@@ -7,6 +7,9 @@
 #include <glad/glad.h>
 #include <stb_image/stb_image.h>
 
+#include <ft2build.h>
+#include FT_FREETYPE_H
+
 namespace cannon {
   namespace graphics {
 
@@ -14,7 +17,8 @@ namespace cannon {
       public:
         Texture() = delete;
 
-        Texture(const std::string& path, bool use_alpha=false, GLenum texture_unit=0) {
+        Texture(const std::string& path, bool use_alpha=false, GLenum
+            texture_unit=GL_TEXTURE0) : gl_texture_unit_(texture_unit) {
           data_ = stbi_load(path.c_str(), &width_, &height_, &num_channels_, 0);
           if (data_ == nullptr) 
             throw std::runtime_error("Could not load image for texture");
@@ -33,6 +37,18 @@ namespace cannon {
           glGenerateMipmap(GL_TEXTURE_2D);
 
           stbi_image_free(data_);
+        }
+
+        Texture(FT_Face &face, GLenum texture_unit=0) :
+            width_(face->glyph->bitmap.width), height_(face->glyph->bitmap.rows),
+            data_(face->glyph->bitmap.buffer), gl_texture_unit_(texture_unit) {
+          glGenTextures(1, &gl_texture_);
+          bind(texture_unit);
+
+          set_wrap_clamp_edge();
+          set_filter_linear();
+
+          glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, width_, height_, 0, GL_RED, GL_UNSIGNED_BYTE, data_);
         }
 
         void bind();
@@ -54,6 +70,7 @@ namespace cannon {
         unsigned char *data_;
 
         unsigned int gl_texture_;
+        GLenum gl_texture_unit_;
     };
 
   } // namespace graphics

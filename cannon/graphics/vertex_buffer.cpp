@@ -2,14 +2,28 @@
 
 using namespace cannon::graphics;
 
+void VertexBuffer::init(std::shared_ptr<VertexArrayObject> vao) {
+  assert(vao_ == nullptr);
+  vao_ = vao;
+
+  vao_->bind();
+  glGenBuffers(1, &gl_vertex_buffer_object_);
+
+  gl_vertex_attribute_num_ = vao_->get_next_vertex_attribute_num();
+}
+
 void VertexBuffer::bind() {
+  if (vao_ == nullptr)
+    throw std::runtime_error("Buffer used without initialized vao.");
+
   vao_->bind();
   glBindBuffer(GL_ARRAY_BUFFER, gl_vertex_buffer_object_);
 }
 
 void VertexBuffer::unbind() {
   glBindBuffer(GL_ARRAY_BUFFER, 0);
-  vao_->unbind();
+  if (vao_ != nullptr) 
+    vao_->unbind();
 }
 
 void VertexBuffer::buffer(MatrixX3f vertices) {
@@ -21,7 +35,7 @@ void VertexBuffer::buffer(MatrixX3f vertices) {
   tmp_vertices.noalias() = vertices.transpose().eval();
 
   glBufferData(GL_ARRAY_BUFFER, sizeof(float) * tmp_vertices.size(), 
-      tmp_vertices.data(), GL_STATIC_DRAW);
+      tmp_vertices.data(), GL_DYNAMIC_DRAW);
 
   set_vertex_attribute_pointer(3);
 }
@@ -35,9 +49,74 @@ void VertexBuffer::buffer(MatrixX2f vertices) {
   tmp_vertices.noalias() = vertices.transpose().eval();
 
   glBufferData(GL_ARRAY_BUFFER, sizeof(float) * tmp_vertices.size(), 
-      tmp_vertices.data(), GL_STATIC_DRAW);
+      tmp_vertices.data(), GL_DYNAMIC_DRAW);
 
   set_vertex_attribute_pointer(2);
+}
+
+void VertexBuffer::buffer(MatrixX4f vertices) {
+  bind();
+
+  // Eigen stores matrices in column-major format, so we transpose because
+  // OpenGL expects row-major
+  Matrix4Xf tmp_vertices;
+  tmp_vertices.noalias() = vertices.transpose().eval();
+
+  glBufferData(GL_ARRAY_BUFFER, sizeof(float) * tmp_vertices.size(), 
+      tmp_vertices.data(), GL_DYNAMIC_DRAW);
+
+  set_vertex_attribute_pointer(4);
+}
+
+void VertexBuffer::replace(MatrixX2f vertices) {
+  bind();
+
+  int size;
+  glGetBufferParameteriv(GL_ARRAY_BUFFER, GL_BUFFER_SIZE,  &size);
+
+  if (size == sizeof(float) * vertices.size()) {
+    // Eigen stores matrices in column-major format, so we transpose because
+    // OpenGL expects row-major
+    Matrix2Xf tmp_vertices;
+    tmp_vertices.noalias() = vertices.transpose().eval();
+    glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(float) * tmp_vertices.size(), tmp_vertices.data());
+  } else {
+    buffer(vertices);
+  }
+}
+
+void VertexBuffer::replace(MatrixX3f vertices) {
+  bind();
+
+  int size;
+  glGetBufferParameteriv(GL_ARRAY_BUFFER, GL_BUFFER_SIZE,  &size);
+
+  if (size == sizeof(float) * vertices.size()) {
+    // Eigen stores matrices in column-major format, so we transpose because
+    // OpenGL expects row-major
+    Matrix3Xf tmp_vertices;
+    tmp_vertices.noalias() = vertices.transpose().eval();
+    glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(float) * tmp_vertices.size(), tmp_vertices.data());
+  } else {
+    buffer(vertices);
+  }
+}
+
+void VertexBuffer::replace(MatrixX4f vertices) {
+  bind();
+
+  int size;
+  glGetBufferParameteriv(GL_ARRAY_BUFFER, GL_BUFFER_SIZE,  &size);
+
+  if (size == sizeof(float) * vertices.size()) {
+    // Eigen stores matrices in column-major format, so we transpose because
+    // OpenGL expects row-major
+    Matrix4Xf tmp_vertices;
+    tmp_vertices.noalias() = vertices.transpose().eval();
+    glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(float) * tmp_vertices.size(), tmp_vertices.data());
+  } else {
+    buffer(vertices);
+  }
 }
 
 void VertexBuffer::set_vertex_attribute_pointer(int dim) {

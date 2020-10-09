@@ -11,13 +11,7 @@
 using namespace cannon::graphics;
 using namespace cannon::log;
 
-void render_func() {
-  glDrawArrays(GL_TRIANGLES, 0, 3);
-}
-
 int main() {
-  init_glfw();
-
   Window w;
   
   MatrixXf vertices(3, 6);
@@ -46,6 +40,9 @@ int main() {
   program.activate();
 
   buf.bind();
-  w.render_loop(render_func);
-  buf.unbind();
+  w.render_loop([&] {
+      buf.bind();
+      program.activate();
+      glDrawArrays(GL_TRIANGLES, 0, 3);
+      });
 }

@@ -15,8 +15,10 @@ namespace cannon {
 
     class ShaderProgram {
       public:
-        ShaderProgram() {
-          gl_shader_program_ = glCreateProgram();
+        ShaderProgram(bool do_init=true) {
+          if (do_init) {
+            init();
+          }
         }
 
         ShaderProgram(ShaderProgram& s) = delete;
@@ -35,6 +37,11 @@ namespace cannon {
           glAttachShader(gl_shader_program_, shader.gl_shader_);
         }
 
+        void init() {
+          gl_shader_program_ = glCreateProgram();
+          initialized_ = true;
+        }
+
         void link();
         void activate();
         void set_uniform(const std::string& name, int value);
@@ -46,6 +53,7 @@ namespace cannon {
         int get_uniform_loc_(const std::string& name);
 
         unsigned int gl_shader_program_;
+        bool initialized_ = false;
 
     };
 

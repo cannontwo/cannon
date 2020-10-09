@@ -3,12 +3,20 @@
 
 #include <vector>
 #include <stdexcept>
+
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <stb_image/stb_image_write.h>
 #include <Eigen/Dense>
 
 #include <cannon/log/registry.hpp>
+#include <cannon/graphics/font.hpp>
+#include <cannon/graphics/shader_program.hpp>
+#include <cannon/graphics/vertex_shader.hpp>
+#include <cannon/graphics/fragment_shader.hpp>
+#include <cannon/graphics/projection.hpp>
+#include <cannon/graphics/vertex_buffer.hpp>
+#include <cannon/graphics/vertex_array_object.hpp>
 
 // TODO
 //#include <cannon/graphics/input_handlers.hpp>
@@ -17,6 +25,13 @@ using namespace Eigen;
 
 namespace cannon {
   namespace graphics {
+
+    struct OverlayText {
+      float x;
+      float y;
+      float scale;
+      const std::string text;
+    };
 
     // Free functions
     void init_glfw();
@@ -31,7 +46,8 @@ namespace cannon {
 
     class Window {
       public:
-        Window(int w = 800, int h = 600, const std::string& name = "Test"): width(w), height(h) {
+        Window(int w = 800, int h = 600, const std::string& name = "Test"):
+          width(w), height(h), font_(false), text_program_(false), vao_(nullptr), buf_() {
           init_glfw();
           window = glfwCreateWindow(width, height, name.c_str(), NULL, NULL); 
 
@@ -42,11 +58,18 @@ namespace cannon {
 
           make_current();
           init_glad();
+
           glEnable(GL_MULTISAMPLE);
           set_viewport(0, 0, width, height);
 
           register_callbacks();
           set_clear_color(Vector4f(0.2f, 0.3f, 0.3f, 1.0f));
+          set_text_color(Vector4f(1.0, 0.0, 0.0, 1.0));
+          font_.init();
+          text_program_.init();
+          vao_ = std::make_shared<VertexArrayObject>();
+          buf_.init(vao_);
+          init_text_shader();
         }
 
         ~Window() {
@@ -55,11 +78,13 @@ namespace cannon {
 
         void make_current();
         void set_viewport(unsigned x, unsigned y, unsigned width, unsigned height);
-        void register_callbacks();
         
         void set_clear_color(Vector4f color);
+        void set_text_color(Vector4f color);
         void set_wireframe_mode();
         void set_fill_mode();
+
+        void display_text(float x, float y, float scale, const std::string &text);
 
         void enable_depth_test();
         void disable_depth_test();
@@ -77,6 +102,8 @@ namespace cannon {
             glfwGetFramebufferSize(window, &width, &height);
 
             f();
+
+            draw_overlays();
 
             glfwSwapBuffers(window);
             glfwPollEvents();
@@ -97,6 +124,8 @@ namespace cannon {
 
               f();
 
+              draw_overlays();
+
               glfwSwapBuffers(window);
               glfwPollEvents();
             }
@@ -107,8 +136,19 @@ namespace cannon {
         int height;
 
       private:
+        void register_callbacks();
+        void init_text_shader();
+        void draw_overlays();
+
         GLFWwindow *window;
+
+        Font font_;
+        Vector4f text_color_;
+        ShaderProgram text_program_;
         Vector4f clear_color_;
+        std::shared_ptr<VertexArrayObject> vao_;
+        VertexBuffer buf_;
+        std::vector<OverlayText> overlays_;
     };
 
   } // namespace graphics

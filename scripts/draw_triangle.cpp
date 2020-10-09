@@ -12,11 +12,9 @@ using namespace cannon::graphics;
 using namespace cannon::log;
 
 void render_func() {
-  glDrawArrays(GL_TRIANGLES, 0, 3);
 }
 
 int main() {
-  init_glfw();
 
   Window w;
   
@@ -47,5 +45,9 @@ int main() {
   program.set_uniform("uColor", Vector4f(1.0f, 0.0f, 0.0f, 1.0f));
 
   buf.bind();
-  w.render_loop(render_func);
+  w.render_loop([&] {
+    program.activate();
+    buf.bind();
+    glDrawArrays(GL_TRIANGLES, 0, 3);
+      });
 }

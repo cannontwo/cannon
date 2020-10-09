@@ -3,6 +3,7 @@
 using namespace cannon::graphics;
 
 void Texture::bind() {
+  glActiveTexture(gl_texture_unit_);
   glBindTexture(GL_TEXTURE_2D, gl_texture_);
 }
 

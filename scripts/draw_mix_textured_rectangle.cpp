@@ -21,8 +21,6 @@ void render_func() {
 }
 
 int main() {
-  init_glfw();
-
   Window w;
 
   MatrixXf vertices(4, 8);
@@ -65,10 +63,13 @@ int main() {
   program.set_uniform("texture1", 0);
   program.set_uniform("texture2", 1);
 
-  vbuf.bind();
-  ebuf.bind();
   //w.set_wireframe_mode();
-  w.render_loop([] {
+  w.render_loop([&t0, &t1, &program, &vbuf, &ebuf] {
+    t0.bind();
+    t1.bind();
+    program.activate();
+    vbuf.bind();
+    ebuf.bind();
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
   });
   vbuf.unbind();

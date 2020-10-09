@@ -12,7 +12,7 @@ void Line::add_points(MatrixX2f point) {
 
 void Line::replace_points(MatrixX2f points) {
   points_ = points;
-  buf_.buffer(points_);
+  buf_.replace(points_);
 }
 
 void Line::draw() {
