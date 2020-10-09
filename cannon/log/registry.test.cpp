@@ -15,7 +15,7 @@ int main() {
   std::stringstream ss; 
   auto l = std::make_shared<Logger>(ss);
   Registry::instance().add_logger(l);
-  log("Test");
+  log(Level::info, "Test");
   assert(ss.str().compare("[INFO] Test\n") == 0);
 
   // Multiple loggers
@@ -24,7 +24,7 @@ int main() {
   auto l2 = std::make_shared<Logger>(ss2);
   add_logger(l1);
   add_logger(l2);
-  log("Test");
+  log(Level::info, "Test");
   assert(ss1.str().compare("[INFO] Test\n") == 0);
   assert(ss2.str().compare("[INFO] Test\n") == 0);
 
@@ -44,4 +44,10 @@ int main() {
   assert(ss_info.str().compare("[INFO] Test_info\n[WARN] Test_warning\n[ERR] Test_error\n") == 0);
   assert(ss_warning.str().compare("[WARN] Test_warning\n[ERR] Test_error\n") == 0);
   assert(ss_error.str().compare("[ERR] Test_error\n") == 0);
+
+  // Variadic log
+  std::stringstream ss_variadic;
+  add_logger(ss_variadic);
+  log_info("Test", 5, "Hello");
+  assert(ss_variadic.str().compare("[INFO] Test 5 Hello\n") == 0);
 }

@@ -27,16 +27,46 @@ namespace cannon {
 
         void add_logger(std::shared_ptr<Logger> l);
 
-
-        // TODO Make variadic
         template <typename T>
-        void log(const T& t, const Level& level = Level::info) {
+        void log(const Level& level, const T& t) {
           for (auto l : loggers_) {
-            l->log(t, level);
+            l->log_internal_(level, level);
+            l->log_internal_(level, t);
+            l->log_internal_(level, "\n");
+          }
+        }
+
+        template <typename... Targs>
+        void log(const Level& level, const Targs&... targs) {
+          for (auto l : loggers_) {
+            l->log_internal_(level, level);
+          }
+
+          log_internal_(level, targs...);
+
+          for (auto l : loggers_) {
+            l->log_internal_(level, "\n");
           }
         }
 
       private:
+        template <typename T>
+        void log_internal_(const Level& level, const T& t) {
+          for (auto l : loggers_) {
+            l->log_internal_(level, t);
+          }
+        }
+
+        template <typename T, typename... Targs>
+        void log_internal_(const Level& level, const T& t, const Targs&... targs) {
+          for (auto l : loggers_) {
+            l->log_internal_(level, t);
+            l->log_internal_(level, " ");
+          }
+          log_internal_(level, targs...);
+        }
+
+
         std::vector<std::shared_ptr<Logger>> loggers_;
     };
 
@@ -45,23 +75,43 @@ namespace cannon {
     void add_logger(std::ostream &os, const Level &level = Level::info);
     
     template <typename T>
-    void log(const T& t, const Level& level = Level::info) {
-      Registry::instance().log(t, level);
+    void log(const Level& level, const T& t) {
+      Registry::instance().log(level, t);
+    }
+
+    template <typename... Targs>
+    void log(const Level& level, const Targs&... targs) {
+      Registry::instance().log(level, targs...);
     }
 
     template <typename T>
     void log_info(const T &t) {
-      log(t, Level::info);
+      log(Level::info, t);
+    }
+
+    template <typename... Targs>
+    void log_info(const Targs&... targs) {
+      log(Level::info, targs...);
     }
 
     template <typename T>
     void log_warning(const T &t) {
-      log(t, Level::warning);
+      log(Level::warning, t);
+    }
+
+    template <typename... Targs>
+    void log_warning(const Targs&... targs) {
+      log(Level::warning, targs...);
     }
 
     template <typename T>
     void log_error(const T &t) {
-      log(t, Level::error);
+      log(Level::error, t);
+    }
+
+    template <typename... Targs>
+    void log_error(const Targs&... targs) {
+      log(Level::error, targs...);
     }
 
   } // namespace log
