@@ -11,9 +11,6 @@
 using namespace cannon::graphics;
 using namespace cannon::log;
 
-void render_func() {
-}
-
 int main() {
 
   Window w;

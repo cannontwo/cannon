@@ -10,6 +10,7 @@
 #include <cannon/graphics/vertex_buffer.hpp>
 #include <cannon/graphics/vertex_shader.hpp>
 #include <cannon/graphics/fragment_shader.hpp>
+#include <cannon/plot/plotter.hpp>
 #include <cannon/log/registry.hpp>
 
 using namespace Eigen;
@@ -19,18 +20,20 @@ using namespace cannon::log;
 namespace cannon {
   namespace plot {
 
+    class Plotter;
+
     class Line {
       public:
         Line() = delete;
 
-        Line(std::shared_ptr<ShaderProgram> program, MatrixX2f points, Vector4f color) : points_(points), color_(color), vao_(new VertexArrayObject), buf_(vao_), program_(program)  {
+        Line(Plotter& plotter, std::shared_ptr<ShaderProgram> program, MatrixX2f points, Vector4f color) : plotter_(plotter), points_(points), color_(color), vao_(new VertexArrayObject), buf_(vao_), program_(program)  {
           buf_.buffer(points_);
           log_info(buf_);
         }
 
         Line(Line& s) = delete;
 
-        Line(Line&& s) : points_(s.points_), color_(s.color_),
+        Line(Line&& s) : plotter_(s.plotter_), points_(s.points_), color_(s.color_),
           vao_(s.vao_), buf_(std::move(s.buf_)),
           program_(std::move(s.program_)) {}
 
@@ -41,7 +44,9 @@ namespace cannon {
 
       private:
         void draw();
+        void update_plotter();
 
+        Plotter& plotter_;
         MatrixX2f points_;
         Vector4f color_;
         std::shared_ptr<VertexArrayObject> vao_;

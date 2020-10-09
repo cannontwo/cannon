@@ -11,6 +11,7 @@
 #include <cannon/graphics/vertex_shader.hpp>
 #include <cannon/graphics/fragment_shader.hpp>
 #include <cannon/log/registry.hpp>
+#include <cannon/plot/plotter.hpp>
 
 using namespace Eigen;
 using namespace cannon::graphics;
@@ -19,11 +20,17 @@ using namespace cannon::log;
 namespace cannon {
   namespace plot {
 
+    class Plotter;
+
     class Scatter {
       public:
         Scatter() = delete;
 
-        Scatter(std::shared_ptr<ShaderProgram> program, MatrixX2f points, Vector4f color, float point_size) : points_(points), color_(color), point_size_(point_size), vao_(new VertexArrayObject), buf_(vao_), program_(program)  {
+        Scatter(Plotter& plotter, std::shared_ptr<ShaderProgram> program,
+            MatrixX2f points, Vector4f color, float point_size) :
+            plotter_(plotter), points_(points), color_(color),
+            point_size_(point_size), vao_(new VertexArrayObject), buf_(vao_),
+            program_(program)  {
           glEnable(GL_PROGRAM_POINT_SIZE);
           buf_.buffer(points_);
           log_info(buf_);
@@ -31,7 +38,7 @@ namespace cannon {
 
         Scatter(Scatter& s) = delete;
 
-        Scatter(Scatter&& s) : points_(s.points_), color_(s.color_),
+        Scatter(Scatter&& s) : plotter_(s.plotter_), points_(s.points_), color_(s.color_),
           point_size_(s.point_size_), vao_(s.vao_), buf_(std::move(s.buf_)),
           program_(std::move(s.program_)) {}
 
@@ -42,6 +49,7 @@ namespace cannon {
       private:
         void draw();
 
+        Plotter& plotter_;
         MatrixX2f points_;
         Vector4f color_;
         float point_size_;

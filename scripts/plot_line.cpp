@@ -20,6 +20,9 @@ int main() {
   log_info(pts);
   std::shared_ptr<Line> l = plotter.plot_line(pts, Vector4f(0.0, 0.0, 0.0, 1.0));
 
+  plotter.set_xlim(-5.0, 5.0);
+  plotter.set_ylim(-5.0, 5.0);
+
   plotter.render([&l] {
       float t = (float)glfwGetTime();
       float x1 = -5.0 * std::cos(t);

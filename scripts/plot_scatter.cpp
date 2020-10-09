@@ -7,19 +7,21 @@ using namespace cannon::log;
 
 int main() {
   Plotter plotter;
+  plotter.display_fps();
 
-  // TODO
-  MatrixX2f pts = MatrixX2f::Random(10, 2);
+  MatrixX2f pts = MatrixX2f::Random(1, 2);
   log_info(pts);
-  plotter.plot_points(pts, Vector4f(0.0, 0.0, 0.0, 1.0), 15.0);
+  auto scatter = plotter.plot_points(pts, Vector4f(0.0, 0.0, 0.0, 1.0), 15.0);
 
-  MatrixX2f pts2(4, 2);
-  pts2 << -5.0, 5.0,
-          4.0, -6.0,
-          10.0, 2.0,
-          -10.0, -10.0;
-  plotter.plot_points(pts2, Vector4f(1.0, 0.0, 0.0, 1.0), 15.0);
+  double last_time = glfwGetTime();
+  double time_delta = 0.1;
 
-  plotter.render();
+  plotter.render([&] {
+      if (glfwGetTime() > last_time + time_delta) {
+        MatrixX2f new_pt = MatrixX2f::Random(1, 2);
+        scatter->add_points(new_pt);
+        last_time = glfwGetTime();
+      }
+      });
   plotter.save("tmp.png");
 }

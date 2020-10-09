@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <stdexcept>
+#include <functional>
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -30,7 +31,8 @@ namespace cannon {
       float x;
       float y;
       float scale;
-      const std::string text;
+      std::string text;
+      std::function<void(OverlayText&)> update;
     };
 
     // Free functions
@@ -84,7 +86,9 @@ namespace cannon {
         void set_wireframe_mode();
         void set_fill_mode();
 
-        void display_text(float x, float y, float scale, const std::string &text);
+        void display_text(float x, float y, float scale, 
+            const std::string& text, std::function<void(OverlayText&)> update);
+        void display_fps(float x, float y, float scale);
 
         void enable_depth_test();
         void disable_depth_test();

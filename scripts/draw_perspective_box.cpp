@@ -23,7 +23,7 @@ float to_radians(float degrees) {
 
 int main() {
   Window w;
-  w.display_text(25.0, 25.0, 1.0, "Perspective box");
+  w.display_text(25.0, 25.0, 1.0, "Perspective box", [](OverlayText& o){});
   w.enable_depth_test();
 
   MatrixXf vertices(8, 8);

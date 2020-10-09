@@ -32,8 +32,27 @@ void Window::set_fill_mode() {
   glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 }
 
-void Window::display_text(float x, float y, float scale, const std::string &text) {
-  overlays_.push_back({x, y, scale, text});
+void Window::display_text(float x, float y, float scale, const std::string
+    &text, std::function<void(OverlayText&)> update) {
+  overlays_.push_back({x, y, scale, text, update});
+}
+
+void Window::display_fps(float x, float y, float scale) {
+  float last_time = glfwGetTime();
+  float fps = 0.0;
+
+  overlays_.push_back({x, y, scale, "", [last_time,fps](OverlayText& o) mutable {
+      float smoothing = 0.9;
+      float estimate = 1.0 / (glfwGetTime() - last_time);
+      fps = (fps * smoothing) + (estimate * (1.0 - smoothing));
+      
+      std::stringstream ss;
+      ss.precision(2);
+      ss << fps;
+      o.text.replace(o.text.begin(), o.text.end(), ss.str());
+
+      last_time = glfwGetTime();
+      }});
 }
 
 void Window::init_text_shader() {
@@ -59,14 +78,24 @@ void Window::draw_overlays() {
   text_program_.set_uniform("textColor", text_color_);
 
   for (auto& o : overlays_) {
+    o.update(o);
+
+    // Using negative overlay position to mean relative to top-right
     float x = o.x;
+    if (x < 0.0)
+      x = width + x;
+
+    float y = o.y;
+    if (y < 0.0)
+      y = height + y;
+
     std::string::const_iterator c;   
 
     for (c = o.text.begin(); c != o.text.end(); c++) {
       std::shared_ptr<Character> ch = font_.get_char(*c);
 
       float xpos = x + ch->bearing[0] * o.scale;
-      float ypos = o.y - (ch->size[1] - ch->bearing[1]) * o.scale;
+      float ypos = y - (ch->size[1] - ch->bearing[1]) * o.scale;
       float w = ch->size[0] * o.scale;
       float h = ch->size[1] * o.scale;
 

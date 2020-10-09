@@ -20,9 +20,9 @@ namespace cannon {
 
     class Font {
       public:
-        Font(bool do_init=true, const std::string&
-            path="/usr/share/fonts/truetype/open-sans/OpenSans-Regular.ttf",
-            int size=20) : path_(path), size_(size) {
+        Font(bool do_init=true, int size=20, const std::string&
+            path="/usr/share/fonts/truetype/open-sans/OpenSans-Regular.ttf") :
+            path_(path), size_(size) {
           if (do_init) {
             init();
           }

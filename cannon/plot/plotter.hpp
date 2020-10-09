@@ -19,9 +19,13 @@ using namespace cannon::log;
 namespace cannon {
   namespace plot {
 
+    class Scatter;
+    class Line;
+
     class Plotter {
       public:
-        Plotter() : w_(), point_program_(new ShaderProgram), line_program_(new ShaderProgram) {
+        Plotter() : w_(), point_program_(new ShaderProgram), line_program_(new
+            ShaderProgram), axes_(2.0f / (float)w_.height) {
           w_.set_clear_color(Vector4f(1.0f, 1.0f, 1.0f, 1.0f));
 
           // Set up point shader
@@ -53,10 +57,14 @@ namespace cannon {
         }
 
         void save(const std::string &path);
+        void set_xlim(float low, float high);
+        void set_ylim(float low, float high);
 
         std::shared_ptr<Scatter> plot_points(MatrixX2f points, Vector4f
             color={0.0, 0.0, 0.0, 1.0}, float size=15.0);
         std::shared_ptr<Line> plot_line(MatrixX2f points, Vector4f color={0.0, 0.0, 0.0, 1.0});
+
+        void display_fps();
 
       private:
         void draw_pass();
