@@ -8,12 +8,32 @@ using namespace cannon::logic;
 using namespace cannon::log;
 
 int main() {
+  // PropAssignment printing
+  std::stringstream ss;
+  ss << True;
+  assert(ss.str().compare("True") == 0);
+  ss.str("");
+
+  ss << False;
+  assert(ss.str().compare("False") == 0);
+  ss.str("");
+  
+  ss << Unassigned;
+  assert(ss.str().compare("Unassigned") == 0);
+  ss.str("");
+
   // Test literal evaluation
   std::valarray<PropAssignment> a1 = {True, False};
   std::valarray<PropAssignment> a2 = {False, True};
   std::valarray<PropAssignment> a3 = {Unassigned, Unassigned};
   std::valarray<PropAssignment> a4 = {Unassigned, False};
   std::valarray<PropAssignment> a5 = {True, Unassigned};
+
+  Literal l_fail(10, false);
+  try {
+    l_fail.eval({True});
+    assert(false);
+  } catch (...) {}
   
 
   Literal l1(0, false);
@@ -28,7 +48,6 @@ int main() {
 
   // Testing clause construction and evaluation
   Clause c;
-  std::stringstream ss;
 
   c.add_literal(0, false);
   assert(c.size() == 1);

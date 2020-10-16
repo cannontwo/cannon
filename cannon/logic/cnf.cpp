@@ -22,6 +22,7 @@ PropAssignment Literal::eval(const std::valarray<PropAssignment> assignment) con
 
 // Clause
 void Clause::add_literal(Literal l) {
+  num_props_ = std::max(num_props_, l.prop_ + 1);
   literals_.insert(l);
 }
 
@@ -59,6 +60,7 @@ PropAssignment Clause::eval(const std::valarray<PropAssignment> assignment) cons
 
 // CNFFormula 
 void CNFFormula::add_clause(Clause c) {
+  num_props_ = std::max(num_props_, c.num_props_);
   clauses_.push_back(c);
 }
 
@@ -91,6 +93,10 @@ std::vector<std::pair<unsigned int, bool>> CNFFormula::get_unit_clauses(const
   }
 
   return idxs;
+}
+
+unsigned int CNFFormula::get_num_props() const {
+  return num_props_;
 }
 
 // Free Functions

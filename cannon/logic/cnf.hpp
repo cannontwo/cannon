@@ -6,6 +6,8 @@
 #include <iostream>
 #include <stdexcept>
 #include <valarray>
+#include <cmath>
+#include <algorithm>
 
 namespace cannon {
   namespace logic {
@@ -41,6 +43,7 @@ namespace cannon {
 
         friend std::ostream& operator<<(std::ostream& os, const Literal& l);
 
+        friend class Clause;
         friend class CNFFormula;
 
       private:
@@ -62,9 +65,19 @@ namespace cannon {
 
         friend class CNFFormula;
 
+        bool operator==(const Clause c) const {
+          for (auto& l : literals_) {
+            if (c.literals_.find(l) == c.literals_.end()) {
+              return false;
+            }
+          }
+          
+          return true;
+        }
+
       private:
         std::set<Literal> literals_;
-
+        unsigned int num_props_ = 0;
     };
 
     class CNFFormula {
@@ -75,11 +88,23 @@ namespace cannon {
 
         std::vector<std::pair<unsigned int, bool>> get_unit_clauses(const
             std::valarray<PropAssignment>& a) const;
+        unsigned int get_num_props() const;
+
+        bool operator==(const CNFFormula f) const {
+          for (auto& c : clauses_) {
+            if (std::find(f.clauses_.begin(), f.clauses_.end(), c) == f.clauses_.end()) {
+              return false;
+            }
+          }
+          
+          return true;
+        }
 
         friend std::ostream& operator<<(std::ostream& os, const CNFFormula& f);
 
       private:
         std::vector<Clause> clauses_;
+        unsigned int num_props_ = 0;
     };
 
     std::ostream& operator<<(std::ostream& os, const PropAssignment& a);
