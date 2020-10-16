@@ -38,6 +38,17 @@ bool Clause::is_unit() const {
   return literals_.size() == 1;
 }
 
+bool Clause::is_unit(std::valarray<PropAssignment> a) const {
+  int num_unassigned = 0;
+  for (auto& l : literals_) {
+    if (a[l.prop_] == PropAssignment::Unassigned) {
+      num_unassigned += 1;
+    }
+  }
+
+  return num_unassigned == 1;
+}
+
 PropAssignment Clause::eval(const std::valarray<PropAssignment> assignment) const {
   bool found_unassigned = false;
 

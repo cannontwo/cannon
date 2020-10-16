@@ -51,12 +51,22 @@ int main() {
 
   c.add_literal(0, false);
   assert(c.size() == 1);
+  assert(c.is_unit());
+  assert(!c.is_unit(a1));
+  assert(c.is_unit(a3));
+
   c.add_literal(0, true);
   assert(c.size() == 2);
+  assert(!c.is_unit());
+
   c.add_literal(1, false);
   assert(c.size() == 3);
+  assert(!c.is_unit());
+  assert(c.is_unit(a5));
+
   c.add_literal(0, false);
   assert(c.size() == 3);
+  assert(!c.is_unit());
 
   assert(c.eval(a1) == True);
   assert(c.eval(a2) == True);

@@ -58,6 +58,7 @@ namespace cannon {
 
         unsigned int size() const;
         bool is_unit() const;
+        bool is_unit(std::valarray<PropAssignment> a) const;
 
         PropAssignment eval(const std::valarray<PropAssignment> assignment) const;
 
