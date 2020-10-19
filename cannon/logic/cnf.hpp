@@ -9,14 +9,21 @@
 #include <cmath>
 #include <algorithm>
 
+#include <cannon/log/registry.hpp>
+
+using namespace cannon::log;
+
 namespace cannon {
   namespace logic {
 
-    enum PropAssignment {
+    enum class PropAssignment {
       False,
       Unassigned,
       True
     };
+
+    using Assignment=std::valarray<PropAssignment>;
+    using Simplification=std::valarray<bool>;
 
     class Literal {
       public:
@@ -28,7 +35,7 @@ namespace cannon {
         
         Literal(Literal&& l) : prop_(l.prop_), negated_(l.negated_) {}
 
-        PropAssignment eval(const std::valarray<PropAssignment> assignment) const;
+        PropAssignment eval(const Assignment& assignment) const;
 
 
         bool operator<(const Literal& l) const {
@@ -58,9 +65,10 @@ namespace cannon {
 
         unsigned int size() const;
         bool is_unit() const;
-        bool is_unit(std::valarray<PropAssignment> a) const;
+        bool is_unit(const Assignment& a) const;
 
-        PropAssignment eval(const std::valarray<PropAssignment> assignment) const;
+        std::set<unsigned int> get_props(const Assignment& a);
+        PropAssignment eval(const Assignment& assignment) const;
 
         friend std::ostream& operator<<(std::ostream& os, const Clause& c);
 
@@ -85,11 +93,19 @@ namespace cannon {
       public:
         void add_clause(Clause c);
 
-        PropAssignment eval(const std::valarray<PropAssignment> assignment) const;
+        PropAssignment eval(const Assignment& assignment,
+            const Simplification& s) const;
 
         std::vector<std::pair<unsigned int, bool>> get_unit_clauses(const
-            std::valarray<PropAssignment>& a) const;
+            Assignment& a, const Simplification& s) const;
         unsigned int get_num_props() const;
+        unsigned int get_num_clauses() const;
+        std::vector<unsigned int> get_props(const Assignment& a,
+            const Simplification& s);
+        std::vector<unsigned int> get_props(std::vector<bool> s);
+
+        Simplification simplify(const Assignment& a,
+            const Simplification& s) const;
 
         bool operator==(const CNFFormula f) const {
           for (auto& c : clauses_) {
@@ -112,6 +128,7 @@ namespace cannon {
     std::ostream& operator<<(std::ostream& os, const Literal& l);
     std::ostream& operator<<(std::ostream& os, const Clause& c);
     std::ostream& operator<<(std::ostream& os, const CNFFormula& f);
+    std::ostream& operator<<(std::ostream& os, const std::valarray<PropAssignment>& v);
 
   } // namespace logic
 } // namespace cannon
