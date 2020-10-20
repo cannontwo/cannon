@@ -111,7 +111,7 @@ int main() {
   assert(f.simplify(a6, s)[0] == new_s[0] && f.simplify(a6, s)[1] == new_s[1]);
 
   // Testing getting unit clauses
-  assert(f.get_unit_clauses(a1, s).size() == 0);
+  assert(f.get_unit_clause_props(a1, s).size() == 0);
   auto p = std::pair<unsigned int, bool>(0, false);
-  assert(f.get_unit_clauses(a3, s)[0] == p);
+  assert(f.get_unit_clause_props(a3, s)[0] == p);
 }

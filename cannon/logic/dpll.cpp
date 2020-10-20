@@ -12,4 +12,3 @@ std::ostream& cannon::logic::operator<<(std::ostream& os, const DPLLResult& r) {
 
   return os;
 }
-

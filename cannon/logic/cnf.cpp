@@ -12,10 +12,10 @@ PropAssignment Literal::eval(const Assignment& assignment) const {
   if (a == PropAssignment::Unassigned) 
     return PropAssignment::Unassigned;
   else { 
-    if (a == PropAssignment::True) 
-      return negated_ ? PropAssignment::False : PropAssignment::True;
+    if (negated_) 
+      return a == PropAssignment::True ? PropAssignment::False : PropAssignment::True;
     else
-      return negated_ ? PropAssignment::True : PropAssignment::False;
+      return a;
   }
 }
 
@@ -106,7 +106,7 @@ PropAssignment CNFFormula::eval(const Assignment& assignment,
     return PropAssignment::True;
 }
 
-std::vector<std::pair<unsigned int, bool>> CNFFormula::get_unit_clauses(const
+std::vector<std::pair<unsigned int, bool>> CNFFormula::get_unit_clause_props(const
     Assignment& a, const Simplification& s) const {
   std::vector<std::pair<unsigned int, bool>> idxs; 
 
@@ -117,8 +117,12 @@ std::vector<std::pair<unsigned int, bool>> CNFFormula::get_unit_clauses(const
 
     const Clause& c = clauses_[i];
     if (c.is_unit(a)) {
-      const Literal& l = *c.literals_.begin();
-      idxs.emplace_back(l.prop_, l.negated_);
+      for (auto& l : c.literals_) {
+        if (l.eval(a) == PropAssignment::Unassigned) {
+          idxs.emplace_back(l.prop_, l.negated_);
+          break;
+        }
+      }
     }
   }
 

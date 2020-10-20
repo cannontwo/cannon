@@ -96,7 +96,7 @@ namespace cannon {
         PropAssignment eval(const Assignment& assignment,
             const Simplification& s) const;
 
-        std::vector<std::pair<unsigned int, bool>> get_unit_clauses(const
+        std::vector<std::pair<unsigned int, bool>> get_unit_clause_props(const
             Assignment& a, const Simplification& s) const;
         unsigned int get_num_props() const;
         unsigned int get_num_clauses() const;

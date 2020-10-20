@@ -100,8 +100,14 @@ namespace cannon {
         void do_splitting_rule(Assignment& a, Simplification& s) {
           // Create vector of all propositions
           std::vector<unsigned int> all_props = formula_.get_props(a, s);
+          if (all_props.size() == 0) {
+            return;
+          }
+
           unsigned int prop = ph_.choose_prop(formula_, a, s, all_props);
           bool first_assignment = ah_.choose_assignment(formula_, a, s, prop);
+
+          assert(a[prop] == PropAssignment::Unassigned);
           
           Assignment split_first_a(a);
           split_first_a[prop] = first_assignment ? PropAssignment::True : PropAssignment::False;
@@ -118,10 +124,13 @@ namespace cannon {
 
         void do_unit_preference(Assignment& a, Simplification& s) {
           std::vector<std::pair<unsigned int, bool>> units =
-            formula_.get_unit_clauses(a, s);
-          log_info("Doing unit preference with units");
+            formula_.get_unit_clause_props(a, s);
           for (auto& p : units) {
             log_info("\t", p.first, ":", p.second);
+          }
+
+          if (units.size() == 0) {
+            return;
           }
 
           std::set<unsigned int> unit_props;
@@ -134,7 +143,6 @@ namespace cannon {
           unit_prop_vec.insert(unit_prop_vec.end(), unit_props.begin(), unit_props.end());
 
           unsigned int prop = ph_.choose_prop(formula_, a, s, unit_prop_vec);
-          log_info("Selected prop is", prop);
           Assignment unit_a(a);
 
           auto idx = std::find_if(units.begin(), units.end(), 
@@ -142,6 +150,7 @@ namespace cannon {
 
           // Either the prop or its negated version must be a literal
           assert(idx != units.end());
+          assert(unit_a[prop] == PropAssignment::Unassigned);
 
           if ((*idx).second) {
             unit_a[prop] = PropAssignment::False; 
@@ -162,7 +171,8 @@ namespace cannon {
           Assignment a = current.first;
           Simplification s = current.second;
 
-          log_info("Popped assignment", a, "from stack");
+          // TODO Delete
+          log_info("Popped assignment", a, "from stack with simplification [");
 
           Assignment empty;
           auto e = formula_.eval(a, s);
