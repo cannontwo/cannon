@@ -88,13 +88,13 @@ int main() {
   assert(r == DPLLResult::Satisfiable);
 
   // Larger (Einstein's Puzzle)
-  CNFFormula ein_f = load_cnf("formulas/ein.cnf"); 
-  log_info("Parsed Einstein's Puzzle as", ein_f);
-  std::tie(r, a) = dpll(ein_f, uniform_random_prop, uniform_random_assign);
-  log_info("DPLL on Einstein's Puzzle returned result", r, "with assignment", a);
-  assert(r == DPLLResult::Satisfiable);
+  //CNFFormula ein_f = load_cnf("formulas/ein.cnf"); 
+  //log_info("Parsed Einstein's Puzzle as", ein_f);
+  //std::tie(r, a) = dpll(ein_f, uniform_random_prop, uniform_random_assign);
+  //log_info("DPLL on Einstein's Puzzle returned result", r, "with assignment", a);
+  //assert(r == DPLLResult::Satisfiable);
 
-  Simplification s = std::valarray<bool>(false, 375);
-  log_info("Evaluation of formula on returned assignment is");
-  log_info(ein_f.eval(a, s));
+  //Simplification s = std::valarray<bool>(false, 375);
+  //log_info("Evaluation of formula on returned assignment is");
+  //log_info(ein_f.eval(a, s));
 }

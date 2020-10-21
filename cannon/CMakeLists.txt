@@ -7,6 +7,7 @@ add_subdirectory(log)
 add_subdirectory(logic)
 add_subdirectory(graphics)
 add_subdirectory(plot)
+add_subdirectory(ml)
 
 add_library(cannon ${CANNON_SOURCES})
 target_link_libraries(cannon 
@@ -15,5 +16,6 @@ target_link_libraries(cannon
   logic
   graphics
   plot
+  ml
   ${LIBRARIES})
 
