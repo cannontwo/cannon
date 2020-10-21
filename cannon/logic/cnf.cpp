@@ -227,3 +227,22 @@ std::ostream& cannon::logic::operator<<(std::ostream& os, const std::valarray<Pr
 
   return os;
 }
+
+bool cannon::logic::operator==(const std::valarray<PropAssignment>& v1, const
+    std::valarray<PropAssignment>& v2) {
+  if (v1.size() != v2.size())
+    return false;
+
+  for (int i = 0; i < v1.size(); i++) {
+    if (v1[i] != v2[i])
+      return false;
+  }
+
+  return true;
+}
+
+
+bool cannon::logic::operator!=(const std::valarray<PropAssignment>& v1, const
+    std::valarray<PropAssignment>& v2) {
+  return !(v1 == v2);
+}

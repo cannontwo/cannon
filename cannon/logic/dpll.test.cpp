@@ -75,6 +75,18 @@ int main() {
   log_info("DPLL returned result", r, "with assignment", a);
   assert(r == DPLLResult::Unsatisfiable);
 
+  // Requiring splitting
+  CNFFormula f4;
+  f4.add_clause(parse_clause("-1 2"));
+  f4.add_clause(parse_clause("-2 3"));
+  f4.add_clause(parse_clause("-3 4"));
+  f4.add_clause(parse_clause("-4 1"));
+  f4.add_clause(parse_clause("1 2 3 4"));
+
+  std::tie(r, a) = dpll(f4, uniform_random_prop, uniform_random_assign);
+  log_info("DPLL returned result", r, "with assignment", a);
+  assert(r == DPLLResult::Satisfiable);
+
   // Larger (Einstein's Puzzle)
   CNFFormula ein_f = load_cnf("formulas/ein.cnf"); 
   log_info("Parsed Einstein's Puzzle as", ein_f);

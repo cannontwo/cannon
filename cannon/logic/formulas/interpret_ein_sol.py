@@ -150,13 +150,139 @@ def make_einstein_prop(n=None, c=None, b=None, s=None, p=None, h=None):
         prop_num = 350
         prop_num = prop_num + (int(p)*5) + int(h)
 
-
         return prop_num
 
-def run():
-    sol = [True, False, False, False, False, False, False, True, False, False, False, False, False, True, False, False, True, False, False, False, False, False, False, False, True, False, True, False, False, False, False, False, False, False, True, True, False, False, False, False, False, False, False, True, False, False, False, True, False, False, False, False, True, False, False, False, False, False, True, False, True, False, False, False, False, False, True, False, False, False, False, False, False, False, True, False, True, False, False, False, True, False, False, False, False, False, False, False, False, True, False, False, False, True, False, False, False, True, False, False, False, False, True, False, False, False, True, False, False, False, False, False, False, False, True, True, False, False, False, False, False, False, False, True, False, False, False, False, True, False, False, True, False, False, False, False, False, True, False, False, True, False, False, False, False, False, False, False, False, True, False, False, True, False, False, True, False, False, False, False, False, True, False, False, False, False, False, False, True, False, False, False, False, False, True, False, False, False, False, True, False, False, False, True, False, False, True, False, False, False, False, False, True, False, False, True, False, False, False, False, False, False, True, False, False, False, False, False, True, False, True, False, False, False, False, False, True, False, False, False, False, False, False, False, True, False, False, True, False, False, False, True, False, False, False, False, False, False, False, True, False, False, False, True, False, True, False, False, False, False, True, False, False, False, False, False, False, False, False, True, False, False, True, False, False, False, True, False, False, False, False, False, False, True, False, True, False, False, False, False, False, False, False, False, True, False, False, True, False, False, False, False, False, True, False, False, True, False, False, False, False, True, False, False, False, False, False, False, True, False, True, False, False, False, False, False, False, True, False, False, False, False, False, False, True, False, False, False, False, True, True, False, False, False, False, False, False, True, False, False, False, False, False, True, False, False, True, False, False, False, False, False, False, False, True, True, False, False, False, False, False, False, False, True, False, False, True, False, False, False, False, False, True, False, False]
+def prop_num_to_tuple(prop):
 
-    # TODO Interpret solution
+    ## Nationality
+    if prop < 25:
+        first_num = prop // 5
+        second_num = prop % 5
+        return (Nationality(first_num), Color(second_num))
+
+    if prop < 50:
+        prop = prop - 25
+        first_num = prop // 5
+        second_num = prop % 5
+        return (Nationality(first_num), Beverage(second_num))
+
+    if prop < 75:
+        prop = prop - 50
+        first_num = prop // 5
+        second_num = prop % 5
+        return (Nationality(first_num), Cigar(second_num))
+
+    if prop < 100:
+        prop = prop - 75
+        first_num = prop // 5
+        second_num = prop % 5
+        return (Nationality(first_num), Pet(second_num))
+
+    if prop < 125:
+        prop = prop - 100
+        first_num = prop // 5
+        second_num = prop % 5
+        return (Nationality(first_num), second_num)
+
+    ## Color
+    if prop < 150:
+        prop = prop - 125
+        first_num = prop // 5
+        second_num = prop % 5
+        return (Color(first_num), Beverage(second_num))
+    
+    if prop < 175:
+        prop = prop - 150
+        first_num = prop // 5
+        second_num = prop % 5
+        return (Color(first_num), Cigar(second_num))
+
+    if prop < 200:
+        prop = prop - 175
+        first_num = prop // 5
+        second_num = prop % 5
+        return (Color(first_num), Pet(second_num))
+
+    if prop < 225:
+        prop = prop - 200
+        first_num = prop // 5
+        second_num = prop % 5
+        return (Color(first_num), second_num)
+
+    ## Beverage
+    if prop < 250:
+        prop = prop - 225
+        first_num = prop // 5
+        second_num = prop % 5
+        return (Beverage(first_num), Cigar(second_num))
+
+    if prop < 275:
+        prop = prop - 250
+        first_num = prop // 5
+        second_num = prop % 5
+        return (Beverage(first_num), Pet(second_num))
+
+    if prop < 300:
+        prop = prop - 275
+        first_num = prop // 5
+        second_num = prop % 5
+        return (Beverage(first_num), second_num)
+
+    ## Cigar
+    if prop < 325:
+        prop = prop - 300
+        first_num = prop // 5
+        second_num = prop % 5
+        return (Cigar(first_num), Pet(second_num))
+
+    if prop < 350:
+        prop = prop - 325
+        first_num = prop // 5
+        second_num = prop % 5
+        return (Cigar(first_num), second_num)
+
+    ## Cigar
+    if prop < 375:
+        prop = prop - 350
+        first_num = prop // 5
+        second_num = prop % 5
+        return (Pet(first_num), second_num)
+
+    assert(False)
+
+def pretty_print(first, second):
+    ret_str = ""
+    if isinstance(first, Nationality):
+        ret_str = ret_str + str(first) + ", "
+    if isinstance(first, Beverage):
+        ret_str = ret_str + str(first) + ", "
+    if isinstance(first, Color):
+        ret_str = ret_str + str(first) + ", "
+    if isinstance(first, Cigar):
+        ret_str = ret_str + str(first) + ", "
+    if isinstance(first, Pet):
+        ret_str = ret_str + str(first) + ", "
+
+    if isinstance(second, Beverage):
+        ret_str = ret_str + str(second)
+    if isinstance(second, Color):
+        ret_str = ret_str + str(second)
+    if isinstance(second, Cigar):
+        ret_str = ret_str + str(second)
+    if isinstance(second, Pet):
+        ret_str = ret_str + str(second)
+    if isinstance(second, int):
+        ret_str = ret_str + "House." + str(second)
+
+    return ret_str
+
+def run():
+    sol = [True, False, False, False, False, False, False, False, False, True, False, False, False, True, False, False, False, True, False, False, False, True, False, False, False, False, False, True, False, False, False, False, False, True, False, True, False, False, False, False, False, False, False, False, True, False, True, False, False, False, True, False, False, False, False, False, False, False, True, False, False, False, True, False, False, False, True, False, False, False, False, False, False, False, True, False, True, False, False, False, True, False, False, False, False, False, False, False, True, False, False, False, True, False, False, False, False, False, False, True, False, False, True, False, False, False, False, False, False, True, False, True, False, False, False, True, False, False, False, False, False, False, False, True, False, False, False, True, False, False, False, True, False, False, False, False, False, False, False, True, True, False, False, False, False, False, False, False, True, False, True, False, False, False, False, False, False, False, False, True, False, True, False, False, False, False, False, True, False, False, False, False, False, True, False, False, True, False, False, False, False, False, False, False, True, False, False, True, False, False, False, False, False, True, False, True, False, False, False, False, False, False, True, False, False, False, False, False, True, False, True, False, False, False, False, False, True, False, False, False, False, False, False, False, True, False, False, True, False, False, False, False, False, False, True, True, False, False, False, False, False, False, False, True, False, False, True, False, False, False, False, False, False, True, False, False, False, False, False, True, False, True, False, False, False, True, False, False, False, False, False, False, True, False, False, False, True, False, False, False, False, False, False, True, False, False, False, True, False, False, False, False, False, False, True, True, False, False, False, False, False, True, False, False, False, False, False, True, False, False, False, False, False, True, False, True, False, False, False, False, False, False, False, False, True, False, False, True, False, False, True, False, False, False, False, False, True, False, False, False, False, False, False, False, True, False, False, False, True, False, False, False, False, False, True, False, False, True, False, False, True, False, False, False, False, False, True, False, False, False, False, False, False, True, False]
+
+    for i in range(len(sol)):
+        if sol[i]:
+            first, second = prop_num_to_tuple(i)
+            print(pretty_print(first, second))
 
 if __name__ == "__main__":
     run()

@@ -533,6 +533,88 @@ def make_exclusion_axioms(ns=None, cs=None, bs=None, ss=None, ps=None, hs=None):
 
     return axioms
 
+# TODO Implement consistency axioms, which should say that (p_{n,c} and p_{n, p}) \implies p_{c, p}) 
+# I.e. (\neg p_{n, c} \vee \neg p_{n, p} \vee p_{c, p}) for all combinations of pairs
+
+def make_consistency_axioms():
+    axioms = []
+    for i in range(5):
+        for j in range(5):
+            for k in range(5):
+                # NC
+                c = Clause()
+                c.add_literal(make_literal(make_einstein_prop(n=Nationality(j), h=i), negated=True))
+                c.add_literal(make_literal(make_einstein_prop(c=Color(k), h=i), negated=True))
+                c.add_literal(make_literal(make_einstein_prop(n=Nationality(j), c=Color(k))))
+                axioms.append(c)
+
+                # NB
+                c = Clause()
+                c.add_literal(make_literal(make_einstein_prop(n=Nationality(j), h=i), negated=True))
+                c.add_literal(make_literal(make_einstein_prop(b=Beverage(k), h=i), negated=True))
+                c.add_literal(make_literal(make_einstein_prop(n=Nationality(j), b=Beverage(k))))
+                axioms.append(c)
+                
+                # NS
+                c = Clause()
+                c.add_literal(make_literal(make_einstein_prop(n=Nationality(j), h=i), negated=True))
+                c.add_literal(make_literal(make_einstein_prop(s=Cigar(k), h=i), negated=True))
+                c.add_literal(make_literal(make_einstein_prop(n=Nationality(j), s=Cigar(k))))
+                axioms.append(c)
+
+                # NP
+                c = Clause()
+                c.add_literal(make_literal(make_einstein_prop(n=Nationality(j), h=i), negated=True))
+                c.add_literal(make_literal(make_einstein_prop(p=Pet(k), h=i), negated=True))
+                c.add_literal(make_literal(make_einstein_prop(n=Nationality(j), p=Pet(k))))
+                axioms.append(c)
+
+                # CB
+                c = Clause()
+                c.add_literal(make_literal(make_einstein_prop(c=Color(j), h=i), negated=True))
+                c.add_literal(make_literal(make_einstein_prop(b=Beverage(k), h=i), negated=True))
+                c.add_literal(make_literal(make_einstein_prop(c=Color(j), b=Beverage(k))))
+                axioms.append(c)
+
+                # CS
+                c = Clause()
+                c.add_literal(make_literal(make_einstein_prop(c=Color(j), h=i), negated=True))
+                c.add_literal(make_literal(make_einstein_prop(s=Cigar(k), h=i), negated=True))
+                c.add_literal(make_literal(make_einstein_prop(c=Color(j), s=Cigar(k))))
+                axioms.append(c)
+
+                # CP
+                c = Clause()
+                c.add_literal(make_literal(make_einstein_prop(c=Color(j), h=i), negated=True))
+                c.add_literal(make_literal(make_einstein_prop(p=Pet(k), h=i), negated=True))
+                c.add_literal(make_literal(make_einstein_prop(c=Color(j), p=Pet(k))))
+                axioms.append(c)
+
+                # BS
+                c = Clause()
+                c.add_literal(make_literal(make_einstein_prop(b=Beverage(j), h=i), negated=True))
+                c.add_literal(make_literal(make_einstein_prop(s=Cigar(k), h=i), negated=True))
+                c.add_literal(make_literal(make_einstein_prop(b=Beverage(j), s=Cigar(k))))
+                axioms.append(c)
+
+                # BP
+                c = Clause()
+                c.add_literal(make_literal(make_einstein_prop(b=Beverage(j), h=i), negated=True))
+                c.add_literal(make_literal(make_einstein_prop(p=Pet(k), h=i), negated=True))
+                c.add_literal(make_literal(make_einstein_prop(b=Beverage(j), p=Pet(k))))
+                axioms.append(c)
+
+                # SP
+                c = Clause()
+                c.add_literal(make_literal(make_einstein_prop(s=Cigar(j), h=i), negated=True))
+                c.add_literal(make_literal(make_einstein_prop(p=Pet(k), h=i), negated=True))
+                c.add_literal(make_literal(make_einstein_prop(s=Cigar(j), p=Pet(k))))
+                axioms.append(c)
+
+    return axioms
+
+
+
 def make_einstein_axioms():
     axioms = []
 
@@ -563,6 +645,9 @@ def make_einstein_axioms():
     axioms = axioms + make_exclusion_axioms(ss=ss, hs=hs)
 
     axioms = axioms + make_exclusion_axioms(ps=ps, hs=hs)
+    
+    # Consistency axioms
+    axioms = axioms + make_consistency_axioms()
 
     ## Fifteen facts
     # Brit lives in red house

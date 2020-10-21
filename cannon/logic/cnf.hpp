@@ -128,7 +128,10 @@ namespace cannon {
     std::ostream& operator<<(std::ostream& os, const Literal& l);
     std::ostream& operator<<(std::ostream& os, const Clause& c);
     std::ostream& operator<<(std::ostream& os, const CNFFormula& f);
+
     std::ostream& operator<<(std::ostream& os, const std::valarray<PropAssignment>& v);
+    bool operator==(const std::valarray<PropAssignment>& v1, const std::valarray<PropAssignment>& v2);
+    bool operator!=(const std::valarray<PropAssignment>& v1, const std::valarray<PropAssignment>& v2);
 
   } // namespace logic
 } // namespace cannon

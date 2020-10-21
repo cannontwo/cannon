@@ -108,6 +108,7 @@ namespace cannon {
           bool first_assignment = ah_.choose_assignment(formula_, a, s, prop);
 
           assert(a[prop] == PropAssignment::Unassigned);
+          log_info("Splitting on", prop);
           
           Assignment split_first_a(a);
           split_first_a[prop] = first_assignment ? PropAssignment::True : PropAssignment::False;
@@ -118,6 +119,9 @@ namespace cannon {
           Simplification split_second_s = formula_.simplify(split_second_a, s);
 
           // Push the second branch to be evaluated first, since we're using a stack
+          assert(split_first_a != split_second_a);
+          assert(split_first_a != a);
+          assert(split_second_a != a);
           frontier_.push({split_second_a, split_second_s});
           frontier_.push({split_first_a, split_first_s});
         }
@@ -125,9 +129,6 @@ namespace cannon {
         void do_unit_preference(Assignment& a, Simplification& s) {
           std::vector<std::pair<unsigned int, bool>> units =
             formula_.get_unit_clause_props(a, s);
-          for (auto& p : units) {
-            log_info("\t", p.first, ":", p.second);
-          }
 
           if (units.size() == 0) {
             return;
@@ -143,6 +144,7 @@ namespace cannon {
           unit_prop_vec.insert(unit_prop_vec.end(), unit_props.begin(), unit_props.end());
 
           unsigned int prop = ph_.choose_prop(formula_, a, s, unit_prop_vec);
+          log_info("Doing unit preference on", prop);
           Assignment unit_a(a);
 
           auto idx = std::find_if(units.begin(), units.end(), 
@@ -157,6 +159,8 @@ namespace cannon {
           } else {
             unit_a[prop] = PropAssignment::True;
           } 
+
+          assert(unit_a != a);
           
           Simplification unit_s = formula_.simplify(unit_a, s);
           frontier_.push({unit_a, unit_s});
@@ -172,7 +176,7 @@ namespace cannon {
           Simplification s = current.second;
 
           // TODO Delete
-          log_info("Popped assignment", a, "from stack with simplification [");
+          log_info("Popped assignment", a, "from stack");
 
           Assignment empty;
           auto e = formula_.eval(a, s);
@@ -182,9 +186,10 @@ namespace cannon {
             return {DPLLResult::Unsatisfiable, empty};
           }
 
-          // First we do the splitting rule, since we're using a stack and we
-          // want to resolve unit clauses and pure literals first
-          do_splitting_rule(a, s);
+          // Only do splitting rule if there are no unit clauses
+          if (formula_.get_unit_clause_props(a, s).size() == 0) {
+            do_splitting_rule(a, s);
+          }
           
           // TODO Add pure literals
           // do_pure_literals(a, s);
