@@ -4,22 +4,27 @@
 #include <utility>
 #include <stdexcept>
 #include <cmath>
+#include <cassert>
 
 #include <Eigen/Dense>
 
+#include <cannon/log/registry.hpp>
+
 using namespace Eigen;
+
+using namespace cannon::log;
 
 namespace cannon {
   namespace ml {
 
     // A Recursive Least Squares Filter supporting intercept estimation and
-    // forgetting
+    // forgetting. See http://cannontwo.com/assets/rls_notes.pdf.
     class RLSFilter {
       public:
 
         RLSFilter() = delete;
 
-        RLSFilter(unsigned int in_dim, unsigned int out_dim, double alpha=1.0,
+        RLSFilter(unsigned int in_dim, unsigned int out_dim, double alpha=1.0e6,
             double forgetting=1.0) : in_dim_(in_dim), out_dim_(out_dim),
         param_dim_(in_dim), alpha_(alpha), forgetting_(forgetting) {
           intercept_ = VectorXd::Zero(out_dim_);
@@ -47,7 +52,7 @@ namespace cannon {
         RowVectorXd make_feature_vec_(const VectorXd& in_vec) const;
         MatrixX2d make_u_(const RowVectorXd& feat) const;
         Matrix2Xd make_v_(const RowVectorXd& feat) const;
-        Matrix2d make_c_(const RowVectorXd& feat) const;
+        Matrix2d make_c_() const;
 
         void update_covar_(const MatrixX2d& u, const Matrix2d& c, 
             const Matrix2Xd& v);

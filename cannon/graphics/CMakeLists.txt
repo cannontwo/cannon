@@ -21,7 +21,7 @@ target_link_libraries(graphics log ${LIBRARIES})
 ADD_CUSTOM_COMMAND(
   TARGET graphics POST_BUILD
   COMMAND ${CMAKE_COMMAND} -E create_symlink
-    ${CMAKE_CURRENT_SOURCE_DIR}/graphics/shaders ${CMAKE_CURRENT_BINARY_DIR}/../shaders
+    ${CMAKE_CURRENT_SOURCE_DIR}/shaders ${CMAKE_CURRENT_BINARY_DIR}/../../shaders
   COMMENT "Copying shaders" VERBATIM
   )
 
@@ -29,7 +29,7 @@ ADD_CUSTOM_COMMAND(
 ADD_CUSTOM_COMMAND(
   TARGET graphics POST_BUILD
   COMMAND ${CMAKE_COMMAND} -E create_symlink
-    ${CMAKE_CURRENT_SOURCE_DIR}/graphics/assets ${CMAKE_CURRENT_BINARY_DIR}/../assets
+    ${CMAKE_CURRENT_SOURCE_DIR}/assets ${CMAKE_CURRENT_BINARY_DIR}/../../assets
   COMMENT "Copying assets" VERBATIM
   )
 

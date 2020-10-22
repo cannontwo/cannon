@@ -4,13 +4,8 @@ using namespace cannon::plot;
 using namespace cannon::log;
 
 void Scatter::add_points(MatrixX2f point) {
-  log_info("Before");
-  log_info(points_);
   points_.conservativeResize(points_.rows() + 1, NoChange);
   points_.row(points_.rows() - 1) = point;
-
-  log_info("After");
-  log_info(points_);
 
   buf_.buffer(points_);
   RowVector2f maxes = points_.colwise().maxCoeff();
