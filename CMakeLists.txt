@@ -17,7 +17,7 @@ set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/CMakeModules)
 if(CMAKE_COMPILER_IS_GNUCXX)
   include(CodeCoverage)
   append_coverage_compiler_flags()
-  setup_target_for_coverage_gcovr_html(NAME ${PROJECT_NAME}_coverage ${PROJECT_TEST_NAME} coverage EXCLUDE ${PROJECT_SOURCE_DIR}/tests EXCLUDE ${PROJECT_SOURCE_DIR}/cannon/graphics EXCLUDE ${PROJECT_SOURCE_DIR}/thirdparty)
+  setup_target_for_coverage_gcovr_html(NAME ${PROJECT_NAME}_coverage ${PROJECT_TEST_NAME} coverage EXCLUDE ${PROJECT_SOURCE_DIR}/tests EXCLUDE ${PROJECT_SOURCE_DIR}/cannon/graphics EXCLUDE ${PROJECT_SOURCE_DIR}/scripts EXCLUDE ${PROJECT_SOURCE_DIR}/cannon/plot EXCLUDE ${PROJECT_SOURCE_DIR}/thirdparty)
 endif()
 
 IF( EXISTS "${CMAKE_CURRENT_BINARY_DIR}/compile_commands.json" )
