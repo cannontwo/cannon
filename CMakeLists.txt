@@ -80,6 +80,11 @@ find_package(Freetype REQUIRED)
 include_directories(${FREETYPE_INCLUDE_DIRS})
 list(APPEND LIBRARIES ${FREETYPE_LIBRARIES})
 
+# Boost
+find_package(Boost 1.74.0 REQUIRED)
+include_directories(${Boost_INCLUDE_DIRS})
+
+## Source code
 include_directories("${PROJECT_SOURCE_DIR}")
 add_subdirectory(cannon)
 

@@ -9,6 +9,7 @@ add_subdirectory(graphics)
 add_subdirectory(plot)
 add_subdirectory(ml)
 add_subdirectory(control)
+add_subdirectory(physics)
 
 add_library(cannon ${CANNON_SOURCES})
 target_link_libraries(cannon 
@@ -19,5 +20,6 @@ target_link_libraries(cannon
   plot
   ml
   control
+  physics
   ${LIBRARIES})
 
