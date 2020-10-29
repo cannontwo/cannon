@@ -24,6 +24,8 @@ namespace cannon {
 
         MatrixXd apply_update(const MatrixXd& params, const MatrixXd& gradient);
 
+        void set_learning_rate(double learning_rate);
+
       private:
         // Parameters
         unsigned int cols_;

@@ -20,3 +20,7 @@ MatrixXd AdamOptimizer::apply_update(const MatrixXd& params, const MatrixXd& gra
 
   return params + (learning_rate_ * update);
 }
+
+void AdamOptimizer::set_learning_rate(double learning_rate) {
+  learning_rate_ = learning_rate;
+}

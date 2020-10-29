@@ -5,6 +5,9 @@ using namespace cannon::log;
 
 void Window::make_current() {
   glfwMakeContextCurrent(window);
+
+  // V-Sync
+  glfwSwapInterval(1);
 }
 
 void Window::set_viewport(unsigned x, unsigned y, unsigned width, unsigned height) {
