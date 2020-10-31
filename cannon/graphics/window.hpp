@@ -98,6 +98,10 @@ namespace cannon {
         template <typename F>
         void render_loop(F f) {
           while (!glfwWindowShouldClose(window)) {
+            float cur_time = glfwGetTime();
+            delta_time_ = cur_time - last_frame_time_;
+            last_frame_time_ = cur_time;
+
             process_input(window);
 
             glClearColor(clear_color_[0], clear_color_[1], clear_color_[2], clear_color_[3]);
@@ -119,6 +123,10 @@ namespace cannon {
           if (!glfwWindowShouldClose(window)) {
             // Call rendering process three times because OpenGL is double-buffered by default
             for (int i = 0; i < 3; i++) {
+              float cur_time = glfwGetTime();
+              delta_time_ = cur_time - last_frame_time_;
+              last_frame_time_ = cur_time;
+
               process_input(window);
 
               glClearColor(clear_color_[0], clear_color_[1], clear_color_[2], clear_color_[3]);
@@ -139,6 +147,8 @@ namespace cannon {
         int width;
         int height;
 
+        friend class Viewer3D;
+
       private:
         void register_callbacks();
         void init_text_shader();
@@ -153,6 +163,9 @@ namespace cannon {
         std::shared_ptr<VertexArrayObject> vao_;
         VertexBuffer buf_;
         std::vector<OverlayText> overlays_;
+
+        float delta_time_ = 0.0;
+        float last_frame_time_ = 0.0;
     };
 
   } // namespace graphics

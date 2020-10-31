@@ -12,6 +12,8 @@ list(APPEND GRAPHICS_SOURCES
   projection.cpp
   font.cpp
   character.cpp
+  camera.cpp
+  viewer_3d.cpp
   )
 
 add_library(graphics ${GRAPHICS_SOURCES})
