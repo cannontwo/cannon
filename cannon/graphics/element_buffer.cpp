@@ -2,12 +2,12 @@
 
 using namespace cannon::graphics;
 
-void ElementBuffer::bind() {
+void ElementBuffer::bind() const {
   vao_->bind();
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, gl_element_buffer_object_);
 }
 
-void ElementBuffer::unbind() {
+void ElementBuffer::unbind() const {
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
   vao_->unbind();
 }

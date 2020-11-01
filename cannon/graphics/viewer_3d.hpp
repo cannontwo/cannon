@@ -2,9 +2,12 @@
 #define CANNON_GRAPHICS_VIEWER_3D 
 
 #include <cmath>
+#include <memory>
 
 #include <cannon/graphics/camera.hpp>
 #include <cannon/graphics/window.hpp>
+#include <cannon/graphics/geometry/drawable_geom.hpp>
+#include <cannon/graphics/projection.hpp>
 
 namespace cannon {
   namespace graphics {
@@ -28,14 +31,20 @@ namespace cannon {
             process_input_();
 
             f();
+
+            draw_scene_geom_();
           });
         }
+
+        void add_geom(std::shared_ptr<geometry::DrawableGeom> g);
         
         Window w;
         Camera c; 
 
       private:
         void process_input_();
+        void process_mouse_input_();
+        void draw_scene_geom_();
 
         double last_x_;
         double last_y_;
@@ -44,6 +53,8 @@ namespace cannon {
         bool first_mouse_ = true;
         float yaw_ = M_PI/2.0;
         float pitch_ = 0.0;
+
+        std::vector<std::shared_ptr<geometry::DrawableGeom>> scene_geom_;
     };
 
   } // namespace graphics

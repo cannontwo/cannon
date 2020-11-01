@@ -8,6 +8,8 @@ using namespace Eigen;
 namespace cannon {
   namespace graphics {
 
+    float to_radians(float degrees);
+
     Matrix4f make_perspective_frustum(float left, float right, float bottom,
         float top, float near, float far);
 

@@ -12,8 +12,10 @@ void Viewer3D::process_input_() {
   if (glfwGetKey(w.window, GLFW_KEY_D) == GLFW_PRESS)
     c.strafe_right();
 
-  // Process mouse movement
-  // TODO Refactor into separate private method
+  process_mouse_input_();
+}
+
+void Viewer3D::process_mouse_input_() {
   double xpos, ypos;
   glfwGetCursorPos(w.window, &xpos, &ypos);
   if (first_mouse_) {
@@ -44,4 +46,18 @@ void Viewer3D::process_input_() {
              std::sin(yaw_) * std::cos(pitch_);
   new_dir.normalize();
   c.set_direction(new_dir);
+}
+
+void Viewer3D::draw_scene_geom_() {
+  Matrix4f perspective = make_perspective_fov(to_radians(45.0f),
+      (float)(w.width) / (float)(w.height), 0.1f, 1000.0f);
+
+  for (auto& g : scene_geom_) {
+    g->draw(c.get_view_mat(), perspective);
+  }
+
+}
+
+void Viewer3D::add_geom(std::shared_ptr<geometry::DrawableGeom> g) {
+  scene_geom_.push_back(g);
 }

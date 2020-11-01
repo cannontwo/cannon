@@ -17,10 +17,6 @@
 using namespace cannon::graphics;
 using namespace cannon::log;
 
-float to_radians(float degrees) {
-  return (degrees / 180.0f) * M_PI;
-}
-
 int main() {
   Window w;
   w.display_text(25.0, 25.0, 1.0, "Perspective box", [](OverlayText& o){});

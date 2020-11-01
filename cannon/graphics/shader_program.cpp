@@ -20,34 +20,38 @@ void ShaderProgram::activate() {
   glUseProgram(gl_shader_program_);
 }
 
-int ShaderProgram::get_uniform_loc_(const std::string &name) {
+int ShaderProgram::get_uniform_loc_(const std::string &name, bool verbose) {
   int location = glGetUniformLocation(gl_shader_program_, name.c_str());
-  if (location == -1) 
-    throw std::runtime_error("Could not locate uniform");
+  if (location == -1 && verbose) {
+    log_error("Couldn't find uniform", name, "in shader", gl_shader_program_);
+  }
 
   return location;
 }
 
-void ShaderProgram::set_uniform(const std::string& name, int value) {
-  int location = get_uniform_loc_(name);
+void ShaderProgram::set_uniform(const std::string& name, int value, bool verbose) {
   activate();
-  glUniform1i(location, value);
+  int location = get_uniform_loc_(name, verbose);
+  if (location != -1)
+    glUniform1i(location, value);
 }
 
-void ShaderProgram::set_uniform(const std::string& name, float value) {
-  int location = get_uniform_loc_(name);
+void ShaderProgram::set_uniform(const std::string& name, float value, bool verbose) {
   activate();
+  int location = get_uniform_loc_(name, verbose);
   glUniform1f(location, value);
 }
 
-void ShaderProgram::set_uniform(const std::string& name, Vector4f value) {
-  int location = get_uniform_loc_(name);
+void ShaderProgram::set_uniform(const std::string& name, Vector4f value, bool verbose) {
   activate();
-  glUniform4f(location, value[0], value[1], value[2], value[3]);
+  int location = get_uniform_loc_(name, verbose);
+  if (location != -1)
+    glUniform4f(location, value[0], value[1], value[2], value[3]);
 }
 
-void ShaderProgram::set_uniform(const std::string& name, Matrix4f value) {
-  int location = get_uniform_loc_(name);
+void ShaderProgram::set_uniform(const std::string& name, Matrix4f value, bool verbose) {
   activate();
-  glUniformMatrix4fv(location, 1, GL_FALSE, value.data());
+  int location = get_uniform_loc_(name, verbose);
+  if (location != -1)
+    glUniformMatrix4fv(location, 1, GL_FALSE, value.data());
 }

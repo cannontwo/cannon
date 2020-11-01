@@ -14,6 +14,7 @@ list(APPEND GRAPHICS_SOURCES
   character.cpp
   camera.cpp
   viewer_3d.cpp
+  geometry/cube.cpp
   )
 
 add_library(graphics ${GRAPHICS_SOURCES})

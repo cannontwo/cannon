@@ -39,8 +39,8 @@ namespace cannon {
         }
 
         void init(std::shared_ptr<VertexArrayObject> vao);
-        void bind();
-        void unbind();
+        void bind() const;
+        void unbind() const;
         void buffer(MatrixX2f vertices);
         void buffer(MatrixX3f vertices);
         void buffer(MatrixX4f vertices);

@@ -2,7 +2,7 @@
 
 using namespace cannon::graphics;
 
-Matrix4f Camera::get_view_mat() {
+Matrix4f Camera::get_view_mat() const {
   // The "LookAt" matrix
   Matrix4f rot_mat;
   Matrix4f trans_mat;
@@ -23,6 +23,10 @@ Matrix4f Camera::get_view_mat() {
                0.0, 0.0, 0.0, 1.0;
 
   return rot_mat * trans_mat;
+}
+
+Vector3f Camera::get_pos() const {
+  return pos_;
 }
 
 void Camera::set_speed(float speed) {

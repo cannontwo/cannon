@@ -1,6 +1,7 @@
 #include <glad/glad.h>
 #include <Eigen/Dense>
 #include <stb_image/stb_image.h>
+#include <memory>
 
 #include <cannon/graphics/window.hpp>
 #include <cannon/graphics/vertex_buffer.hpp>
@@ -14,95 +15,96 @@
 #include <cannon/graphics/projection.hpp>
 #include <cannon/graphics/viewer_3d.hpp>
 #include <cannon/log/registry.hpp>
+#include <cannon/graphics/geometry/cube.hpp>
 
 using namespace cannon::graphics;
 using namespace cannon::log;
 
-float to_radians(float degrees) {
-  return (degrees / 180.0f) * M_PI;
-}
-
 int main() {
   Viewer3D viewer;
 
-  MatrixXf vertices(8, 8);
-               // positions           // colors          // texture coords 
-  vertices <<  -0.5f, -0.5f, -0.5f,   1.0f, 1.0f, 1.0f,  0.0f, 0.0f,
-               0.5f, -0.5f, -0.5f,    1.0f, 1.0f, 1.0f,  1.0f, 0.0f,
-               0.5f, 0.5f, -0.5f,     1.0f, 1.0f, 1.0f,  1.0f, 1.0f,
-               -0.5f, 0.5f, -0.5f,    1.0f, 1.0f, 1.0f,  0.0f, 1.0f,
-               -0.5f, -0.5f, 0.5f,    1.0f, 1.0f, 1.0f,  0.0f, 0.0f,
-               0.5f, -0.5f, 0.5f,     1.0f, 1.0f, 1.0f,  1.0f, 0.0f,
-               0.5f, 0.5f, 0.5f,      1.0f, 1.0f, 1.0f,  1.0f, 1.0f,
-               -0.5f, 0.5f, 0.5f,     1.0f, 1.0f, 1.0f,  0.0f, 1.0f;
+  auto v = load_vertex_shader("shaders/mvp_normals.vert");
+  auto f = load_fragment_shader("shaders/material_light.frag");
+  auto program = std::make_shared<ShaderProgram>();
+  program->attach_shader(v);
+  program->attach_shader(f);
+  program->link();
 
-  MatrixX3u indices(12, 3);
-  indices << 0, 1, 2,
-             2, 3, 0,
-             4, 5, 6,
-             6, 7, 4,
-             7, 3, 0,
-             0, 4, 7,
-             6, 2, 1,
-             1, 5, 6,
-             0, 1, 5,
-             5, 4, 0,
-             3, 2, 6,
-             6, 7, 3;
+  auto v2 = load_vertex_shader("shaders/mvp_normals.vert");
+  auto f2 = load_fragment_shader("shaders/material_light.frag");
+  auto light_program = std::make_shared<ShaderProgram>();
+  light_program->attach_shader(v2);
+  light_program->attach_shader(f2);
+  light_program->link();
 
+  auto c = std::make_shared<geometry::Cube>(program);
+  auto c2 = std::make_shared<geometry::Cube>(program);
+  auto light_cube = std::make_shared<geometry::Cube>(light_program);
 
-  auto vao = std::make_shared<VertexArrayObject>();
-  VertexColorTexBuffer vbuf(vao);
-  ElementBuffer ebuf(vao);
+  viewer.add_geom(c);
+  viewer.add_geom(c2);
+  viewer.add_geom(light_cube);
 
-  vbuf.buffer(vertices); 
-  vbuf.bind();
+  Vector4f light_color;
+  light_color << 1.0,
+                 1.0,
+                 1.0,
+                 1.0;
 
-  ebuf.buffer(indices);
-  ebuf.bind();
+  Vector4f light_pos;
+  light_pos << 0.0,
+               -1.0,
+               2.0,
+               1.0;
 
-  Texture t0("assets/container.jpg", false, GL_TEXTURE0);
+  geometry::Material light_material(light_color, {0.0, 0.0, 0.0, 1.0},
+      {0.0, 0.0, 0.0, 1.0}, 32.0);
+  light_cube->set_material(light_material);
 
-  stbi_set_flip_vertically_on_load(true);
-  Texture t1("assets/awesomeface.png", true, GL_TEXTURE1);  
-  stbi_set_flip_vertically_on_load(false);
+  program->set_uniform("light.ambient", (Vector4f)(light_color * 0.2));
+  program->set_uniform("light.diffuse", (Vector4f)(light_color * 0.5));
+  program->set_uniform("light.specular", (Vector4f)(light_color * 1.0));
+  program->set_uniform("light.position", light_pos);
 
-  VertexShader v = load_vertex_shader("shaders/mvp_color.vert");
-  FragmentShader f = load_fragment_shader("shaders/mix_tex.frag");
+  light_program->set_uniform("light.ambient", light_color);
+  light_program->set_uniform("light.diffuse", light_color);
+  light_program->set_uniform("light.specular", light_color);
+  light_program->set_uniform("light.position", light_pos);
 
-  ShaderProgram program;
-  program.attach_shader(v);
-  program.attach_shader(f);
-  program.link();
+  Vector3f c_pos = viewer.c.get_pos();
+  Vector4f tmp_pos;
+  tmp_pos << c_pos[0],
+             c_pos[1],
+             c_pos[2],
+             1.0;
+  program->set_uniform("viewPos", tmp_pos);
+  light_program->set_uniform("viewPos", tmp_pos);
 
-  // Set texture locations
-  program.set_uniform("texture1", 0);
-  program.set_uniform("texture2", 1);
+  c2->set_pos({2.0, 0.0, 0.0});
+  light_cube->set_pos(light_pos.head(3));
+  light_cube->set_scale(0.2);
 
-  // Model matrix
-  Affine3f model;
-  model = AngleAxisf(to_radians(0.0f), Vector3f::UnitX());
+  viewer.render_loop([&] {
+    Vector4f light_color;
+    light_color << std::sin(glfwGetTime() * 2.0),
+                   std::sin(glfwGetTime() * 0.7),
+                   std::sin(glfwGetTime() * 1.3),
+                   1.0;
 
-  //w.set_wireframe_mode();
-  viewer.render_loop([&program, &viewer, &model, &vbuf, &ebuf, &t0, &t1] {
+    program->set_uniform("light.ambient", (Vector4f)(light_color * 0.2));
+    program->set_uniform("light.diffuse", (Vector4f)(light_color * 0.5));
+    program->set_uniform("light.specular", (Vector4f)(light_color * 1.0));
+    program->set_uniform("light.position", light_pos);
+
+    light_program->set_uniform("light.ambient", light_color);
+    light_program->set_uniform("light.diffuse", light_color);
+    light_program->set_uniform("light.specular", light_color);
+    light_program->set_uniform("light.position", light_pos);
+
     // Projection matrix
-    Matrix4f projection = make_perspective_fov(to_radians(45.0f),
-        (float)(viewer.w.width) / (float)(viewer.w.height), 0.1f, 100.0f);
-
-    auto tmp_model = model * AngleAxisf((float)glfwGetTime() *
-        to_radians(50.0f), Vector3f(0.5f, 1.0f, 0.0f));
-
-    vbuf.bind();
-    ebuf.bind();
-    t0.bind();
-    t1.bind();
-    program.activate();
-    program.set_uniform("model", tmp_model.matrix());
-    program.set_uniform("view", viewer.c.get_view_mat());
-    program.set_uniform("projection", projection);
-
-    glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+    c->set_rot(AngleAxisf((float)glfwGetTime() *
+        to_radians(50.0f), Vector3f(0.5f, 1.0f, 0.0f).normalized()));
+    c2->set_rot(AngleAxisf((float)glfwGetTime() *
+        to_radians(50.0f), Vector3f(0.5f, 1.0f, 0.0f).normalized()));
   });
-  vbuf.unbind();
-  ebuf.unbind();
 }

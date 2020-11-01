@@ -12,7 +12,7 @@ void VertexBuffer::init(std::shared_ptr<VertexArrayObject> vao) {
   gl_vertex_attribute_num_ = vao_->get_next_vertex_attribute_num();
 }
 
-void VertexBuffer::bind() {
+void VertexBuffer::bind() const {
   if (vao_ == nullptr)
     throw std::runtime_error("Buffer used without initialized vao.");
 
@@ -20,7 +20,7 @@ void VertexBuffer::bind() {
   glBindBuffer(GL_ARRAY_BUFFER, gl_vertex_buffer_object_);
 }
 
-void VertexBuffer::unbind() {
+void VertexBuffer::unbind() const {
   glBindBuffer(GL_ARRAY_BUFFER, 0);
   if (vao_ != nullptr) 
     vao_->unbind();

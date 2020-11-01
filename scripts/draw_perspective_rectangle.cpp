@@ -21,10 +21,6 @@ void render_func() {
   glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 }
 
-float to_radians(float degrees) {
-  return (degrees / 180.0f) * M_PI;
-}
-
 int main() {
   Window w;
 

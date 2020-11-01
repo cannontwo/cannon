@@ -27,8 +27,8 @@ namespace cannon {
           glDeleteBuffers(1, &gl_element_buffer_object_);
         }
 
-        void bind();
-        void unbind();
+        void bind() const;
+        void unbind() const;
         void buffer(MatrixX3u indices);
 
       private:

@@ -20,7 +20,9 @@ namespace cannon {
           right_.normalize();
         }
 
-        Matrix4f get_view_mat();
+        Matrix4f get_view_mat() const;
+        Vector3f get_pos() const;
+
         void set_speed(float speed);
 
         // Controls

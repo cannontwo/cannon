@@ -24,7 +24,7 @@ namespace cannon {
         ShaderProgram(ShaderProgram& s) = delete;
 
         ShaderProgram(ShaderProgram&& s) :
-          gl_shader_program_(s.gl_shader_program_) {
+          gl_shader_program_(s.gl_shader_program_), initialized_(s.initialized_) {
             s.gl_shader_program_ = -1;
           }
 
@@ -39,18 +39,19 @@ namespace cannon {
 
         void init() {
           gl_shader_program_ = glCreateProgram();
+          log_info("Created ShaderProgram", gl_shader_program_);
           initialized_ = true;
         }
 
         void link();
         void activate();
-        void set_uniform(const std::string& name, int value);
-        void set_uniform(const std::string& name, float value);
-        void set_uniform(const std::string& name, Vector4f value);
-        void set_uniform(const std::string& name, Matrix4f value);
+        void set_uniform(const std::string& name, int value, bool verbose=false);
+        void set_uniform(const std::string& name, float value, bool verbose=false);
+        void set_uniform(const std::string& name, Vector4f value, bool verbose=false);
+        void set_uniform(const std::string& name, Matrix4f value, bool verbose=false);
 
       private:
-        int get_uniform_loc_(const std::string& name);
+        int get_uniform_loc_(const std::string& name, bool verbose=true);
 
         unsigned int gl_shader_program_;
         bool initialized_ = false;

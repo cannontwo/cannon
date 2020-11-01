@@ -33,3 +33,7 @@ Matrix4f cannon::graphics::make_orthographic(float left, float right, float
 
   return m;
 }
+
+float cannon::graphics::to_radians(float degrees) {
+  return (degrees / 180.0f) * M_PI;
+}
