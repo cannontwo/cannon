@@ -7,9 +7,14 @@ Matrix4f Camera::get_view_mat() {
   Matrix4f rot_mat;
   Matrix4f trans_mat;
 
+  Vector3f tmp_dir = direction_;
+  tmp_dir.normalize();
+
+  Vector3f camera_up = right_.cross(tmp_dir);
+
   rot_mat << right_[0], right_[1], right_[2], 0.0,
-             up_[0], up_[1], up_[2], 0.0,
-             direction_[0], direction_[1], direction_[2], 0.0,
+             camera_up[0], camera_up[1], camera_up[2], 0.0,
+             tmp_dir[0], tmp_dir[1], tmp_dir[2], 0.0,
              0.0, 0.0, 0.0, 1.0;
 
   trans_mat << 1.0, 0.0, 0.0, -pos_[0],
@@ -38,4 +43,12 @@ void Camera::strafe_left() {
 
 void Camera::strafe_right() {
   pos_ += speed_ * right_;
+}
+
+void Camera::set_direction(const Vector3f& direction) {
+  direction_ = direction;
+  direction_.normalize();
+
+  right_ = up_.cross(direction_);
+  right_.normalize();
 }

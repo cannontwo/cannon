@@ -12,14 +12,12 @@ namespace cannon {
       public:
         Camera() = delete;
 
-        Camera(const Vector3f& pos, const Vector3f& target, const Vector3f& up, float speed=0.05) : pos_(pos), direction_(pos - target), speed_(speed) {
+        Camera(const Vector3f& pos, const Vector3f& target, const Vector3f& up, float speed=0.05) : pos_(pos), direction_(pos - target), up_(up), speed_(speed) {
           direction_.normalize();
           up_.normalize();
 
-          right_ = up.cross(direction_);
+          right_ = up_.cross(direction_);
           right_.normalize();
-
-          up_ = direction_.cross(right_);
         }
 
         Matrix4f get_view_mat();
@@ -30,6 +28,8 @@ namespace cannon {
         void move_backward();
         void strafe_left();
         void strafe_right();
+
+        void set_direction(const Vector3f& direction);
 
       private:
         Vector3f pos_;
