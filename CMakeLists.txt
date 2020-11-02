@@ -34,6 +34,7 @@ IF( EXISTS "${CMAKE_CURRENT_BINARY_DIR}/compile_commands.json" )
 ENDIF()
 
 set(CMAKE_CXX_STANDARD 11)
+set(CGAL_EIGEN3_ENABLED ON)
 
 # Clang Tidy
 find_program (CLANG_TIDY_EXE NAMES "clang-tidy")
@@ -52,13 +53,13 @@ add_definitions(${OMPL_DEFINITIONS})
 list(APPEND LIBRARIES ${OMPL_LIBRARIES})
 
 # Eigen
-find_package(Eigen3 REQUIRED)
+find_package(Eigen3 3.3.4 REQUIRED)
 include_directories(${EIGEN3_INCLUDE_DIR})
 
 # CGAL
-find_package(CGAL REQUIRED)
+find_package(CGAL REQUIRED COMPONENTS Core)
 include_directories(${CGAL_INCLUDE_DIRS})
-list(APPEND LIBRARIES ${CGAL_LIBRARIES})
+list(APPEND LIBRARIES ${CGAL_LIBRARY})
 
 # OpenGL
 find_package(OpenGL 4.3 REQUIRED)

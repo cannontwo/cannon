@@ -1,6 +1,6 @@
 list(APPEND PHYSICS_SOURCES
-  euler_integration.cpp
+  euler_integrator.cpp
   )
 
-add_library(physics ${CONTROL_SOURCES})
+add_library(physics ${PHYSICS_SOURCES})
 target_link_libraries(physics log ${LIBRARIES})
