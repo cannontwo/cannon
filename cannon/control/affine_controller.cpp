@@ -8,6 +8,10 @@ VectorXd AffineController::get_action(const VectorXd& state) const {
   return (K_ * state) + k_;
 }
 
+std::pair<VectorXd, MatrixXd> AffineController::get_mats() const {
+  return std::make_pair(k_, K_);
+}
+
 void AffineController::apply_gradient(const VectorXd& k_gradient, const MatrixXd& K_gradient) {
   assert(k_gradient.size() == action_dim_);
   assert(K_gradient.rows() == action_dim_);

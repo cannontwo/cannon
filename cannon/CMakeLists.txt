@@ -11,6 +11,7 @@ add_subdirectory(ml)
 add_subdirectory(control)
 add_subdirectory(physics)
 add_subdirectory(geom)
+add_subdirectory(research)
 
 add_library(cannon ${CANNON_SOURCES})
 target_link_libraries(cannon 
@@ -23,5 +24,6 @@ target_link_libraries(cannon
   control
   physics
   geom
+  research
   ${LIBRARIES})
 

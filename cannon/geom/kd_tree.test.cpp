@@ -3,7 +3,7 @@
 using namespace cannon::geom;
 
 int main() {
-  KDTree<2> k;
+  KDTree k(2);
   MatrixXd v(2, 2);
   v << 1.0, 2.0,
        3.0, 4.0;

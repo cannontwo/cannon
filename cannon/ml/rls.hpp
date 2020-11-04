@@ -42,6 +42,7 @@ namespace cannon {
         void process_datum(const VectorXd& in_vec, const VectorXd& output);
 
         std::pair<MatrixXd, VectorXd> get_identified_mats() const;
+        MatrixXd get_pred_error_covar() const;
 
         VectorXd predict(const VectorXd& in_vec);
 

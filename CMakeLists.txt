@@ -91,6 +91,11 @@ list(APPEND LIBRARIES ${FREETYPE_LIBRARIES})
 find_package(Boost 1.74.0 REQUIRED)
 include_directories(${Boost_INCLUDE_DIRS})
 
+# yaml-cpp
+find_package(yaml-cpp 0.6.0 REQUIRED)
+include_directories(${YAML_CPP_INCLUDE_DIR})
+list(APPEND LIBRARIES ${YAML_CPP_LIBRARIES})
+
 ## Source code
 include_directories("${PROJECT_SOURCE_DIR}")
 add_subdirectory(cannon)

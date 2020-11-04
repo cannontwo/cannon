@@ -33,6 +33,10 @@ std::pair<MatrixXd, VectorXd> RLSFilter::get_identified_mats() const {
   return {corrected_theta_.transpose(), intercept_};
 }
 
+MatrixXd RLSFilter::get_pred_error_covar() const {
+  return pred_error_covar_;
+}
+
 VectorXd RLSFilter::predict(const VectorXd& in_vec) {
   RowVectorXd feat = make_feature_vec_(in_vec);
   VectorXd prediction = (feat * corrected_theta_).transpose() + intercept_;
