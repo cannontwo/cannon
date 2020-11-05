@@ -2,18 +2,18 @@
 
 using namespace cannon::graphics;
 
-void Texture::bind() {
+void Texture::bind() const {
   glActiveTexture(gl_texture_unit_);
   glBindTexture(GL_TEXTURE_2D, gl_texture_);
 }
 
-void Texture::bind(GLenum texture_unit) {
+void Texture::bind(GLenum texture_unit) const {
   // texture_unit should be GL_TEXTURE0 - GL_TEXTURE15
   glActiveTexture(texture_unit);
   glBindTexture(GL_TEXTURE_2D, gl_texture_);
 }
 
-void Texture::unbind() {
+void Texture::unbind() const {
   glBindTexture(GL_TEXTURE_2D, 0);
 }
 

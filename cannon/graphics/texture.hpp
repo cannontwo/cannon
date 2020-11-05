@@ -29,10 +29,20 @@ namespace cannon {
           set_wrap_repeat();
           set_filter_linear();
 
-          if (use_alpha)
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width_, height_, 0, GL_RGBA, GL_UNSIGNED_BYTE, data_);
+          GLenum format;
+          if (num_channels_ == 1)
+            format = GL_RED;
+          else if (num_channels_ == 3)
+            format = GL_RGB;
+          else if (num_channels_ == 4)
+            format = GL_RGBA;
           else
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width_, height_, 0, GL_RGB, GL_UNSIGNED_BYTE, data_);
+            throw std::runtime_error("Unrecognized texture format");
+
+          glTexImage2D(GL_TEXTURE_2D, 0, format, width_, height_, 0, format, GL_UNSIGNED_BYTE, data_);
+
+          set_wrap_repeat();
+          set_filter_linear();
 
           glGenerateMipmap(GL_TEXTURE_2D);
 
@@ -51,9 +61,9 @@ namespace cannon {
           glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, width_, height_, 0, GL_RED, GL_UNSIGNED_BYTE, data_);
         }
 
-        void bind();
-        void bind(GLenum texture_unit);
-        void unbind();
+        void bind() const;
+        void bind(GLenum texture_unit) const;
+        void unbind() const;
 
         void set_wrap_repeat();
         void set_wrap_mirrored_repeat();
