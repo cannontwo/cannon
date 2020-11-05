@@ -69,6 +69,7 @@ int main() {
       {0.0, 0.0, 0.0, 1.0}, 32.0);
   light_cube->set_material(light_material);
 
+  // TODO Encapsulate this lightcasting behavior
   program->set_uniform("light.ambient", (Vector4f)(light_color * 0.2));
   program->set_uniform("light.diffuse", (Vector4f)(light_color * 0.5));
   program->set_uniform("light.specular", (Vector4f)(light_color * 1.0));
