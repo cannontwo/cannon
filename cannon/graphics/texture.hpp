@@ -30,16 +30,20 @@ namespace cannon {
           set_filter_linear();
 
           GLenum format;
-          if (num_channels_ == 1)
+          GLenum pix_format;
+          if (num_channels_ == 1) {
             format = GL_RED;
-          else if (num_channels_ == 3)
-            format = GL_RGB;
-          else if (num_channels_ == 4)
-            format = GL_RGBA;
-          else
+            pix_format = GL_RED;
+          } else if (num_channels_ == 3) {
+            format = GL_SRGB;
+            pix_format = GL_RGB;
+          } else if (num_channels_ == 4) {
+            format = GL_SRGB_ALPHA;
+            pix_format = GL_RGBA;
+          } else
             throw std::runtime_error("Unrecognized texture format");
 
-          glTexImage2D(GL_TEXTURE_2D, 0, format, width_, height_, 0, format, GL_UNSIGNED_BYTE, data_);
+          glTexImage2D(GL_TEXTURE_2D, 0, format, width_, height_, 0, pix_format, GL_UNSIGNED_BYTE, data_);
 
           set_wrap_repeat();
           set_filter_linear();

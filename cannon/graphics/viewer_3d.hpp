@@ -16,6 +16,8 @@ namespace cannon {
       public:
         Viewer3D() : c({0.0, 0.0, 3.0}, {0.0, 0.0, -1.0}, {0.0, 1.0, 0.0}) {
           w.enable_depth_test();
+
+          glEnable(GL_FRAMEBUFFER_SRGB); 
           glfwSetInputMode(w.window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
           last_x_ = w.width / 2;
