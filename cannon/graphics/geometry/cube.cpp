@@ -3,17 +3,17 @@
 using namespace cannon::graphics::geometry;
 
 void Cube::draw(const Matrix4f& view, const Matrix4f& perspective) const {
-  program_->activate();
-  program_->set_uniform("model", get_model_mat());
-  program_->set_uniform("view", view);
-  program_->set_uniform("projection", perspective);
-  program_->set_uniform("normalmat", get_normal_mat(), false);
+  program->activate();
+  program->set_uniform("model", get_model_mat());
+  program->set_uniform("view", view);
+  program->set_uniform("projection", perspective);
+  program->set_uniform("normalmat", get_normal_mat(), false);
   
   // Material properties
-  program_->set_uniform("material.ambient", material_.ambient);
-  program_->set_uniform("material.diffuse", material_.diffuse);
-  program_->set_uniform("material.specular", material_.specular);
-  program_->set_uniform("material.shininess", material_.shininess);
+  program->set_uniform("material.ambient", material_.ambient);
+  program->set_uniform("material.diffuse", material_.diffuse);
+  program->set_uniform("material.specular", material_.specular);
+  program->set_uniform("material.shininess", material_.shininess);
 
   buf_.bind();
   normal_buf_.bind();

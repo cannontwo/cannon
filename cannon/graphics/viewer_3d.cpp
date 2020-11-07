@@ -61,3 +61,15 @@ void Viewer3D::draw_scene_geom_() {
 void Viewer3D::add_geom(std::shared_ptr<geometry::DrawableGeom> g) {
   scene_geom_.push_back(g);
 }
+
+void Viewer3D::apply_light(std::shared_ptr<Light> l) {
+  for (auto& g : scene_geom_) {
+    l->apply(g);
+  }
+}
+
+void Viewer3D::apply_light_collection(const LightCollection& l) {
+  for (auto& g : scene_geom_) {
+    l.apply(g);
+  }
+}

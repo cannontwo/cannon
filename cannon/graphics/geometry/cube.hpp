@@ -21,32 +21,41 @@ namespace cannon {
           Cube(const std::string& v_src="shaders/mvp_uniform_color.vert", const
               std::string& f_src="shaders/pass_color.frag") : 
             vao_(new VertexArrayObject), buf_(vao_), normal_buf_(vao_), 
-            program_(new ShaderProgram), vertices_(36, 3), normals_(36, 3) {
+            vertices_(36, 3), normals_(36, 3) {
+
+            program = std::make_shared<ShaderProgram>();
 
             auto v = load_vertex_shader(v_src);
             auto f = load_fragment_shader(f_src);
-            program_->attach_shader(v);
-            program_->attach_shader(f);
-            program_->link();
+            program->attach_shader(v);
+            program->attach_shader(f);
+            program->link();
             
             populate_bufs_();
           }
 
-          Cube (std::shared_ptr<ShaderProgram> program) : vao_(new
-              VertexArrayObject), buf_(vao_), normal_buf_(vao_), program_(program),
+          Cube (std::shared_ptr<ShaderProgram> p) : vao_(new
+              VertexArrayObject), buf_(vao_), normal_buf_(vao_),
           vertices_(36, 3), normals_(36, 3) {
+
+            program = p;
+
             populate_bufs_(); 
+
           }
 
           Cube(Cube& c) : vao_(new VertexArrayObject), buf_(vao_), normal_buf_(vao_),
-          program_(c.program_), vertices_(c.vertices_), normals_(c.normals_) {
+          vertices_(c.vertices_), normals_(c.normals_) {
+            program = c.program;
             buf_.buffer(vertices_);
             normal_buf_.buffer(normals_);
           }
 
           Cube(Cube&& c) : vao_(c.vao_), buf_(std::move(c.buf_)),
-          normal_buf_(std::move(c.normal_buf_)), program_(c.program_),
-          vertices_(c.vertices_), normals_(c.normals_) {}
+          normal_buf_(std::move(c.normal_buf_)),
+          vertices_(c.vertices_), normals_(c.normals_) {
+            program = c.program; 
+          }
 
           virtual ~Cube() override {}
 
@@ -58,7 +67,6 @@ namespace cannon {
           std::shared_ptr<VertexArrayObject> vao_;
           VertexBuffer buf_;
           VertexBuffer normal_buf_;
-          std::shared_ptr<ShaderProgram> program_;
 
           MatrixX3f vertices_;
           MatrixX3f normals_;

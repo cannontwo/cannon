@@ -4,6 +4,7 @@
 #include <Eigen/Dense>
 
 #include <cannon/graphics/projection.hpp>
+#include <cannon/graphics/shader_program.hpp>
 
 using namespace Eigen;
 
@@ -65,19 +66,21 @@ namespace cannon {
             scale_ = scale;
           }
 
+          std::shared_ptr<ShaderProgram> program;
+
         protected:
           virtual ~DrawableGeom() {};
 
           Material material_ = {
-            Vector4f{1.0, 0.5, 0.31, 1.0},
-            Vector4f{1.0, 0.5, 0.31, 1.0},
-            Vector4f{0.5, 0.5, 0.5, 1.0},
+            Vector4f{1.0, 1.0, 1.0, 1.0},
+            Vector4f{1.0, 1.0, 1.0, 1.0},
+            Vector4f{1.0, 1.0, 1.0, 1.0},
             32.0
           };
           Matrix4f model_mat_;
 
-          Vector3f pos_;
-          AngleAxisf rot_;
+          Vector3f pos_ = Vector3f::Zero();
+          AngleAxisf rot_ = AngleAxisf(0.0, Vector3f::UnitZ());
           float scale_ = 1.0;
       };
 

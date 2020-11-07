@@ -24,38 +24,44 @@ namespace cannon {
               std::string& d_tex="assets/container2.png", const std::string&
               s_tex="assets/container2_specular.png") : vao_(new
                 VertexArrayObject), buf_(vao_), normal_buf_(vao_),
-            texture_coord_buf_(vao_), program_(new ShaderProgram),
+            texture_coord_buf_(vao_),
             diffuse_tex_(d_tex, true, GL_TEXTURE0), 
             specular_tex_(s_tex, true, GL_TEXTURE1), 
             vertices_(36, 3), normals_(36, 3), texture_coords_(36, 2) {
 
+            program = std::make_shared<ShaderProgram>();
+
             auto v = load_vertex_shader(v_src);
             auto f = load_fragment_shader(f_src);
-            program_->attach_shader(v);
-            program_->attach_shader(f);
-            program_->link();
+            program->attach_shader(v);
+            program->attach_shader(f);
+            program->link();
             
             populate_bufs_();
 
           }
 
-          TexturedCube (std::shared_ptr<ShaderProgram> program, const
+          TexturedCube (std::shared_ptr<ShaderProgram> p, const
               std::string& d_tex="assets/container2.png", const std::string&
               s_tex="assets/container2_specular.png" ) : 
             vao_(new VertexArrayObject), buf_(vao_), normal_buf_(vao_),
-            texture_coord_buf_(vao_), program_(program),
+            texture_coord_buf_(vao_),
             diffuse_tex_(d_tex, false, GL_TEXTURE0), 
             specular_tex_(s_tex, false, GL_TEXTURE1), 
             vertices_(36, 3), normals_(36, 3), texture_coords_(36, 2) {
+
+            program = p;
 
             populate_bufs_(); 
 
           }
 
           TexturedCube(TexturedCube& c) : vao_(new VertexArrayObject),
-          buf_(vao_), normal_buf_(vao_), texture_coord_buf_(vao_), program_(c.program_),
+          buf_(vao_), normal_buf_(vao_), texture_coord_buf_(vao_),
           diffuse_tex_(c.diffuse_tex_), specular_tex_(c.specular_tex_),
           vertices_(c.vertices_), normals_(c.normals_), texture_coords_(c.texture_coords_) {
+
+            program = c.program;
 
             buf_.buffer(vertices_);
             normal_buf_.buffer(normals_);
@@ -65,10 +71,13 @@ namespace cannon {
 
           TexturedCube(TexturedCube&& c) : vao_(c.vao_),
           buf_(std::move(c.buf_)), normal_buf_(std::move(c.normal_buf_)),
-          texture_coord_buf_(std::move(c.texture_coord_buf_)),
-          program_(c.program_), diffuse_tex_(c.diffuse_tex_),
+          texture_coord_buf_(std::move(c.texture_coord_buf_)), diffuse_tex_(c.diffuse_tex_),
           specular_tex_(c.specular_tex_), vertices_(c.vertices_),
-          normals_(c.normals_) {}
+          normals_(c.normals_) {
+
+            program = c.program;
+          
+          }
 
           virtual ~TexturedCube() override {}
 
@@ -81,7 +90,6 @@ namespace cannon {
           VertexBuffer buf_;
           VertexBuffer normal_buf_;
           VertexBuffer texture_coord_buf_;
-          std::shared_ptr<ShaderProgram> program_;
 
           Texture diffuse_tex_;
           Texture specular_tex_;

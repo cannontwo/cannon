@@ -8,6 +8,8 @@
 #include <cannon/graphics/window.hpp>
 #include <cannon/graphics/geometry/drawable_geom.hpp>
 #include <cannon/graphics/projection.hpp>
+#include <cannon/graphics/light.hpp>
+#include <cannon/graphics/light_collection.hpp>
 
 namespace cannon {
   namespace graphics {
@@ -39,6 +41,8 @@ namespace cannon {
         }
 
         void add_geom(std::shared_ptr<geometry::DrawableGeom> g);
+        void apply_light(std::shared_ptr<Light> l);
+        void apply_light_collection(const LightCollection& l);
         
         Window w;
         Camera c; 

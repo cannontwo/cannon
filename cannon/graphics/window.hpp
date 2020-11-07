@@ -65,7 +65,7 @@ namespace cannon {
           set_viewport(0, 0, width, height);
 
           register_callbacks();
-          set_clear_color(Vector4f(0.2f, 0.3f, 0.3f, 1.0f));
+          set_clear_color(Vector4f(0.02f, 0.07f, 0.09f, 1.0f));
           set_text_color(Vector4f(1.0, 0.0, 0.0, 1.0));
           font_.init();
           text_program_.init();
