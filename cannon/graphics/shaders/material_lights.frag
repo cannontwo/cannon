@@ -107,31 +107,24 @@ vec3 calculate_spotlight(Spotlight light, vec3 normal, vec3 fragPos, vec3 viewDi
   // ambient
   vec3 ambient = light.ambient.xyz * material.ambient.xyz;
 
-  if (theta > light.cutoff) {
-    // diffuse
-    float diff = max(dot(normal, lightDir), 0.0);
-    vec3 diffuse = light.diffuse.xyz * (diff * material.diffuse.xyz);
+  // diffuse
+  float diff = max(dot(normal, lightDir), 0.0);
+  vec3 diffuse = light.diffuse.xyz * (diff * material.diffuse.xyz);
 
-    // specular
-    vec3 reflectDir = reflect(-lightDir, normal);
-    float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
-    vec3 specular = light.specular.xyz * spec * material.specular.xyz;
+  // specular
+  vec3 reflectDir = reflect(-lightDir, normal);
+  float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
+  vec3 specular = light.specular.xyz * spec * material.specular.xyz;
 
-    // attenuation
-    float distance = length(light.position.xyz - fragPos);
-    float attenuation = 1.0 / (light.constant + light.linear * distance + light.quadratic * (distance * distance));
+  // attenuation
+  float distance = length(light.position.xyz - fragPos);
+  float attenuation = 1.0 / (light.constant + light.linear * distance + light.quadratic * (distance * distance));
 
-    diffuse *= intensity;
-    specular *= intensity;
+  ambient *= intensity * attenuation;
+  diffuse *= intensity * attenuation;
+  specular *= intensity * attenuation;
 
-    diffuse *= attenuation;
-    specular *= attenuation;
-
-    return (ambient + diffuse + specular);
-
-  } else {
-    return ambient;
-  }
+  return (ambient + diffuse + specular);
 }
 
 void main() {

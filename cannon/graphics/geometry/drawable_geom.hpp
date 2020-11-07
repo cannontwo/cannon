@@ -68,11 +68,12 @@ namespace cannon {
           }
 
           virtual void write_imgui(int idx) {
-            if (ImGui::CollapsingHeader((std::string("Drawable ") + std::to_string(idx)).c_str())) {
+            if (ImGui::TreeNode((name_ + " " + std::to_string(idx)).c_str())) {
               ImGui::ColorEdit3("ambient", material_.ambient.data());
               ImGui::ColorEdit3("diffuse", material_.diffuse.data());
               ImGui::ColorEdit3("specular", material_.specular.data());
               ImGui::SliderFloat3("position", pos_.data(), -10.0, 10.0);
+              ImGui::TreePop();
             }
           }
 
@@ -92,6 +93,8 @@ namespace cannon {
           Vector3f pos_ = Vector3f::Zero();
           AngleAxisf rot_ = AngleAxisf(0.0, Vector3f::UnitZ());
           float scale_ = 1.0;
+
+          std::string name_ = std::string("Drawable");
       };
 
     } // namespace geometry

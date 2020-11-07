@@ -32,6 +32,8 @@ namespace cannon {
             program->link();
             
             populate_bufs_();
+
+            name_ = std::string("Cube");
           }
 
           Cube (std::shared_ptr<ShaderProgram> p) : vao_(new
@@ -42,6 +44,8 @@ namespace cannon {
 
             populate_bufs_(); 
 
+            name_ = std::string("Cube");
+
           }
 
           Cube(Cube& c) : vao_(new VertexArrayObject), buf_(vao_), normal_buf_(vao_),
@@ -49,12 +53,16 @@ namespace cannon {
             program = c.program;
             buf_.buffer(vertices_);
             normal_buf_.buffer(normals_);
+
+            name_ = c.name_;
           }
 
           Cube(Cube&& c) : vao_(c.vao_), buf_(std::move(c.buf_)),
           normal_buf_(std::move(c.normal_buf_)),
           vertices_(c.vertices_), normals_(c.normals_) {
             program = c.program; 
+
+            name_ = c.name_;
           }
 
           virtual ~Cube() override {}

@@ -39,6 +39,7 @@ namespace cannon {
             
             populate_bufs_();
 
+            name_ = std::string("Textured Cube");
           }
 
           TexturedCube (std::shared_ptr<ShaderProgram> p, const
@@ -54,6 +55,7 @@ namespace cannon {
 
             populate_bufs_(); 
 
+            name_ = std::string("Textured Cube");
           }
 
           TexturedCube(TexturedCube& c) : vao_(new VertexArrayObject),
@@ -67,6 +69,8 @@ namespace cannon {
             normal_buf_.buffer(normals_);
             texture_coord_buf_.buffer(texture_coords_);
 
+            name_ = c.name_;
+
           }
 
           TexturedCube(TexturedCube&& c) : vao_(c.vao_),
@@ -76,6 +80,7 @@ namespace cannon {
           normals_(c.normals_) {
 
             program = c.program;
+            name_ = c.name_;
           
           }
 

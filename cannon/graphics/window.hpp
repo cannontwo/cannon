@@ -127,7 +127,7 @@ namespace cannon {
             ImGui_ImplGlfw_NewFrame();
             ImGui::NewFrame();
 
-            ImGui::Begin("Hello, world");
+            ImGui::Begin("Settings");
 
             float cur_time = glfwGetTime();
             delta_time_ = cur_time - last_frame_time_;

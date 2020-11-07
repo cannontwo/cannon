@@ -51,28 +51,21 @@ int main() {
   textured_program->link();
 
   // Make random scene geometry
-  for (int i = 0; i < 5; i++) {
+  for (int i = 0; i < 2; i++) {
     auto c = std::make_shared<geometry::TexturedCube>(textured_program);
-    auto c2 = std::make_shared<geometry::Cube>(program);
 
     viewer.add_geom(c);
-    viewer.add_geom(c2);
 
     Vector3f pos1 = Vector3f::Random() * 5.0;
-    Vector3f pos2 = Vector3f::Random() * 5.0;
 
     std::random_device rd;
     std::mt19937 gen(rd());
     std::uniform_real_distribution<float> dist(-M_PI, M_PI);
 
     AngleAxisf rot1(dist(gen), Vector3f::Random().normalized());
-    AngleAxisf rot2(dist(gen), Vector3f::Random().normalized());
 
     c->set_pos(pos1);
-    c2->set_pos(pos2);
-
     c->set_rot(rot1);
-    c->set_rot(rot2);
   }
 
   // Light setup
@@ -90,47 +83,6 @@ int main() {
   auto dl = std::make_shared<DirectionalLight>(light_color*0.2, light_color*0.5, light_color);
   dl->set_direction({-0.2, -1.0, -0.3, -1.0});
   lc.add_light(dl);
-
-  std::random_device rd;
-  std::mt19937 gen(rd());
-  std::uniform_real_distribution<float> dist(0.0, 1.0);
-  for (int i = 0; i < 2; i++) {
-    Vector4f light_color;
-    Vector3f random_color;
-    random_color[0] = dist(gen);
-    random_color[1] = dist(gen);
-    random_color[2] = dist(gen);
-    random_color.normalize();
-    random_color *= std::sqrt(3);
-
-    light_color.head(3) = random_color;
-    light_color[3] = 1.0;
-
-    geometry::Material light_material(light_color, {0.0, 0.0, 0.0, 1.0},
-        {0.0, 0.0, 0.0, 1.0}, 32.0);
-
-    auto light = std::make_shared<PointLight>(light_color*0.2, light_color*0.5, light_color);
-    auto light_cube = std::make_shared<geometry::Cube>(light_program);
-    viewer.add_geom(light_cube);
-
-    Vector4f light_pos;
-    light_pos.head(3) = 5.0 * Vector3f::Random();
-    light_pos[3] = 1.0;
-    light->set_pos(light_pos);
-
-    light_cube->set_material(light_material);
-    light_cube->set_pos(light_pos.head(3));
-    light_cube->set_scale(0.2);
-
-    // Lights rendered saturated
-    light->set_ambient(light_color);
-    light->apply(light_cube);
-    light->set_ambient(light_color * 0.2);
-
-    lc.add_light(light);
-  }
-
-  viewer.apply_light_collection(lc);
 
   viewer.render_loop([&] {
     //Vector4f light_color;
@@ -155,6 +107,86 @@ int main() {
     program->set_uniform("viewPos", tmp_pos);
     light_program->set_uniform("viewPos", tmp_pos);
     textured_program->set_uniform("viewPos", tmp_pos);
+
+    if (ImGui::Button("Spawn cube")) {
+      auto c = std::make_shared<geometry::Cube>(program);
+      viewer.add_geom(c);
+
+      Vector3f pos1 = viewer.c.get_pos() - 2.0 * viewer.c.get_direction().normalized();
+
+      std::random_device rd;
+      std::mt19937 gen(rd());
+      std::uniform_real_distribution<float> dist(-M_PI, M_PI);
+
+      AngleAxisf rot1(dist(gen), Vector3f::Random().normalized());
+
+      c->set_pos(pos1);
+      c->set_rot(rot1);
+    }
+
+    ImGui::SameLine();
+
+    if (ImGui::Button("Spawn point light")) {
+      Vector4f light_color;
+      light_color << 1.0,
+                     1.0,
+                     1.0,
+                     1.0;
+
+      geometry::Material light_material(light_color, {0.0, 0.0, 0.0, 1.0},
+          {0.0, 0.0, 0.0, 1.0}, 32.0);
+
+      auto light_cube = std::make_shared<geometry::Cube>(light_program);
+      auto light = std::make_shared<PointLight>(light_color*0.2, light_color*0.5, light_color, light_cube);
+      viewer.add_geom(light_cube);
+
+      Vector4f light_pos;
+      Vector3f pos1 = viewer.c.get_pos() - 2.0 * viewer.c.get_direction().normalized();
+      light_pos.head(3) = pos1;
+      light_pos[3] = 1.0;
+      light->set_pos(light_pos);
+
+      light_cube->set_material(light_material);
+      light_cube->set_pos(light_pos.head(3));
+      light_cube->set_scale(0.2);
+
+      // Lights rendered saturated
+      light->set_ambient(light_color);
+      light->apply(light_cube);
+      light->set_ambient(light_color * 0.2);
+
+      lc.add_light(light);
+    }
+
+    ImGui::SameLine();
+
+    if (ImGui::Button("Spawn spotlight")) {
+      Vector4f light_color;
+      light_color << 1.0,
+                     1.0,
+                     1.0,
+                     1.0;
+
+      geometry::Material light_material(light_color, {0.0, 0.0, 0.0, 1.0},
+          {0.0, 0.0, 0.0, 1.0}, 32.0);
+
+      Vector4f light_dir;
+      light_dir.head(3) = -viewer.c.get_direction();
+      light_dir[3] = 1.0;
+      auto light = std::make_shared<Spotlight>(light_color*0.2,
+          light_color*0.5, light_color, light_dir);
+
+      Vector4f light_pos;
+      Vector3f pos1 = viewer.c.get_pos() - 2.0 * viewer.c.get_direction().normalized();
+      light_pos.head(3) = pos1;
+      light_pos[3] = 1.0;
+      light->set_pos(light_pos);
+
+      lc.add_light(light);
+    }
+
+    lc.write_imgui();
+    viewer.apply_light_collection(lc);
 
     // Projection matrix
     //c->set_rot(AngleAxisf((float)glfwGetTime() *

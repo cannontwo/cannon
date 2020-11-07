@@ -29,6 +29,10 @@ Vector3f Camera::get_pos() const {
   return pos_;
 }
 
+Vector3f Camera::get_direction() const {
+  return direction_;
+}
+
 void Camera::set_speed(float speed) {
   speed_ = speed;
 }

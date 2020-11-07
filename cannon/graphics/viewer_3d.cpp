@@ -3,6 +3,11 @@
 using namespace cannon::graphics;
 
 void Viewer3D::process_input_() {
+  if (glfwGetKey(w.window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
+    c.set_speed(0.2);
+  if (glfwGetKey(w.window, GLFW_KEY_LEFT_SHIFT) == GLFW_RELEASE)
+    c.set_speed(0.05);
+
   if (glfwGetKey(w.window, GLFW_KEY_W) == GLFW_PRESS)
     c.move_forward();
   if (glfwGetKey(w.window, GLFW_KEY_S) == GLFW_PRESS)
@@ -12,19 +17,19 @@ void Viewer3D::process_input_() {
   if (glfwGetKey(w.window, GLFW_KEY_D) == GLFW_PRESS)
     c.strafe_right();
 
-  if (glfwGetKey(w.window, GLFW_KEY_C) == GLFW_PRESS) {
-    if (glfwGetTime() - last_capture_time_ > 0.2) {
+  if (glfwGetMouseButton(w.window, GLFW_MOUSE_BUTTON_MIDDLE) == GLFW_PRESS) {
+    if (!mouse_captured_) {
+      mouse_captured_ = true;
       first_mouse_ = true;
-      last_capture_time_ = glfwGetTime();
-      
-      if (mouse_captured_) {
-        mouse_captured_ = false;
-        glfwSetInputMode(w.window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-      } else {
-        mouse_captured_ = true;
-        glfwSetInputMode(w.window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-      }
-    }
+      glfwSetInputMode(w.window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    } 
+  }
+
+  if (glfwGetMouseButton(w.window, GLFW_MOUSE_BUTTON_MIDDLE) == GLFW_RELEASE) {
+    if (mouse_captured_) {
+      mouse_captured_ = false;
+      glfwSetInputMode(w.window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+    } 
   }
 
   process_mouse_input_();
@@ -72,9 +77,13 @@ void Viewer3D::draw_scene_geom_() {
 
   for (unsigned int i = 0; i < scene_geom_.size(); i++) {
     scene_geom_[i]->draw(c.get_view_mat(), perspective);
-    scene_geom_[i]->write_imgui(i);
   }
 
+  if (ImGui::CollapsingHeader("Geometry")) {
+    for (unsigned int i = 0; i < scene_geom_.size(); i++) {
+      scene_geom_[i]->write_imgui(i);
+    }
+  }
 }
 
 void Viewer3D::add_geom(std::shared_ptr<geometry::DrawableGeom> g) {

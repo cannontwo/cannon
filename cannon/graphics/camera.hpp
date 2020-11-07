@@ -22,6 +22,7 @@ namespace cannon {
 
         Matrix4f get_view_mat() const;
         Vector3f get_pos() const;
+        Vector3f get_direction() const;
 
         void set_speed(float speed);
 
