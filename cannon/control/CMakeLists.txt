@@ -3,4 +3,4 @@ list(APPEND CONTROL_SOURCES
   )
 
 add_library(control ${CONTROL_SOURCES})
-target_link_libraries(control log ml ${LIBRARIES})
+target_link_libraries(control log ml)

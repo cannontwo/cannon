@@ -6,4 +6,4 @@ list(APPEND PLOT_SOURCES
   )
 
 add_library(plot ${PLOT_SOURCES})
-target_link_libraries(plot graphics log ${LIBRARIES})
+target_link_libraries(plot graphics log)

@@ -5,6 +5,7 @@
 
 #include <cannon/graphics/projection.hpp>
 #include <cannon/graphics/shader_program.hpp>
+#include <imgui.h>
 
 using namespace Eigen;
 
@@ -64,6 +65,15 @@ namespace cannon {
 
           void set_scale(const float scale) {
             scale_ = scale;
+          }
+
+          virtual void write_imgui(int idx) {
+            if (ImGui::CollapsingHeader((std::string("Drawable ") + std::to_string(idx)).c_str())) {
+              ImGui::ColorEdit3("ambient", material_.ambient.data());
+              ImGui::ColorEdit3("diffuse", material_.diffuse.data());
+              ImGui::ColorEdit3("specular", material_.specular.data());
+              ImGui::SliderFloat3("position", pos_.data(), -10.0, 10.0);
+            }
           }
 
           std::shared_ptr<ShaderProgram> program;

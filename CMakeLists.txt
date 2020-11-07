@@ -96,6 +96,46 @@ find_package(yaml-cpp 0.6.0 REQUIRED)
 include_directories(${YAML_CPP_INCLUDE_DIR})
 list(APPEND LIBRARIES ${YAML_CPP_LIBRARIES})
 
+# ImGui
+add_definitions(-DIMGUI_IMPL_OPENGL_LOADER_GLAD)
+include_directories(${PROJECT_SOURCE_DIR}/thirdparty/imgui)
+include_directories(${PROJECT_SOURCE_DIR}/thirdparty/imgui/backends)
+list(APPEND IMGUI_SOURCES
+  ${PROJECT_SOURCE_DIR}/thirdparty/imgui/imgui.cpp
+  ${PROJECT_SOURCE_DIR}/thirdparty/imgui/imgui_draw.cpp
+  ${PROJECT_SOURCE_DIR}/thirdparty/imgui/imgui_demo.cpp
+  ${PROJECT_SOURCE_DIR}/thirdparty/imgui/imgui_widgets.cpp
+  ${PROJECT_SOURCE_DIR}/thirdparty/imgui/imconfig.h
+  ${PROJECT_SOURCE_DIR}/thirdparty/imgui/imgui.h
+  ${PROJECT_SOURCE_DIR}/thirdparty/imgui/imgui_internal.h
+  ${PROJECT_SOURCE_DIR}/thirdparty/imgui/imstb_rectpack.h
+  ${PROJECT_SOURCE_DIR}/thirdparty/imgui/imstb_textedit.h
+  ${PROJECT_SOURCE_DIR}/thirdparty/imgui/imstb_truetype.h
+  ${PROJECT_SOURCE_DIR}/thirdparty/imgui/backends/imgui_impl_glfw.cpp
+  ${PROJECT_SOURCE_DIR}/thirdparty/imgui/backends/imgui_impl_glfw.h
+  ${PROJECT_SOURCE_DIR}/thirdparty/imgui/backends/imgui_impl_opengl3.cpp
+  ${PROJECT_SOURCE_DIR}/thirdparty/imgui/backends/imgui_impl_opengl3.h
+  ${PROJECT_SOURCE_DIR}/thirdparty/implot/implot.h
+  ${PROJECT_SOURCE_DIR}/thirdparty/implot/implot.cpp
+  ${PROJECT_SOURCE_DIR}/thirdparty/implot/implot_internal.h
+  ${PROJECT_SOURCE_DIR}/thirdparty/implot/implot_items.cpp
+  )
+add_library(imgui ${IMGUI_SOURCES})
+target_link_libraries(imgui ${GLFW3_LIBRARY} ${OPENGL_LIBRARIES})
+list(APPEND LIBRARIES imgui)
+
+
+# ImPlot
+include_directories(${PROJECT_SOURCE_DIR}/thirdparty/implot)
+list(APPEND IMPLOT_SOURCES
+  ${PROJECT_SOURCE_DIR}/thirdparty/implot/implot.h
+  ${PROJECT_SOURCE_DIR}/thirdparty/implot/implot.cpp
+  ${PROJECT_SOURCE_DIR}/thirdparty/implot/implot_internal.h
+  ${PROJECT_SOURCE_DIR}/thirdparty/implot/implot_items.cpp
+  )
+add_library(implot ${IMPLOT_SOURCES})
+list(APPEND LIBRARIES implot)
+
 ## Source code
 include_directories("${PROJECT_SOURCE_DIR}")
 add_subdirectory(cannon)

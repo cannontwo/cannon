@@ -6,7 +6,7 @@ list(APPEND LOGIC_SOURCES
   )
 
 add_library(logic ${LOGIC_SOURCES})
-target_link_libraries(logic ${LIBRARIES})
+target_link_libraries(logic)
 
 # Copy CNF formulas
 ADD_CUSTOM_COMMAND(

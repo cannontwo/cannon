@@ -3,4 +3,4 @@ list(APPEND PHYSICS_SOURCES
   )
 
 add_library(physics ${PHYSICS_SOURCES})
-target_link_libraries(physics log ${LIBRARIES})
+target_link_libraries(physics log)

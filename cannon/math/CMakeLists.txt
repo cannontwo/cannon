@@ -5,4 +5,4 @@ list(APPEND MATH_SOURCES
   )
 
 add_library(math ${MATH_SOURCES})
-target_link_libraries(math ${LIBRARIES})
+target_link_libraries(math)

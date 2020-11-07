@@ -4,4 +4,4 @@ list(APPEND GEOM_SOURCES
   )
 
 add_library(geom ${GEOM_SOURCES})
-target_link_libraries(geom log ${LIBRARIES})
+target_link_libraries(geom log)

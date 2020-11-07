@@ -5,4 +5,4 @@ list(APPEND ML_SOURCES
   )
 
 add_library(ml ${ML_SOURCES})
-target_link_libraries(ml log ${LIBRARIES})
+target_link_libraries(ml log)

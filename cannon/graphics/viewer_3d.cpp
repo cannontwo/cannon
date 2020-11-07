@@ -12,10 +12,28 @@ void Viewer3D::process_input_() {
   if (glfwGetKey(w.window, GLFW_KEY_D) == GLFW_PRESS)
     c.strafe_right();
 
+  if (glfwGetKey(w.window, GLFW_KEY_C) == GLFW_PRESS) {
+    if (glfwGetTime() - last_capture_time_ > 0.2) {
+      first_mouse_ = true;
+      last_capture_time_ = glfwGetTime();
+      
+      if (mouse_captured_) {
+        mouse_captured_ = false;
+        glfwSetInputMode(w.window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+      } else {
+        mouse_captured_ = true;
+        glfwSetInputMode(w.window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+      }
+    }
+  }
+
   process_mouse_input_();
 }
 
 void Viewer3D::process_mouse_input_() {
+  if (!mouse_captured_)
+    return;
+
   double xpos, ypos;
   glfwGetCursorPos(w.window, &xpos, &ypos);
   if (first_mouse_) {
@@ -52,8 +70,9 @@ void Viewer3D::draw_scene_geom_() {
   Matrix4f perspective = make_perspective_fov(to_radians(45.0f),
       (float)(w.width) / (float)(w.height), 0.1f, 1000.0f);
 
-  for (auto& g : scene_geom_) {
-    g->draw(c.get_view_mat(), perspective);
+  for (unsigned int i = 0; i < scene_geom_.size(); i++) {
+    scene_geom_[i]->draw(c.get_view_mat(), perspective);
+    scene_geom_[i]->write_imgui(i);
   }
 
 }

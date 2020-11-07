@@ -21,6 +21,7 @@ namespace cannon {
 
           glEnable(GL_FRAMEBUFFER_SRGB); 
           glfwSetInputMode(w.window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+          last_capture_time_ = glfwGetTime();
 
           last_x_ = w.width / 2;
           last_y_ = w.height / 2;
@@ -57,6 +58,8 @@ namespace cannon {
         double mouse_sensitivity_ = 0.005;
 
         bool first_mouse_ = true;
+        bool mouse_captured_ = true;
+        double last_capture_time_;
         float yaw_ = M_PI/2.0;
         float pitch_ = 0.0;
 

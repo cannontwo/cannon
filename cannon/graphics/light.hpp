@@ -42,7 +42,6 @@ namespace cannon {
           pos_ = pos;
         }
 
-
       protected:
         Vector4f ambient_;
         Vector4f diffuse_;

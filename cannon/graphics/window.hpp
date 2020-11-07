@@ -2,6 +2,7 @@
 #define CANNON_GRAPHICS_WINDOW_H 
 
 #include <vector>
+#include <queue>
 #include <stdexcept>
 #include <functional>
 
@@ -9,6 +10,11 @@
 #include <GLFW/glfw3.h>
 #include <stb_image/stb_image_write.h>
 #include <Eigen/Dense>
+
+#include <imgui.h>
+#include <imgui_impl_glfw.h>
+#include <imgui_impl_opengl3.h>
+#include <implot.h>
 
 #include <cannon/log/registry.hpp>
 #include <cannon/graphics/font.hpp>
@@ -72,9 +78,26 @@ namespace cannon {
           vao_ = std::make_shared<VertexArrayObject>();
           buf_.init(vao_);
           init_text_shader();
+
+          // Setting up ImGui
+          IMGUI_CHECKVERSION();
+          ImGui::CreateContext();
+          ImPlot::CreateContext();
+          ImGui::GetIO();
+
+          ImGui::StyleColorsDark();
+          ImGui_ImplGlfw_InitForOpenGL(window, true);
+          const char *glsl_version = "#version 330 core";
+          ImGui_ImplOpenGL3_Init(glsl_version);
         }
 
         ~Window() {
+          ImGui_ImplOpenGL3_Shutdown();
+          ImGui_ImplGlfw_Shutdown();
+          ImPlot::DestroyContext();
+          ImGui::DestroyContext();
+
+          glfwDestroyWindow(window);
           glfwTerminate();
         }
 
@@ -98,6 +121,14 @@ namespace cannon {
         template <typename F>
         void render_loop(F f) {
           while (!glfwWindowShouldClose(window)) {
+            glfwPollEvents();
+
+            ImGui_ImplOpenGL3_NewFrame();
+            ImGui_ImplGlfw_NewFrame();
+            ImGui::NewFrame();
+
+            ImGui::Begin("Hello, world");
+
             float cur_time = glfwGetTime();
             delta_time_ = cur_time - last_frame_time_;
             last_frame_time_ = cur_time;
@@ -109,12 +140,20 @@ namespace cannon {
 
             glfwGetFramebufferSize(window, &width, &height);
 
+            double start_time = glfwGetTime();
+
             f();
+
+            double elapsed = glfwGetTime() - start_time;
+            ImGui::Text("Elapsed time: %f", elapsed);
 
             draw_overlays();
 
+            ImGui::End();
+            ImGui::Render();
+            ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
             glfwSwapBuffers(window);
-            glfwPollEvents();
           }
         }
 

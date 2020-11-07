@@ -5,4 +5,4 @@ list(APPEND LOG_SOURCES
   )
 
 add_library(log ${LOG_SOURCES})
-target_link_libraries(log ${LIBRARIES})
+target_link_libraries(log)
