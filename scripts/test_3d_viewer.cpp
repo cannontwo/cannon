@@ -79,11 +79,18 @@ int main() {
 
 
   //auto light = std::make_shared<Light>(light_color*0.2, light_color*0.5, light_color);
-  //auto light = std::make_shared<DirectionalLight>(light_color*0.2, light_color*0.5, light_color);
-  //light->set_direction({-0.2, -1.0, -0.3, -1.0});
   
   // Make random lights
   LightCollection lc;
+  Vector4f light_color;
+  light_color << 0.5,
+                 0.5,
+                 0.5,
+                 0.5;
+  auto dl = std::make_shared<DirectionalLight>(light_color*0.2, light_color*0.5, light_color);
+  dl->set_direction({-0.2, -1.0, -0.3, -1.0});
+  lc.add_light(dl);
+
   std::random_device rd;
   std::mt19937 gen(rd());
   std::uniform_real_distribution<float> dist(0.0, 1.0);
