@@ -129,8 +129,6 @@ namespace cannon {
             ImGui_ImplGlfw_NewFrame();
             ImGui::NewFrame();
 
-            ImGui::Begin("Settings");
-
             float cur_time = glfwGetTime();
             delta_time_ = cur_time - last_frame_time_;
             last_frame_time_ = cur_time;
@@ -150,9 +148,15 @@ namespace cannon {
             float smoothing = 0.9;
             float estimate = 1.0 / (glfwGetTime() - last_frame_time_);
             fps_ = (fps_ * smoothing) + (estimate * (1.0 - smoothing));
-            ImGui::Text("Elapsed time: %f", elapsed);
-            ImGui::Text("FPS: %f", fps_);
-            ImGui::End();
+
+            if (ImGui::BeginMainMenuBar()) {
+              if (ImGui::BeginMenu("Statistics")) {
+                ImGui::Text("Elapsed time: %f", elapsed);
+                ImGui::Text("FPS: %f", fps_);
+                ImGui::EndMenu();
+              }
+              ImGui::EndMainMenuBar();
+            }
             ImGui::Render();
             ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 

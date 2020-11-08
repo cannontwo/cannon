@@ -105,6 +105,7 @@ list(APPEND LIBRARIES ${ASSIMP_LIBRARIES})
 add_definitions(-DIMGUI_IMPL_OPENGL_LOADER_GLAD)
 include_directories(${PROJECT_SOURCE_DIR}/thirdparty/imgui)
 include_directories(${PROJECT_SOURCE_DIR}/thirdparty/imgui/backends)
+include_directories(${PROJECT_SOURCE_DIR}/thirdparty/imgui/misc/cpp)
 list(APPEND IMGUI_SOURCES
   ${PROJECT_SOURCE_DIR}/thirdparty/imgui/imgui.cpp
   ${PROJECT_SOURCE_DIR}/thirdparty/imgui/imgui_draw.cpp
@@ -112,6 +113,8 @@ list(APPEND IMGUI_SOURCES
   ${PROJECT_SOURCE_DIR}/thirdparty/imgui/imgui_widgets.cpp
   ${PROJECT_SOURCE_DIR}/thirdparty/imgui/imconfig.h
   ${PROJECT_SOURCE_DIR}/thirdparty/imgui/imgui.h
+  ${PROJECT_SOURCE_DIR}/thirdparty/imgui/misc/cpp/imgui_stdlib.h
+  ${PROJECT_SOURCE_DIR}/thirdparty/imgui/misc/cpp/imgui_stdlib.cpp
   ${PROJECT_SOURCE_DIR}/thirdparty/imgui/imgui_internal.h
   ${PROJECT_SOURCE_DIR}/thirdparty/imgui/imstb_rectpack.h
   ${PROJECT_SOURCE_DIR}/thirdparty/imgui/imstb_textedit.h

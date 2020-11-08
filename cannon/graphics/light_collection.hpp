@@ -55,17 +55,22 @@ namespace cannon {
         }
 
         virtual void write_imgui() {
-          if (ImGui::CollapsingHeader("Lighting")) {
-            for (unsigned int i = 0; i < point_lights_.size(); i++) {
-              point_lights_[i]->write_imgui(i);
-            }
+          if (ImGui::BeginMainMenuBar()) {
+            if (ImGui::BeginMenu("Lighting")) {
+              for (unsigned int i = 0; i < point_lights_.size(); i++) {
+                point_lights_[i]->write_imgui(i);
+              }
 
-            for (unsigned int i = 0; i < spotlights_.size(); i++) {
-              spotlights_[i]->write_imgui(i);
-            }
+              for (unsigned int i = 0; i < spotlights_.size(); i++) {
+                spotlights_[i]->write_imgui(i);
+              }
 
-            if (directional_light_)
-              directional_light_->write_imgui(0);
+              if (directional_light_)
+                directional_light_->write_imgui(0);
+
+              ImGui::EndMenu();
+            }
+            ImGui::EndMainMenuBar();
           }
         }
 

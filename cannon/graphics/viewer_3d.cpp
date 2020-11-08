@@ -79,10 +79,14 @@ void Viewer3D::draw_scene_geom_() {
     scene_geom_[i]->draw(c.get_view_mat(), perspective);
   }
 
-  if (ImGui::CollapsingHeader("Geometry")) {
-    for (unsigned int i = 0; i < scene_geom_.size(); i++) {
-      scene_geom_[i]->write_imgui(i);
+  if (ImGui::BeginMainMenuBar()) {
+    if (ImGui::BeginMenu("Geometry")) {
+      for (unsigned int i = 0; i < scene_geom_.size(); i++) {
+        scene_geom_[i]->write_imgui(i);
+      }
+      ImGui::EndMenu();
     }
+    ImGui::EndMainMenuBar();
   }
 }
 

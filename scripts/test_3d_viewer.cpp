@@ -4,6 +4,9 @@
 #include <memory>
 #include <random>
 
+#include <imgui.h>
+#include <imgui_stdlib.h>
+
 #include <cannon/graphics/window.hpp>
 #include <cannon/graphics/vertex_buffer.hpp>
 #include <cannon/graphics/vertex_color_tex_buffer.hpp>
@@ -109,97 +112,109 @@ int main() {
     light_program->set_uniform("viewPos", tmp_pos);
     textured_program->set_uniform("viewPos", tmp_pos);
 
-    if (ImGui::Button("Spawn cube")) {
-      auto c = std::make_shared<geometry::Cube>(program);
-      viewer.add_geom(c);
+    if (ImGui::BeginMainMenuBar()) {
+      if (ImGui::BeginMenu("Spawn")) {
+        if (ImGui::Button("Cube")) {
+          auto c = std::make_shared<geometry::Cube>(program);
+          viewer.add_geom(c);
 
-      Vector3f pos1 = viewer.c.get_pos() - 2.0 * viewer.c.get_direction().normalized();
+          Vector3f pos1 = viewer.c.get_pos() - 2.0 * viewer.c.get_direction().normalized();
 
-      std::random_device rd;
-      std::mt19937 gen(rd());
-      std::uniform_real_distribution<float> dist(-M_PI, M_PI);
+          std::random_device rd;
+          std::mt19937 gen(rd());
+          std::uniform_real_distribution<float> dist(-M_PI, M_PI);
 
-      AngleAxisf rot1(dist(gen), Vector3f::Random().normalized());
+          AngleAxisf rot1(dist(gen), Vector3f::Random().normalized());
 
-      c->set_pos(pos1);
-      c->set_rot(rot1);
-    }
+          c->set_pos(pos1);
+          c->set_rot(rot1);
+        }
 
-    if (ImGui::Button("Spawn model")) {
-      auto m = std::make_shared<geometry::Model>(textured_program, "assets/backpack/backpack.obj");
-      viewer.add_geom(m);
+        if (ImGui::BeginMenu("Model")) {
+          static std::string model_path("assets/backpack/backpack.obj");
+          ImGui::InputText("Model path", &model_path);
 
-      Vector3f pos1 = viewer.c.get_pos() - 2.0 * viewer.c.get_direction().normalized();
+          if (ImGui::Button("Spawn")) {
+            try {
+              auto m = std::make_shared<geometry::Model>(textured_program, model_path);
+              viewer.add_geom(m);
 
-      std::random_device rd;
-      std::mt19937 gen(rd());
-      std::uniform_real_distribution<float> dist(-M_PI, M_PI);
+              Vector3f pos1 = viewer.c.get_pos() - 2.0 * viewer.c.get_direction().normalized();
 
-      AngleAxisf rot1(dist(gen), Vector3f::Random().normalized());
+              std::random_device rd;
+              std::mt19937 gen(rd());
+              std::uniform_real_distribution<float> dist(-M_PI, M_PI);
 
-      m->set_pos(pos1);
-      m->set_rot(rot1);
-    }
+              AngleAxisf rot1(dist(gen), Vector3f::Random().normalized());
 
-    ImGui::SameLine();
+              m->set_pos(pos1);
+              m->set_rot(rot1);
+            } catch (...) {
+              log_warning("Could not load model at", model_path);
+            }
+          }
+          ImGui::EndMenu();
+        }
 
-    if (ImGui::Button("Spawn point light")) {
-      Vector4f light_color;
-      light_color << 1.0,
-                     1.0,
-                     1.0,
-                     1.0;
+        if (ImGui::Button("Point light")) {
+          Vector4f light_color;
+          light_color << 1.0,
+                         1.0,
+                         1.0,
+                         1.0;
 
-      geometry::Material light_material(light_color, {0.0, 0.0, 0.0, 1.0},
-          {0.0, 0.0, 0.0, 1.0}, 32.0);
+          geometry::Material light_material(light_color, {0.0, 0.0, 0.0, 1.0},
+              {0.0, 0.0, 0.0, 1.0}, 32.0);
 
-      auto light_cube = std::make_shared<geometry::Cube>(light_program);
-      auto light = std::make_shared<PointLight>(light_color*0.2, light_color*0.5, light_color, light_cube);
-      viewer.add_geom(light_cube);
+          auto light_cube = std::make_shared<geometry::Cube>(light_program);
+          auto light = std::make_shared<PointLight>(light_color*0.2, light_color*0.5, light_color, light_cube);
+          viewer.add_geom(light_cube);
 
-      Vector4f light_pos;
-      Vector3f pos1 = viewer.c.get_pos() - 2.0 * viewer.c.get_direction().normalized();
-      light_pos.head(3) = pos1;
-      light_pos[3] = 1.0;
-      light->set_pos(light_pos);
+          Vector4f light_pos;
+          Vector3f pos1 = viewer.c.get_pos() - 2.0 * viewer.c.get_direction().normalized();
+          light_pos.head(3) = pos1;
+          light_pos[3] = 1.0;
+          light->set_pos(light_pos);
 
-      light_cube->set_material(light_material);
-      light_cube->set_pos(light_pos.head(3));
-      light_cube->set_scale(0.2);
+          light_cube->set_material(light_material);
+          light_cube->set_pos(light_pos.head(3));
+          light_cube->set_scale(0.2);
 
-      // Lights rendered saturated
-      light->set_ambient(light_color);
-      light->apply(light_cube);
-      light->set_ambient(light_color * 0.2);
+          // Lights rendered saturated
+          light->set_ambient(light_color);
+          light->apply(light_cube);
+          light->set_ambient(light_color * 0.2);
 
-      lc.add_light(light);
-    }
+          lc.add_light(light);
+        }
 
-    ImGui::SameLine();
+        if (ImGui::Button("Spotlight")) {
+          Vector4f light_color;
+          light_color << 1.0,
+                         1.0,
+                         1.0,
+                         1.0;
 
-    if (ImGui::Button("Spawn spotlight")) {
-      Vector4f light_color;
-      light_color << 1.0,
-                     1.0,
-                     1.0,
-                     1.0;
+          geometry::Material light_material(light_color, {0.0, 0.0, 0.0, 1.0},
+              {0.0, 0.0, 0.0, 1.0}, 32.0);
 
-      geometry::Material light_material(light_color, {0.0, 0.0, 0.0, 1.0},
-          {0.0, 0.0, 0.0, 1.0}, 32.0);
+          Vector4f light_dir;
+          light_dir.head(3) = -viewer.c.get_direction();
+          light_dir[3] = 1.0;
+          auto light = std::make_shared<Spotlight>(light_color*0.2,
+              light_color*0.5, light_color, light_dir);
 
-      Vector4f light_dir;
-      light_dir.head(3) = -viewer.c.get_direction();
-      light_dir[3] = 1.0;
-      auto light = std::make_shared<Spotlight>(light_color*0.2,
-          light_color*0.5, light_color, light_dir);
+          Vector4f light_pos;
+          Vector3f pos1 = viewer.c.get_pos() - 2.0 * viewer.c.get_direction().normalized();
+          light_pos.head(3) = pos1;
+          light_pos[3] = 1.0;
+          light->set_pos(light_pos);
 
-      Vector4f light_pos;
-      Vector3f pos1 = viewer.c.get_pos() - 2.0 * viewer.c.get_direction().normalized();
-      light_pos.head(3) = pos1;
-      light_pos[3] = 1.0;
-      light->set_pos(light_pos);
-
-      lc.add_light(light);
+          lc.add_light(light);
+        }
+        ImGui::EndMenu();
+      }
+      ImGui::EndMainMenuBar();
     }
 
     lc.write_imgui();

@@ -40,12 +40,12 @@ namespace cannon {
             format = GL_RED;
             pix_format = GL_RED;
           } else if (num_channels_ == 3) {
-            //format = GL_SRGB;
-            format = GL_RGB;
+            format = GL_SRGB;
+            //format = GL_RGB;
             pix_format = GL_RGB;
           } else if (num_channels_ == 4) {
-            //format = GL_SRGB_ALPHA;
-            format = GL_RGBA;
+            format = GL_SRGB_ALPHA;
+            //format = GL_RGBA;
             pix_format = GL_RGBA;
           } else
             throw std::runtime_error("Unrecognized texture format");
