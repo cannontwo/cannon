@@ -11,11 +11,11 @@ void TexturedCube::draw(const Matrix4f& view, const Matrix4f& perspective) const
   
   // Material properties
   program->set_uniform("material.diffuse", 0);
-  program->set_uniform("material.specular", 1);
+  program->set_uniform("material.specular", 8);
   program->set_uniform("material.shininess", material_.shininess);
 
   diffuse_tex_.bind(GL_TEXTURE0);
-  specular_tex_.bind(GL_TEXTURE1);
+  specular_tex_.bind(GL_TEXTURE8);
 
   buf_.bind();
   normal_buf_.bind();

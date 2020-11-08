@@ -96,6 +96,11 @@ find_package(yaml-cpp 0.6.0 REQUIRED)
 include_directories(${YAML_CPP_INCLUDE_DIR})
 list(APPEND LIBRARIES ${YAML_CPP_LIBRARIES})
 
+# Assimp
+find_package(assimp REQUIRED)
+include_directories(assimp_INCLUDE_DIRS)
+list(APPEND LIBRARIES ${assimp_LIBRARIES})
+
 # ImGui
 add_definitions(-DIMGUI_IMPL_OPENGL_LOADER_GLAD)
 include_directories(${PROJECT_SOURCE_DIR}/thirdparty/imgui)
@@ -123,7 +128,6 @@ list(APPEND IMGUI_SOURCES
 add_library(imgui ${IMGUI_SOURCES})
 target_link_libraries(imgui ${GLFW3_LIBRARY} ${OPENGL_LIBRARIES})
 list(APPEND LIBRARIES imgui)
-
 
 # ImPlot
 include_directories(${PROJECT_SOURCE_DIR}/thirdparty/implot)

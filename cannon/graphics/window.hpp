@@ -68,6 +68,8 @@ namespace cannon {
           init_glad();
 
           glEnable(GL_MULTISAMPLE);
+          // V-Sync
+          glfwSwapInterval(1);
           set_viewport(0, 0, width, height);
 
           register_callbacks();
@@ -140,15 +142,16 @@ namespace cannon {
 
             glfwGetFramebufferSize(window, &width, &height);
 
-            double start_time = glfwGetTime();
-
             f();
-
-            double elapsed = glfwGetTime() - start_time;
-            ImGui::Text("Elapsed time: %f", elapsed);
 
             draw_overlays();
 
+            double elapsed = glfwGetTime() - cur_time;
+            float smoothing = 0.9;
+            float estimate = 1.0 / (glfwGetTime() - last_frame_time_);
+            fps_ = (fps_ * smoothing) + (estimate * (1.0 - smoothing));
+            ImGui::Text("Elapsed time: %f", elapsed);
+            ImGui::Text("FPS: %f", fps_);
             ImGui::End();
             ImGui::Render();
             ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
@@ -205,6 +208,7 @@ namespace cannon {
 
         float delta_time_ = 0.0;
         float last_frame_time_ = 0.0;
+        float fps_ = 0.0;
     };
 
   } // namespace graphics

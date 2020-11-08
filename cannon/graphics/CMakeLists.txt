@@ -16,6 +16,7 @@ list(APPEND GRAPHICS_SOURCES
   viewer_3d.cpp
   geometry/cube.cpp
   geometry/textured_cube.cpp
+  geometry/mesh.cpp
   )
 
 add_library(graphics ${GRAPHICS_SOURCES})
