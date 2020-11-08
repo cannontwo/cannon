@@ -18,6 +18,7 @@
 #include <cannon/log/registry.hpp>
 #include <cannon/graphics/geometry/cube.hpp>
 #include <cannon/graphics/geometry/textured_cube.hpp>
+#include <cannon/graphics/geometry/model.hpp>
 #include <cannon/graphics/light.hpp>
 #include <cannon/graphics/directional_light.hpp>
 #include <cannon/graphics/point_light.hpp>
@@ -122,6 +123,22 @@ int main() {
 
       c->set_pos(pos1);
       c->set_rot(rot1);
+    }
+
+    if (ImGui::Button("Spawn model")) {
+      auto m = std::make_shared<geometry::Model>(textured_program, "assets/backpack/backpack.obj");
+      viewer.add_geom(m);
+
+      Vector3f pos1 = viewer.c.get_pos() - 2.0 * viewer.c.get_direction().normalized();
+
+      std::random_device rd;
+      std::mt19937 gen(rd());
+      std::uniform_real_distribution<float> dist(-M_PI, M_PI);
+
+      AngleAxisf rot1(dist(gen), Vector3f::Random().normalized());
+
+      m->set_pos(pos1);
+      m->set_rot(rot1);
     }
 
     ImGui::SameLine();

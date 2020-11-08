@@ -15,7 +15,7 @@ void Mesh::draw(const Matrix4f& view, const Matrix4f& perspective) const {
     diffuse_textures_[i]->bind(diffuse_gl_textures_[i]);
   }
   for (unsigned int i = 0; i < specular_textures_.size(); i++) {
-    program->set_uniform(std::string("material.diffuse[") + std::to_string(i) + "]", 
+    program->set_uniform(std::string("material.specular[") + std::to_string(i) + "]", 
         (int)(max_diffuse_tex + i));
     specular_textures_[i]->bind(specular_gl_textures_[i]);
   }

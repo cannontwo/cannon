@@ -55,15 +55,15 @@ namespace cannon {
             return tmp;
           }
 
-          void set_pos(const Vector3f& pos) {
+          virtual void set_pos(const Vector3f& pos) {
             pos_ = pos;
           }
 
-          void set_rot(const AngleAxisf& rot) {
+          virtual void set_rot(const AngleAxisf& rot) {
             rot_ = rot;
           }
 
-          void set_scale(const float scale) {
+          virtual void set_scale(const float scale) {
             scale_ = scale;
           }
 

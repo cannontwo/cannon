@@ -98,8 +98,8 @@ list(APPEND LIBRARIES ${YAML_CPP_LIBRARIES})
 
 # Assimp
 find_package(assimp REQUIRED)
-include_directories(assimp_INCLUDE_DIRS)
-list(APPEND LIBRARIES ${assimp_LIBRARIES})
+include_directories(${ASSIMP_INCLUDE_DIRS})
+list(APPEND LIBRARIES ${ASSIMP_LIBRARIES})
 
 # ImGui
 add_definitions(-DIMGUI_IMPL_OPENGL_LOADER_GLAD)
