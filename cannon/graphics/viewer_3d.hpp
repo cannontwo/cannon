@@ -37,6 +37,8 @@ namespace cannon {
           set_callbacks_();
         }
 
+        ~Viewer3D() {}
+
         template <typename F>
         void render_loop(F f) {
           w.render_loop([&](){

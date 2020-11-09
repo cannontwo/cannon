@@ -67,7 +67,7 @@ namespace cannon {
             e_.set_state(state_);
             state_ = e_.step();
             
-            return std::make_pair(state_, reward);
+            return std::make_pair(state_.head(2), reward);
           }
 
           VectorXd reset() {

@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.10)
-project(Cannon)
+project(Cannon C CXX)
 
 # Compilation configuration
 ADD_DEFINITIONS(
@@ -33,8 +33,9 @@ IF( EXISTS "${CMAKE_CURRENT_BINARY_DIR}/compile_commands.json" )
   )
 ENDIF()
 
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 14)
 set(CGAL_EIGEN3_ENABLED ON)
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
 
 # Clang Tidy
 find_program (CLANG_TIDY_EXE NAMES "clang-tidy")
@@ -44,6 +45,12 @@ else()
     message(STATUS "clang-tidy NOT found!")
     set(CMAKE_CXX_CLANG_TIDY "" CACHE STRING "" FORCE) # clear it
 endif()
+
+# Threading
+set(CMAKE_THREAD_PREFER_PTHREAD TRUE)
+set(THREADS_PREFER_PTHREAD_FLAG TRUE)
+find_package(Threads REQUIRED)
+list(APPEND LIBRARIES ${CMAKE_THREAD_LIBS_INIT})
 
 # OMPL
 find_package(OMPL REQUIRED)
@@ -123,10 +130,6 @@ list(APPEND IMGUI_SOURCES
   ${PROJECT_SOURCE_DIR}/thirdparty/imgui/backends/imgui_impl_glfw.h
   ${PROJECT_SOURCE_DIR}/thirdparty/imgui/backends/imgui_impl_opengl3.cpp
   ${PROJECT_SOURCE_DIR}/thirdparty/imgui/backends/imgui_impl_opengl3.h
-  ${PROJECT_SOURCE_DIR}/thirdparty/implot/implot.h
-  ${PROJECT_SOURCE_DIR}/thirdparty/implot/implot.cpp
-  ${PROJECT_SOURCE_DIR}/thirdparty/implot/implot_internal.h
-  ${PROJECT_SOURCE_DIR}/thirdparty/implot/implot_items.cpp
   )
 add_library(imgui ${IMGUI_SOURCES})
 target_link_libraries(imgui ${GLFW3_LIBRARY} ${OPENGL_LIBRARIES})

@@ -95,12 +95,16 @@ namespace cannon {
         }
 
         ~Window() {
+          log_info("Destructing window");
+
           ImGui_ImplOpenGL3_Shutdown();
           ImGui_ImplGlfw_Shutdown();
           ImPlot::DestroyContext();
           ImGui::DestroyContext();
 
+          glfwMakeContextCurrent(NULL);
           glfwDestroyWindow(window);
+
           glfwTerminate();
         }
 

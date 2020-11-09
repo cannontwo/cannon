@@ -10,8 +10,6 @@ VertexShader cannon::graphics::load_vertex_shader(const std::string& path) {
     std::string str((std::istreambuf_iterator<char>(fs)),
         std::istreambuf_iterator<char>());
 
-    log_info(str);
-
     const char *c_str = str.c_str();
     return VertexShader(&c_str);
   } catch (std::ifstream::failure e) {

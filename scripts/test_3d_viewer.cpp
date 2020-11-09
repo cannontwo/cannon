@@ -3,6 +3,7 @@
 #include <stb_image/stb_image.h>
 #include <memory>
 #include <random>
+#include <thread>
 
 #include <imgui.h>
 #include <imgui_stdlib.h>
@@ -30,7 +31,7 @@
 using namespace cannon::graphics;
 using namespace cannon::log;
 
-int main() {
+void test() {
   Viewer3D viewer;
 
   auto textured_program = std::make_shared<ShaderProgram>("textured_cube_shader");
@@ -65,4 +66,14 @@ int main() {
                1.0;
     textured_program->set_uniform("viewPos", tmp_pos);
   });
+
+  log_info("Render loop finished");
+}
+
+int main() {
+
+  std::thread render_thread(test);
+
+  // There appears to be a driver bug that causes a segfault on thread destruction
+  render_thread.join();
 }
