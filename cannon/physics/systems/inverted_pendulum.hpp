@@ -44,7 +44,7 @@ namespace cannon {
       class InvertedPendulum {
         public:
           InvertedPendulum(double max_torque = 2.0) : max_torque_(max_torque),
-          e_(s_, 3, 0.05) {
+          e_(s_, 3, 0.05), state_(3) {
             std::random_device rd;
             gen_ = std::mt19937(rd());  
 
@@ -78,7 +78,7 @@ namespace cannon {
             state_[1] = thdot;
             state_[2] = 0.0;
 
-            return state_;
+            return state_.head(2);
           }
 
           // TODO 
