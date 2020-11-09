@@ -86,12 +86,23 @@ void Viewer3D::draw_scene_geom_() {
       }
       ImGui::EndMenu();
     }
+
+    if (ImGui::BeginMenu("Shaders")) {
+      for (auto &s : shaders_) {
+        s->write_imgui();
+      }
+      ImGui::EndMenu();
+    }
     ImGui::EndMainMenuBar();
   }
 }
 
 void Viewer3D::add_geom(std::shared_ptr<geometry::DrawableGeom> g) {
   scene_geom_.push_back(g);
+
+  if (std::find(shaders_.begin(), shaders_.end(), g->program) == shaders_.end()) {
+    shaders_.push_back(g->program);
+  }
 }
 
 void Viewer3D::apply_light(std::shared_ptr<Light> l) {
@@ -101,7 +112,167 @@ void Viewer3D::apply_light(std::shared_ptr<Light> l) {
 }
 
 void Viewer3D::apply_light_collection(const LightCollection& l) {
-  for (auto& g : scene_geom_) {
-    l.apply(g);
+  // In the case of a large number of lights, we expect this to be a speed up
+  for (auto& s : shaders_) {
+    l.apply(s);
   }
+}
+
+void Viewer3D::spawn_cube() {
+  auto cube = std::make_shared<geometry::Cube>(diffuse_program_);
+  add_geom(cube);
+
+  Vector3f pos1 = c.get_pos() - 2.0 * c.get_direction().normalized();
+
+  std::random_device rd;
+  std::mt19937 gen(rd());
+  std::uniform_real_distribution<float> dist(-M_PI, M_PI);
+
+  AngleAxisf rot1(dist(gen), Vector3f::Random().normalized());
+
+  cube->set_pos(pos1);
+  cube->set_rot(rot1);
+}
+
+void Viewer3D::spawn_model(const std::string& path) {
+  try {
+    auto m = std::make_shared<geometry::Model>(textured_program_, path);
+    add_geom(m);
+
+    Vector3f pos1 = c.get_pos() - 2.0 * c.get_direction().normalized();
+
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_real_distribution<float> dist(-M_PI, M_PI);
+
+    AngleAxisf rot1(dist(gen), Vector3f::Random().normalized());
+
+    m->set_pos(pos1);
+    m->set_rot(rot1);
+  } catch (...) {
+    log_warning("Could not load model at", path);
+  }
+}
+
+void Viewer3D::spawn_point_light() {
+  Vector4f light_color;
+  light_color << 1.0,
+                 1.0,
+                 1.0,
+                 1.0;
+
+  geometry::Material light_material(light_color, {0.0, 0.0, 0.0, 1.0},
+      {0.0, 0.0, 0.0, 1.0}, 32.0);
+
+  auto light_cube = std::make_shared<geometry::Cube>(light_program_);
+  auto light = std::make_shared<PointLight>(light_color*0.2, light_color*0.5, light_color, light_cube);
+  add_geom(light_cube);
+
+  Vector4f light_pos;
+  Vector3f pos1 = c.get_pos() - 2.0 * c.get_direction().normalized();
+  light_pos.head(3) = pos1;
+  light_pos[3] = 1.0;
+  light->set_pos(light_pos);
+
+  light_cube->set_material(light_material);
+  light_cube->set_pos(light_pos.head(3));
+  light_cube->set_scale(0.2);
+
+  // Lights rendered saturated
+  light->set_ambient(light_color);
+  light->apply(light_cube);
+  light->set_ambient(light_color * 0.2);
+
+  lc_.add_light(light);
+}
+
+void Viewer3D::spawn_spotlight() {
+  Vector4f light_color;
+  light_color << 1.0,
+                 1.0,
+                 1.0,
+                 1.0;
+
+  geometry::Material light_material(light_color, {0.0, 0.0, 0.0, 1.0},
+      {0.0, 0.0, 0.0, 1.0}, 32.0);
+
+  Vector4f light_dir;
+  light_dir.head(3) = -c.get_direction();
+  light_dir[3] = 1.0;
+  auto light = std::make_shared<Spotlight>(light_color*0.2,
+      light_color*0.5, light_color, light_dir);
+
+  Vector4f light_pos;
+  Vector3f pos1 = c.get_pos() - 2.0 * c.get_direction().normalized();
+  light_pos.head(3) = pos1;
+  light_pos[3] = 1.0;
+  light->set_pos(light_pos);
+
+  lc_.add_light(light);
+}
+
+void Viewer3D::write_imgui() {
+  if (ImGui::BeginMainMenuBar()) {
+    if (ImGui::BeginMenu("Spawn")) {
+      if (ImGui::BeginMenu("Geometry")) {
+        if (ImGui::Button("Cube")) {
+          spawn_cube();
+        }
+
+        if (ImGui::BeginMenu("Model")) {
+          static std::string model_path("assets/backpack/backpack.obj");
+          ImGui::InputText("Model path", &model_path);
+          if (ImGui::Button("Spawn")) {
+            spawn_model(model_path);
+          }
+          ImGui::EndMenu();
+        }
+
+        ImGui::EndMenu();
+      }
+
+      if (ImGui::BeginMenu("Lights")) {
+        if (ImGui::Button("Point Light")) {
+          spawn_point_light();        
+        }
+
+        if (ImGui::Button("Spotlight")) {
+          spawn_spotlight();
+        }
+        ImGui::EndMenu();
+      }
+
+      ImGui::EndMenu();
+    }
+
+    ImGui::EndMainMenuBar();
+  }
+}
+
+void Viewer3D::initialize_lc_() {
+  Vector4f light_color;
+  light_color << 0.5,
+                 0.5,
+                 0.5,
+                 0.5;
+  auto dl = std::make_shared<DirectionalLight>(light_color*0.2, light_color*0.5, light_color);
+  dl->set_direction({-0.2, -1.0, -0.3, -1.0});
+  lc_.add_light(dl);
+}
+
+void Viewer3D::make_shaders_() {
+  diffuse_program_ = std::make_shared<ShaderProgram>("diffuse_shader");
+  diffuse_program_->attach_vertex_shader("shaders/mvp_normals.vert");
+  diffuse_program_->attach_fragment_shader("shaders/material_lights.frag");
+  diffuse_program_->link();
+
+  light_program_ = std::make_shared<ShaderProgram>("light_shader");
+  light_program_->attach_vertex_shader("shaders/mvp_normals.vert");
+  light_program_->attach_fragment_shader("shaders/material_light.frag");
+  light_program_->link();
+
+  textured_program_ = std::make_shared<ShaderProgram>("textured_shader");
+  textured_program_->attach_vertex_shader("shaders/mvp_normals_tex.vert");
+  textured_program_->attach_fragment_shader("shaders/material_lights_tex.frag");
+  textured_program_->link();
 }

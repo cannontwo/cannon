@@ -5,6 +5,7 @@ using namespace cannon::graphics::geometry;
 
 void Model::draw(const Matrix4f& view, const Matrix4f& perspective) const {
   for (auto& mesh : meshes_) {
+    mesh->set_parent_model_mat(get_model_mat());
     mesh->draw(view, perspective);
   }
 }
@@ -21,18 +22,6 @@ void Model::load_model_(const std::string& path) {
   log_info("Model directory is", directory_);
 
   process_node_(scene->mRootNode, scene);
-}
-
-void Model::set_pos(const Vector3f& pos) {
-  for (auto& mesh : meshes_) {
-    mesh->set_pos(pos);
-  }
-}
-
-void Model::set_rot(const AngleAxisf& rot) {
-  for (auto& mesh : meshes_) {
-    mesh->set_rot(rot);
-  }
 }
 
 void Model::process_node_(aiNode *node, const aiScene *scene) {

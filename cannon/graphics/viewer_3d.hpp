@@ -3,6 +3,7 @@
 
 #include <cmath>
 #include <memory>
+#include <random>
 
 #include <cannon/graphics/camera.hpp>
 #include <cannon/graphics/window.hpp>
@@ -10,6 +11,11 @@
 #include <cannon/graphics/projection.hpp>
 #include <cannon/graphics/light.hpp>
 #include <cannon/graphics/light_collection.hpp>
+#include <cannon/graphics/geometry/cube.hpp>
+#include <cannon/graphics/geometry/textured_cube.hpp>
+#include <cannon/graphics/geometry/model.hpp>
+#include <cannon/graphics/point_light.hpp>
+#include <cannon/graphics/spotlight.hpp>
 
 namespace cannon {
   namespace graphics {
@@ -25,6 +31,9 @@ namespace cannon {
 
           last_x_ = w.width / 2;
           last_y_ = w.height / 2;
+
+          make_shaders_();
+          initialize_lc_();
         }
 
         template <typename F>
@@ -35,20 +44,45 @@ namespace cannon {
 
             process_input_();
 
+            Vector3f c_pos = c.get_pos();
+            Vector4f tmp_pos;
+            tmp_pos << c_pos[0],
+                       c_pos[1],
+                       c_pos[2],
+                       1.0;
+            diffuse_program_->set_uniform("viewPos", tmp_pos);
+            light_program_->set_uniform("viewPos", tmp_pos);
+            textured_program_->set_uniform("viewPos", tmp_pos);
+
             f();
 
+            write_imgui();
+            lc_.write_imgui();
+            apply_light_collection(lc_);
+
             draw_scene_geom_();
+
           });
         }
 
         void add_geom(std::shared_ptr<geometry::DrawableGeom> g);
         void apply_light(std::shared_ptr<Light> l);
         void apply_light_collection(const LightCollection& l);
+
+        void spawn_cube();
+        void spawn_textured_cube();
+        void spawn_model(const std::string& path);
+        void spawn_point_light();
+        void spawn_spotlight();
+
+        void write_imgui();
         
         Window w;
         Camera c; 
 
       private:
+        void make_shaders_();
+        void initialize_lc_();
         void process_input_();
         void process_mouse_input_();
         void draw_scene_geom_();
@@ -64,6 +98,13 @@ namespace cannon {
         float pitch_ = 0.0;
 
         std::vector<std::shared_ptr<geometry::DrawableGeom>> scene_geom_;
+        std::vector<std::shared_ptr<ShaderProgram>> shaders_;
+
+        LightCollection lc_;
+
+        std::shared_ptr<ShaderProgram> diffuse_program_;
+        std::shared_ptr<ShaderProgram> light_program_;
+        std::shared_ptr<ShaderProgram> textured_program_;
     };
 
   } // namespace graphics

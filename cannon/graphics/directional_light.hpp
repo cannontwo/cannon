@@ -16,10 +16,14 @@ namespace cannon {
           Light(ambient, diffuse, specular) {}
 
         virtual void apply(const std::shared_ptr<geometry::DrawableGeom> geom) const override {
-          geom->program->set_uniform("directional_light.ambient", ambient_);
-          geom->program->set_uniform("directional_light.diffuse", diffuse_);
-          geom->program->set_uniform("directional_light.specular", specular_);
-          geom->program->set_uniform("directional_light.direction", direction_);
+          apply(geom->program);
+        }
+
+        void apply(const std::shared_ptr<ShaderProgram> s) const {
+          s->set_uniform("directional_light.ambient", ambient_);
+          s->set_uniform("directional_light.diffuse", diffuse_);
+          s->set_uniform("directional_light.specular", specular_);
+          s->set_uniform("directional_light.direction", direction_);
         }
 
         void set_direction(const Vector4f& direction) {

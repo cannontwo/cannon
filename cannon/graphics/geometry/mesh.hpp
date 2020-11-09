@@ -39,6 +39,10 @@ namespace cannon {
 
           virtual void draw(const Matrix4f& view, const Matrix4f& perspective) const override;
 
+          virtual Matrix4f get_model_mat() const override;
+
+          void set_parent_model_mat(const MatrixX4f& mat);
+
         private:
           void populate_bufs_();
 
@@ -52,6 +56,9 @@ namespace cannon {
           MatrixX3f normals_;
           MatrixX2f tex_coords_;
           MatrixX3u indices_;
+
+          // Parent transform
+          MatrixX4f parent_model_mat_;
 
           std::vector<std::shared_ptr<Texture>> diffuse_textures_;
           std::vector<std::shared_ptr<Texture>> specular_textures_;

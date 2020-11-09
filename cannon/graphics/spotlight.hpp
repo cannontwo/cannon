@@ -40,22 +40,26 @@ namespace cannon {
         }
 
         void apply(const std::shared_ptr<geometry::DrawableGeom> geom, int idx) const {
+          apply(geom->program, idx);
+        }
+
+        void apply(const std::shared_ptr<ShaderProgram> s, int idx) const {
           std::string preamble("spotlights[");
           preamble += std::to_string(idx);
           preamble += "]";
 
-          geom->program->set_uniform(preamble + ".ambient", ambient_);
-          geom->program->set_uniform(preamble + ".diffuse", diffuse_);
-          geom->program->set_uniform(preamble + ".specular", specular_);
+          s->set_uniform(preamble + ".ambient", ambient_);
+          s->set_uniform(preamble + ".diffuse", diffuse_);
+          s->set_uniform(preamble + ".specular", specular_);
 
-          geom->program->set_uniform(preamble + ".position", pos_);
-          geom->program->set_uniform(preamble + ".direction", direction_);
-          geom->program->set_uniform(preamble + ".cutoff", std::cos(to_radians(cutoff_)));
-          geom->program->set_uniform(preamble + ".outer_cutoff", std::cos(to_radians(outer_cutoff_)));
+          s->set_uniform(preamble + ".position", pos_);
+          s->set_uniform(preamble + ".direction", direction_);
+          s->set_uniform(preamble + ".cutoff", std::cos(to_radians(cutoff_)));
+          s->set_uniform(preamble + ".outer_cutoff", std::cos(to_radians(outer_cutoff_)));
 
-          geom->program->set_uniform(preamble + ".constant", constant_);
-          geom->program->set_uniform(preamble + ".linear", linear_);
-          geom->program->set_uniform(preamble + ".quadratic", quadratic_);
+          s->set_uniform(preamble + ".constant", constant_);
+          s->set_uniform(preamble + ".linear", linear_);
+          s->set_uniform(preamble + ".quadratic", quadratic_);
         }
 
         void set_cutoff(float cutoff) {

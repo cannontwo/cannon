@@ -29,11 +29,11 @@ namespace cannon {
           Model(std::shared_ptr<ShaderProgram> p, const std::string& path) {
             program = p;
             load_model_(path);
+
+            name_ = std::string("Model");
           }
 
           virtual void draw(const Matrix4f& view, const Matrix4f& perspective) const override;
-          virtual void set_pos(const Vector3f& pos) override;
-          virtual void set_rot(const AngleAxisf& rot) override;
 
         private:
           void load_model_(const std::string& path);

@@ -31,7 +31,7 @@ namespace cannon {
             material_ = material;
           }
 
-          Matrix4f get_model_mat() const {
+          virtual Matrix4f get_model_mat() const {
             Affine3f trans;
             trans = AngleAxisf(to_radians(0.0f), Vector3f::UnitX()) *
               Translation3f(pos_) * rot_ * Scaling(scale_);

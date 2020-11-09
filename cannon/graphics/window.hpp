@@ -55,7 +55,8 @@ namespace cannon {
     class Window {
       public:
         Window(int w = 800, int h = 600, const std::string& name = "Test"):
-          width(w), height(h), font_(false), text_program_(false), vao_(nullptr), buf_() {
+          width(w), height(h), font_(false), text_program_("text_program",
+              false), vao_(nullptr), buf_() {
           init_glfw();
           window = glfwCreateWindow(width, height, name.c_str(), NULL, NULL); 
 
@@ -131,7 +132,6 @@ namespace cannon {
 
             float cur_time = glfwGetTime();
             delta_time_ = cur_time - last_frame_time_;
-            last_frame_time_ = cur_time;
 
             process_input(window);
 
@@ -160,6 +160,7 @@ namespace cannon {
             ImGui::Render();
             ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
+            last_frame_time_ = glfwGetTime();
             glfwSwapBuffers(window);
           }
         }

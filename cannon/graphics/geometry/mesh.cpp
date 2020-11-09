@@ -8,6 +8,7 @@ void Mesh::draw(const Matrix4f& view, const Matrix4f& perspective) const {
   program->set_uniform("view", view);
   program->set_uniform("projection", perspective);
   program->set_uniform("normalmat", get_normal_mat(), false);
+  program->set_uniform("material.shininess", material_.shininess);
 
   for (unsigned int i = 0; i < diffuse_textures_.size(); i++) {
     program->set_uniform(std::string("material.diffuse[") + std::to_string(i) + "]", 
@@ -26,6 +27,18 @@ void Mesh::draw(const Matrix4f& view, const Matrix4f& perspective) const {
   ebuf_.bind();
 
   glDrawElements(GL_TRIANGLES, indices_.rows() * indices_.cols(), GL_UNSIGNED_INT, 0);
+}
+
+Matrix4f Mesh::get_model_mat() const {
+  Affine3f trans;
+  trans = AngleAxisf(to_radians(0.0f), Vector3f::UnitX()) *
+    Translation3f(pos_) * rot_ * Scaling(scale_);
+
+  return parent_model_mat_ * trans.matrix();
+}
+
+void Mesh::set_parent_model_mat(const MatrixX4f& mat) {
+  parent_model_mat_ = mat;
 }
 
 void Mesh::populate_bufs_() {
