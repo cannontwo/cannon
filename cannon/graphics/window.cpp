@@ -178,5 +178,6 @@ void cannon::graphics::process_input(GLFWwindow* window) {
 void cannon::graphics::debug_message_callback(GLenum source, GLenum type, GLuint id, GLenum
     severity, GLsizei length, const GLchar *message, 
     const void *userParam) {
-  log_warning(message);
+  if (severity != GL_DEBUG_SEVERITY_NOTIFICATION) 
+    log_warning(message);
 }
