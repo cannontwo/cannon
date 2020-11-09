@@ -276,3 +276,19 @@ void Viewer3D::make_shaders_() {
   textured_program_->attach_fragment_shader("shaders/material_lights_tex.frag");
   textured_program_->link();
 }
+
+void Viewer3D::set_callbacks_() {
+  glfwSetWindowUserPointer(w.window, this);
+  glfwSetDropCallback(w.window, drop_callback);
+}
+
+// Callbacks
+void cannon::graphics::drop_callback(GLFWwindow *window, int path_count, const char* paths[]) {
+  Viewer3D *viewer = (Viewer3D*)glfwGetWindowUserPointer(window);
+
+  // Assuming that only model paths are dropped
+  for (int i = 0; i < path_count; i++) {
+    std::string path(paths[i]);
+    viewer->spawn_model(path);
+  }
+}

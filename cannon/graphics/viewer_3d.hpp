@@ -34,6 +34,7 @@ namespace cannon {
 
           make_shaders_();
           initialize_lc_();
+          set_callbacks_();
         }
 
         template <typename F>
@@ -83,6 +84,8 @@ namespace cannon {
       private:
         void make_shaders_();
         void initialize_lc_();
+        void set_callbacks_();
+
         void process_input_();
         void process_mouse_input_();
         void draw_scene_geom_();
@@ -106,6 +109,8 @@ namespace cannon {
         std::shared_ptr<ShaderProgram> light_program_;
         std::shared_ptr<ShaderProgram> textured_program_;
     };
+
+    void drop_callback(GLFWwindow *window, int path_count, const char* paths[]);
 
   } // namespace graphics
 } // namespace cannon
