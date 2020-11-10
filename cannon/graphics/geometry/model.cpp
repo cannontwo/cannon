@@ -70,6 +70,7 @@ std::shared_ptr<Mesh> Model::process_mesh_(aiMesh *mesh, const aiScene *scene) {
   }
 
   if (mesh->mMaterialIndex >= 0) {
+    log_info("Loading mesh material");
     aiMaterial *material = scene->mMaterials[mesh->mMaterialIndex];
     diffuse = load_material_textures_(material, aiTextureType_DIFFUSE);
     specular = load_material_textures_(material, aiTextureType_SPECULAR);
@@ -83,6 +84,7 @@ std::vector<std::shared_ptr<Texture>> Model::load_material_textures_(aiMaterial 
     aiTextureType type) {
   std::vector<std::shared_ptr<Texture>> textures;
 
+  log_info("Material has", mat->GetTextureCount(type), "textures of type", type);
   for (unsigned int i = 0; i < mat->GetTextureCount(type); i++) {
     aiString str;
     mat->GetTexture(type, i, &str);
