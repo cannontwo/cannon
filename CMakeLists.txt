@@ -174,3 +174,13 @@ foreach (script_source ${SCRIPT_SOURCES})
   target_include_directories( ${scriptname} PUBLIC "${PROJECT_SOURCE_DIR}")
   set_target_properties(${scriptname} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/scripts")
 endforeach (script_source ${SCRIPT_SOURCES})
+
+# Find experiments
+file( GLOB_RECURSE EXP_SOURCES cannon/research/experiments/*.cpp )
+foreach (exp_source ${EXP_SOURCES})
+  get_filename_component( expname ${exp_source} NAME_WE)
+  add_executable( ${expname} ${exp_source} )
+  target_link_libraries( ${expname} cannon ${LIBRARIES})
+  target_include_directories( ${expname} PUBLIC "${PROJECT_SOURCE_DIR}")
+  set_target_properties(${expname} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/experiments")
+endforeach (exp_source ${EXP_SOURCES})
