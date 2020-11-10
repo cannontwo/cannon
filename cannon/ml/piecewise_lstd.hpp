@@ -4,9 +4,12 @@
 #include <cassert>
 
 #include <Eigen/Core>
-#include <Eigen/Dense>
+
+#include <cannon/log/registry.hpp>
 
 using namespace Eigen;
+
+using namespace cannon::log;
 
 namespace cannon {
   namespace ml {
@@ -17,7 +20,7 @@ namespace cannon {
 
         PiecewiseLSTDFilter(unsigned int in_dim, unsigned int num_refs, double
             discount_factor, double alpha=1.0) : in_dim_(in_dim + 1),
-        param_dim_(in_dim * num_refs), num_refs_(num_refs),
+        param_dim_(in_dim_ * num_refs), num_refs_(num_refs),
         discount_factor_(discount_factor), alpha_(alpha) {
           a_inv_ = MatrixXd::Identity(param_dim_, param_dim_) * alpha_;
           b_ = VectorXd::Zero(param_dim_);

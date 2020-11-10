@@ -8,8 +8,11 @@
 #include <Eigen/Dense>
 
 #include <cannon/physics/euler_integrator.hpp>
+#include <cannon/log/registry.hpp>
 
 using namespace Eigen;
+
+using namespace cannon::log;
 
 namespace cannon {
   namespace physics {
@@ -17,7 +20,7 @@ namespace cannon {
 
       struct PendSystem {
         PendSystem(double g = 10.0, double m = 1.0, double l = 1.0, double dt =
-            0.05, double max_speed = 8.0) : g_(g), m_(m), l_(l),
+            0.05, double max_speed = 8.0) : g_(g), m_(m), l_(l), dt_(dt),
         max_speed_(max_speed) {}
 
         void operator()(const VectorXd& x, VectorXd& dxdt, const double /*t*/) {
@@ -27,10 +30,12 @@ namespace cannon {
 
           double new_thdot = (-3 * g_ / (2 * l_)) * std::sin(th + M_PI) + 
             (3.0 * u / (m_ * std::pow(l_, 2.0)));
-          double new_th = thdot + new_thdot * dt_;
-          
-          dxdt[0] = std::atan2(std::sin(new_th), std::cos(new_th));
-          dxdt[1] = std::max(-max_speed_, std::min(max_speed_, new_thdot));
+          double new_th = thdot + (new_thdot * dt_);
+
+          dxdt.resize(3);
+          dxdt[0] = new_th;
+          dxdt[1] = new_thdot;
+          dxdt[2] = 0.0;
         }
 
         // Parameters
@@ -44,13 +49,14 @@ namespace cannon {
       class InvertedPendulum {
         public:
           InvertedPendulum(double max_torque = 2.0) : max_torque_(max_torque),
-          e_(s_, 3, 0.05), state_(3) {
+          e_(s_, 3, 0.05) {
             std::random_device rd;
             gen_ = std::mt19937(rd());  
 
             th_dis_ = std::uniform_real_distribution<double>(-M_PI, M_PI);
             thdot_dis_ = std::uniform_real_distribution<double>(-1.0, 1.0);
 
+            state_ = Vector3d::Zero(3);
             reset(); 
           }
 
@@ -66,6 +72,9 @@ namespace cannon {
 
             e_.set_state(state_);
             state_ = e_.step();
+
+            state_[0] = std::atan2(std::sin(state_[0]),std::cos(state_[0]));
+            state_[1] = std::max(-8.0, std::min(state_[1], 8.0)); 
             
             return std::make_pair(state_.head(2), reward);
           }
@@ -94,7 +103,7 @@ namespace cannon {
           PendSystem s_;
           EulerIntegrator<PendSystem> e_;
 
-          VectorXd state_;
+          Vector3d state_;
 
           std::mt19937 gen_;
           std::uniform_real_distribution<double> th_dis_;

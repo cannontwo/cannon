@@ -7,9 +7,12 @@
 #include <Eigen/Dense>
 
 #include <cannon/ml/adam.hpp>
+#include <cannon/log/registry.hpp>
 
 using namespace Eigen;
+
 using namespace cannon::ml;
+using namespace cannon::log;
 
 namespace cannon {
   namespace control {
