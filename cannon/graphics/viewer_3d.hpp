@@ -72,9 +72,8 @@ namespace cannon {
         void apply_light(std::shared_ptr<Light> l);
         void apply_light_collection(const LightCollection& l);
 
-        void spawn_cube();
-        void spawn_textured_cube();
-        void spawn_model(const std::string& path);
+        std::shared_ptr<geometry::Cube> spawn_cube();
+        std::shared_ptr<geometry::Model> spawn_model(const std::string& path);
         void spawn_point_light();
         void spawn_spotlight();
 

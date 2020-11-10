@@ -90,9 +90,6 @@ namespace cannon {
             return state_.head(2);
           }
 
-          // TODO 
-          // void start_rendering();
-
         private:
           inline double normalize_(double th) {
             return (std::fmod((th + M_PI), (2.0 * M_PI)) - M_PI); 

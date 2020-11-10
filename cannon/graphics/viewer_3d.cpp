@@ -118,7 +118,7 @@ void Viewer3D::apply_light_collection(const LightCollection& l) {
   }
 }
 
-void Viewer3D::spawn_cube() {
+std::shared_ptr<geometry::Cube> Viewer3D::spawn_cube() {
   auto cube = std::make_shared<geometry::Cube>(diffuse_program_);
   add_geom(cube);
 
@@ -132,26 +132,26 @@ void Viewer3D::spawn_cube() {
 
   cube->set_pos(pos1);
   cube->set_rot(rot1);
+
+  return cube;
 }
 
-void Viewer3D::spawn_model(const std::string& path) {
-  try {
-    auto m = std::make_shared<geometry::Model>(textured_program_, path);
-    add_geom(m);
+std::shared_ptr<geometry::Model> Viewer3D::spawn_model(const std::string& path) {
+  auto m = std::make_shared<geometry::Model>(textured_program_, path);
+  add_geom(m);
 
-    Vector3f pos1 = c.get_pos() - 2.0 * c.get_direction().normalized();
+  Vector3f pos1 = c.get_pos() - 2.0 * c.get_direction().normalized();
 
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_real_distribution<float> dist(-M_PI, M_PI);
+  std::random_device rd;
+  std::mt19937 gen(rd());
+  std::uniform_real_distribution<float> dist(-M_PI, M_PI);
 
-    AngleAxisf rot1(dist(gen), Vector3f::Random().normalized());
+  AngleAxisf rot1(dist(gen), Vector3f::Random().normalized());
 
-    m->set_pos(pos1);
-    m->set_rot(rot1);
-  } catch (...) {
-    log_warning("Could not load model at", path);
-  }
+  m->set_pos(pos1);
+  m->set_rot(rot1);
+
+  return m;
 }
 
 void Viewer3D::spawn_point_light() {
@@ -223,7 +223,11 @@ void Viewer3D::write_imgui() {
           static std::string model_path("assets/backpack/backpack.obj");
           ImGui::InputText("Model path", &model_path);
           if (ImGui::Button("Spawn")) {
-            spawn_model(model_path);
+            try {
+              spawn_model(model_path);
+            } catch (...) {
+              log_warning("Could not load model at", model_path);
+            }
           }
           ImGui::EndMenu();
         }
@@ -289,6 +293,10 @@ void cannon::graphics::drop_callback(GLFWwindow *window, int path_count, const c
   // Assuming that only model paths are dropped
   for (int i = 0; i < path_count; i++) {
     std::string path(paths[i]);
-    viewer->spawn_model(path);
+    try {
+      viewer->spawn_model(path);
+    } catch (...) {
+      log_warning("Could not load model at", path);
+    }
   }
 }
