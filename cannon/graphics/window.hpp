@@ -5,6 +5,8 @@
 #include <queue>
 #include <stdexcept>
 #include <functional>
+#include <filesystem>
+#include <thread>
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -148,17 +150,50 @@ namespace cannon {
 
             draw_overlays();
 
+            if (recording_) {
+              save_image(std::string("img/") +
+                  std::to_string(recording_start_time_) + std::string("/") +
+                  std::to_string(recording_frame_) + ".png");
+              recording_frame_ += 1;
+            }
+
             double elapsed = glfwGetTime() - cur_time;
             float smoothing = 0.9;
             float estimate = 1.0 / (glfwGetTime() - last_frame_time_);
             fps_ = (fps_ * smoothing) + (estimate * (1.0 - smoothing));
 
             if (ImGui::BeginMainMenuBar()) {
+              if (ImGui::BeginMenu("Recording")) {
+                if (ImGui::Button("Take Screenshot")) {
+                  std::filesystem::create_directory("img");
+                  save_image(std::string("img/screenshot_") +
+                      std::to_string(glfwGetTime()) + ".png");
+                }
+
+                if (!recording_) {
+                  if (ImGui::Button("Record Video")) {
+                    recording_start_time_ = glfwGetTime();
+                    recording_ = true;
+                    recording_frame_ = 0;
+
+                    std::filesystem::create_directory(std::string("img/") +
+                        std::to_string(recording_start_time_));
+                  }
+                } else {
+                  if (ImGui::Button("Stop Recording")) {
+                    recording_ = false;
+                  }
+                }
+
+                ImGui::EndMenu();
+              }
+
               if (ImGui::BeginMenu("Statistics")) {
                 ImGui::Text("Elapsed time: %f", elapsed);
                 ImGui::Text("FPS: %f", fps_);
                 ImGui::EndMenu();
               }
+
               ImGui::EndMainMenuBar();
             }
             ImGui::Render();
@@ -218,6 +253,10 @@ namespace cannon {
         float delta_time_ = 0.0;
         float last_frame_time_ = 0.0;
         float fps_ = 0.0;
+
+        bool recording_ = false;
+        double recording_start_time_;
+        int recording_frame_;
     };
 
   } // namespace graphics

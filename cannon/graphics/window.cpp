@@ -149,20 +149,26 @@ void Window::save_image(const std::string &path) {
   stride += (stride % 4) ? (4 - stride % 4) : 0; // Alignment
 
   int buffer_size = stride * height;
-  std::vector<char> buffer(buffer_size);
+  std::shared_ptr<std::vector<char>> buffer = std::make_shared<std::vector<char>>(buffer_size);
 
   // Configure reading
   glPixelStorei(GL_PACK_ALIGNMENT, 4);
   glReadBuffer(GL_FRONT);
 
   // Read into buffer
-  glReadPixels(0, 0, width, height, GL_RGB, GL_UNSIGNED_BYTE, buffer.data());
+  glReadPixels(0, 0, width, height, GL_RGB, GL_UNSIGNED_BYTE, buffer->data());
+
+  int tmp_width = width;
+  int tmp_height = height;
 
   // Write to file
-  stbi_flip_vertically_on_write(true);
-  if (stbi_write_png(path.c_str(), width, height, num_channels, buffer.data(), stride) == 0) {
-    throw std::runtime_error("Could not write OpenGL render to file");
-  }
+  std::thread t([path, buffer, num_channels, tmp_width, tmp_height, stride]{
+    stbi_flip_vertically_on_write(true);
+    if (stbi_write_png(path.c_str(), tmp_width, tmp_height, num_channels, buffer->data(), stride) == 0) {
+      throw std::runtime_error("Could not write OpenGL render to file");
+    }
+  });
+  t.detach();
 }
 
 // Callbacks
