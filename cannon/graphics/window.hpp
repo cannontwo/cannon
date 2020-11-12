@@ -92,6 +92,9 @@ namespace cannon {
           ImGui::GetIO();
 
           ImGui::StyleColorsDark();
+          ImGui::SetColorEditOptions(ImGuiColorEditFlags_Float |
+              ImGuiColorEditFlags_DisplayHSV |
+              ImGuiColorEditFlags_PickerHueWheel);
           ImGui_ImplGlfw_InitForOpenGL(window, true);
           const char *glsl_version = "#version 330 core";
           ImGui_ImplOpenGL3_Init(glsl_version);
