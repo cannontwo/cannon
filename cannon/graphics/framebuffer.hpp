@@ -16,17 +16,28 @@ namespace cannon {
 
     class Framebuffer {
       public:
-        Framebuffer(int width=800, int height=600) : width(width),
+        Framebuffer(int width=800, int height=600, bool msaa=true) : width(width),
         height(height), vao_(new VertexArrayObject), buf_(vao_),
-        texture_coord_buf_(vao_), vertices_(6, 2), texture_coords_(6, 2) {
+        texture_coord_buf_(vao_), vertices_(6, 2), texture_coords_(6, 2), msaa_(msaa) {
 
           glGenFramebuffers(1, &gl_framebuffer_);
           glBindFramebuffer(GL_FRAMEBUFFER, gl_framebuffer_);
 
-          color_buffer_ = std::make_shared<Texture>(width, height);
-          color_buffer_->bind();
-          glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
-              GL_TEXTURE_2D, color_buffer_->gl_texture_, 0);
+          if (msaa_) {
+            color_buffer_ = std::make_shared<Texture>(width, height, true);
+            color_buffer_->bind();
+            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
+                GL_TEXTURE_2D_MULTISAMPLE, color_buffer_->gl_texture_, 0);
+
+            screen_fb_ = std::make_shared<Framebuffer>(width, height, false);
+            screen_fb_->bind();
+            screen_fb_->unbind();
+          } else {
+            color_buffer_ = std::make_shared<Texture>(width, height, false);
+            color_buffer_->bind();
+            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
+                GL_TEXTURE_2D, color_buffer_->gl_texture_, 0);
+          }
           
           // We don't currently have any need to encapsulate this
 
@@ -68,6 +79,7 @@ namespace cannon {
         unsigned int gl_depth_stencil_rb_;
 
         std::shared_ptr<Texture> color_buffer_;
+        std::shared_ptr<Framebuffer> screen_fb_;
 
         std::shared_ptr<VertexArrayObject> vao_;
         VertexBuffer buf_;
@@ -75,6 +87,8 @@ namespace cannon {
 
         MatrixX2f vertices_;
         MatrixX2f texture_coords_;
+
+        bool msaa_;
 
     };
 

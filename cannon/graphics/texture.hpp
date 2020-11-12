@@ -20,13 +20,19 @@ namespace cannon {
     class Texture {
       public:
         // This constructor is primarily for use with Framebuffer
-        Texture(int width=800, int height=600, GLenum texture_unit=GL_TEXTURE0)
-          : width_(width), height_(height), gl_texture_unit_(texture_unit) {
+        Texture(int width=800, int height=600, bool msaa=true, GLenum texture_unit=GL_TEXTURE0)
+          : width_(width), height_(height), gl_texture_unit_(texture_unit), msaa_(msaa) {
 
           glGenTextures(1, &gl_texture_);
-          glBindTexture(GL_TEXTURE_2D, gl_texture_);
 
-          glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width_, height_, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+          if (msaa) {
+            glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, gl_texture_);
+            glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, 16, GL_RGB, width_, height_, GL_TRUE);
+            glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, 0);
+          } else {
+            glBindTexture(GL_TEXTURE_2D, gl_texture_);
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width_, height_, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+          }
 
           set_wrap_repeat();
           set_filter_linear();
@@ -116,6 +122,8 @@ namespace cannon {
 
         unsigned int gl_texture_;
         GLenum gl_texture_unit_;
+
+        bool msaa_ = false;
     };
 
   } // namespace graphics
