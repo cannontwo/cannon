@@ -13,7 +13,7 @@ add_subdirectory(physics)
 add_subdirectory(geom)
 add_subdirectory(research)
 
-add_library(cannon ${CANNON_SOURCES}
+add_library(cannon SHARED ${CANNON_SOURCES}
   $<TARGET_OBJECTS:math>
   $<TARGET_OBJECTS:log>
   $<TARGET_OBJECTS:logic>
