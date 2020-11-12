@@ -56,7 +56,7 @@ void Viewer3D::process_mouse_input_() {
   yoffset *= mouse_sensitivity_; 
 
   yaw_ += xoffset;
-  pitch_ += yoffset;
+  pitch_ -= yoffset;
 
   if (pitch_ > (M_PI / 2.1))
     pitch_ = M_PI / 2.1;
@@ -134,6 +134,24 @@ std::shared_ptr<geometry::Cube> Viewer3D::spawn_cube() {
   cube->set_rot(rot1);
 
   return cube;
+}
+
+std::shared_ptr<geometry::Plane> Viewer3D::spawn_plane() {
+  auto plane = std::make_shared<geometry::Plane>(diffuse_program_);
+  add_geom(plane);
+
+  Vector3f pos1 = c.get_pos() - 2.0 * c.get_direction().normalized();
+
+  std::random_device rd;
+  std::mt19937 gen(rd());
+  std::uniform_real_distribution<float> dist(-M_PI, M_PI);
+
+  AngleAxisf rot1(dist(gen), Vector3f::Random().normalized());
+
+  plane->set_pos(pos1);
+  plane->set_rot(rot1);
+
+  return plane;
 }
 
 std::shared_ptr<geometry::Model> Viewer3D::spawn_model(const std::string& path) {
@@ -217,6 +235,10 @@ void Viewer3D::write_imgui() {
       if (ImGui::BeginMenu("Geometry")) {
         if (ImGui::Button("Cube")) {
           spawn_cube();
+        }
+
+        if (ImGui::Button("Plane")) {
+          spawn_plane();
         }
 
         if (ImGui::BeginMenu("Model")) {

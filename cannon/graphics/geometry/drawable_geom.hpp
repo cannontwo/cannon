@@ -73,6 +73,10 @@ namespace cannon {
               ImGui::ColorEdit3("diffuse", material_.diffuse.data());
               ImGui::ColorEdit3("specular", material_.specular.data());
               ImGui::SliderFloat3("position", pos_.data(), -10.0, 10.0);
+              ImGui::SliderFloat("scale", &scale_, 0.0, 10.0);
+              ImGui::SliderAngle("rotation", &rot_.angle());
+              ImGui::SliderFloat3("axis", rot_.axis().data(), -1.0, 1.0);
+              rot_.axis().normalize();
               ImGui::TreePop();
             }
           }

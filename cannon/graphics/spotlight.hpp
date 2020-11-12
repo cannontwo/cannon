@@ -86,7 +86,7 @@ namespace cannon {
               outer_cutoff_ = cutoff_;
 
             ImGui::SliderFloat3("position", pos_.data(), -10.0, 10.0);
-            ImGui::SliderFloat3("direction", direction_.data(), 0.0, 1.0);
+            ImGui::SliderFloat3("direction", direction_.data(), -1.0, 1.0);
             direction_.head(3).normalize();
             ImGui::TreePop();
           }

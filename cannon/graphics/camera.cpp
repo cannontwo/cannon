@@ -10,7 +10,7 @@ Matrix4f Camera::get_view_mat() const {
   Vector3f tmp_dir = direction_;
   tmp_dir.normalize();
 
-  Vector3f camera_up = right_.cross(tmp_dir);
+  Vector3f camera_up = tmp_dir.cross(right_);
 
   rot_mat << right_[0], right_[1], right_[2], 0.0,
              camera_up[0], camera_up[1], camera_up[2], 0.0,

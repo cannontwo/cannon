@@ -12,6 +12,7 @@
 #include <cannon/graphics/light.hpp>
 #include <cannon/graphics/light_collection.hpp>
 #include <cannon/graphics/geometry/cube.hpp>
+#include <cannon/graphics/geometry/plane.hpp>
 #include <cannon/graphics/geometry/textured_cube.hpp>
 #include <cannon/graphics/geometry/model.hpp>
 #include <cannon/graphics/point_light.hpp>
@@ -35,6 +36,18 @@ namespace cannon {
           make_shaders_();
           initialize_lc_();
           set_callbacks_();
+
+          auto plane = std::make_shared<geometry::Plane>(diffuse_program_);
+          add_geom(plane);
+
+          Vector3f pos;
+          pos << 0.0, -5.0, 0.0;
+
+          AngleAxisf rot(to_radians(90), Vector3f::UnitX());
+
+          plane->set_pos(pos);
+          plane->set_rot(rot);
+          plane->set_scale(20.0);
         }
 
         ~Viewer3D() {}
@@ -73,6 +86,7 @@ namespace cannon {
         void apply_light_collection(const LightCollection& l);
 
         std::shared_ptr<geometry::Cube> spawn_cube();
+        std::shared_ptr<geometry::Plane> spawn_plane();
         std::shared_ptr<geometry::Model> spawn_model(const std::string& path);
         void spawn_point_light();
         void spawn_spotlight();

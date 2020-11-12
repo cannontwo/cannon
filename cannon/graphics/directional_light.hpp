@@ -36,7 +36,7 @@ namespace cannon {
             ambient_.head(3) = specular_.head(3) * 0.2;
             diffuse_.head(3) = specular_.head(3) * 0.5;
 
-            ImGui::SliderFloat3("direction", direction_.data(), 0.0, 1.0);
+            ImGui::SliderFloat3("direction", direction_.data(), -1.0, 1.0);
             direction_.head(3).normalize();
             ImGui::TreePop();
           }

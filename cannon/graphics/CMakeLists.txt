@@ -18,6 +18,7 @@ list(APPEND GRAPHICS_SOURCES
   geometry/textured_cube.cpp
   geometry/mesh.cpp
   geometry/model.cpp
+  geometry/plane.cpp
   )
 
 add_library(graphics ${GRAPHICS_SOURCES})
