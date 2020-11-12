@@ -32,21 +32,24 @@ namespace cannon {
             screen_fb_ = std::make_shared<Framebuffer>(width, height, false);
             screen_fb_->bind();
             screen_fb_->unbind();
+
+            quad_program = screen_fb_->quad_program;
           } else {
             color_buffer_ = std::make_shared<Texture>(width, height, false);
             color_buffer_->bind();
             glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
                 GL_TEXTURE_2D, color_buffer_->gl_texture_, 0);
+
+            quad_program = std::make_shared<ShaderProgram>("quad_shader");
+            quad_program->attach_vertex_shader("shaders/pass_pos_tex.vert");
+            quad_program->attach_fragment_shader("shaders/tex_quad.frag");
+            quad_program->link();
           }
           
           // We don't currently have any need to encapsulate this
 
           generate_depth_stencil_buffer_();
 
-          quad_program = std::make_shared<ShaderProgram>("quad_shader");
-          quad_program->attach_vertex_shader("shaders/pass_pos_tex.vert");
-          quad_program->attach_fragment_shader("shaders/tex_quad.frag");
-          quad_program->link();
 
           populate_quad_buf_();
 
