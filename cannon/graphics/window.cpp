@@ -70,6 +70,44 @@ void Window::init_text_shader() {
   buf_.buffer(vertices);
 }
 
+void Window::write_imgui() {
+  if (ImGui::BeginMainMenuBar()) {
+    if (ImGui::BeginMenu("Recording")) {
+      if (ImGui::Button("Take Screenshot")) {
+        std::filesystem::create_directory("img");
+        save_image(std::string("img/screenshot_") +
+            std::to_string(glfwGetTime()) + ".png");
+      }
+
+      if (!recording_) {
+        if (ImGui::Button("Record Video")) {
+          recording_start_time_ = glfwGetTime();
+          recording_ = true;
+          recording_frame_ = 0;
+
+          std::filesystem::create_directory(std::string("img/") +
+              std::to_string(recording_start_time_));
+        }
+      } else {
+        if (ImGui::Button("Stop Recording")) {
+          recording_ = false;
+        }
+      }
+
+      ImGui::EndMenu();
+    }
+
+    if (ImGui::BeginMenu("Statistics")) {
+      ImGui::Text("Elapsed time: %f", elapsed_);
+      ImGui::Text("FPS: %f", fps_);
+      ImGui::EndMenu();
+    }
+
+    ImGui::EndMainMenuBar();
+  }
+
+}
+
 void Window::draw_overlays() {
   text_program_.activate();
   vao_->bind();
@@ -169,12 +207,18 @@ void Window::save_image(const std::string &path) {
   int buffer_size = stride * height;
   std::shared_ptr<std::vector<char>> buffer = std::make_shared<std::vector<char>>(buffer_size);
 
+  if (render_to_framebuffer_)
+    fb_->unbind();
+
   // Configure reading
   glPixelStorei(GL_PACK_ALIGNMENT, 4);
   glReadBuffer(GL_FRONT);
 
   // Read into buffer
   glReadPixels(0, 0, width, height, GL_RGB, GL_UNSIGNED_BYTE, buffer->data());
+
+  if (render_to_framebuffer_)
+    fb_->bind();
 
   int tmp_width = width;
   int tmp_height = height;
@@ -187,6 +231,11 @@ void Window::save_image(const std::string &path) {
     }
   });
   t.detach();
+}
+
+void Window::render_to_framebuffer(std::shared_ptr<Framebuffer> fb) {
+  render_to_framebuffer_ = true;
+  fb_ = fb;
 }
 
 // Callbacks

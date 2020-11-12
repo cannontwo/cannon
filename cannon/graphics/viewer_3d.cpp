@@ -99,9 +99,13 @@ void Viewer3D::draw_scene_geom_() {
 
 void Viewer3D::add_geom(std::shared_ptr<geometry::DrawableGeom> g) {
   scene_geom_.push_back(g);
+  add_shader(g->program);
 
-  if (std::find(shaders_.begin(), shaders_.end(), g->program) == shaders_.end()) {
-    shaders_.push_back(g->program);
+}
+
+void Viewer3D::add_shader(std::shared_ptr<ShaderProgram> s) {
+  if (std::find(shaders_.begin(), shaders_.end(), s) == shaders_.end()) {
+    shaders_.push_back(s);
   }
 }
 

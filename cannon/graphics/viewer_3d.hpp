@@ -54,7 +54,7 @@ namespace cannon {
         ~Viewer3D() {}
 
         template <typename F>
-        void render_loop(F f) {
+        void render_loop(F f, bool clear = true) {
           w.render_loop([&](){
             // Adjust camera movement speed based on render rate
             c.set_speed(2.5 * w.delta_time_);
@@ -71,18 +71,19 @@ namespace cannon {
             light_program_->set_uniform("viewPos", tmp_pos);
             textured_program_->set_uniform("viewPos", tmp_pos);
 
-            f();
-
             write_imgui();
             lc_.write_imgui();
             apply_light_collection(lc_);
 
             draw_scene_geom_();
 
-          });
+            f();
+
+          }, clear);
         }
 
         void add_geom(std::shared_ptr<geometry::DrawableGeom> g);
+        void add_shader(std::shared_ptr<ShaderProgram> s);
         void apply_light(std::shared_ptr<Light> l);
         void apply_light_collection(const LightCollection& l);
 

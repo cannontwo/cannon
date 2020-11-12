@@ -19,7 +19,19 @@ namespace cannon {
 
     class Texture {
       public:
-        Texture() = delete;
+        // This constructor is primarily for use with Framebuffer
+        Texture(int width=800, int height=600, GLenum texture_unit=GL_TEXTURE0)
+          : width_(width), height_(height), gl_texture_unit_(texture_unit) {
+
+          glGenTextures(1, &gl_texture_);
+          glBindTexture(GL_TEXTURE_2D, gl_texture_);
+
+          glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width_, height_, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+
+          set_wrap_repeat();
+          set_filter_linear();
+
+        }
 
         Texture(const std::string& path, bool use_alpha=false, GLenum
             texture_unit=GL_TEXTURE0) : path(path), gl_texture_unit_(texture_unit) {
@@ -30,9 +42,6 @@ namespace cannon {
 
           glGenTextures(1, &gl_texture_);
           bind(texture_unit);
-
-          set_wrap_repeat();
-          set_filter_linear();
 
           GLenum format;
           GLenum pix_format;
@@ -74,6 +83,10 @@ namespace cannon {
           glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, width_, height_, 0, GL_RED, GL_UNSIGNED_BYTE, data_);
         }
 
+        ~Texture() {
+          glDeleteTextures(1, &gl_texture_);
+        }
+
         static std::vector<std::shared_ptr<Texture>>& get_loaded_textures() {
           static std::vector<std::shared_ptr<Texture>> loaded_textures;
           return loaded_textures;
@@ -93,6 +106,7 @@ namespace cannon {
 
         std::string path;
 
+        friend class Framebuffer;
 
       private:
         int width_;

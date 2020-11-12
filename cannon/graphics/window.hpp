@@ -26,6 +26,7 @@
 #include <cannon/graphics/projection.hpp>
 #include <cannon/graphics/vertex_buffer.hpp>
 #include <cannon/graphics/vertex_array_object.hpp>
+#include <cannon/graphics/framebuffer.hpp>
 
 // TODO
 //#include <cannon/graphics/input_handlers.hpp>
@@ -131,12 +132,16 @@ namespace cannon {
         void enable_face_culling();
         void disable_face_culling();
 
+        void render_to_framebuffer(std::shared_ptr<Framebuffer> fb);
         void save_image(const std::string &path);
 
         template <typename F>
-        void render_loop(F f) {
+        void render_loop(F f, bool clear = true) {
           while (!glfwWindowShouldClose(window)) {
             glfwPollEvents();
+
+            if (render_to_framebuffer_)
+              fb_->bind();
 
             ImGui_ImplOpenGL3_NewFrame();
             ImGui_ImplGlfw_NewFrame();
@@ -147,10 +152,18 @@ namespace cannon {
 
             process_input(window);
 
-            glClearColor(clear_color_[0], clear_color_[1], clear_color_[2], clear_color_[3]);
-            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+            if (clear) {
+              glClearColor(clear_color_[0], clear_color_[1], clear_color_[2], clear_color_[3]);
+              glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+            }
 
+            int old_width = width;
+            int old_height = height;
             glfwGetFramebufferSize(window, &width, &height);
+
+            if (render_to_framebuffer_ && (old_width != width || old_height != height)) {
+              fb_->resize(width, height);
+            }
 
             f();
 
@@ -163,50 +176,22 @@ namespace cannon {
               recording_frame_ += 1;
             }
 
-            double elapsed = glfwGetTime() - cur_time;
+            elapsed_ = glfwGetTime() - cur_time;
             float smoothing = 0.9;
             float estimate = 1.0 / (glfwGetTime() - last_frame_time_);
             fps_ = (fps_ * smoothing) + (estimate * (1.0 - smoothing));
 
-            if (ImGui::BeginMainMenuBar()) {
-              if (ImGui::BeginMenu("Recording")) {
-                if (ImGui::Button("Take Screenshot")) {
-                  std::filesystem::create_directory("img");
-                  save_image(std::string("img/screenshot_") +
-                      std::to_string(glfwGetTime()) + ".png");
-                }
+            write_imgui();
 
-                if (!recording_) {
-                  if (ImGui::Button("Record Video")) {
-                    recording_start_time_ = glfwGetTime();
-                    recording_ = true;
-                    recording_frame_ = 0;
-
-                    std::filesystem::create_directory(std::string("img/") +
-                        std::to_string(recording_start_time_));
-                  }
-                } else {
-                  if (ImGui::Button("Stop Recording")) {
-                    recording_ = false;
-                  }
-                }
-
-                ImGui::EndMenu();
-              }
-
-              if (ImGui::BeginMenu("Statistics")) {
-                ImGui::Text("Elapsed time: %f", elapsed);
-                ImGui::Text("FPS: %f", fps_);
-                ImGui::EndMenu();
-              }
-
-              ImGui::EndMainMenuBar();
-            }
             ImGui::Render();
             ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
             last_frame_time_ = glfwGetTime();
             glfwSwapBuffers(window);
+
+            if (render_to_framebuffer_) {
+              fb_->display();
+            }
           }
         }
 
@@ -245,6 +230,7 @@ namespace cannon {
         void register_callbacks();
         void init_text_shader();
         void draw_overlays();
+        void write_imgui();
 
         GLFWwindow *window;
 
@@ -256,9 +242,13 @@ namespace cannon {
         VertexBuffer buf_;
         std::vector<OverlayText> overlays_;
 
+        bool render_to_framebuffer_ = false;
+        std::shared_ptr<Framebuffer> fb_;
+
         float delta_time_ = 0.0;
         float last_frame_time_ = 0.0;
         float fps_ = 0.0;
+        double elapsed_ = 0.0;
 
         bool recording_ = false;
         double recording_start_time_;

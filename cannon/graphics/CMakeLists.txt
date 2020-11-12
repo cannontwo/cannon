@@ -19,6 +19,7 @@ list(APPEND GRAPHICS_SOURCES
   geometry/mesh.cpp
   geometry/model.cpp
   geometry/plane.cpp
+  framebuffer.cpp
   )
 
 add_library(graphics ${GRAPHICS_SOURCES})
