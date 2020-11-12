@@ -23,11 +23,11 @@ void Cube::draw(const Matrix4f& view, const Matrix4f& perspective) const {
 
 void Cube::populate_bufs_() {
   vertices_ << -0.5f, -0.5f, -0.5f,  
+                0.5f,  0.5f, -0.5f,  
                 0.5f, -0.5f, -0.5f,  
                 0.5f,  0.5f, -0.5f,  
-                0.5f,  0.5f, -0.5f,  
-               -0.5f,  0.5f, -0.5f,  
                -0.5f, -0.5f, -0.5f,  
+               -0.5f,  0.5f, -0.5f,  
 
                -0.5f, -0.5f,  0.5f, 
                 0.5f, -0.5f,  0.5f, 
@@ -44,11 +44,11 @@ void Cube::populate_bufs_() {
                -0.5f,  0.5f,  0.5f, 
 
                 0.5f,  0.5f,  0.5f, 
+                0.5f, -0.5f, -0.5f, 
                 0.5f,  0.5f, -0.5f, 
                 0.5f, -0.5f, -0.5f, 
-                0.5f, -0.5f, -0.5f, 
-                0.5f, -0.5f,  0.5f, 
                 0.5f,  0.5f,  0.5f, 
+                0.5f, -0.5f,  0.5f, 
 
                -0.5f, -0.5f, -0.5f, 
                 0.5f, -0.5f, -0.5f, 
@@ -58,11 +58,11 @@ void Cube::populate_bufs_() {
                -0.5f, -0.5f, -0.5f, 
 
                -0.5f,  0.5f, -0.5f, 
+                0.5f,  0.5f,  0.5f, 
                 0.5f,  0.5f, -0.5f, 
                 0.5f,  0.5f,  0.5f, 
-                0.5f,  0.5f,  0.5f, 
-               -0.5f,  0.5f,  0.5f, 
-               -0.5f,  0.5f, -0.5f;
+               -0.5f,  0.5f, -0.5f,
+               -0.5f,  0.5f,  0.5f; 
     
   buf_.buffer(vertices_);
   

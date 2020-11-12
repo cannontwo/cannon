@@ -25,6 +25,7 @@ namespace cannon {
       public:
         Viewer3D() : c({0.0, 0.0, 3.0}, {0.0, 0.0, -1.0}, {0.0, 1.0, 0.0}) {
           w.enable_depth_test();
+          w.enable_face_culling();
 
           glEnable(GL_FRAMEBUFFER_SRGB); 
           glfwSetInputMode(w.window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
@@ -43,7 +44,7 @@ namespace cannon {
           Vector3f pos;
           pos << 0.0, -5.0, 0.0;
 
-          AngleAxisf rot(to_radians(90), Vector3f::UnitX());
+          AngleAxisf rot(to_radians(-90), Vector3f::UnitX());
 
           plane->set_pos(pos);
           plane->set_rot(rot);

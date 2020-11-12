@@ -25,11 +25,11 @@ void TexturedCube::draw(const Matrix4f& view, const Matrix4f& perspective) const
 
 void TexturedCube::populate_bufs_() {
   vertices_ << -0.5f, -0.5f, -0.5f,  
+                0.5f,  0.5f, -0.5f,  
                 0.5f, -0.5f, -0.5f,  
                 0.5f,  0.5f, -0.5f,  
-                0.5f,  0.5f, -0.5f,  
-               -0.5f,  0.5f, -0.5f,  
                -0.5f, -0.5f, -0.5f,  
+               -0.5f,  0.5f, -0.5f,  
 
                -0.5f, -0.5f,  0.5f, 
                 0.5f, -0.5f,  0.5f, 
@@ -46,11 +46,11 @@ void TexturedCube::populate_bufs_() {
                -0.5f,  0.5f,  0.5f, 
 
                 0.5f,  0.5f,  0.5f, 
+                0.5f, -0.5f, -0.5f, 
                 0.5f,  0.5f, -0.5f, 
                 0.5f, -0.5f, -0.5f, 
-                0.5f, -0.5f, -0.5f, 
-                0.5f, -0.5f,  0.5f, 
                 0.5f,  0.5f,  0.5f, 
+                0.5f, -0.5f,  0.5f, 
 
                -0.5f, -0.5f, -0.5f, 
                 0.5f, -0.5f, -0.5f, 
@@ -60,11 +60,11 @@ void TexturedCube::populate_bufs_() {
                -0.5f, -0.5f, -0.5f, 
 
                -0.5f,  0.5f, -0.5f, 
+                0.5f,  0.5f,  0.5f, 
                 0.5f,  0.5f, -0.5f, 
                 0.5f,  0.5f,  0.5f, 
-                0.5f,  0.5f,  0.5f, 
-               -0.5f,  0.5f,  0.5f, 
-               -0.5f,  0.5f, -0.5f;
+               -0.5f,  0.5f, -0.5f,
+               -0.5f,  0.5f,  0.5f; 
     
   buf_.buffer(vertices_);
   
@@ -113,11 +113,11 @@ void TexturedCube::populate_bufs_() {
   normal_buf_.buffer(normals_);
 
   texture_coords_ << 0.0f, 0.0f,
+                     1.0f, 1.0f,
                      1.0f, 0.0f,
                      1.0f, 1.0f,
-                     1.0f, 1.0f,
-                     0.0f, 1.0f,
                      0.0f, 0.0f,
+                     0.0f, 1.0f,
 
                      0.0f, 0.0f,
                      1.0f, 0.0f,
@@ -125,13 +125,6 @@ void TexturedCube::populate_bufs_() {
                      1.0f, 1.0f,
                      0.0f, 1.0f,
                      0.0f, 0.0f,
-
-                     1.0f, 0.0f,
-                     1.0f, 1.0f,
-                     0.0f, 1.0f,
-                     0.0f, 1.0f,
-                     0.0f, 0.0f,
-                     1.0f, 0.0f,
 
                      1.0f, 0.0f,
                      1.0f, 1.0f,
@@ -140,6 +133,13 @@ void TexturedCube::populate_bufs_() {
                      0.0f, 0.0f,
                      1.0f, 0.0f,
 
+                     1.0f, 0.0f,
+                     0.0f, 1.0f,
+                     1.0f, 1.0f,
+                     0.0f, 1.0f,
+                     1.0f, 0.0f,
+                     0.0f, 0.0f,
+
                      0.0f, 1.0f,
                      1.0f, 1.0f,
                      1.0f, 0.0f,
@@ -148,10 +148,11 @@ void TexturedCube::populate_bufs_() {
                      0.0f, 1.0f,
 
                      0.0f, 1.0f,
+                     1.0f, 0.0f,
                      1.0f, 1.0f,
                      1.0f, 0.0f,
-                     1.0f, 0.0f,
-                     0.0f, 0.0f,
-                     0.0f, 1.0f;
+                     0.0f, 1.0f,
+                     0.0f, 0.0f;
+
   texture_coord_buf_.buffer(texture_coords_);
 }

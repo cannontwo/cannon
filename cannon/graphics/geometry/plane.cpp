@@ -40,12 +40,12 @@ void Plane::populate_bufs_() {
     
   buf_.buffer(vertices_);
   
-  normals_ << 0.0f,  0.0f, -1.0f,
-              0.0f,  0.0f, -1.0f,
-              0.0f,  0.0f, -1.0f,  
-              0.0f,  0.0f, -1.0f,
-              0.0f,  0.0f, -1.0f,
-              0.0f,  0.0f, -1.0f;
+  normals_ << 0.0f,  0.0f, 1.0f,
+              0.0f,  0.0f, 1.0f,
+              0.0f,  0.0f, 1.0f,  
+              0.0f,  0.0f, 1.0f,
+              0.0f,  0.0f, 1.0f,
+              0.0f,  0.0f, 1.0f;
 
               // For two-sided plane
               //0.0f,  0.0f, 1.0f,

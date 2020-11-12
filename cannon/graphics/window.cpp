@@ -143,6 +143,24 @@ void Window::disable_depth_test() {
   glDisable(GL_DEPTH_TEST);
 }
 
+void Window::enable_stencil_test() {
+  glEnable(GL_STENCIL_TEST);
+}
+
+void Window::disable_stencil_test() {
+  glDisable(GL_STENCIL_TEST);
+}
+
+void Window::enable_face_culling() {
+  glEnable(GL_CULL_FACE);
+  glCullFace(GL_BACK);
+  glFrontFace(GL_CCW);
+}
+
+void Window::disable_face_culling() {
+  glDisable(GL_CULL_FACE);
+}
+
 void Window::save_image(const std::string &path) {
   int num_channels = 3;
   int stride = num_channels * width;

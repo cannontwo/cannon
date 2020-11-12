@@ -125,6 +125,12 @@ namespace cannon {
         void enable_depth_test();
         void disable_depth_test();
 
+        void enable_stencil_test();
+        void disable_stencil_test();
+        
+        void enable_face_culling();
+        void disable_face_culling();
+
         void save_image(const std::string &path);
 
         template <typename F>
@@ -142,7 +148,7 @@ namespace cannon {
             process_input(window);
 
             glClearColor(clear_color_[0], clear_color_[1], clear_color_[2], clear_color_[3]);
-            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
             glfwGetFramebufferSize(window, &width, &height);
 
@@ -216,7 +222,7 @@ namespace cannon {
               process_input(window);
 
               glClearColor(clear_color_[0], clear_color_[1], clear_color_[2], clear_color_[3]);
-              glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+              glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
               glfwGetFramebufferSize(window, &width, &height);
 
