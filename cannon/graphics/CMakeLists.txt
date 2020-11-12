@@ -22,22 +22,4 @@ list(APPEND GRAPHICS_SOURCES
   framebuffer.cpp
   )
 
-add_library(graphics ${GRAPHICS_SOURCES})
-target_link_libraries(graphics log ${LIBRARIES})
-
-# Copy shaders
-ADD_CUSTOM_COMMAND(
-  TARGET graphics POST_BUILD
-  COMMAND ${CMAKE_COMMAND} -E create_symlink
-    ${CMAKE_CURRENT_SOURCE_DIR}/shaders ${CMAKE_CURRENT_BINARY_DIR}/../../shaders
-  COMMENT "Copying shaders" VERBATIM
-  )
-
-# Copy assets
-ADD_CUSTOM_COMMAND(
-  TARGET graphics POST_BUILD
-  COMMAND ${CMAKE_COMMAND} -E create_symlink
-    ${CMAKE_CURRENT_SOURCE_DIR}/assets ${CMAKE_CURRENT_BINARY_DIR}/../../assets
-  COMMENT "Copying assets" VERBATIM
-  )
-
+add_library(graphics OBJECT ${GRAPHICS_SOURCES})

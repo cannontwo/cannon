@@ -5,5 +5,4 @@ list(APPEND PLOT_SOURCES
   axes.cpp
   )
 
-add_library(plot ${PLOT_SOURCES})
-target_link_libraries(plot graphics log)
+add_library(plot OBJECT ${PLOT_SOURCES})

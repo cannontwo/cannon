@@ -4,5 +4,4 @@ list(APPEND LOG_SOURCES
   level.cpp
   )
 
-add_library(log ${LOG_SOURCES})
-target_link_libraries(log)
+add_library(log OBJECT ${LOG_SOURCES})

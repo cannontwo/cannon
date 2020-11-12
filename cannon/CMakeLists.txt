@@ -13,17 +13,40 @@ add_subdirectory(physics)
 add_subdirectory(geom)
 add_subdirectory(research)
 
-add_library(cannon ${CANNON_SOURCES})
-target_link_libraries(cannon 
-  math 
-  log 
-  logic
-  graphics
-  plot
-  ml
-  control
-  physics
-  geom
-  research
-  ${LIBRARIES})
+add_library(cannon ${CANNON_SOURCES}
+  $<TARGET_OBJECTS:math>
+  $<TARGET_OBJECTS:log>
+  $<TARGET_OBJECTS:logic>
+  $<TARGET_OBJECTS:graphics>
+  $<TARGET_OBJECTS:plot>
+  $<TARGET_OBJECTS:ml>
+  $<TARGET_OBJECTS:control>
+  $<TARGET_OBJECTS:physics>
+  $<TARGET_OBJECTS:geom>
+  $<TARGET_OBJECTS:research>
+  )
+target_link_libraries(cannon ${LIBRARIES})
 
+# Copy CNF formulas
+ADD_CUSTOM_COMMAND(
+  TARGET cannon POST_BUILD
+  COMMAND ${CMAKE_COMMAND} -E create_symlink
+    ${CMAKE_CURRENT_SOURCE_DIR}/logic/formulas ${CMAKE_CURRENT_BINARY_DIR}/../formulas
+  COMMENT "Copying formulas" VERBATIM
+  )
+
+# Copy shaders
+ADD_CUSTOM_COMMAND(
+  TARGET cannon POST_BUILD
+  COMMAND ${CMAKE_COMMAND} -E create_symlink
+    ${CMAKE_CURRENT_SOURCE_DIR}/graphics/shaders ${CMAKE_CURRENT_BINARY_DIR}/../shaders
+  COMMENT "Copying shaders" VERBATIM
+  )
+
+# Copy assets
+ADD_CUSTOM_COMMAND(
+  TARGET cannon POST_BUILD
+  COMMAND ${CMAKE_COMMAND} -E create_symlink
+    ${CMAKE_CURRENT_SOURCE_DIR}/graphics/assets ${CMAKE_CURRENT_BINARY_DIR}/../assets
+  COMMENT "Copying assets" VERBATIM
+  )

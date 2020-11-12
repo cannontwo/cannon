@@ -4,5 +4,4 @@ list(APPEND ML_SOURCES
   adam.cpp
   )
 
-add_library(ml ${ML_SOURCES})
-target_link_libraries(ml log)
+add_library(ml OBJECT ${ML_SOURCES})

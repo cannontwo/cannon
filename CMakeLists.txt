@@ -38,9 +38,9 @@ set(CGAL_EIGEN3_ENABLED ON)
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17")
 
 # Profiling
-SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pg")
-SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -pg")
-SET(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -pg")
+#SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pg")
+#SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -pg")
+#SET(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -pg")
 
 # Clang Tidy
 find_program (CLANG_TIDY_EXE NAMES "clang-tidy")
@@ -141,15 +141,15 @@ target_link_libraries(imgui ${GLFW3_LIBRARY} ${OPENGL_LIBRARIES})
 list(APPEND LIBRARIES imgui)
 
 # ImPlot
-include_directories(${PROJECT_SOURCE_DIR}/thirdparty/implot)
-list(APPEND IMPLOT_SOURCES
-  ${PROJECT_SOURCE_DIR}/thirdparty/implot/implot.h
-  ${PROJECT_SOURCE_DIR}/thirdparty/implot/implot.cpp
-  ${PROJECT_SOURCE_DIR}/thirdparty/implot/implot_internal.h
-  ${PROJECT_SOURCE_DIR}/thirdparty/implot/implot_items.cpp
-  )
-add_library(implot ${IMPLOT_SOURCES})
-list(APPEND LIBRARIES implot)
+#include_directories(${PROJECT_SOURCE_DIR}/thirdparty/implot)
+#list(APPEND IMPLOT_SOURCES
+#  ${PROJECT_SOURCE_DIR}/thirdparty/implot/implot.h
+#  ${PROJECT_SOURCE_DIR}/thirdparty/implot/implot.cpp
+#  ${PROJECT_SOURCE_DIR}/thirdparty/implot/implot_internal.h
+#  ${PROJECT_SOURCE_DIR}/thirdparty/implot/implot_items.cpp
+#  )
+#add_library(implot ${IMPLOT_SOURCES})
+#list(APPEND LIBRARIES implot)
 
 ## Source code
 include_directories("${PROJECT_SOURCE_DIR}")

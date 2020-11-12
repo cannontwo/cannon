@@ -16,7 +16,6 @@
 #include <imgui.h>
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
-#include <implot.h>
 
 #include <cannon/log/registry.hpp>
 #include <cannon/graphics/font.hpp>
@@ -88,7 +87,7 @@ namespace cannon {
           // Setting up ImGui
           IMGUI_CHECKVERSION();
           ImGui::CreateContext();
-          ImPlot::CreateContext();
+          //ImPlot::CreateContext();
           ImGui::GetIO();
 
           ImGui::StyleColorsDark();
@@ -105,7 +104,7 @@ namespace cannon {
 
           ImGui_ImplOpenGL3_Shutdown();
           ImGui_ImplGlfw_Shutdown();
-          ImPlot::DestroyContext();
+          //ImPlot::DestroyContext();
           ImGui::DestroyContext();
 
           glfwMakeContextCurrent(NULL);

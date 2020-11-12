@@ -4,5 +4,4 @@ list(APPEND MATH_SOURCES
   multivariate_normal.cpp
   )
 
-add_library(math ${MATH_SOURCES})
-target_link_libraries(math)
+add_library(math OBJECT ${MATH_SOURCES})
