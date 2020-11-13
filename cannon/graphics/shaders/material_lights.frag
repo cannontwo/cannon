@@ -65,7 +65,12 @@ vec3 calculate_dir_light(DirectionalLight light, vec3 normal, vec3 viewDir) {
   float diff = max(dot(normal, lightDir), 0.0);
 
   vec3 reflectDir = reflect(-lightDir, normal);
-  float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
+  vec3 halfwayDir = normalize(lightDir + viewDir);
+  //Phong
+  //float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
+
+  // Blinn-Phong
+  float spec = pow(max(dot(normal, halfwayDir), 0.0), material.shininess);
 
   vec3 ambient = light.ambient.xyz * material.ambient.xyz;
   vec3 diffuse = light.diffuse.xyz * diff * material.diffuse.xyz;
@@ -88,7 +93,12 @@ vec3 calculate_point_light(PointLight light, vec3 normal, vec3 fragPos, vec3 vie
 
   // specular
   vec3 reflectDir = reflect(-lightDir, normal);
-  float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
+  vec3 halfwayDir = normalize(lightDir + viewDir);
+  // Phong
+  //float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
+
+  // Blinn-Phong
+  float spec = pow(max(dot(normal, halfwayDir), 0.0), material.shininess);
   vec3 specular = light.specular.xyz * (spec * material.specular.xyz);
 
   ambient *= attenuation;
@@ -113,7 +123,12 @@ vec3 calculate_spotlight(Spotlight light, vec3 normal, vec3 fragPos, vec3 viewDi
 
   // specular
   vec3 reflectDir = reflect(-lightDir, normal);
-  float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
+  vec3 halfwayDir = normalize(lightDir + viewDir);
+  // Phong
+  //float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
+
+  // Blinn-Phong
+  float spec = pow(max(dot(normal, halfwayDir), 0.0), material.shininess);
   vec3 specular = light.specular.xyz * spec * material.specular.xyz;
 
   // attenuation
