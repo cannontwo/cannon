@@ -17,6 +17,7 @@
 #include <cannon/graphics/geometry/model.hpp>
 #include <cannon/graphics/point_light.hpp>
 #include <cannon/graphics/spotlight.hpp>
+#include <cannon/graphics/geometry/skybox.hpp>
 
 namespace cannon {
   namespace graphics {
@@ -86,6 +87,7 @@ namespace cannon {
         void add_shader(std::shared_ptr<ShaderProgram> s);
         void apply_light(std::shared_ptr<Light> l);
         void apply_light_collection(const LightCollection& l);
+        void set_skybox(std::vector<std::string> face_paths);
 
         std::shared_ptr<geometry::Cube> spawn_cube();
         std::shared_ptr<geometry::Plane> spawn_plane();
@@ -125,6 +127,9 @@ namespace cannon {
         std::shared_ptr<ShaderProgram> diffuse_program_;
         std::shared_ptr<ShaderProgram> light_program_;
         std::shared_ptr<ShaderProgram> textured_program_;
+
+        bool draw_skybox_ = false;
+        std::shared_ptr<geometry::Skybox> skybox_;
     };
 
     void drop_callback(GLFWwindow *window, int path_count, const char* paths[]);

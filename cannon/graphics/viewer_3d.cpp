@@ -95,12 +95,15 @@ void Viewer3D::draw_scene_geom_() {
     }
     ImGui::EndMainMenuBar();
   }
+
+  if (draw_skybox_) {
+    skybox_->draw(c.get_view_mat(), perspective);
+  }
 }
 
 void Viewer3D::add_geom(std::shared_ptr<geometry::DrawableGeom> g) {
   scene_geom_.push_back(g);
   add_shader(g->program);
-
 }
 
 void Viewer3D::add_shader(std::shared_ptr<ShaderProgram> s) {
@@ -120,6 +123,12 @@ void Viewer3D::apply_light_collection(const LightCollection& l) {
   for (auto& s : shaders_) {
     l.apply(s);
   }
+}
+
+void Viewer3D::set_skybox(std::vector<std::string> face_paths) {
+  draw_skybox_ = true;
+  skybox_ = std::make_shared<geometry::Skybox>(face_paths);
+  add_shader(skybox_->program);
 }
 
 std::shared_ptr<geometry::Cube> Viewer3D::spawn_cube() {

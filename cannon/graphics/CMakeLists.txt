@@ -20,6 +20,8 @@ list(APPEND GRAPHICS_SOURCES
   geometry/model.cpp
   geometry/plane.cpp
   framebuffer.cpp
+  cubemap.cpp
+  geometry/skybox.cpp
   )
 
 add_library(graphics OBJECT ${GRAPHICS_SOURCES})
