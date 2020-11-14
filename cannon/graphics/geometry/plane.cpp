@@ -21,6 +21,26 @@ void Plane::draw(const Matrix4f& view, const Matrix4f& perspective) const {
   glDrawArrays(GL_TRIANGLES, 0, vertices_.rows());
 }
 
+void Plane::draw(std::shared_ptr<ShaderProgram> p, const Matrix4f& view, const
+    Matrix4f& perspective) const {
+  p->activate();
+  p->set_uniform("model", get_model_mat());
+  p->set_uniform("view", view);
+  p->set_uniform("projection", perspective);
+  p->set_uniform("normalmat", get_normal_mat(), false);
+  
+  // Material properties
+  p->set_uniform("material.ambient", material_.ambient);
+  p->set_uniform("material.diffuse", material_.diffuse);
+  p->set_uniform("material.specular", material_.specular);
+  p->set_uniform("material.shininess", material_.shininess);
+
+  buf_.bind();
+  normal_buf_.bind();
+
+  glDrawArrays(GL_TRIANGLES, 0, vertices_.rows());
+}
+
 void Plane::populate_bufs_() {
   vertices_ << -0.5f, -0.5f, 0.0f,  
                 0.5f, -0.5f, 0.0f,  

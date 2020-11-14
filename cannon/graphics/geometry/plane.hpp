@@ -22,6 +22,9 @@ namespace cannon {
 
             name_ = std::string("Plane");
 
+            material_.ambient = {1.0, 1.0, 1.0, 1.0};
+            material_.diffuse = {1.0, 1.0, 1.0, 1.0};
+            material_.specular = {1.0, 1.0, 1.0, 1.0};
           }
 
           Plane(Plane& o) : vao_(new VertexArrayObject), buf_(vao_), normal_buf_(vao_),
@@ -31,6 +34,8 @@ namespace cannon {
             normal_buf_.buffer(normals_);
 
             name_ = o.name_;
+
+            material_ = o.material_;
           }
 
           Plane(Plane&& o) : vao_(o.vao_), buf_(std::move(o.buf_)),
@@ -39,11 +44,15 @@ namespace cannon {
             program = o.program; 
 
             name_ = o.name_;
+
+            material_ = o.material_;
           }
 
           virtual ~Plane() override {}
 
           virtual void draw(const Matrix4f& view, const Matrix4f& perspective) const override;
+          virtual void draw(std::shared_ptr<ShaderProgram> p, const Matrix4f&
+              view, const Matrix4f& perspective) const override;
 
         private:
           void populate_bufs_();

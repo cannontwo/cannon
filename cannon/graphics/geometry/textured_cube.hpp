@@ -87,6 +87,8 @@ namespace cannon {
           virtual ~TexturedCube() override {}
 
           virtual void draw(const Matrix4f& view, const Matrix4f& perspective) const override;
+          virtual void draw(std::shared_ptr<ShaderProgram> p, const Matrix4f&
+              view, const Matrix4f& perspective) const override;
 
         private:
           void populate_bufs_();

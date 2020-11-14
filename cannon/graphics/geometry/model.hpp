@@ -34,6 +34,8 @@ namespace cannon {
           }
 
           virtual void draw(const Matrix4f& view, const Matrix4f& perspective) const override;
+          virtual void draw(std::shared_ptr<ShaderProgram> p, const Matrix4f&
+              view, const Matrix4f& perspective) const override;
 
         private:
           void load_model_(const std::string& path);

@@ -10,6 +10,14 @@ void Model::draw(const Matrix4f& view, const Matrix4f& perspective) const {
   }
 }
 
+void Model::draw(std::shared_ptr<ShaderProgram> p, const Matrix4f& view, const
+    Matrix4f& perspective) const {
+  for (auto& mesh : meshes_) {
+    mesh->set_parent_model_mat(get_model_mat());
+    mesh->draw(p, view, perspective);
+  }
+}
+
 void Model::load_model_(const std::string& path) {
   Assimp::Importer import;
   const aiScene *scene = import.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs);

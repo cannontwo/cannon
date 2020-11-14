@@ -32,12 +32,13 @@ namespace cannon {
 
             program = p;
             populate_bufs_();
-          
           }
 
           virtual ~Mesh() override {};
 
           virtual void draw(const Matrix4f& view, const Matrix4f& perspective) const override;
+          virtual void draw(std::shared_ptr<ShaderProgram> p, const Matrix4f&
+              view, const Matrix4f& perspective) const override;
 
           virtual Matrix4f get_model_mat() const override;
 

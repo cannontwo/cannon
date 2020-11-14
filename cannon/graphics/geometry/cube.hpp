@@ -34,6 +34,10 @@ namespace cannon {
             populate_bufs_();
 
             name_ = std::string("Cube");
+
+            material_.ambient = {1.0, 1.0, 1.0, 1.0};
+            material_.diffuse = {1.0, 1.0, 1.0, 1.0};
+            material_.specular = {1.0, 1.0, 1.0, 1.0};
           }
 
           Cube (std::shared_ptr<ShaderProgram> p) : vao_(new
@@ -45,6 +49,10 @@ namespace cannon {
             populate_bufs_(); 
 
             name_ = std::string("Cube");
+            
+            material_.ambient = {1.0, 1.0, 1.0, 1.0};
+            material_.diffuse = {1.0, 1.0, 1.0, 1.0};
+            material_.specular = {1.0, 1.0, 1.0, 1.0};
 
           }
 
@@ -55,6 +63,8 @@ namespace cannon {
             normal_buf_.buffer(normals_);
 
             name_ = c.name_;
+
+            material_ = c.material_;
           }
 
           Cube(Cube&& c) : vao_(c.vao_), buf_(std::move(c.buf_)),
@@ -63,11 +73,15 @@ namespace cannon {
             program = c.program; 
 
             name_ = c.name_;
+
+            material_ = c.material_;
           }
 
           virtual ~Cube() override {}
 
           virtual void draw(const Matrix4f& view, const Matrix4f& perspective) const override;
+          virtual void draw(std::shared_ptr<ShaderProgram> p, const Matrix4f&
+              view, const Matrix4f& perspective) const override;
 
         private:
           void populate_bufs_();

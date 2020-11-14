@@ -4,8 +4,11 @@
 #define NR_SPECULAR_TEX 8
 
 struct Material {
-  sampler2D diffuse[NR_DIFFUSE_TEX];
-  sampler2D specular[NR_SPECULAR_TEX];
+  vec4 ambient;
+  vec4 diffuse;
+  vec4 specular;
+  sampler2D diffuse_tex[NR_DIFFUSE_TEX];
+  sampler2D specular_tex[NR_SPECULAR_TEX];
   float shininess;
 };
 
@@ -155,9 +158,10 @@ void main() {
   vec3 norm = normalize(Normal);
   vec3 viewDir = normalize(viewPos.xyz - FragPos);
 
-  vec3 material_ambient = vec3(texture(material.diffuse[0], TexCoords));
-  vec3 material_diffuse = vec3(texture(material.diffuse[0], TexCoords));
-  vec3 material_specular = vec3(texture(material.specular[0], TexCoords));
+  // Only rendering first diffuse and specular tex right now
+  vec3 material_ambient = material.ambient.xyz + vec3(texture(material.diffuse_tex[0], TexCoords));
+  vec3 material_diffuse = material.diffuse.xyz + vec3(texture(material.diffuse_tex[0], TexCoords));
+  vec3 material_specular = material.specular.xyz + vec3(texture(material.specular_tex[0], TexCoords));
 
   output += calculate_dir_light(directional_light, norm, viewDir, material_ambient, material_diffuse, material_specular);
 

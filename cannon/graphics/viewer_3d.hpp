@@ -39,7 +39,7 @@ namespace cannon {
           initialize_lc_();
           set_callbacks_();
 
-          auto plane = std::make_shared<geometry::Plane>(diffuse_program_);
+          auto plane = std::make_shared<geometry::Plane>(geom_program_);
           add_geom(plane);
 
           Vector3f pos;
@@ -68,9 +68,7 @@ namespace cannon {
                        c_pos[1],
                        c_pos[2],
                        1.0;
-            diffuse_program_->set_uniform("viewPos", tmp_pos);
-            light_program_->set_uniform("viewPos", tmp_pos);
-            textured_program_->set_uniform("viewPos", tmp_pos);
+            geom_program_->set_uniform("viewPos", tmp_pos);
 
             write_imgui();
             lc_.write_imgui();
@@ -124,9 +122,7 @@ namespace cannon {
 
         LightCollection lc_;
 
-        std::shared_ptr<ShaderProgram> diffuse_program_;
-        std::shared_ptr<ShaderProgram> light_program_;
-        std::shared_ptr<ShaderProgram> textured_program_;
+        std::shared_ptr<ShaderProgram> geom_program_;
 
         bool draw_skybox_ = false;
         std::shared_ptr<geometry::Skybox> skybox_;

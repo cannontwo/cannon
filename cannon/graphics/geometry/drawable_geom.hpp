@@ -26,6 +26,8 @@ namespace cannon {
       class DrawableGeom {
         public:
           virtual void draw(const Matrix4f& view, const Matrix4f& perspective) const = 0;
+          virtual void draw(std::shared_ptr<ShaderProgram> p, const Matrix4f&
+              view, const Matrix4f& perspective) const = 0;
 
           void set_material(const Material& material) {
             material_ = material;
@@ -87,9 +89,9 @@ namespace cannon {
           virtual ~DrawableGeom() {};
 
           Material material_ = {
-            Vector4f{1.0, 1.0, 1.0, 1.0},
-            Vector4f{1.0, 1.0, 1.0, 1.0},
-            Vector4f{1.0, 1.0, 1.0, 1.0},
+            Vector4f{0.0, 0.0, 0.0, 1.0},
+            Vector4f{0.0, 0.0, 0.0, 1.0},
+            Vector4f{0.0, 0.0, 0.0, 1.0},
             32.0
           };
           Matrix4f model_mat_;

@@ -132,7 +132,7 @@ void Viewer3D::set_skybox(std::vector<std::string> face_paths) {
 }
 
 std::shared_ptr<geometry::Cube> Viewer3D::spawn_cube() {
-  auto cube = std::make_shared<geometry::Cube>(diffuse_program_);
+  auto cube = std::make_shared<geometry::Cube>(geom_program_);
   add_geom(cube);
 
   Vector3f pos1 = c.get_pos() - 2.0 * c.get_direction().normalized();
@@ -150,7 +150,7 @@ std::shared_ptr<geometry::Cube> Viewer3D::spawn_cube() {
 }
 
 std::shared_ptr<geometry::Plane> Viewer3D::spawn_plane() {
-  auto plane = std::make_shared<geometry::Plane>(diffuse_program_);
+  auto plane = std::make_shared<geometry::Plane>(geom_program_);
   add_geom(plane);
 
   Vector3f pos1 = c.get_pos() - 2.0 * c.get_direction().normalized();
@@ -168,7 +168,7 @@ std::shared_ptr<geometry::Plane> Viewer3D::spawn_plane() {
 }
 
 std::shared_ptr<geometry::Model> Viewer3D::spawn_model(const std::string& path) {
-  auto m = std::make_shared<geometry::Model>(textured_program_, path);
+  auto m = std::make_shared<geometry::Model>(geom_program_, path);
   add_geom(m);
 
   Vector3f pos1 = c.get_pos() - 2.0 * c.get_direction().normalized();
@@ -192,10 +192,10 @@ void Viewer3D::spawn_point_light() {
                  1.0,
                  1.0;
 
-  geometry::Material light_material(light_color, {0.0, 0.0, 0.0, 1.0},
+  geometry::Material light_material(light_color*5, {0.0, 0.0, 0.0, 1.0},
       {0.0, 0.0, 0.0, 1.0}, 32.0);
 
-  auto light_cube = std::make_shared<geometry::Cube>(light_program_);
+  auto light_cube = std::make_shared<geometry::Cube>(geom_program_);
   auto light = std::make_shared<PointLight>(light_color*0.2, light_color*0.5, light_color, light_cube);
   add_geom(light_cube);
 
@@ -300,20 +300,10 @@ void Viewer3D::initialize_lc_() {
 }
 
 void Viewer3D::make_shaders_() {
-  diffuse_program_ = std::make_shared<ShaderProgram>("diffuse_shader");
-  diffuse_program_->attach_vertex_shader("shaders/mvp_normals.vert");
-  diffuse_program_->attach_fragment_shader("shaders/material_lights.frag");
-  diffuse_program_->link();
-
-  light_program_ = std::make_shared<ShaderProgram>("light_shader");
-  light_program_->attach_vertex_shader("shaders/mvp_normals.vert");
-  light_program_->attach_fragment_shader("shaders/material_light.frag");
-  light_program_->link();
-
-  textured_program_ = std::make_shared<ShaderProgram>("textured_shader");
-  textured_program_->attach_vertex_shader("shaders/mvp_normals_tex.vert");
-  textured_program_->attach_fragment_shader("shaders/material_lights_tex.frag");
-  textured_program_->link();
+  geom_program_ = std::make_shared<ShaderProgram>("geom_shader");
+  geom_program_->attach_vertex_shader("shaders/mvp_normals_tex.vert");
+  geom_program_->attach_fragment_shader("shaders/material_lights_tex.frag");
+  geom_program_->link();
 }
 
 void Viewer3D::set_callbacks_() {
