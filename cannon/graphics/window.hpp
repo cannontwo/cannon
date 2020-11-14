@@ -185,41 +185,22 @@ namespace cannon {
 
             write_imgui();
 
+
+            if (render_to_framebuffer_) {
+              fb_->display();
+              fb_->unbind();
+            }
+
             ImGui::Render();
             ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
+            if (render_to_framebuffer_) {
+              fb_->bind();
+            }
 
             last_frame_time_ = glfwGetTime();
             glfwSwapBuffers(window);
 
-            if (render_to_framebuffer_) {
-              fb_->display();
-            }
-          }
-        }
-
-        template <typename F>
-        void render_once(F f) {
-          if (!glfwWindowShouldClose(window)) {
-            // Call rendering process three times because OpenGL is double-buffered by default
-            for (int i = 0; i < 3; i++) {
-              float cur_time = glfwGetTime();
-              delta_time_ = cur_time - last_frame_time_;
-              last_frame_time_ = cur_time;
-
-              process_input(window);
-
-              glClearColor(clear_color_[0], clear_color_[1], clear_color_[2], clear_color_[3]);
-              glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-
-              glfwGetFramebufferSize(window, &width, &height);
-
-              f();
-
-              draw_overlays();
-
-              glfwSwapBuffers(window);
-              glfwPollEvents();
-            }
           }
         }
 

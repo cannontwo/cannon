@@ -27,6 +27,9 @@ namespace cannon {
         Plotter() : w_(), point_program_(new ShaderProgram), line_program_(new
             ShaderProgram), axes_(2.0f / (float)w_.height) {
           w_.set_clear_color(Vector4f(1.0f, 1.0f, 1.0f, 1.0f));
+          w_.disable_depth_test();
+          w_.disable_face_culling();
+          w_.disable_stencil_test();
 
           // Set up point shader
           VertexShader v = load_vertex_shader("shaders/basic_2d_pass_pos.vert");
@@ -56,7 +59,6 @@ namespace cannon {
           w_.render_loop([this, f] {draw_pass();f();});
         }
 
-        void save(const std::string &path);
         void set_xlim(float low, float high);
         void set_ylim(float low, float high);
 

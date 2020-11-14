@@ -79,21 +79,17 @@ void Viewer3D::draw_scene_geom_() {
     scene_geom_[i]->draw(c.get_view_mat(), perspective);
   }
 
-  if (ImGui::BeginMainMenuBar()) {
-    if (ImGui::BeginMenu("Geometry")) {
-      for (unsigned int i = 0; i < scene_geom_.size(); i++) {
-        scene_geom_[i]->write_imgui(i);
-      }
-      ImGui::EndMenu();
-    }
+  if (draw_skybox_) {
+    skybox_->draw(c.get_view_mat(), perspective);
+  }
+}
 
-    if (ImGui::BeginMenu("Shaders")) {
-      for (auto &s : shaders_) {
-        s->write_imgui();
-      }
-      ImGui::EndMenu();
-    }
-    ImGui::EndMainMenuBar();
+void Viewer3D::draw_scene_geom_(std::shared_ptr<ShaderProgram> p) {
+  Matrix4f perspective = make_perspective_fov(to_radians(45.0f),
+      (float)(w.width) / (float)(w.height), 0.1f, 1000.0f);
+
+  for (unsigned int i = 0; i < scene_geom_.size(); i++) {
+    scene_geom_[i]->draw(p, c.get_view_mat(), perspective);
   }
 
   if (draw_skybox_) {
@@ -281,6 +277,20 @@ void Viewer3D::write_imgui() {
         ImGui::EndMenu();
       }
 
+      ImGui::EndMenu();
+    }
+
+    if (ImGui::BeginMenu("Geometry")) {
+      for (unsigned int i = 0; i < scene_geom_.size(); i++) {
+        scene_geom_[i]->write_imgui(i);
+      }
+      ImGui::EndMenu();
+    }
+
+    if (ImGui::BeginMenu("Shaders")) {
+      for (auto &s : shaders_) {
+        s->write_imgui();
+      }
       ImGui::EndMenu();
     }
 

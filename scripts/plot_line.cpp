@@ -35,5 +35,4 @@ int main() {
                  x2, y2;
       l->replace_points(new_pts);
       });
-  plotter.save("tmp.png");
 }

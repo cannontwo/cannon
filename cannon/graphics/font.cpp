@@ -10,7 +10,7 @@ void Font::load_chars() {
 
     Vector2f size{face_->glyph->bitmap.width, face_->glyph->bitmap.rows};
     Vector2f bearing{face_->glyph->bitmap_left, face_->glyph->bitmap_top};
-    Texture t(face_, GL_TEXTURE0);
+    auto t = std::make_shared<Texture>(face_, GL_TEXTURE0);
 
     chars_.emplace(c, std::make_shared<Character>(c, t, size, bearing, face_->glyph->advance.x));
   }

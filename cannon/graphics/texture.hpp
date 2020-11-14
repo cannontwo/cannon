@@ -79,7 +79,7 @@ namespace cannon {
 
         Texture(FT_Face &face, GLenum texture_unit=0) :
             width_(face->glyph->bitmap.width), height_(face->glyph->bitmap.rows),
-            data_(face->glyph->bitmap.buffer), gl_texture_unit_(texture_unit) {
+            data_(face->glyph->bitmap.buffer), gl_texture_unit_(texture_unit), msaa_(false) {
           glGenTextures(1, &gl_texture_);
           bind(texture_unit);
 

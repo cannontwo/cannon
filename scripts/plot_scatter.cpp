@@ -23,5 +23,4 @@ int main() {
         last_time = glfwGetTime();
       }
       });
-  plotter.save("tmp.png");
 }

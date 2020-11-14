@@ -37,6 +37,9 @@ void Framebuffer::resize(int w, int h) {
     color_buffer_->bind();
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
         GL_TEXTURE_2D, color_buffer_->gl_texture_, 0);
+
+    quad->resize(w, h);
+    quad->set_tex(color_buffer_);
   }
 
   glDeleteRenderbuffers(1, &gl_depth_stencil_rb_);
@@ -58,28 +61,6 @@ void Framebuffer::generate_depth_stencil_buffer_() {
       gl_depth_stencil_rb_);
 }
 
-void Framebuffer::populate_quad_buf_() {
-  vertices_ << -1.0f,  1.0f,
-               -1.0f, -1.0f,
-                1.0f, -1.0f,
-                
-               -1.0f,  1.0f,
-                1.0f, -1.0f,
-                1.0f,  1.0f;
-
-  buf_.buffer(vertices_);
-
-  texture_coords_ << 0.0f, 1.0f,
-                     0.0f, 0.0f,
-                     1.0f, 0.0f,
-                     
-                     0.0f, 1.0f,
-                     1.0f, 0.0f,
-                     1.0f, 1.0f;
-
-  texture_coord_buf_.buffer(texture_coords_);
-}
-
 void Framebuffer::draw_color_buffer_quad_() {
   if (msaa_) {
     // Blitting to secondary framebuffer necessary to actually get MSAA behavior
@@ -91,17 +72,6 @@ void Framebuffer::draw_color_buffer_quad_() {
 
     screen_fb_->draw_color_buffer_quad_();
   } else {
-
-    quad_program->activate();
-    glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT);
-
-    color_buffer_->bind();
-    buf_.bind();
-    texture_coord_buf_.bind();
-
-    glDisable(GL_DEPTH_TEST);
-    glDrawArrays(GL_TRIANGLES, 0, 6);
-    glEnable(GL_DEPTH_TEST);
+    quad->draw();
   }
 }

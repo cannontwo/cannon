@@ -64,5 +64,4 @@ int main() {
 
       last_time = t;
       });
-  plotter.save("tmp.png");
 }

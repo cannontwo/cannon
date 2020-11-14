@@ -14,12 +14,18 @@ namespace cannon {
       public:
         Character() = delete;
 
-        Character(char c, Texture t, Vector2f s, Vector2f b, 
+        Character(char c, std::shared_ptr<Texture> t, Vector2f s, Vector2f b, 
             unsigned int a) : char_(c), texture(t), size(s),
             bearing(b), advance(a) {}
 
+        Character(Character& c) : char_(c.char_), texture(c.texture),
+          size(c.size), bearing(c.bearing), advance(c.advance){}
+
+        Character(Character&& c) : char_(c.char_), texture(c.texture),
+          size(c.size), bearing(c.bearing), advance(c.advance){}
+
         char char_;
-        Texture texture;
+        std::shared_ptr<Texture> texture;
         Vector2f size;
         Vector2f bearing;
         unsigned int advance;

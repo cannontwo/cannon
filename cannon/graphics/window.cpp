@@ -144,7 +144,7 @@ void Window::draw_overlays() {
                   xpos, ypos + h,     0.0f, 0.0f,
                   xpos + w, ypos,     1.0f, 1.0f,
                   xpos + w, ypos + h, 1.0f, 0.0f;
-      ch->texture.bind();
+      ch->texture->bind();
       buf_.replace(vertices);      
 
       glDrawArrays(GL_TRIANGLES, 0, 6);

@@ -62,6 +62,11 @@ namespace cannon {
 
             process_input_();
 
+
+            write_imgui();
+            lc_.write_imgui();
+
+            // TODO Put in render pass lambda
             Vector3f c_pos = c.get_pos();
             Vector4f tmp_pos;
             tmp_pos << c_pos[0],
@@ -69,12 +74,10 @@ namespace cannon {
                        c_pos[2],
                        1.0;
             geom_program_->set_uniform("viewPos", tmp_pos);
-
-            write_imgui();
-            lc_.write_imgui();
-            apply_light_collection(lc_);
-
-            draw_scene_geom_();
+            //apply_light_collection(lc_);
+            lc_.apply(geom_program_);
+            draw_scene_geom_(geom_program_);
+            // TODO End
 
             f();
 
@@ -106,6 +109,7 @@ namespace cannon {
         void process_input_();
         void process_mouse_input_();
         void draw_scene_geom_();
+        void draw_scene_geom_(std::shared_ptr<ShaderProgram> p);
 
         double last_x_;
         double last_y_;

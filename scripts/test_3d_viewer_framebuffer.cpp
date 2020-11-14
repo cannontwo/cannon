@@ -23,7 +23,7 @@ void test() {
   Viewer3D viewer;
   viewer.set_skybox(faces);
   auto fb = std::make_shared<Framebuffer>(viewer.w.width, viewer.w.height);
-  viewer.add_shader(fb->quad_program);
+  viewer.add_shader(fb->quad->program);
   viewer.w.render_to_framebuffer(fb);
 
   viewer.spawn_cube();

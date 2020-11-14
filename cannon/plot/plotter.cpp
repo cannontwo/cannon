@@ -31,11 +31,6 @@ std::shared_ptr<Line> Plotter::plot_line(MatrixX2f points, Vector4f color) {
   return l;
 }
 
-void Plotter::save(const std::string &path) {
-  w_.render_once([this] {draw_pass();});
-  w_.save_image(path);
-}
-
 void Plotter::set_xlim(float low, float high) {
   axes_.update_limits(low, high, 0.0, 0.0, w_.width, w_.height);
 }
