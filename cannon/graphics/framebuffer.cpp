@@ -9,6 +9,14 @@ void Framebuffer::bind() {
     throw std::runtime_error("Bound framebuffer is not complete");
 }
 
+void Framebuffer::bind_read() {
+  glBindFramebuffer(GL_READ_FRAMEBUFFER, gl_framebuffer_);
+}
+
+void Framebuffer::bind_draw() {
+  glBindFramebuffer(GL_DRAW_FRAMEBUFFER, gl_framebuffer_);
+}
+
 void Framebuffer::unbind() {
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
@@ -44,6 +52,17 @@ void Framebuffer::resize(int w, int h) {
 
   glDeleteRenderbuffers(1, &gl_depth_stencil_rb_);
   generate_depth_stencil_buffer_();
+}
+
+void Framebuffer::write_imgui() {
+  if (ImGui::BeginMenu(name.c_str())) {
+    ImGui::Text("Width: %d", width);
+    ImGui::SameLine();
+    ImGui::Text("Height: %d", height);
+    ImGui::Text("MSAA: %d", msaa_);
+    ImGui::EndMenu();
+  }
+
 }
 
 void Framebuffer::generate_depth_stencil_buffer_() {

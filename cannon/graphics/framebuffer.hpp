@@ -17,8 +17,8 @@ namespace cannon {
 
     class Framebuffer {
       public:
-        Framebuffer(int width=800, int height=600, bool msaa=true) :
-          width(width), height(height), msaa_(msaa) {
+        Framebuffer(int width=800, int height=600, bool msaa=true, const std::string& name="") :
+          width(width), height(height), name(name), msaa_(msaa) {
 
           glGenFramebuffers(1, &gl_framebuffer_);
           glBindFramebuffer(GL_FRAMEBUFFER, gl_framebuffer_);
@@ -56,6 +56,8 @@ namespace cannon {
         // necessary before the default framebuffer will display changes again.
         // Display draws this framebuffer on the currently bound framebuffer.
         void bind(); 
+        void bind_read();
+        void bind_draw();
         void unbind();
         void display();
 
@@ -63,8 +65,12 @@ namespace cannon {
 
         int width;
         int height;
+        
+        void write_imgui();
 
         std::shared_ptr<geometry::ScreenQuad> quad;
+
+        std::string name;
 
       private:
         void draw_color_buffer_quad_();

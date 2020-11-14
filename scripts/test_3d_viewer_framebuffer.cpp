@@ -25,6 +25,7 @@ void test() {
   auto fb = std::make_shared<Framebuffer>(viewer.w.width, viewer.w.height);
   viewer.add_shader(fb->quad->program);
   viewer.w.render_to_framebuffer(fb);
+  viewer.w.draw_from_framebuffer(fb);
 
   viewer.spawn_cube();
 

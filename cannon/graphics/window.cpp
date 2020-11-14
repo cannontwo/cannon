@@ -208,7 +208,7 @@ void Window::save_image(const std::string &path) {
   std::shared_ptr<std::vector<char>> buffer = std::make_shared<std::vector<char>>(buffer_size);
 
   if (render_to_framebuffer_)
-    fb_->unbind();
+    render_fb_->unbind();
 
   // Configure reading
   glPixelStorei(GL_PACK_ALIGNMENT, 4);
@@ -218,7 +218,7 @@ void Window::save_image(const std::string &path) {
   glReadPixels(0, 0, width, height, GL_RGB, GL_UNSIGNED_BYTE, buffer->data());
 
   if (render_to_framebuffer_)
-    fb_->bind();
+    render_fb_->bind();
 
   int tmp_width = width;
   int tmp_height = height;
@@ -235,7 +235,12 @@ void Window::save_image(const std::string &path) {
 
 void Window::render_to_framebuffer(std::shared_ptr<Framebuffer> fb) {
   render_to_framebuffer_ = true;
-  fb_ = fb;
+  render_fb_ = fb;
+}
+
+void Window::draw_from_framebuffer(std::shared_ptr<Framebuffer> fb) {
+  draw_from_framebuffer_ = true;
+  draw_fb_ = fb;
 }
 
 // Callbacks

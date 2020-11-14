@@ -135,6 +135,7 @@ namespace cannon {
         void disable_face_culling();
 
         void render_to_framebuffer(std::shared_ptr<Framebuffer> fb);
+        void draw_from_framebuffer(std::shared_ptr<Framebuffer> fb);
         void save_image(const std::string &path);
 
         template <typename F>
@@ -143,7 +144,7 @@ namespace cannon {
             glfwPollEvents();
 
             if (render_to_framebuffer_)
-              fb_->bind();
+              render_fb_->bind();
 
             ImGui_ImplOpenGL3_NewFrame();
             ImGui_ImplGlfw_NewFrame();
@@ -164,7 +165,10 @@ namespace cannon {
             glfwGetFramebufferSize(window, &width, &height);
 
             if (render_to_framebuffer_ && (old_width != width || old_height != height)) {
-              fb_->resize(width, height);
+              render_fb_->resize(width, height);
+            }
+            if (draw_from_framebuffer_ && (old_width != width || old_height != height)) {
+              draw_fb_->resize(width, height);
             }
 
             f();
@@ -186,17 +190,13 @@ namespace cannon {
             write_imgui();
 
 
-            if (render_to_framebuffer_) {
-              fb_->display();
-              fb_->unbind();
+            if (draw_from_framebuffer_) {
+              draw_fb_->display();
+              draw_fb_->unbind();
             }
 
             ImGui::Render();
             ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-
-            if (render_to_framebuffer_) {
-              fb_->bind();
-            }
 
             last_frame_time_ = glfwGetTime();
             glfwSwapBuffers(window);
@@ -226,7 +226,9 @@ namespace cannon {
         std::vector<OverlayText> overlays_;
 
         bool render_to_framebuffer_ = false;
-        std::shared_ptr<Framebuffer> fb_;
+        std::shared_ptr<Framebuffer> render_fb_;
+        bool draw_from_framebuffer_ = false;
+        std::shared_ptr<Framebuffer> draw_fb_;
 
         float delta_time_ = 0.0;
         float last_frame_time_ = 0.0;

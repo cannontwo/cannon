@@ -4,6 +4,7 @@
 #include <cmath>
 #include <memory>
 #include <random>
+#include <queue>
 
 #include <cannon/graphics/camera.hpp>
 #include <cannon/graphics/window.hpp>
@@ -18,6 +19,7 @@
 #include <cannon/graphics/point_light.hpp>
 #include <cannon/graphics/spotlight.hpp>
 #include <cannon/graphics/geometry/skybox.hpp>
+#include <cannon/graphics/render_pass.hpp>
 
 namespace cannon {
   namespace graphics {
@@ -62,11 +64,10 @@ namespace cannon {
 
             process_input_();
 
-
             write_imgui();
             lc_.write_imgui();
 
-            // TODO Put in render pass lambda
+            // TODO Put in render pass lambda func
             Vector3f c_pos = c.get_pos();
             Vector4f tmp_pos;
             tmp_pos << c_pos[0],
@@ -76,7 +77,7 @@ namespace cannon {
             geom_program_->set_uniform("viewPos", tmp_pos);
             //apply_light_collection(lc_);
             lc_.apply(geom_program_);
-            draw_scene_geom_(geom_program_);
+            draw_scene_geom(geom_program_);
             // TODO End
 
             f();
@@ -84,11 +85,45 @@ namespace cannon {
           }, clear);
         }
 
+        template <typename F>
+        void render_loop_multipass(F f, bool clear = true) {
+          w.render_loop([&](){
+            // Adjust camera movement speed based on render rate
+            c.set_speed(2.5 * w.delta_time_);
+
+            process_input_();
+
+
+            write_imgui(true);
+            lc_.write_imgui();
+
+            for (auto &pass : render_passes_) {
+              double before = glfwGetTime();
+
+              pass->write_imgui();
+              pass->run();
+
+              double duration = glfwGetTime() - before;
+              pass->set_time_taken(duration);
+            }
+
+            f();
+
+          }, clear);
+
+        }
+
         void add_geom(std::shared_ptr<geometry::DrawableGeom> g);
         void add_shader(std::shared_ptr<ShaderProgram> s);
         void apply_light(std::shared_ptr<Light> l);
         void apply_light_collection(const LightCollection& l);
+        void apply_light_collection(std::shared_ptr<ShaderProgram> p);
         void set_skybox(std::vector<std::string> face_paths);
+
+        void draw_scene_geom();
+        void draw_scene_geom(std::shared_ptr<ShaderProgram> p);
+
+        void add_render_pass(std::shared_ptr<RenderPass> rp);
 
         std::shared_ptr<geometry::Cube> spawn_cube();
         std::shared_ptr<geometry::Plane> spawn_plane();
@@ -96,7 +131,7 @@ namespace cannon {
         void spawn_point_light();
         void spawn_spotlight();
 
-        void write_imgui();
+        void write_imgui(bool multipass=false);
         
         Window w;
         Camera c; 
@@ -108,8 +143,6 @@ namespace cannon {
 
         void process_input_();
         void process_mouse_input_();
-        void draw_scene_geom_();
-        void draw_scene_geom_(std::shared_ptr<ShaderProgram> p);
 
         double last_x_;
         double last_y_;
@@ -123,6 +156,7 @@ namespace cannon {
 
         std::vector<std::shared_ptr<geometry::DrawableGeom>> scene_geom_;
         std::vector<std::shared_ptr<ShaderProgram>> shaders_;
+        std::deque<std::shared_ptr<RenderPass>> render_passes_;
 
         LightCollection lc_;
 

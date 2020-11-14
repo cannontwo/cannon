@@ -71,7 +71,7 @@ void Viewer3D::process_mouse_input_() {
   c.set_direction(new_dir);
 }
 
-void Viewer3D::draw_scene_geom_() {
+void Viewer3D::draw_scene_geom() {
   Matrix4f perspective = make_perspective_fov(to_radians(45.0f),
       (float)(w.width) / (float)(w.height), 0.1f, 1000.0f);
 
@@ -84,7 +84,7 @@ void Viewer3D::draw_scene_geom_() {
   }
 }
 
-void Viewer3D::draw_scene_geom_(std::shared_ptr<ShaderProgram> p) {
+void Viewer3D::draw_scene_geom(std::shared_ptr<ShaderProgram> p) {
   Matrix4f perspective = make_perspective_fov(to_radians(45.0f),
       (float)(w.width) / (float)(w.height), 0.1f, 1000.0f);
 
@@ -119,6 +119,10 @@ void Viewer3D::apply_light_collection(const LightCollection& l) {
   for (auto& s : shaders_) {
     l.apply(s);
   }
+}
+
+void Viewer3D::apply_light_collection(std::shared_ptr<ShaderProgram> p) {
+  lc_.apply(p);
 }
 
 void Viewer3D::set_skybox(std::vector<std::string> face_paths) {
@@ -238,7 +242,7 @@ void Viewer3D::spawn_spotlight() {
   lc_.add_light(light);
 }
 
-void Viewer3D::write_imgui() {
+void Viewer3D::write_imgui(bool multipass) {
   if (ImGui::BeginMainMenuBar()) {
     if (ImGui::BeginMenu("Spawn")) {
       if (ImGui::BeginMenu("Geometry")) {
@@ -287,15 +291,26 @@ void Viewer3D::write_imgui() {
       ImGui::EndMenu();
     }
 
-    if (ImGui::BeginMenu("Shaders")) {
-      for (auto &s : shaders_) {
-        s->write_imgui();
+    if (!multipass) {
+      if (ImGui::BeginMenu("Shaders")) {
+        for (auto &s : shaders_) {
+          s->write_imgui();
+        }
+        ImGui::EndMenu();
       }
-      ImGui::EndMenu();
     }
 
     ImGui::EndMainMenuBar();
   }
+}
+
+void Viewer3D::add_render_pass(std::shared_ptr<RenderPass> rp) {
+  render_passes_.push_back(rp);  
+
+  // By convention, initial geometry rendering happens on the first render
+  // pass, and drawing to screen happens on the last
+  w.render_to_framebuffer(render_passes_.front()->framebuffer);
+  w.draw_from_framebuffer(render_passes_.back()->framebuffer);
 }
 
 void Viewer3D::initialize_lc_() {
