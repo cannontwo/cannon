@@ -43,6 +43,16 @@ namespace cannon {
       std::function<void(OverlayText&)> update;
     };
 
+    struct CircularBuffer {
+      void add_point(float p) {
+        data[offset] = p;
+        offset = (offset + 1) % IM_ARRAYSIZE(data);
+      }
+
+      float data[90] = {};
+      int offset = 0;
+    };
+
     // Free functions
     void init_glfw();
     void init_glad();
@@ -186,6 +196,8 @@ namespace cannon {
             float smoothing = 0.9;
             float estimate = 1.0 / (glfwGetTime() - last_frame_time_);
             fps_ = (fps_ * smoothing) + (estimate * (1.0 - smoothing));
+            time_cbuf_.add_point(elapsed_);
+            fps_cbuf_.add_point(fps_);
 
             write_imgui();
 
@@ -238,6 +250,9 @@ namespace cannon {
         bool recording_ = false;
         double recording_start_time_;
         int recording_frame_;
+
+        CircularBuffer time_cbuf_;
+        CircularBuffer fps_cbuf_;
     };
 
   } // namespace graphics

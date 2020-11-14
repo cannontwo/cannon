@@ -37,6 +37,9 @@ namespace cannon {
             if (ImGui::BeginMenu("Render Passes")) {
               if (ImGui::TreeNode(name.c_str())) {
                 ImGui::Text("Took %f seconds", time_taken_);
+                ImGui::PlotLines("Time", time_cbuf_.data,
+                    IM_ARRAYSIZE(time_cbuf_.data), time_cbuf_.offset, NULL,
+                    0.0, 0.05);
                 program->write_imgui(); 
                 framebuffer->write_imgui();
                 ImGui::TreePop();
@@ -49,6 +52,7 @@ namespace cannon {
 
         void set_time_taken(double t) {
           time_taken_ = t;
+          time_cbuf_.add_point(t);
         }
 
         std::string name;
@@ -59,6 +63,8 @@ namespace cannon {
 
       private:
         double time_taken_;
+
+        CircularBuffer time_cbuf_;
     };
 
   } // namespace graphics

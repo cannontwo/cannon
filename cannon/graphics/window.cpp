@@ -99,13 +99,14 @@ void Window::write_imgui() {
 
     if (ImGui::BeginMenu("Statistics")) {
       ImGui::Text("Elapsed time: %f", elapsed_);
+      ImGui::PlotLines("Times", time_cbuf_.data, IM_ARRAYSIZE(time_cbuf_.data), time_cbuf_.offset, NULL, 0.0, 0.05);
       ImGui::Text("FPS: %f", fps_);
+      ImGui::PlotLines("FPS", fps_cbuf_.data, IM_ARRAYSIZE(fps_cbuf_.data), fps_cbuf_.offset, NULL, 0.0, 100.0);
       ImGui::EndMenu();
     }
 
     ImGui::EndMainMenuBar();
   }
-
 }
 
 void Window::draw_overlays() {

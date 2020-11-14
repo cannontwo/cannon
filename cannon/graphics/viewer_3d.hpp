@@ -67,7 +67,6 @@ namespace cannon {
             write_imgui();
             lc_.write_imgui();
 
-            // TODO Put in render pass lambda func
             Vector3f c_pos = c.get_pos();
             Vector4f tmp_pos;
             tmp_pos << c_pos[0],
@@ -78,7 +77,6 @@ namespace cannon {
             //apply_light_collection(lc_);
             lc_.apply(geom_program_);
             draw_scene_geom(geom_program_);
-            // TODO End
 
             f();
 
