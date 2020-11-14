@@ -85,12 +85,23 @@ namespace cannon {
 
         template <typename F>
         void render_loop_multipass(F f, bool clear = true) {
+          int old_width = w.width;
+          int old_height = w.height;
+
           w.render_loop([&](){
             // Adjust camera movement speed based on render rate
             c.set_speed(2.5 * w.delta_time_);
 
             process_input_();
 
+            if (w.height != old_height || w.width != old_width) {
+              for (auto& pass : render_passes_) {
+                pass->framebuffer->resize(w.width, w.height);
+              }
+
+              old_height = w.height;
+              old_width = w.width;
+            }
 
             write_imgui(true);
             lc_.write_imgui();
@@ -98,12 +109,13 @@ namespace cannon {
             for (auto &pass : render_passes_) {
               double before = glfwGetTime();
 
-              pass->write_imgui();
               pass->run();
+              pass->write_imgui();
 
               double duration = glfwGetTime() - before;
               pass->set_time_taken(duration);
             }
+
 
             f();
 

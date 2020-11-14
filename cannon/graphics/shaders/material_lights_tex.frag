@@ -121,35 +121,29 @@ vec3 calculate_spotlight(Spotlight light, vec3 normal, vec3 fragPos, vec3 viewDi
   // ambient
   vec3 ambient = light.ambient.xyz * material_ambient;
 
-  if (theta > light.cutoff) {
-    // diffuse
-    float diff = max(dot(normal, lightDir), 0.0);
-    vec3 diffuse = light.diffuse.xyz * (diff * material_diffuse);
+  // diffuse
+  float diff = max(dot(normal, lightDir), 0.0);
+  vec3 diffuse = light.diffuse.xyz * (diff * material.diffuse.xyz);
 
-    // specular
-    vec3 reflectDir = reflect(-lightDir, normal);
-    vec3 halfwayDir = normalize(lightDir + viewDir);
-    // Phong
-    //float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
-    // Blinn-Phong
-    float spec = pow(max(dot(normal, halfwayDir), 0.0), material.shininess);
-    vec3 specular = light.specular.xyz * spec * material_specular;
+  // specular
+  vec3 reflectDir = reflect(-lightDir, normal);
+  vec3 halfwayDir = normalize(lightDir + viewDir);
+  // Phong
+  //float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
 
-    // attenuation
-    float distance = length(light.position.xyz - fragPos);
-    float attenuation = 1.0 / (light.constant + light.linear * distance + light.quadratic * (distance * distance));
+  // Blinn-Phong
+  float spec = pow(max(dot(normal, halfwayDir), 0.0), material.shininess);
+  vec3 specular = light.specular.xyz * spec * material.specular.xyz;
 
-    diffuse *= intensity;
-    specular *= intensity;
+  // attenuation
+  float distance = length(light.position.xyz - fragPos);
+  float attenuation = 1.0 / (light.constant + light.linear * distance + light.quadratic * (distance * distance));
 
-    diffuse *= attenuation;
-    specular *= attenuation;
+  ambient *= intensity * attenuation;
+  diffuse *= intensity * attenuation;
+  specular *= intensity * attenuation;
 
-    return (ambient + diffuse + specular);
-
-  } else {
-    return ambient;
-  }
+  return (ambient + diffuse + specular);
 }
 
 void main() {

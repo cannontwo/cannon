@@ -24,10 +24,10 @@ namespace cannon {
           glBindFramebuffer(GL_FRAMEBUFFER, gl_framebuffer_);
 
           if (msaa_) {
-            color_buffer_ = std::make_shared<Texture>(width, height, true);
-            color_buffer_->bind();
+            color_buffer = std::make_shared<Texture>(width, height, true);
+            color_buffer->bind();
             glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
-                GL_TEXTURE_2D_MULTISAMPLE, color_buffer_->gl_texture_, 0);
+                GL_TEXTURE_2D_MULTISAMPLE, color_buffer->gl_texture_, 0);
 
             screen_fb_ = std::make_shared<Framebuffer>(width, height, false);
             screen_fb_->bind();
@@ -35,12 +35,12 @@ namespace cannon {
 
             quad = screen_fb_->quad;
           } else {
-            color_buffer_ = std::make_shared<Texture>(width, height, false);
-            color_buffer_->bind();
+            color_buffer = std::make_shared<Texture>(width, height, false);
+            color_buffer->bind();
             glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
-                GL_TEXTURE_2D, color_buffer_->gl_texture_, 0);
+                GL_TEXTURE_2D, color_buffer->gl_texture_, 0);
 
-            quad = std::make_shared<geometry::ScreenQuad>(color_buffer_, width, height);
+            quad = std::make_shared<geometry::ScreenQuad>(color_buffer, width, height);
           }
           
           // We don't currently have any need to encapsulate this
@@ -57,9 +57,13 @@ namespace cannon {
         // Display draws this framebuffer on the currently bound framebuffer.
         void bind(); 
         void bind_read();
+        void unbind_read();
         void bind_draw();
+        void unbind_draw();
         void unbind();
         void display();
+
+        void draw_color_buffer_quad();
 
         void resize(int w, int h);
 
@@ -72,14 +76,14 @@ namespace cannon {
 
         std::string name;
 
+        std::shared_ptr<Texture> color_buffer;
+
       private:
-        void draw_color_buffer_quad_();
         void generate_depth_stencil_buffer_();
 
         unsigned int gl_framebuffer_;
         unsigned int gl_depth_stencil_rb_;
 
-        std::shared_ptr<Texture> color_buffer_;
         std::shared_ptr<Framebuffer> screen_fb_;
 
         bool msaa_;

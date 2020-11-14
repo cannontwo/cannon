@@ -6,6 +6,7 @@
 
 #include <glad/glad.h>
 #include <stb_image/stb_image.h>
+#include <imgui.h>
 
 #include <ft2build.h>
 #include FT_FREETYPE_H
@@ -24,6 +25,7 @@ namespace cannon {
           : width_(width), height_(height), gl_texture_unit_(texture_unit), msaa_(msaa) {
 
           glGenTextures(1, &gl_texture_);
+          log_info("Created texture", gl_texture_);
 
           if (msaa) {
             glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, gl_texture_);
@@ -47,6 +49,7 @@ namespace cannon {
             throw std::runtime_error("Could not load image for texture");
 
           glGenTextures(1, &gl_texture_);
+          log_info("Created texture", gl_texture_);
           bind(texture_unit);
 
           GLenum format;
@@ -81,6 +84,7 @@ namespace cannon {
             width_(face->glyph->bitmap.width), height_(face->glyph->bitmap.rows),
             data_(face->glyph->bitmap.buffer), gl_texture_unit_(texture_unit), msaa_(false) {
           glGenTextures(1, &gl_texture_);
+          log_info("Created texture", gl_texture_);
           bind(texture_unit);
 
           set_wrap_clamp_edge();
@@ -90,6 +94,7 @@ namespace cannon {
         }
 
         ~Texture() {
+          log_info("Deleted texture", gl_texture_);
           glDeleteTextures(1, &gl_texture_);
         }
 
@@ -110,6 +115,8 @@ namespace cannon {
         void set_filter_linear();
         void set_filter_nearest();
 
+        void write_imgui();
+
         std::string path;
 
         friend class Framebuffer;
@@ -120,7 +127,7 @@ namespace cannon {
         int num_channels_;
         unsigned char *data_;
 
-        unsigned int gl_texture_;
+        GLuint gl_texture_;
         GLenum gl_texture_unit_;
 
         bool msaa_ = false;

@@ -65,13 +65,13 @@ void ShaderProgram::reload() {
 }
 
 void ShaderProgram::write_imgui() {
-  if (ImGui::BeginMenu(name_.c_str())) {
+  if (ImGui::TreeNode(name_.c_str())) {
     ImGui::InputText("Vertex Shader", &v_src_);
     ImGui::InputText("Fragment Shader", &f_src_);
     if (ImGui::Button("Reload")) {
       reload();
     }
-    ImGui::EndMenu();
+    ImGui::TreePop();
   }
 }
 

@@ -170,16 +170,7 @@ namespace cannon {
               glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
             }
 
-            int old_width = width;
-            int old_height = height;
             glfwGetFramebufferSize(window, &width, &height);
-
-            if (render_to_framebuffer_ && (old_width != width || old_height != height)) {
-              render_fb_->resize(width, height);
-            }
-            if (draw_from_framebuffer_ && (old_width != width || old_height != height)) {
-              draw_fb_->resize(width, height);
-            }
 
             f();
 

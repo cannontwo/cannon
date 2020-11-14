@@ -41,17 +41,26 @@ void test() {
             viewer.draw_scene_geom(geom_program);
       });
 
+
   auto fb2 = std::make_shared<Framebuffer>(viewer.w.width, viewer.w.height, false, "screen framebuffer");
   auto rp2 = std::make_shared<RenderPass>("screen pass", fb2, fb2->quad->program, [&](){
-        fb->bind();
-        fb->bind_read();
-        fb2->bind_draw();
-        glBlitFramebuffer(0, 0, fb->width, fb->height, 0, 0, fb2->width, fb2->height, GL_COLOR_BUFFER_BIT, GL_NEAREST);
-        fb->unbind();
+        fb2->quad->set_tex(fb->color_buffer);
+        fb2->bind();
+        fb2->draw_color_buffer_quad();
+        fb2->quad->set_tex(fb2->color_buffer);
+      });
+
+  auto fb3 = std::make_shared<Framebuffer>(viewer.w.width, viewer.w.height, false, "inverted framebuffer");
+  auto rp3 = std::make_shared<RenderPass>("inverted pass", fb3, fb3->quad->program, [&](){
+        fb3->quad->set_tex(fb->color_buffer);
+        fb3->bind();
+        fb3->draw_color_buffer_quad();
+        fb3->quad->set_tex(fb2->color_buffer);
       });
 
   viewer.add_render_pass(rp);
   viewer.add_render_pass(rp2);
+  viewer.add_render_pass(rp3);
 
   viewer.spawn_cube();
   viewer.render_loop_multipass([&] {});

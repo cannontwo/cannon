@@ -86,3 +86,10 @@ void Texture::set_filter_nearest() {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
   }
 }
+
+void Texture::write_imgui() {
+  ImTextureID tex_id = (void *)(intptr_t)gl_texture_;
+
+  // Rendering is flipped in ImGui
+  ImGui::Image(tex_id, ImVec2(100.0, 100.0), ImVec2(0.0, 1.0), ImVec2(1.0, 0.0));
+}
