@@ -35,6 +35,24 @@ void ScreenQuad::draw(std::shared_ptr<ShaderProgram> p) {
     glEnable(GL_DEPTH_TEST);
 }
 
+void ScreenQuad::draw(std::shared_ptr<ShaderProgram> p,
+    std::vector<std::shared_ptr<Texture>> textures) {
+  p->activate();
+  glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+  glClear(GL_COLOR_BUFFER_BIT);
+
+  for (unsigned int i = 0; i < textures.size(); i++) {
+    textures[i]->bind(GL_TEXTURE0+i); 
+  }
+
+  buf_.bind();
+  texture_coord_buf_.bind();
+
+  glDisable(GL_DEPTH_TEST);
+  glDrawArrays(GL_TRIANGLES, 0, 6);
+  glEnable(GL_DEPTH_TEST);
+}
+
 void ScreenQuad::set_tex(std::shared_ptr<Texture> t) {
   tex_ = t;
 }

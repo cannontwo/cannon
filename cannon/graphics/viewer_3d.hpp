@@ -128,10 +128,16 @@ namespace cannon {
         void apply_light(std::shared_ptr<Light> l);
         void apply_light_collection(const LightCollection& l);
         void apply_light_collection(std::shared_ptr<ShaderProgram> p);
-        void set_skybox(std::vector<std::string> face_paths);
 
-        void draw_scene_geom();
-        void draw_scene_geom(std::shared_ptr<ShaderProgram> p);
+        void set_skybox(std::vector<std::string> face_paths);
+        void enable_skybox();
+        void disable_skybox();
+
+        void draw_scene_geom(bool draw_lights = true);
+        void draw_scene_geom(std::shared_ptr<ShaderProgram> p, bool draw_lights = true);
+
+        void draw_light_geom();
+        void draw_light_geom(std::shared_ptr<ShaderProgram> p);
 
         void add_render_pass(std::shared_ptr<RenderPass> rp);
 
@@ -165,6 +171,7 @@ namespace cannon {
         float pitch_ = 0.0;
 
         std::vector<std::shared_ptr<geometry::DrawableGeom>> scene_geom_;
+        std::vector<std::shared_ptr<geometry::DrawableGeom>> light_geom_;
         std::vector<std::shared_ptr<ShaderProgram>> shaders_;
         std::deque<std::shared_ptr<RenderPass>> render_passes_;
 

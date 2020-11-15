@@ -32,6 +32,8 @@ namespace cannon {
 
           void draw();
           void draw(std::shared_ptr<ShaderProgram> p);
+          void draw(std::shared_ptr<ShaderProgram> p,
+              std::vector<std::shared_ptr<Texture>> textures);
 
           void set_tex(std::shared_ptr<Texture> t);
 

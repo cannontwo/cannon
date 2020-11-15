@@ -71,7 +71,7 @@ void Viewer3D::process_mouse_input_() {
   c.set_direction(new_dir);
 }
 
-void Viewer3D::draw_scene_geom() {
+void Viewer3D::draw_scene_geom(bool draw_lights) {
   Matrix4f perspective = make_perspective_fov(to_radians(45.0f),
       (float)(w.width) / (float)(w.height), 0.1f, 1000.0f);
 
@@ -79,17 +79,55 @@ void Viewer3D::draw_scene_geom() {
     scene_geom_[i]->draw(c.get_view_mat(), perspective);
   }
 
+  if (draw_lights) {
+    for (unsigned int i = 0; i < light_geom_.size(); i++) {
+      light_geom_[i]->draw(c.get_view_mat(), perspective);
+    }
+  }
+
   if (draw_skybox_) {
     skybox_->draw(c.get_view_mat(), perspective);
   }
 }
 
-void Viewer3D::draw_scene_geom(std::shared_ptr<ShaderProgram> p) {
+void Viewer3D::draw_scene_geom(std::shared_ptr<ShaderProgram> p, bool draw_lights) {
   Matrix4f perspective = make_perspective_fov(to_radians(45.0f),
       (float)(w.width) / (float)(w.height), 0.1f, 1000.0f);
 
   for (unsigned int i = 0; i < scene_geom_.size(); i++) {
     scene_geom_[i]->draw(p, c.get_view_mat(), perspective);
+  }
+
+  if (draw_lights) {
+    for (unsigned int i = 0; i < light_geom_.size(); i++) {
+      light_geom_[i]->draw(c.get_view_mat(), perspective);
+    }
+  }
+
+  if (draw_skybox_) {
+    skybox_->draw(c.get_view_mat(), perspective);
+  }
+}
+
+void Viewer3D::draw_light_geom() {
+  Matrix4f perspective = make_perspective_fov(to_radians(45.0f),
+      (float)(w.width) / (float)(w.height), 0.1f, 1000.0f);
+
+  for (unsigned int i = 0; i < light_geom_.size(); i++) {
+    light_geom_[i]->draw(c.get_view_mat(), perspective);
+  }
+
+  if (draw_skybox_) {
+    skybox_->draw(c.get_view_mat(), perspective);
+  }
+}
+
+void Viewer3D::draw_light_geom(std::shared_ptr<ShaderProgram> p) {
+  Matrix4f perspective = make_perspective_fov(to_radians(45.0f),
+      (float)(w.width) / (float)(w.height), 0.1f, 1000.0f);
+
+  for (unsigned int i = 0; i < light_geom_.size(); i++) {
+    light_geom_[i]->draw(p, c.get_view_mat(), perspective);
   }
 
   if (draw_skybox_) {
@@ -129,6 +167,14 @@ void Viewer3D::set_skybox(std::vector<std::string> face_paths) {
   draw_skybox_ = true;
   skybox_ = std::make_shared<geometry::Skybox>(face_paths);
   add_shader(skybox_->program);
+}
+
+void Viewer3D::enable_skybox() {
+  draw_skybox_ = true;
+}
+
+void Viewer3D::disable_skybox() {
+  draw_skybox_ = false;
 }
 
 std::shared_ptr<geometry::Cube> Viewer3D::spawn_cube() {
@@ -197,7 +243,7 @@ void Viewer3D::spawn_point_light() {
 
   auto light_cube = std::make_shared<geometry::Cube>(geom_program_);
   auto light = std::make_shared<PointLight>(light_color*0.2, light_color*0.5, light_color, light_cube);
-  add_geom(light_cube);
+  light_geom_.push_back(light_cube);
 
   Vector4f light_pos;
   Vector3f pos1 = c.get_pos() - 2.0 * c.get_direction().normalized();

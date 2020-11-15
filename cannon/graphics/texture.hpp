@@ -21,20 +21,15 @@ namespace cannon {
     class Texture {
       public:
         // This constructor is primarily for use with Framebuffer
-        Texture(int width=800, int height=600, bool msaa=true, GLenum texture_unit=GL_TEXTURE0)
-          : width_(width), height_(height), gl_texture_unit_(texture_unit), msaa_(msaa) {
+        Texture(int width=800, int height=600, GLint internal_format=GL_RGBA,
+            GLenum data_type=GL_UNSIGNED_BYTE, GLenum texture_unit=GL_TEXTURE0)
+          : width_(width), height_(height), gl_texture_unit_(texture_unit) {
 
           glGenTextures(1, &gl_texture_);
           log_info("Created texture", gl_texture_);
 
-          if (msaa) {
-            glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, gl_texture_);
-            glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, 16, GL_RGB, width_, height_, GL_TRUE);
-            glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, 0);
-          } else {
-            glBindTexture(GL_TEXTURE_2D, gl_texture_);
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width_, height_, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
-          }
+          glBindTexture(GL_TEXTURE_2D, gl_texture_);
+          glTexImage2D(GL_TEXTURE_2D, 0, internal_format, width_, height_, 0, GL_RGBA, data_type, NULL);
 
           set_wrap_repeat();
           set_filter_linear();
@@ -82,7 +77,7 @@ namespace cannon {
 
         Texture(FT_Face &face, GLenum texture_unit=0) :
             width_(face->glyph->bitmap.width), height_(face->glyph->bitmap.rows),
-            data_(face->glyph->bitmap.buffer), gl_texture_unit_(texture_unit), msaa_(false) {
+            data_(face->glyph->bitmap.buffer), gl_texture_unit_(texture_unit) {
           glGenTextures(1, &gl_texture_);
           log_info("Created texture", gl_texture_);
           bind(texture_unit);
@@ -130,7 +125,6 @@ namespace cannon {
         GLuint gl_texture_;
         GLenum gl_texture_unit_;
 
-        bool msaa_ = false;
     };
 
   } // namespace graphics

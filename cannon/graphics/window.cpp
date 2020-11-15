@@ -170,8 +170,8 @@ void cannon::graphics::init_glad() {
   if (!gladLoadGLLoader((GLADloadproc) glfwGetProcAddress)) {
     throw std::runtime_error("Could not initialize glad");
   }
-  glEnable(GL_BLEND);
-  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+  //glEnable(GL_BLEND);
+  //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
 void Window::enable_depth_test() {
