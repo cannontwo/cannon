@@ -69,7 +69,9 @@ void Framebuffer::resize(int w, int h) {
   bind();
 
   for (unsigned int i = 0; i < color_attachments.size(); i++) {
-    color_attachments[i] = std::make_shared<Texture>(width, height, false);
+    GLint internal_format = color_attachments[i]->internal_format;
+    GLenum type = color_attachments[i]->data_type;
+    color_attachments[i] = std::make_shared<Texture>(width, height, internal_format, type);
     color_attachments[i]->bind();
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0+i,
         GL_TEXTURE_2D, color_attachments[i]->gl_texture_, 0);

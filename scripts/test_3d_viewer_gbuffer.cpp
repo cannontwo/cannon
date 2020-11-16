@@ -34,7 +34,7 @@ void test() {
   attachments.push_back(std::make_shared<Texture>(viewer.w.width,
         viewer.w.height, GL_RGBA16F, GL_FLOAT));
   attachments.push_back(std::make_shared<Texture>(viewer.w.width,
-        viewer.w.height, GL_RGBA, GL_UNSIGNED_BYTE));
+        viewer.w.height, GL_RGBA16F, GL_FLOAT));
 
   viewer.w.set_clear_color({0.0, 0.0, 0.0, 1.0});
 
@@ -113,10 +113,37 @@ void test() {
         viewer.draw_light_geom(light_geom_program);
       });
 
+  auto hdr_program = std::make_shared<ShaderProgram>("hdr_shader");
+  hdr_program->attach_vertex_shader("shaders/pass_pos_tex.vert");
+  hdr_program->attach_fragment_shader("shaders/hdr_tone_mapping.frag");
+  hdr_program->link();
+
+  auto fb4 = std::make_shared<Framebuffer>(viewer.w.width, viewer.w.height, "hdr framebuffer");
+  auto rp4 = std::make_shared<RenderPass>("hdr tone mapping pass", fb4, hdr_program, [&]() {
+        fb3->bind_read();
+        fb4->bind_draw();
+        glBlitFramebuffer(0, 0, fb3->width, fb3->height, 0, 0, fb4->width,
+            fb4->height, GL_COLOR_BUFFER_BIT, GL_NEAREST);
+
+        static float exposure = 1.0;
+        if (ImGui::BeginMainMenuBar()) {
+          if (ImGui::BeginMenu("Lighting")) {
+            ImGui::SliderFloat("exposure", &exposure, 0.0, 5.0);
+            ImGui::EndMenu();
+          }
+          ImGui::EndMainMenuBar();
+        }
+        hdr_program->set_uniform("exposure", exposure);
+
+        fb4->bind_draw();
+        fb3->quad->draw(hdr_program);
+      });
+
 
   viewer.add_render_pass(rp);
   viewer.add_render_pass(rp2);
   viewer.add_render_pass(rp3);
+  viewer.add_render_pass(rp4);
 
   viewer.spawn_cube();
   viewer.render_loop_multipass([&] {});

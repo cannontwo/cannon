@@ -24,7 +24,7 @@ namespace cannon {
           glGenFramebuffers(1, &gl_framebuffer_);
           glBindFramebuffer(GL_FRAMEBUFFER, gl_framebuffer_);
 
-          auto color_buf = std::make_shared<Texture>(width, height);
+          auto color_buf = std::make_shared<Texture>(width, height, GL_RGBA16F, GL_FLOAT);
           attach_tex(color_buf);
           
           quad = std::make_shared<geometry::ScreenQuad>(color_buf, width, height);

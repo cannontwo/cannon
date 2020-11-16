@@ -23,7 +23,8 @@ namespace cannon {
         // This constructor is primarily for use with Framebuffer
         Texture(int width=800, int height=600, GLint internal_format=GL_RGBA,
             GLenum data_type=GL_UNSIGNED_BYTE, GLenum texture_unit=GL_TEXTURE0)
-          : width_(width), height_(height), gl_texture_unit_(texture_unit) {
+          : internal_format(internal_format),
+          data_type(data_type), width_(width), height_(height), gl_texture_unit_(texture_unit) {
 
           glGenTextures(1, &gl_texture_);
           log_info("Created texture", gl_texture_);
@@ -116,6 +117,9 @@ namespace cannon {
 
         friend class Framebuffer;
 
+        GLint internal_format;
+        GLenum data_type;
+
       private:
         int width_;
         int height_;
@@ -124,6 +128,7 @@ namespace cannon {
 
         GLuint gl_texture_;
         GLenum gl_texture_unit_;
+
 
     };
 
