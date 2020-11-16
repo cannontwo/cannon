@@ -26,6 +26,10 @@ namespace cannon {
       public:
         Plotter() : w_(), point_program_(new ShaderProgram), line_program_(new
             ShaderProgram), axes_(2.0f / (float)w_.height) {
+
+          glEnable(GL_BLEND);
+          glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
           w_.set_clear_color(Vector4f(1.0f, 1.0f, 1.0f, 1.0f));
           w_.disable_depth_test();
           w_.disable_face_culling();

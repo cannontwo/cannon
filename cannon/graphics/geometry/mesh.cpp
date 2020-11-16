@@ -30,6 +30,14 @@ void Mesh::draw(const Matrix4f& view, const Matrix4f& perspective) const {
   ebuf_.bind();
 
   glDrawElements(GL_TRIANGLES, indices_.rows() * indices_.cols(), GL_UNSIGNED_INT, 0);
+
+
+  for (unsigned int i = 0; i < diffuse_textures_.size(); i++) {
+    diffuse_textures_[i]->unbind(diffuse_gl_textures_[i]);
+  }
+  for (unsigned int i = 0; i < specular_textures_.size(); i++) {
+    specular_textures_[i]->unbind(specular_gl_textures_[i]);
+  }
 }
 
 void Mesh::draw(std::shared_ptr<ShaderProgram> p, const Matrix4f& view, const

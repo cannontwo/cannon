@@ -102,6 +102,7 @@ namespace cannon {
         void bind() const;
         void bind(GLenum texture_unit) const;
         void unbind() const;
+        void unbind(GLenum texture_unit) const;
 
         void set_wrap_repeat();
         void set_wrap_mirrored_repeat();

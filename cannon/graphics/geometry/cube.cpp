@@ -18,6 +18,7 @@ void Cube::draw(const Matrix4f& view, const Matrix4f& perspective) const {
   buf_.bind();
   normal_buf_.bind();
 
+  glBindTexture(GL_TEXTURE_2D, 0);
   glDrawArrays(GL_TRIANGLES, 0, vertices_.rows());
 }
 
@@ -38,6 +39,7 @@ void Cube::draw(std::shared_ptr<ShaderProgram> p, const Matrix4f& view, const
   buf_.bind();
   normal_buf_.bind();
 
+  glBindTexture(GL_TEXTURE_2D, 0);
   glDrawArrays(GL_TRIANGLES, 0, vertices_.rows());
 
 }

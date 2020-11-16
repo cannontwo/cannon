@@ -18,6 +18,11 @@ void Texture::unbind() const {
   glBindTexture(GL_TEXTURE_2D, 0);
 }
 
+void Texture::unbind(GLenum texture_unit) const {
+  glActiveTexture(texture_unit);
+  glBindTexture(GL_TEXTURE_2D, 0);
+}
+
 void Texture::set_wrap_repeat() {
   bind();
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
