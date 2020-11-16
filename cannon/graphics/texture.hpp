@@ -22,7 +22,7 @@ namespace cannon {
       public:
         // This constructor is primarily for use with Framebuffer
         Texture(int width=800, int height=600, GLint internal_format=GL_RGBA,
-            GLenum data_type=GL_UNSIGNED_BYTE, GLenum texture_unit=GL_TEXTURE0)
+            GLenum data_type=GL_UNSIGNED_BYTE, const void *data=NULL, GLenum texture_unit=GL_TEXTURE0)
           : internal_format(internal_format),
           data_type(data_type), width_(width), height_(height), gl_texture_unit_(texture_unit) {
 
@@ -30,7 +30,7 @@ namespace cannon {
           log_info("Created texture", gl_texture_);
 
           glBindTexture(GL_TEXTURE_2D, gl_texture_);
-          glTexImage2D(GL_TEXTURE_2D, 0, internal_format, width_, height_, 0, GL_RGBA, data_type, NULL);
+          glTexImage2D(GL_TEXTURE_2D, 0, internal_format, width_, height_, 0, GL_RGBA, data_type, data);
 
           set_wrap_repeat();
           set_filter_linear();

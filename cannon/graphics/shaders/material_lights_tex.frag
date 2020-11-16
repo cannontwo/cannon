@@ -50,7 +50,7 @@ struct Spotlight {
 #define NR_SPOTLIGHTS 16
 
 in vec3 Normal;
-in vec3 FragPos;
+in vec4 FragPos;
 in vec2 TexCoords;
 
 out vec4 FragColor;
@@ -85,7 +85,7 @@ vec3 calculate_dir_light(DirectionalLight light, vec3 normal, vec3 viewDir, vec3
 }
 
 vec3 calculate_point_light(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir, vec3 material_ambient, vec3 material_diffuse, vec3 material_specular) {
-  float distance = length(light.position.xyz - FragPos);
+  float distance = length(light.position.xyz - FragPos.xyz);
   float attenuation = 1.0 / (light.constant + light.linear * distance + light.quadratic * (distance * distance));
 
   // ambient
@@ -150,7 +150,7 @@ void main() {
   vec3 output = vec3(0.0);
 
   vec3 norm = normalize(Normal);
-  vec3 viewDir = normalize(viewPos.xyz - FragPos);
+  vec3 viewDir = normalize(viewPos.xyz - FragPos.xyz);
 
   // Only rendering first diffuse and specular tex right now
   vec3 material_ambient = material.ambient.xyz + vec3(texture(material.diffuse_tex[0], TexCoords));
@@ -160,11 +160,11 @@ void main() {
   output += calculate_dir_light(directional_light, norm, viewDir, material_ambient, material_diffuse, material_specular);
 
   for (int i = 0; i < num_point_lights; i++) {
-    output += calculate_point_light(point_lights[i], norm, FragPos, viewDir, material_ambient, material_diffuse, material_specular);
+    output += calculate_point_light(point_lights[i], norm, FragPos.xyz, viewDir, material_ambient, material_diffuse, material_specular);
   }
 
   for (int i = 0; i < num_spotlights; i++) {
-    output += calculate_spotlight(spotlights[i], norm, FragPos, viewDir, material_ambient, material_diffuse, material_specular);
+    output += calculate_spotlight(spotlights[i], norm, FragPos.xyz, viewDir, material_ambient, material_diffuse, material_specular);
   }
 
   FragColor = vec4(output, 1.0);

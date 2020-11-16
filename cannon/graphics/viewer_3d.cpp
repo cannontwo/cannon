@@ -73,7 +73,7 @@ void Viewer3D::process_mouse_input_() {
 
 void Viewer3D::draw_scene_geom(bool draw_lights) {
   Matrix4f perspective = make_perspective_fov(to_radians(45.0f),
-      (float)(w.width) / (float)(w.height), 0.1f, 1000.0f);
+      (float)(w.width) / (float)(w.height), 0.1f, 50.0f);
 
   for (unsigned int i = 0; i < scene_geom_.size(); i++) {
     scene_geom_[i]->draw(c.get_view_mat(), perspective);
@@ -92,7 +92,7 @@ void Viewer3D::draw_scene_geom(bool draw_lights) {
 
 void Viewer3D::draw_scene_geom(std::shared_ptr<ShaderProgram> p, bool draw_lights) {
   Matrix4f perspective = make_perspective_fov(to_radians(45.0f),
-      (float)(w.width) / (float)(w.height), 0.1f, 1000.0f);
+      (float)(w.width) / (float)(w.height), 0.1f, 50.0f);
 
   for (unsigned int i = 0; i < scene_geom_.size(); i++) {
     scene_geom_[i]->draw(p, c.get_view_mat(), perspective);
@@ -111,7 +111,7 @@ void Viewer3D::draw_scene_geom(std::shared_ptr<ShaderProgram> p, bool draw_light
 
 void Viewer3D::draw_light_geom() {
   Matrix4f perspective = make_perspective_fov(to_radians(45.0f),
-      (float)(w.width) / (float)(w.height), 0.1f, 1000.0f);
+      (float)(w.width) / (float)(w.height), 0.1f, 50.0f);
 
   for (unsigned int i = 0; i < light_geom_.size(); i++) {
     light_geom_[i]->draw(c.get_view_mat(), perspective);
@@ -124,7 +124,7 @@ void Viewer3D::draw_light_geom() {
 
 void Viewer3D::draw_light_geom(std::shared_ptr<ShaderProgram> p) {
   Matrix4f perspective = make_perspective_fov(to_radians(45.0f),
-      (float)(w.width) / (float)(w.height), 0.1f, 1000.0f);
+      (float)(w.width) / (float)(w.height), 0.1f, 50.0f);
 
   for (unsigned int i = 0; i < light_geom_.size(); i++) {
     light_geom_[i]->draw(p, c.get_view_mat(), perspective);

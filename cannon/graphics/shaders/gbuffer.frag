@@ -13,7 +13,7 @@ struct Material {
 };
 
 in vec3 Normal;
-in vec3 FragPos;
+in vec4 FragPos;
 in vec2 TexCoords;
 
 uniform Material material;
@@ -23,7 +23,7 @@ layout (location = 1) out vec4 gNormal;
 layout (location = 2) out vec4 gAlbedoSpec;
 
 void main() {
-  gPosition = vec4(FragPos, 1.0);
+  gPosition = FragPos;
   gNormal = vec4(normalize(Normal), 1.0);
 
   vec3 material_diffuse = material.diffuse.xyz + vec3(texture(material.diffuse_tex[0], TexCoords));
