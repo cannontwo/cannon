@@ -109,11 +109,6 @@ void test() {
   ssao_program->attach_fragment_shader("shaders/ssao.frag");
   ssao_program->link();
 
-  std::vector<std::shared_ptr<Texture>> ssao_attachments;
-  ssao_attachments.push_back(attachments[0]);
-  ssao_attachments.push_back(attachments[1]);
-  ssao_attachments.push_back(noise_tex);
-
   auto ssao_fb = std::make_shared<Framebuffer>(viewer.w.width, viewer.w.height, "ssao framebuffer");
   auto ssao_rp = std::make_shared<RenderPass>("ssao pass", ssao_fb, ssao_program, [&](){
         Vector3f c_pos = viewer.c.get_pos();
@@ -154,7 +149,10 @@ void test() {
         ssao_program->set_uniform("projection", perspective);
         ssao_program->set_uniform("view", viewer.c.get_view_mat());
 
-        log_info("View dir is", viewer.c.get_direction());
+        std::vector<std::shared_ptr<Texture>> ssao_attachments;
+        ssao_attachments.push_back(fb->color_attachments[0]);
+        ssao_attachments.push_back(fb->color_attachments[1]);
+        ssao_attachments.push_back(noise_tex);
 
         ssao_fb->quad->draw(ssao_program, ssao_attachments);
       });
@@ -181,7 +179,12 @@ void test() {
         lighting_program->set_uniform("gNormal", 1);
         lighting_program->set_uniform("gAlbedoSpec", 2);
 
-        fb2->quad->draw(lighting_program, attachments);
+        std::vector<std::shared_ptr<Texture>> lighting_attachments;
+        lighting_attachments.push_back(fb->color_attachments[0]);
+        lighting_attachments.push_back(fb->color_attachments[1]);
+        lighting_attachments.push_back(fb->color_attachments[2]);
+
+        fb2->quad->draw(lighting_program, lighting_attachments);
       });
 
   auto light_geom_program = std::make_shared<ShaderProgram>("light_geom_shader");
@@ -242,12 +245,13 @@ void test() {
         fb3->quad->draw(hdr_program);
       });
 
-
   viewer.add_render_pass(rp);
   viewer.add_render_pass(ssao_rp);
   viewer.add_render_pass(rp2);
   viewer.add_render_pass(rp3);
   viewer.add_render_pass(rp4);
+
+  viewer.w.draw_from_framebuffer(ssao_fb);
 
   viewer.spawn_cube();
   viewer.render_loop_multipass([&] {});
