@@ -33,7 +33,7 @@ void main() {
   //vec3 mapped = reinhard_map(hdrColor);
   //vec3 mapped = basic_exposure_map(hdrColor, exposure);
   //vec3 mapped = hdrColor;
-  vec3 mapped = filmic_map(hdrColor * exposure);
+  vec3 mapped = filmic_map(hdrColor * pow(2.0, exposure));
 
   FragColor = vec4(mapped, 1.0);
 }

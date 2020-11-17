@@ -99,21 +99,7 @@ std::vector<std::shared_ptr<Texture>> Model::load_material_textures_(aiMaterial 
     std::string path_str(str.C_Str());
     path_str = directory_ + "/" + path_str;
     
-    // Cache textures we've already loaded
-    bool skip = false;
-    for (auto& tex : Texture::get_loaded_textures()) {
-      if (path_str.compare(tex->path) == 0) {
-        textures.push_back(tex);
-        skip = true;
-        break;
-      }
-    }
-
-    if (!skip) {
-      std::shared_ptr<Texture> new_tex = std::make_shared<Texture>(path_str);
-      textures.push_back(new_tex);
-      Texture::get_loaded_textures().push_back(new_tex);
-    }
+    textures.push_back(Texture::load_texture(path_str));
   }
 
   return textures;

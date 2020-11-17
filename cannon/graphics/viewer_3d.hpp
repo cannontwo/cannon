@@ -5,6 +5,7 @@
 #include <memory>
 #include <random>
 #include <queue>
+#include <functional>
 
 #include <cannon/graphics/camera.hpp>
 #include <cannon/graphics/window.hpp>
@@ -40,67 +41,7 @@ namespace cannon {
           make_shaders_();
           initialize_lc_();
           set_callbacks_();
-
-          auto plane = std::make_shared<geometry::Plane>(geom_program_);
-          add_geom(plane);
-
-          Vector3f pos;
-          pos << 0.0, -5.0, 0.0;
-
-          AngleAxisf rot(to_radians(-90), Vector3f::UnitX());
-
-          plane->set_pos(pos);
-          plane->set_rot(rot);
-          plane->set_scale(20.0);
-
-          auto plane2 = std::make_shared<geometry::Plane>(geom_program_);
-          add_geom(plane2);
-
-          Vector3f pos2;
-          pos2 << 10.0, 0.0, 0.0;
-
-          AngleAxisf rot2(to_radians(-90), Vector3f::UnitY());
-
-          plane2->set_pos(pos2);
-          plane2->set_rot(rot2);
-          plane2->set_scale(20.0);
-
-          auto plane3 = std::make_shared<geometry::Plane>(geom_program_);
-
-          Vector3f pos3;
-          pos3 << -10.0, 0.0, 0.0;
-
-          AngleAxisf rot3(to_radians(90), Vector3f::UnitY());
-
-          plane3->set_pos(pos3);
-          plane3->set_rot(rot3);
-          plane3->set_scale(20.0);
-
-          add_geom(plane3);
-
-          auto plane4 = std::make_shared<geometry::Plane>(geom_program_);
-          Vector3f pos4;
-          pos4 << 0.0, 0.0, -10.0;
-
-          AngleAxisf rot4(to_radians(0), Vector3f::UnitZ());
-
-          plane4->set_pos(pos4);
-          plane4->set_rot(rot4);
-          plane4->set_scale(20.0);
-
-          add_geom(plane4);
-
-          auto plane5 = std::make_shared<geometry::Plane>(geom_program_);
-          Vector3f pos5;
-          pos5 << 0.0, 0.0, 10.0;
-
-          AngleAxisf rot5(to_radians(180), Vector3f::UnitY());
-
-          plane5->set_pos(pos5);
-          plane5->set_rot(rot5);
-          plane5->set_scale(20.0);
-
-          add_geom(plane5);
+          populate_initial_geometry_();
         }
 
         ~Viewer3D() {}
@@ -189,6 +130,11 @@ namespace cannon {
         void draw_light_geom(std::shared_ptr<ShaderProgram> p);
 
         void add_render_pass(std::shared_ptr<RenderPass> rp);
+        std::shared_ptr<Framebuffer> add_render_pass(const std::string& name,
+            std::shared_ptr<ShaderProgram> p, std::function<void()> f);
+        std::shared_ptr<Framebuffer> add_render_pass(const std::string& name,
+            std::vector<std::shared_ptr<Texture>> attachments,
+            std::shared_ptr<ShaderProgram> p, std::function<void()> f);
 
         std::shared_ptr<geometry::Cube> spawn_cube();
         std::shared_ptr<geometry::Plane> spawn_plane();
@@ -205,6 +151,7 @@ namespace cannon {
         void make_shaders_();
         void initialize_lc_();
         void set_callbacks_();
+        void populate_initial_geometry_();
 
         void process_input_();
         void process_mouse_input_();

@@ -62,6 +62,19 @@ void Texture::set_filter_nearest() {
 void Texture::write_imgui() {
   ImTextureID tex_id = (void *)(intptr_t)gl_texture_;
 
-  // Rendering is flipped in ImGui
-  ImGui::Image(tex_id, ImVec2(100.0, 100.0), ImVec2(0.0, 1.0), ImVec2(1.0, 0.0));
+  if (path.empty()) {
+    // Rendering is flipped in ImGui
+    static float texture_preview_size = 100.0;
+    ImGui::SliderFloat("Preview Size", &texture_preview_size, 100.0, 500.0);
+    ImGui::Image(tex_id, ImVec2(texture_preview_size, texture_preview_size),
+        ImVec2(0.0, 1.0), ImVec2(1.0, 0.0));
+  } else {
+    if (ImGui::TreeNode(path.c_str())) {
+      static float texture_preview_size = 100.0;
+      ImGui::SliderFloat("Preview Size", &texture_preview_size, 100.0, 500.0);
+      ImGui::Image(tex_id, ImVec2(texture_preview_size, texture_preview_size),
+          ImVec2(0.0, 1.0), ImVec2(1.0, 0.0));
+      ImGui::TreePop();
+    }
+  }
 }

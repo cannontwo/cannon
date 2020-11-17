@@ -44,9 +44,8 @@ void test() {
 
   viewer.w.set_clear_color({0.0, 0.0, 0.0, 1.0});
 
-  auto fb = std::make_shared<Framebuffer>(attachments, viewer.w.width,
-      viewer.w.height, "gbuffer framebuffer");
-  auto rp = std::make_shared<RenderPass>("gbuffer pass", fb, gbuf_program, [&](){
+  std::shared_ptr<Framebuffer> fb = viewer.add_render_pass("gbuffer",
+      attachments, gbuf_program, [&](){
             glDisable(GL_FRAMEBUFFER_SRGB); 
             viewer.disable_skybox();
             Vector3f c_pos = viewer.c.get_pos();
@@ -109,8 +108,7 @@ void test() {
   ssao_program->attach_fragment_shader("shaders/ssao.frag");
   ssao_program->link();
 
-  auto ssao_fb = std::make_shared<Framebuffer>(viewer.w.width, viewer.w.height, "ssao framebuffer");
-  auto ssao_rp = std::make_shared<RenderPass>("ssao pass", ssao_fb, ssao_program, [&](){
+  std::shared_ptr<Framebuffer> ssao_fb = viewer.add_render_pass("ssao", ssao_program, [&](){
         Vector3f c_pos = viewer.c.get_pos();
         Vector4f tmp_pos;
         tmp_pos << c_pos[0],
@@ -162,23 +160,19 @@ void test() {
   ssao_blur_program->attach_fragment_shader("shaders/ssao_blur.frag");
   ssao_blur_program->link();
 
-  auto ssao_blur_fb = std::make_shared<Framebuffer>(viewer.w.width,
-      viewer.w.height, "ssao blur framebuffer");
-  auto ssao_blur_rp = std::make_shared<RenderPass>("ssao blur pass",
-      ssao_blur_fb, ssao_blur_program, [&](){
+  std::shared_ptr<Framebuffer> ssao_blur_fb = viewer.add_render_pass("ssao blur",
+      ssao_blur_program, [&](){
         ssao_blur_fb->bind_read();
         ssao_blur_fb->bind_draw();
         ssao_fb->quad->draw(ssao_blur_program);
       });
-  
 
   auto lighting_program = std::make_shared<ShaderProgram>("lighting_shader");
   lighting_program->attach_vertex_shader("shaders/pass_pos_tex.vert");
   lighting_program->attach_fragment_shader("shaders/deferred_lighting.frag");
   lighting_program->link();
 
-  auto fb2 = std::make_shared<Framebuffer>(viewer.w.width, viewer.w.height, "lighting framebuffer");
-  auto rp2 = std::make_shared<RenderPass>("lighting pass", fb2, lighting_program, [&](){
+  std::shared_ptr<Framebuffer> fb2 = viewer.add_render_pass("lighting", lighting_program, [&](){
         Vector3f c_pos = viewer.c.get_pos();
         Vector4f tmp_pos;
         tmp_pos << c_pos[0],
@@ -219,8 +213,7 @@ void test() {
   light_geom_program->attach_fragment_shader("shaders/pass_color.frag");
   light_geom_program->link();
 
-  auto fb3 = std::make_shared<Framebuffer>(viewer.w.width, viewer.w.height, "light geom framebuffer");
-  auto rp3 = std::make_shared<RenderPass>("light geom pass", fb3, light_geom_program, [&]() {
+  std::shared_ptr<Framebuffer> fb3 = viewer.add_render_pass("light geom", light_geom_program, [&]() {
         Vector3f c_pos = viewer.c.get_pos();
         Vector4f tmp_pos;
         tmp_pos << c_pos[0],
@@ -251,12 +244,11 @@ void test() {
   hdr_program->attach_fragment_shader("shaders/hdr_tone_mapping.frag");
   hdr_program->link();
 
-  auto fb4 = std::make_shared<Framebuffer>(viewer.w.width, viewer.w.height, "hdr framebuffer");
-  auto rp4 = std::make_shared<RenderPass>("hdr tone mapping pass", fb4, hdr_program, [&]() {
-        static float exposure = 1.0;
+  std::shared_ptr<Framebuffer> fb4 = viewer.add_render_pass("hdr tone mapping", hdr_program, [&]() {
+        static float exposure = 0.0;
         if (ImGui::BeginMainMenuBar()) {
           if (ImGui::BeginMenu("Lighting")) {
-            ImGui::SliderFloat("exposure", &exposure, 0.0, 5.0);
+            ImGui::SliderFloat("exposure", &exposure, -4.0, 4.0);
             ImGui::EndMenu();
           }
           ImGui::EndMainMenuBar();
@@ -267,13 +259,6 @@ void test() {
         fb4->bind_draw();
         fb3->quad->draw(hdr_program);
       });
-
-  viewer.add_render_pass(rp);
-  viewer.add_render_pass(ssao_rp);
-  viewer.add_render_pass(ssao_blur_rp);
-  viewer.add_render_pass(rp2);
-  viewer.add_render_pass(rp3);
-  viewer.add_render_pass(rp4);
 
   viewer.spawn_cube();
   viewer.render_loop_multipass([&] {});

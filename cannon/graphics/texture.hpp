@@ -99,6 +99,19 @@ namespace cannon {
           return loaded_textures;
         }
 
+        static std::shared_ptr<Texture> load_texture(const std::string& path) {
+          for (auto& tex : get_loaded_textures()) {
+            if (path.compare(tex->path) == 0) {
+              return tex;
+            }
+          }
+
+          // We need to actually create the new texture
+          auto ret_tex = std::make_shared<Texture>(path);
+          get_loaded_textures().push_back(ret_tex);
+          return ret_tex;
+        }
+
         void bind() const;
         void bind(GLenum texture_unit) const;
         void unbind() const;
@@ -129,8 +142,6 @@ namespace cannon {
 
         GLuint gl_texture_;
         GLenum gl_texture_unit_;
-
-
     };
 
   } // namespace graphics

@@ -346,6 +346,13 @@ void Viewer3D::write_imgui(bool multipass) {
       }
     }
 
+    if (ImGui::BeginMenu("Textures")) {
+      for (auto &t : Texture::get_loaded_textures()) {
+        t->write_imgui();
+      }
+      ImGui::EndMenu();
+    }
+
     ImGui::EndMainMenuBar();
   }
 }
@@ -357,6 +364,31 @@ void Viewer3D::add_render_pass(std::shared_ptr<RenderPass> rp) {
   // pass, and drawing to screen happens on the last
   w.render_to_framebuffer(render_passes_.front()->framebuffer);
   w.draw_from_framebuffer(render_passes_.back()->framebuffer);
+}
+
+std::shared_ptr<Framebuffer> Viewer3D::add_render_pass(const std::string& name,
+    std::shared_ptr<ShaderProgram> p, std::function<void()> f) {
+  auto fb = std::make_shared<Framebuffer>(w.width, w.height, name + " framebuffer");
+  auto rp = std::make_shared<RenderPass>(name + " pass", fb, p, f);
+
+  render_passes_.push_back(rp);  
+  w.render_to_framebuffer(render_passes_.front()->framebuffer);
+  w.draw_from_framebuffer(render_passes_.back()->framebuffer);
+
+  return fb;
+}
+
+std::shared_ptr<Framebuffer> Viewer3D::add_render_pass(const std::string& name,
+    std::vector<std::shared_ptr<Texture>> attachments,
+    std::shared_ptr<ShaderProgram> p, std::function<void()> f) {
+  auto fb = std::make_shared<Framebuffer>(attachments, w.width, w.height, name + " framebuffer");
+  auto rp = std::make_shared<RenderPass>(name + " pass", fb, p, f);
+
+  render_passes_.push_back(rp);  
+  w.render_to_framebuffer(render_passes_.front()->framebuffer);
+  w.draw_from_framebuffer(render_passes_.back()->framebuffer);
+
+  return fb;
 }
 
 void Viewer3D::initialize_lc_() {
@@ -380,6 +412,69 @@ void Viewer3D::make_shaders_() {
 void Viewer3D::set_callbacks_() {
   glfwSetWindowUserPointer(w.window, this);
   glfwSetDropCallback(w.window, drop_callback);
+}
+
+void Viewer3D::populate_initial_geometry_() {
+  auto plane = std::make_shared<geometry::Plane>(geom_program_);
+  add_geom(plane);
+
+  Vector3f pos;
+  pos << 0.0, -5.0, 0.0;
+
+  AngleAxisf rot(to_radians(-90), Vector3f::UnitX());
+
+  plane->set_pos(pos);
+  plane->set_rot(rot);
+  plane->set_scale(20.0);
+
+  auto plane2 = std::make_shared<geometry::Plane>(geom_program_);
+  add_geom(plane2);
+
+  Vector3f pos2;
+  pos2 << 10.0, 0.0, 0.0;
+
+  AngleAxisf rot2(to_radians(-90), Vector3f::UnitY());
+
+  plane2->set_pos(pos2);
+  plane2->set_rot(rot2);
+  plane2->set_scale(20.0);
+
+  auto plane3 = std::make_shared<geometry::Plane>(geom_program_);
+
+  Vector3f pos3;
+  pos3 << -10.0, 0.0, 0.0;
+
+  AngleAxisf rot3(to_radians(90), Vector3f::UnitY());
+
+  plane3->set_pos(pos3);
+  plane3->set_rot(rot3);
+  plane3->set_scale(20.0);
+
+  add_geom(plane3);
+
+  auto plane4 = std::make_shared<geometry::Plane>(geom_program_);
+  Vector3f pos4;
+  pos4 << 0.0, 0.0, -10.0;
+
+  AngleAxisf rot4(to_radians(0), Vector3f::UnitZ());
+
+  plane4->set_pos(pos4);
+  plane4->set_rot(rot4);
+  plane4->set_scale(20.0);
+
+  add_geom(plane4);
+
+  auto plane5 = std::make_shared<geometry::Plane>(geom_program_);
+  Vector3f pos5;
+  pos5 << 0.0, 0.0, 10.0;
+
+  AngleAxisf rot5(to_radians(180), Vector3f::UnitY());
+
+  plane5->set_pos(pos5);
+  plane5->set_rot(rot5);
+  plane5->set_scale(20.0);
+
+  add_geom(plane5);
 }
 
 // Callbacks
