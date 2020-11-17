@@ -52,9 +52,12 @@ uniform vec4 viewPos;
 
 uniform float shininess;
 
+uniform bool enable_ssao;
+
 uniform sampler2D gPosition;
 uniform sampler2D gNormal;
 uniform sampler2D gAlbedoSpec;
+uniform sampler2D ssao;
 
 vec3 calculate_dir_light(DirectionalLight light, vec3 normal, vec3 viewDir, vec3 material_ambient, vec3 material_diffuse, vec3 material_specular) {
   vec3 lightDir = normalize(-light.direction.xyz);
@@ -144,11 +147,15 @@ void main() {
   vec3 Albedo = texture(gAlbedoSpec, texCoord).rgb;
   float Specular = texture(gAlbedoSpec, texCoord).a;
 
+  float occlusion = texture(ssao, texCoord).r;
+  if (!enable_ssao)
+    occlusion = 1.0;
+
   vec3 norm = normalize(Normal);
   vec3 viewDir = normalize(viewPos.xyz - FragPos);
 
   // Only rendering first diffuse and specular tex right now
-  vec3 material_ambient = Albedo;
+  vec3 material_ambient = Albedo * occlusion;
   vec3 material_diffuse = Albedo;
   vec3 material_specular = vec3(Specular);
 

@@ -156,6 +156,20 @@ void test() {
 
         ssao_fb->quad->draw(ssao_program, ssao_attachments);
       });
+
+  auto ssao_blur_program = std::make_shared<ShaderProgram>("ssao_blur_shader");
+  ssao_blur_program->attach_vertex_shader("shaders/pass_pos_tex.vert");
+  ssao_blur_program->attach_fragment_shader("shaders/ssao_blur.frag");
+  ssao_blur_program->link();
+
+  auto ssao_blur_fb = std::make_shared<Framebuffer>(viewer.w.width,
+      viewer.w.height, "ssao blur framebuffer");
+  auto ssao_blur_rp = std::make_shared<RenderPass>("ssao blur pass",
+      ssao_blur_fb, ssao_blur_program, [&](){
+        ssao_blur_fb->bind_read();
+        ssao_blur_fb->bind_draw();
+        ssao_fb->quad->draw(ssao_blur_program);
+      });
   
 
   auto lighting_program = std::make_shared<ShaderProgram>("lighting_shader");
@@ -178,11 +192,24 @@ void test() {
         lighting_program->set_uniform("gPosition", 0);
         lighting_program->set_uniform("gNormal", 1);
         lighting_program->set_uniform("gAlbedoSpec", 2);
+        lighting_program->set_uniform("ssao", 3);
+
+        static bool enable_ssao = true;
+        if (ImGui::BeginMainMenuBar()) {
+          if (ImGui::BeginMenu("SSAO")) {
+            ImGui::Checkbox("enable", &enable_ssao);
+            ImGui::EndMenu();
+          }
+          ImGui::EndMainMenuBar();
+        }
+
+        lighting_program->set_uniform("enable_ssao", enable_ssao);
 
         std::vector<std::shared_ptr<Texture>> lighting_attachments;
         lighting_attachments.push_back(fb->color_attachments[0]);
         lighting_attachments.push_back(fb->color_attachments[1]);
         lighting_attachments.push_back(fb->color_attachments[2]);
+        lighting_attachments.push_back(ssao_blur_fb->color_attachments[0]);
 
         fb2->quad->draw(lighting_program, lighting_attachments);
       });
@@ -226,11 +253,6 @@ void test() {
 
   auto fb4 = std::make_shared<Framebuffer>(viewer.w.width, viewer.w.height, "hdr framebuffer");
   auto rp4 = std::make_shared<RenderPass>("hdr tone mapping pass", fb4, hdr_program, [&]() {
-        fb3->bind_read();
-        fb4->bind_draw();
-        glBlitFramebuffer(0, 0, fb3->width, fb3->height, 0, 0, fb4->width,
-            fb4->height, GL_COLOR_BUFFER_BIT, GL_NEAREST);
-
         static float exposure = 1.0;
         if (ImGui::BeginMainMenuBar()) {
           if (ImGui::BeginMenu("Lighting")) {
@@ -241,17 +263,17 @@ void test() {
         }
         hdr_program->set_uniform("exposure", exposure);
 
+        fb3->bind_read();
         fb4->bind_draw();
         fb3->quad->draw(hdr_program);
       });
 
   viewer.add_render_pass(rp);
   viewer.add_render_pass(ssao_rp);
+  viewer.add_render_pass(ssao_blur_rp);
   viewer.add_render_pass(rp2);
   viewer.add_render_pass(rp3);
   viewer.add_render_pass(rp4);
-
-  viewer.w.draw_from_framebuffer(ssao_fb);
 
   viewer.spawn_cube();
   viewer.render_loop_multipass([&] {});
