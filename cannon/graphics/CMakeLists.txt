@@ -23,6 +23,7 @@ list(APPEND GRAPHICS_SOURCES
   cubemap.cpp
   geometry/skybox.cpp
   geometry/screen_quad.cpp
+  geometry/axes_hint.cpp
   )
 
 add_library(graphics OBJECT ${GRAPHICS_SOURCES})

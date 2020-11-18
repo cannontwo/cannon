@@ -8,6 +8,7 @@
 #include <cannon/graphics/framebuffer.hpp>
 #include <cannon/log/registry.hpp>
 #include <cannon/math/multivariate_normal.hpp>
+#include <cannon/graphics/geometry/axes_hint.hpp>
 
 using namespace cannon::graphics;
 using namespace cannon::log;
@@ -259,6 +260,56 @@ void test() {
         fb3->bind_read();
         fb4->bind_draw();
         fb3->quad->draw(hdr_program);
+      });
+
+  auto axes_program = std::make_shared<ShaderProgram>("axes_shader");
+  axes_program->attach_vertex_shader("shaders/pass_pos.vert");
+  axes_program->attach_fragment_shader("shaders/axes_hint.frag");
+  axes_program->link();
+
+  geometry::AxesHint ah;
+
+  std::shared_ptr<Framebuffer> axes_fb = viewer.add_render_pass("axes hint", axes_program, [&]() {
+      fb4->bind_read();
+      axes_fb->bind_draw();
+      fb4->quad->draw();
+
+      axes_fb->bind_read();
+      Matrix4f perspective = make_orthographic(-1.0, 1.0, -1.0, 1.0, -2.0,
+          2.0);
+
+      // Rotation-only lookAt matrix
+      Vector3f tmp_pos = -viewer.c.get_direction().normalized();
+      Vector3f tmp_dir = viewer.c.get_direction().normalized();
+      Vector3f tmp_up = tmp_dir.cross(viewer.c.get_right());
+      Vector3f right = viewer.c.get_right();
+
+      Matrix4f rot_mat;
+      Matrix4f trans_mat;
+
+      rot_mat << right[0], right[1], right[2], 0.0,
+                 tmp_up[0], tmp_up[1], tmp_up[2], 0.0,
+                 tmp_dir[0], tmp_dir[1], tmp_dir[2], 0.0,
+                 0.0, 0.0, 0.0, 1.0;
+
+      trans_mat << 1.0, 0.0, 0.0, -tmp_pos[0],
+                   0.0, 1.0, 0.0, -tmp_pos[1],
+                   0.0, 0.0, 1.0, -tmp_pos[2],
+                   0.0, 0.0, 0.0, 1.0;
+
+      Matrix4f view = rot_mat * trans_mat;
+
+      glDisable(GL_DEPTH_TEST);
+      int start_x = viewer.w.width - 150;
+      int start_y = viewer.w.height - 150;
+      int small_width = 100;
+      int small_height = 100;
+      glViewport(start_x, start_y, small_width, small_height);
+      glLineWidth(5.0);
+      ah.draw(axes_program, view, perspective);
+      glEnable(GL_DEPTH_TEST);
+
+      glViewport(0, 0, viewer.w.width, viewer.w.height);
       });
 
   viewer.spawn_cube();
