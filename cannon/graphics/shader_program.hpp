@@ -42,8 +42,10 @@ namespace cannon {
           glAttachShader(gl_shader_program_, shader.gl_shader_);
         }
 
-        void attach_vertex_shader(const std::string& v_src);
-        void attach_fragment_shader(const std::string& f_src);
+        void attach_vertex_shader(const std::string& v_src, const
+            std::vector<std::string>& v_libs = {});
+        void attach_fragment_shader(const std::string& f_src, const
+            std::vector<std::string>& f_libs = {});
 
         void init() {
           gl_shader_program_ = glCreateProgram();
@@ -70,7 +72,9 @@ namespace cannon {
 
         std::string name_;
         std::string v_src_;
+        std::vector<std::string> v_libs_;
         std::string f_src_;
+        std::vector<std::string> f_libs_;
 
     };
 

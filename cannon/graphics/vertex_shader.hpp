@@ -49,6 +49,8 @@ namespace cannon {
 
     // Free Functions
     VertexShader load_vertex_shader(const std::string& path);
+    VertexShader load_vertex_shader(const std::string& main_path, const
+        std::vector<std::string>& lib_paths);
 
     // Static shader sources
     static const std::string BASIC_VERTEX_SHADER = std::string("\

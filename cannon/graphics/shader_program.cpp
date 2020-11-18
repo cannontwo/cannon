@@ -59,15 +59,29 @@ void ShaderProgram::set_uniform(const std::string& name, Matrix4f value, bool ve
 void ShaderProgram::reload() {
   glDeleteProgram(gl_shader_program_);
   init();
-  attach_vertex_shader(v_src_);
-  attach_fragment_shader(f_src_);
+  attach_vertex_shader(v_src_, v_libs_);
+  attach_fragment_shader(f_src_, f_libs_);
   link();
 }
 
 void ShaderProgram::write_imgui() {
   if (ImGui::TreeNode(name_.c_str())) {
     ImGui::InputText("Vertex Shader", &v_src_);
+    for (unsigned int i = 0; i < v_libs_.size(); i++) {
+      ImGui::PushID(i);
+      std::string l = "Vertex Lib " + std::to_string(i);
+      ImGui::InputText(l.c_str(), &v_libs_[i]);
+      ImGui::PopID();
+    }
+
     ImGui::InputText("Fragment Shader", &f_src_);
+    for (unsigned int i = 0; i < f_libs_.size(); i++) {
+      ImGui::PushID(v_libs_.size() + i);
+      std::string l = "Fragment Lib " + std::to_string(i);
+      ImGui::InputText(l.c_str(), &f_libs_[i]);
+      ImGui::PopID();
+    }
+
     if (ImGui::Button("Reload")) {
       reload();
     }
@@ -75,14 +89,18 @@ void ShaderProgram::write_imgui() {
   }
 }
 
-void ShaderProgram::attach_vertex_shader(const std::string& v_src) {
+void ShaderProgram::attach_vertex_shader(const std::string& v_src,
+    const std::vector<std::string>& v_libs) {
   v_src_ = v_src;
+  v_libs_ = v_libs;
 
-  attach_shader(load_vertex_shader(v_src));
+  attach_shader(load_vertex_shader(v_src, v_libs_));
 }
 
-void ShaderProgram::attach_fragment_shader(const std::string& f_src) {
+void ShaderProgram::attach_fragment_shader(const std::string& f_src,
+    const std::vector<std::string>& f_libs) {
   f_src_ = f_src;
+  f_libs_ = f_libs;
 
-  attach_shader(load_fragment_shader(f_src));
+  attach_shader(load_fragment_shader(f_src, f_libs_));
 }

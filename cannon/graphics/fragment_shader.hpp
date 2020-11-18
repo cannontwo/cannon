@@ -49,6 +49,8 @@ namespace cannon {
 
     // Free Functions
     FragmentShader load_fragment_shader(const std::string& path);
+    FragmentShader load_fragment_shader(const std::string& main_path, const
+        std::vector<std::string>& lib_paths);
 
     // Static shader sources
     static const std::string BASIC_FRAGMENT_SHADER = std::string("\

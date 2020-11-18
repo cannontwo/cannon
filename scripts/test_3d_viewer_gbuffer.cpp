@@ -240,7 +240,8 @@ void test() {
       });
 
   auto hdr_program = std::make_shared<ShaderProgram>("hdr_shader");
-  hdr_program->attach_vertex_shader("shaders/pass_pos_tex.vert");
+  hdr_program->attach_vertex_shader("shaders/pass_pos_tex.vert",{"shaders/libs/sdf.glsl",
+      "shaders/libs/foo.glsl"});
   hdr_program->attach_fragment_shader("shaders/hdr_tone_mapping.frag");
   hdr_program->link();
 
