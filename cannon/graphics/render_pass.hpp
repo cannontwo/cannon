@@ -18,17 +18,25 @@ namespace cannon {
 
         RenderPass(const std::string &name, std::shared_ptr<Framebuffer> fb,
             std::shared_ptr<ShaderProgram> p, std::function<void()> f) :
-          name(name), framebuffer(fb), program(p), draw_func(f) {}
+          name(name), framebuffer(fb), draw_func(f) {
+
+            programs.push_back(p);
+          
+          }
+
+        RenderPass(const std::string &name, std::shared_ptr<Framebuffer> fb,
+            std::vector<std::shared_ptr<ShaderProgram>> programs, std::function<void()> f) :
+          name(name), framebuffer(fb), programs(programs), draw_func(f) {}
 
         RenderPass(RenderPass& o) : name(o.name), framebuffer(o.framebuffer),
-        program(o.program), draw_func(o.draw_func) {}
+        programs(o.programs), draw_func(o.draw_func) {}
 
         RenderPass(RenderPass&& o) : name(o.name), framebuffer(o.framebuffer),
-        program(o.program), draw_func(o.draw_func) {}
+        programs(o.programs), draw_func(o.draw_func) {}
 
         void run() {
           framebuffer->bind();
-          program->activate();
+          programs[0]->activate();
           draw_func();
         };
 
@@ -40,7 +48,10 @@ namespace cannon {
                 ImGui::PlotLines("Time", time_cbuf_.data,
                     IM_ARRAYSIZE(time_cbuf_.data), time_cbuf_.offset, NULL,
                     0.0, 0.05);
-                program->write_imgui(); 
+
+                for (auto& p : programs)
+                  p->write_imgui(); 
+
                 framebuffer->write_imgui();
                 ImGui::TreePop();
               }
@@ -58,7 +69,7 @@ namespace cannon {
         std::string name;
 
         std::shared_ptr<Framebuffer> framebuffer;
-        std::shared_ptr<ShaderProgram> program;
+        std::vector<std::shared_ptr<ShaderProgram>> programs;
         std::function<void()> draw_func;
 
       private:

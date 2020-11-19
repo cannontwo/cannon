@@ -35,6 +35,12 @@ void test() {
   gbuf_program->attach_fragment_shader("shaders/gbuffer.frag");
   gbuf_program->link();
 
+  auto sdf_geom_program = std::make_shared<ShaderProgram>("sdf_geom_shader");
+  sdf_geom_program->attach_vertex_shader("shaders/sdf.vert");
+  std::vector<std::string> libs = {"shaders/libs/sdf.glsl"};
+  sdf_geom_program->attach_fragment_shader("shaders/sdf.frag", libs);
+  sdf_geom_program->link();
+
   std::vector<std::shared_ptr<Texture>> attachments;
   attachments.push_back(std::make_shared<Texture>(viewer.w.width,
         viewer.w.height, GL_RGBA32F, GL_FLOAT));
@@ -46,7 +52,7 @@ void test() {
   viewer.w.set_clear_color({0.0, 0.0, 0.0, 1.0});
 
   std::shared_ptr<Framebuffer> fb = viewer.add_render_pass("gbuffer",
-      attachments, gbuf_program, [&](){
+      attachments, {gbuf_program, sdf_geom_program}, [&](){
             glDisable(GL_FRAMEBUFFER_SRGB); 
             viewer.disable_skybox();
             Vector3f c_pos = viewer.c.get_pos();
@@ -56,11 +62,25 @@ void test() {
                        c_pos[2],
                        1.0;
             gbuf_program->set_uniform("viewPos", tmp_pos);
+            sdf_geom_program->set_uniform("viewPos", tmp_pos);
             viewer.apply_light_collection(gbuf_program);
             
             fb->color_attachments[0]->unbind();
 
             viewer.draw_scene_geom(gbuf_program, false);
+
+            sdf_geom_program->activate();
+            sdf_geom_program->set_uniform("time", (float)glfwGetTime());
+            static int max_march_steps = 255;
+            if (ImGui::BeginMainMenuBar()) {
+              if (ImGui::BeginMenu("SDF")) {
+                ImGui::SliderInt("max_march_steps", &max_march_steps, 0, 1000);
+                ImGui::EndMenu();
+              }
+              ImGui::EndMainMenuBar();
+            }
+            sdf_geom_program->set_uniform("max_march_steps", max_march_steps);
+            viewer.draw_sdf_geom(sdf_geom_program);
       });
 
   std::vector<Vector4f> ssao_kernel;
@@ -208,6 +228,7 @@ void test() {
 
         fb2->quad->draw(lighting_program, lighting_attachments);
       });
+
 
   auto light_geom_program = std::make_shared<ShaderProgram>("light_geom_shader");
   light_geom_program->attach_vertex_shader("shaders/mvp_uniform_color.vert");

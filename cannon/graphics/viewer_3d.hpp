@@ -21,6 +21,7 @@
 #include <cannon/graphics/spotlight.hpp>
 #include <cannon/graphics/geometry/skybox.hpp>
 #include <cannon/graphics/render_pass.hpp>
+#include <cannon/graphics/geometry/sdf_volume.hpp>
 
 namespace cannon {
   namespace graphics {
@@ -129,18 +130,22 @@ namespace cannon {
         void draw_light_geom();
         void draw_light_geom(std::shared_ptr<ShaderProgram> p);
 
+        void draw_sdf_geom();
+        void draw_sdf_geom(std::shared_ptr<ShaderProgram> p);
+
         void add_render_pass(std::shared_ptr<RenderPass> rp);
         std::shared_ptr<Framebuffer> add_render_pass(const std::string& name,
             std::shared_ptr<ShaderProgram> p, std::function<void()> f);
         std::shared_ptr<Framebuffer> add_render_pass(const std::string& name,
             std::vector<std::shared_ptr<Texture>> attachments,
-            std::shared_ptr<ShaderProgram> p, std::function<void()> f);
+            std::vector<std::shared_ptr<ShaderProgram>> programs, std::function<void()> f);
 
         std::shared_ptr<geometry::Cube> spawn_cube();
         std::shared_ptr<geometry::Plane> spawn_plane();
         std::shared_ptr<geometry::Model> spawn_model(const std::string& path);
         void spawn_point_light();
         void spawn_spotlight();
+        void spawn_sdf_volume();
 
         void write_imgui(bool multipass=false);
         
@@ -168,12 +173,14 @@ namespace cannon {
 
         std::vector<std::shared_ptr<geometry::DrawableGeom>> scene_geom_;
         std::vector<std::shared_ptr<geometry::DrawableGeom>> light_geom_;
+        std::vector<std::shared_ptr<geometry::DrawableGeom>> sdf_geom_;
         std::vector<std::shared_ptr<ShaderProgram>> shaders_;
         std::deque<std::shared_ptr<RenderPass>> render_passes_;
 
         LightCollection lc_;
 
         std::shared_ptr<ShaderProgram> geom_program_;
+        std::shared_ptr<ShaderProgram> sdf_program_;
 
         bool draw_skybox_ = false;
         std::shared_ptr<geometry::Skybox> skybox_;

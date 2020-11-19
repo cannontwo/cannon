@@ -24,6 +24,7 @@ list(APPEND GRAPHICS_SOURCES
   geometry/skybox.cpp
   geometry/screen_quad.cpp
   geometry/axes_hint.cpp
+  geometry/sdf_volume.cpp
   )
 
 add_library(graphics OBJECT ${GRAPHICS_SOURCES})

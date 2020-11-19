@@ -135,6 +135,24 @@ void Viewer3D::draw_light_geom(std::shared_ptr<ShaderProgram> p) {
   }
 }
 
+void Viewer3D::draw_sdf_geom() {
+  Matrix4f perspective = make_perspective_fov(to_radians(45.0f),
+      (float)(w.width) / (float)(w.height), 0.1f, 50.0f);
+
+  for (unsigned int i = 0; i < sdf_geom_.size(); i++) {
+    sdf_geom_[i]->draw(c.get_view_mat(), perspective);
+  }
+}
+
+void Viewer3D::draw_sdf_geom(std::shared_ptr<ShaderProgram> p) {
+  Matrix4f perspective = make_perspective_fov(to_radians(45.0f),
+      (float)(w.width) / (float)(w.height), 0.1f, 50.0f);
+
+  for (unsigned int i = 0; i < sdf_geom_.size(); i++) {
+    sdf_geom_[i]->draw(p, c.get_view_mat(), perspective);
+  }
+}
+
 void Viewer3D::add_geom(std::shared_ptr<geometry::DrawableGeom> g) {
   scene_geom_.push_back(g);
   add_shader(g->program);
@@ -288,6 +306,22 @@ void Viewer3D::spawn_spotlight() {
   lc_.add_light(light);
 }
 
+void Viewer3D::spawn_sdf_volume() {
+  auto vol = std::make_shared<geometry::SDFVolume>(sdf_program_);
+  sdf_geom_.push_back(vol);
+
+  Vector3f pos1 = c.get_pos() - 2.0 * c.get_direction().normalized();
+
+  std::random_device rd;
+  std::mt19937 gen(rd());
+  std::uniform_real_distribution<float> dist(-M_PI, M_PI);
+
+  AngleAxisf rot1(dist(gen), Vector3f::Random().normalized());
+
+  vol->set_pos(pos1);
+  vol->set_rot(rot1);
+}
+
 void Viewer3D::write_imgui(bool multipass) {
   if (ImGui::BeginMainMenuBar()) {
     if (ImGui::BeginMenu("Spawn")) {
@@ -298,6 +332,10 @@ void Viewer3D::write_imgui(bool multipass) {
 
         if (ImGui::Button("Plane")) {
           spawn_plane();
+        }
+
+        if (ImGui::Button("SDF Volume")) {
+          spawn_sdf_volume();
         }
 
         if (ImGui::BeginMenu("Model")) {
@@ -333,6 +371,10 @@ void Viewer3D::write_imgui(bool multipass) {
     if (ImGui::BeginMenu("Geometry")) {
       for (unsigned int i = 0; i < scene_geom_.size(); i++) {
         scene_geom_[i]->write_imgui(i);
+      }
+
+      for (unsigned int i = 0; i < sdf_geom_.size(); i++) {
+        sdf_geom_[i]->write_imgui(i);
       }
       ImGui::EndMenu();
     }
@@ -380,9 +422,9 @@ std::shared_ptr<Framebuffer> Viewer3D::add_render_pass(const std::string& name,
 
 std::shared_ptr<Framebuffer> Viewer3D::add_render_pass(const std::string& name,
     std::vector<std::shared_ptr<Texture>> attachments,
-    std::shared_ptr<ShaderProgram> p, std::function<void()> f) {
+    std::vector<std::shared_ptr<ShaderProgram>> programs, std::function<void()> f) {
   auto fb = std::make_shared<Framebuffer>(attachments, w.width, w.height, name + " framebuffer");
-  auto rp = std::make_shared<RenderPass>(name + " pass", fb, p, f);
+  auto rp = std::make_shared<RenderPass>(name + " pass", fb, programs, f);
 
   render_passes_.push_back(rp);  
   w.render_to_framebuffer(render_passes_.front()->framebuffer);
@@ -407,6 +449,12 @@ void Viewer3D::make_shaders_() {
   geom_program_->attach_vertex_shader("shaders/mvp_normals_tex.vert");
   geom_program_->attach_fragment_shader("shaders/material_lights_tex.frag");
   geom_program_->link();
+
+  sdf_program_ = std::make_shared<ShaderProgram>("sdf_shader");
+  sdf_program_->attach_vertex_shader("shaders/sdf.vert");
+  std::vector<std::string> libs = {"shaders/libs/sdf.glsl"};
+  sdf_program_->attach_fragment_shader("shaders/sdf.frag", libs);
+  sdf_program_->link();
 }
 
 void Viewer3D::set_callbacks_() {
