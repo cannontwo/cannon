@@ -22,7 +22,7 @@ namespace cannon {
             throw std::runtime_error("ThreadPool created with improper number of threads");
 
           for (int i = 0; i < num_threads; i++) {
-            threads_.emplace_back([&](){
+            threads_.emplace_back([this, f](){
                   while (true) {
                     std::shared_ptr<T> item;
                     queue_.wait_pop(item);

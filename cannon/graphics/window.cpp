@@ -174,6 +174,14 @@ void cannon::graphics::init_glad() {
   //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
+void cannon::graphics::save_image_func(std::shared_ptr<ImageData> data) {
+  stbi_flip_vertically_on_write(true);
+  if (stbi_write_png(data->path.c_str(), data->width, data->height,
+        data->num_channels, data->buffer->data(), data->stride) == 0) {
+    throw std::runtime_error("Could not write OpenGL render to file"); 
+  }
+}
+
 void Window::enable_depth_test() {
   glEnable(GL_DEPTH_TEST);
 }
@@ -224,14 +232,8 @@ void Window::save_image(const std::string &path) {
   int tmp_width = width;
   int tmp_height = height;
 
-  // Write to file
-  std::thread t([path, buffer, num_channels, tmp_width, tmp_height, stride]{
-    stbi_flip_vertically_on_write(true);
-    if (stbi_write_png(path.c_str(), tmp_width, tmp_height, num_channels, buffer->data(), stride) == 0) {
-      throw std::runtime_error("Could not write OpenGL render to file");
-    }
-  });
-  t.detach();
+  ImageData data = {std::string(path), buffer, num_channels, tmp_width, tmp_height, stride};
+  save_pool_.enqueue(data);
 }
 
 void Window::render_to_framebuffer(std::shared_ptr<Framebuffer> fb) {

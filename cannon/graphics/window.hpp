@@ -26,11 +26,14 @@
 #include <cannon/graphics/vertex_buffer.hpp>
 #include <cannon/graphics/vertex_array_object.hpp>
 #include <cannon/graphics/framebuffer.hpp>
+#include <cannon/utils/thread_pool.hpp>
 
 // TODO
 //#include <cannon/graphics/input_handlers.hpp>
 
 using namespace Eigen;
+
+using namespace cannon::utils;
 
 namespace cannon {
   namespace graphics {
@@ -53,9 +56,20 @@ namespace cannon {
       int offset = 0;
     };
 
+    struct ImageData {
+      std::string path;
+      std::shared_ptr<std::vector<char>> buffer;
+      int num_channels;
+      int width;
+      int height;
+      int stride;
+    };
+
     // Free functions
     void init_glfw();
     void init_glad();
+
+    void save_image_func(std::shared_ptr<ImageData> data);
 
     // Callbacks
     void framebuffer_size_callback(GLFWwindow* window, int width, int height);
@@ -68,7 +82,7 @@ namespace cannon {
       public:
         Window(int w = 800, int h = 600, const std::string& name = "Test"):
           width(w), height(h), font_(false), text_program_("text_program",
-              false), vao_(nullptr), buf_() {
+              false), vao_(nullptr), buf_(), save_pool_(save_image_func) {
           init_glfw();
           window = glfwCreateWindow(width, height, name.c_str(), NULL, NULL); 
 
@@ -244,6 +258,8 @@ namespace cannon {
 
         CircularBuffer time_cbuf_;
         CircularBuffer fps_cbuf_;
+
+        ThreadPool<ImageData> save_pool_;
     };
 
   } // namespace graphics
