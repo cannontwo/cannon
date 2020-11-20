@@ -169,12 +169,7 @@ std::shared_ptr<geometry::Cube> Viewer3D::spawn_cube() {
   add_geom(cube);
 
   Vector3f pos1 = c.get_pos() - 2.0 * c.get_direction().normalized();
-
-  std::random_device rd;
-  std::mt19937 gen(rd());
-  std::uniform_real_distribution<float> dist(-M_PI, M_PI);
-
-  AngleAxisf rot1(dist(gen), Vector3f::Random().normalized());
+  AngleAxisf rot1(0.0, c.get_direction().normalized());
 
   cube->set_pos(pos1);
   cube->set_rot(rot1);
@@ -187,12 +182,7 @@ std::shared_ptr<geometry::Plane> Viewer3D::spawn_plane() {
   add_geom(plane);
 
   Vector3f pos1 = c.get_pos() - 2.0 * c.get_direction().normalized();
-
-  std::random_device rd;
-  std::mt19937 gen(rd());
-  std::uniform_real_distribution<float> dist(-M_PI, M_PI);
-
-  AngleAxisf rot1(dist(gen), Vector3f::Random().normalized());
+  AngleAxisf rot1(0.0, c.get_direction().normalized());
 
   plane->set_pos(pos1);
   plane->set_rot(rot1);
@@ -205,12 +195,7 @@ std::shared_ptr<geometry::Model> Viewer3D::spawn_model(const std::string& path) 
   add_geom(m);
 
   Vector3f pos1 = c.get_pos() - 2.0 * c.get_direction().normalized();
-
-  std::random_device rd;
-  std::mt19937 gen(rd());
-  std::uniform_real_distribution<float> dist(-M_PI, M_PI);
-
-  AngleAxisf rot1(dist(gen), Vector3f::Random().normalized());
+  AngleAxisf rot1(0.0, c.get_direction().normalized());
 
   m->set_pos(pos1);
   m->set_rot(rot1);
@@ -280,12 +265,7 @@ void Viewer3D::spawn_sdf_volume() {
   sdf_geom_.push_back(vol);
 
   Vector3f pos1 = c.get_pos() - 2.0 * c.get_direction().normalized();
-
-  std::random_device rd;
-  std::mt19937 gen(rd());
-  std::uniform_real_distribution<float> dist(-M_PI, M_PI);
-
-  AngleAxisf rot1(dist(gen), Vector3f::Random().normalized());
+  AngleAxisf rot1(0.0, c.get_direction().normalized());
 
   vol->set_pos(pos1);
   vol->set_rot(rot1);

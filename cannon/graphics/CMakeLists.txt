@@ -25,6 +25,7 @@ list(APPEND GRAPHICS_SOURCES
   geometry/screen_quad.cpp
   geometry/axes_hint.cpp
   geometry/sdf_volume.cpp
+  deferred_renderer.cpp
   )
 
 add_library(graphics OBJECT ${GRAPHICS_SOURCES})
