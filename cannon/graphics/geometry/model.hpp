@@ -37,6 +37,8 @@ namespace cannon {
           virtual void draw(std::shared_ptr<ShaderProgram> p, const Matrix4f&
               view, const Matrix4f& perspective) const override;
 
+          virtual void write_imgui(int idx) override;
+
         private:
           void load_model_(const std::string& path);
           void process_node_(aiNode *node, const aiScene *scene);

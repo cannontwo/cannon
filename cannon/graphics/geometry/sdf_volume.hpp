@@ -20,7 +20,7 @@ namespace cannon {
 
             material_.ambient = {1.0, 1.0, 1.0, 1.0};
             material_.diffuse = {1.0, 1.0, 1.0, 1.0};
-            material_.specular = {1.0, 1.0, 1.0, 1.0};
+            material_.specular = {0.0, 0.0, 0.0, 1.0};
           }
 
           SDFVolume(SDFVolume& o) : vao_(new VertexArrayObject), buf_(vao_),

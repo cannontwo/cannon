@@ -35,6 +35,8 @@ namespace cannon {
 
             program = p;
             populate_bufs_();
+
+            name_ = "Mesh";
           }
 
           virtual ~Mesh() override {};

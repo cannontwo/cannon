@@ -141,3 +141,22 @@ std::vector<std::shared_ptr<Texture>> Model::load_material_textures_(aiMaterial 
 
   return textures;
 }
+
+void Model::write_imgui(int idx) {
+  if (ImGui::TreeNode((name_ + " " + std::to_string(idx)).c_str())) {
+    ImGui::ColorEdit3("ambient", material_.ambient.data());
+    ImGui::ColorEdit3("diffuse", material_.diffuse.data());
+    ImGui::ColorEdit3("specular", material_.specular.data());
+    ImGui::SliderFloat3("position", pos_.data(), -10.0, 10.0);
+    ImGui::SliderFloat("scale", &scale_, 0.0, 10.0);
+    ImGui::SliderAngle("rotation", &rot_.angle());
+    ImGui::SliderFloat3("axis", rot_.axis().data(), -1.0, 1.0);
+    rot_.axis().normalize();
+    
+    for (unsigned int i = 0; i < meshes_.size(); i++) {
+      meshes_[i]->write_imgui(i);
+    }
+
+    ImGui::TreePop();
+  }
+}
