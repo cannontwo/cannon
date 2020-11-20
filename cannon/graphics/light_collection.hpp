@@ -70,6 +70,10 @@ namespace cannon {
           directional_light_ = l;
         }
 
+        std::shared_ptr<DirectionalLight> get_directional_light() {
+          return directional_light_;
+        }
+
         virtual void write_imgui() {
           if (ImGui::BeginMainMenuBar()) {
             if (ImGui::BeginMenu("Lighting")) {

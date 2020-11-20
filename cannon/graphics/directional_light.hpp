@@ -42,6 +42,10 @@ namespace cannon {
           }
         }
 
+        Vector3f get_dir() {
+          return direction_.head(3);
+        }
+
       private:
         Vector4f direction_ = Vector4f::UnitZ();
 

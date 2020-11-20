@@ -29,6 +29,15 @@ void test() {
 
   Viewer3D viewer;
   viewer.set_skybox(faces);
+  viewer.w.set_clear_color({0.0, 0.0, 0.0, 1.0});
+
+  std::vector<std::shared_ptr<Texture>> attachments;
+  attachments.push_back(std::make_shared<Texture>(viewer.w.width,
+        viewer.w.height, GL_RGBA32F, GL_FLOAT));
+  attachments.push_back(std::make_shared<Texture>(viewer.w.width,
+        viewer.w.height, GL_RGBA32F, GL_FLOAT));
+  attachments.push_back(std::make_shared<Texture>(viewer.w.width,
+        viewer.w.height, GL_RGBA32F, GL_FLOAT));
 
   auto gbuf_program = std::make_shared<ShaderProgram>("gbuffer_shader");
   gbuf_program->attach_vertex_shader("shaders/mvp_normals_gbuffer.vert");
@@ -40,16 +49,6 @@ void test() {
   std::vector<std::string> libs = {"shaders/libs/sdf.glsl"};
   sdf_geom_program->attach_fragment_shader("shaders/sdf.frag", libs);
   sdf_geom_program->link();
-
-  std::vector<std::shared_ptr<Texture>> attachments;
-  attachments.push_back(std::make_shared<Texture>(viewer.w.width,
-        viewer.w.height, GL_RGBA32F, GL_FLOAT));
-  attachments.push_back(std::make_shared<Texture>(viewer.w.width,
-        viewer.w.height, GL_RGBA32F, GL_FLOAT));
-  attachments.push_back(std::make_shared<Texture>(viewer.w.width,
-        viewer.w.height, GL_RGBA32F, GL_FLOAT));
-
-  viewer.w.set_clear_color({0.0, 0.0, 0.0, 1.0});
 
   std::shared_ptr<Framebuffer> fb = viewer.add_render_pass("gbuffer",
       attachments, {gbuf_program, sdf_geom_program}, [&](){
@@ -81,6 +80,65 @@ void test() {
             }
             sdf_geom_program->set_uniform("max_march_steps", max_march_steps);
             viewer.draw_sdf_geom(sdf_geom_program);
+      });
+
+      
+
+    auto shadow_program = std::make_shared<ShaderProgram>("shadow_shader");
+    shadow_program->attach_vertex_shader("shaders/mvp_normals_tex.vert");
+    shadow_program->attach_fragment_shader("shaders/empty.frag");
+    shadow_program->link();
+
+    auto sdf_shadow_program = std::make_shared<ShaderProgram>("sdf_shadow_shader");
+    sdf_shadow_program->attach_vertex_shader("shaders/sdf.vert");
+    std::vector<std::string> shadow_libs = {"shaders/libs/sdf.glsl"};
+    sdf_shadow_program->attach_fragment_shader("shaders/sdf_shadow.frag", shadow_libs);
+    sdf_shadow_program->link();
+
+    Matrix4f light_space_mat;
+    std::shared_ptr<Framebuffer> shadow_fb = viewer.add_render_pass("shadow",
+      shadow_program, [&](){
+        glClearColor(0.0, 0.0, 0.0, 1.0);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+
+        // Set uniforms for light transform
+        Camera c_backup = viewer.c;
+        viewer.c = Camera({viewer.get_directional_light_pos()},
+            {0.0, 0.0, 0.0}, {0.0, 1.0, 0.0});
+
+        light_space_mat = make_orthographic(-20.0f, 20.0f, -20.0f, 20.0f, 1.0f,
+            50.0f) * viewer.c.get_view_mat();
+
+        Vector3f c_pos = viewer.c.get_pos();
+        Vector4f tmp_pos;
+        tmp_pos << c_pos[0],
+                   c_pos[1],
+                   c_pos[2],
+                   1.0;
+        shadow_program->set_uniform("viewPos", tmp_pos);
+        sdf_shadow_program->set_uniform("viewPos", tmp_pos);
+
+        shadow_fb->color_attachments[0]->set_wrap_clamp_border();
+        float borderColor[] = {1.0, 1.0, 1.0, 1.0};
+        shadow_fb->color_attachments[0]->bind();
+        glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
+
+        viewer.draw_scene_geom(shadow_program, false, true);
+
+        sdf_shadow_program->activate();
+        sdf_shadow_program->set_uniform("time", (float)glfwGetTime());
+        static int max_march_steps = 255;
+        if (ImGui::BeginMainMenuBar()) {
+          if (ImGui::BeginMenu("SDF Shadow")) {
+            ImGui::SliderInt("max_march_steps", &max_march_steps, 0, 1000);
+            ImGui::EndMenu();
+          }
+          ImGui::EndMainMenuBar();
+        }
+        sdf_shadow_program->set_uniform("max_march_steps", max_march_steps);
+        viewer.draw_sdf_geom(sdf_shadow_program, true);
+        
+        viewer.c = c_backup;
       });
 
   std::vector<Vector4f> ssao_kernel;
@@ -120,7 +178,7 @@ void test() {
   }
 
 
-  auto noise_tex = std::make_shared<Texture>(4, 4, GL_RGBA32F, GL_FLOAT, ssao_noise.data());
+  auto noise_tex = std::make_shared<Texture>(4, 4, GL_RGBA32F, GL_FLOAT, GL_RGBA, ssao_noise.data());
   noise_tex->set_filter_nearest();
   noise_tex->set_wrap_repeat();
 
@@ -208,6 +266,9 @@ void test() {
         lighting_program->set_uniform("gNormal", 1);
         lighting_program->set_uniform("gAlbedoSpec", 2);
         lighting_program->set_uniform("ssao", 3);
+        lighting_program->set_uniform("shadowMap", 4);
+
+        lighting_program->set_uniform("lightSpaceMatrix", light_space_mat);
 
         static bool enable_ssao = true;
         if (ImGui::BeginMainMenuBar()) {
@@ -225,6 +286,7 @@ void test() {
         lighting_attachments.push_back(fb->color_attachments[1]);
         lighting_attachments.push_back(fb->color_attachments[2]);
         lighting_attachments.push_back(ssao_blur_fb->color_attachments[0]);
+        lighting_attachments.push_back(shadow_fb->color_attachments[0]);
 
         fb2->quad->draw(lighting_program, lighting_attachments);
       });

@@ -98,14 +98,18 @@ namespace cannon {
         void enable_skybox();
         void disable_skybox();
 
-        void draw_scene_geom(bool draw_lights = true);
-        void draw_scene_geom(std::shared_ptr<ShaderProgram> p, bool draw_lights = true);
+        void draw_scene_geom(bool draw_lights = true, bool ortho = false);
+        void draw_scene_geom(std::shared_ptr<ShaderProgram> p, bool draw_lights = true, 
+            bool ortho = false);
 
         void draw_light_geom();
         void draw_light_geom(std::shared_ptr<ShaderProgram> p);
 
-        void draw_sdf_geom();
-        void draw_sdf_geom(std::shared_ptr<ShaderProgram> p);
+        void draw_sdf_geom(bool ortho = false);
+        void draw_sdf_geom(std::shared_ptr<ShaderProgram> p, bool ortho = false);
+
+        Vector3f get_directional_light_pos();
+        Vector3f get_directional_light_dir();
 
         void add_render_pass(std::shared_ptr<RenderPass> rp);
         std::shared_ptr<Framebuffer> add_render_pass(const std::string& name,

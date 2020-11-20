@@ -54,10 +54,15 @@ uniform float shininess;
 
 uniform bool enable_ssao;
 
+uniform mat4 lightSpaceMatrix;
+
+uniform float shadow_bias;
+
 uniform sampler2D gPosition;
 uniform sampler2D gNormal;
 uniform sampler2D gAlbedoSpec;
 uniform sampler2D ssao;
+uniform sampler2D shadowMap;
 
 vec3 calculate_dir_light(DirectionalLight light, vec3 normal, vec3 viewDir, vec3 material_ambient, vec3 material_diffuse, vec3 material_specular) {
   vec3 lightDir = normalize(-light.direction.xyz);
@@ -139,13 +144,39 @@ vec3 calculate_spotlight(Spotlight light, vec3 normal, vec3 fragPos, vec3 viewDi
   return (ambient + diffuse + specular);
 }
 
+float calculate_shadow(vec4 fragPosLightSpace, vec3 lightDir, vec3 normal) {
+  vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
+
+  if (projCoords.z > 1.0)
+    return 0.0;
+
+  projCoords = projCoords * 0.5 + 0.5;
+  float bias = max(0.05 * (1.0 - dot(normal, lightDir)), 0.005);
+  float currentDepth = projCoords.z;
+
+  float shadow = 0.0;
+  vec2 texelSize = 1.0 / textureSize(shadowMap, 0);
+  for (int x = -1; x <= 1; x++) {
+    for (int y = -1; y <= 1; y++) {
+      float pcfDepth = texture(shadowMap, projCoords.xy + vec2(x, y) * texelSize).r;
+      shadow += currentDepth - bias > pcfDepth ? 1.0 : 0.0;
+    }
+  }
+
+  shadow /= 9.0;
+  return shadow;
+}
+
 void main() {
   vec3 output = vec3(0.0);
 
   vec3 FragPos = texture(gPosition, texCoord).rgb;
+  vec4 FragPosLightSpace = lightSpaceMatrix * vec4(FragPos, 1.0);
   vec3 Normal = texture(gNormal, texCoord).rgb;
   vec3 Albedo = texture(gAlbedoSpec, texCoord).rgb;
   float Specular = texture(gAlbedoSpec, texCoord).a;
+
+  float shadow = calculate_shadow(FragPosLightSpace, normalize(-directional_light.direction.xyz), Normal);
 
   float occlusion = texture(ssao, texCoord).r;
   if (!enable_ssao)
@@ -156,8 +187,8 @@ void main() {
 
   // Only rendering first diffuse and specular tex right now
   vec3 material_ambient = Albedo * occlusion;
-  vec3 material_diffuse = Albedo;
-  vec3 material_specular = vec3(Specular);
+  vec3 material_diffuse = (1.0 - shadow) * Albedo;
+  vec3 material_specular = (1.0 - shadow) * vec3(Specular);
 
   output += calculate_dir_light(directional_light, norm, viewDir, material_ambient, material_diffuse, material_specular);
 

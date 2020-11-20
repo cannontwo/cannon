@@ -23,6 +23,10 @@ void Texture::unbind(GLenum texture_unit) const {
   glBindTexture(GL_TEXTURE_2D, 0);
 }
 
+void Texture::framebuffer_bind(GLenum attachment) const {
+  glFramebufferTexture2D(GL_FRAMEBUFFER, attachment, GL_TEXTURE_2D, gl_texture_, 0);
+}
+
 void Texture::set_wrap_repeat() {
   bind();
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);

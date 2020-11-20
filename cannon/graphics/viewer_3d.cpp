@@ -12,9 +12,14 @@ void Viewer3D::draw() {
   }
 }
 
-void Viewer3D::draw_scene_geom(bool draw_lights) {
-  Matrix4f perspective = make_perspective_fov(to_radians(45.0f),
+void Viewer3D::draw_scene_geom(bool draw_lights, bool ortho) {
+  Matrix4f perspective;
+  if (ortho) {
+    perspective = make_orthographic(-20.0f, 20.0f, -20.0f, 20.0f, 1.0f, 50.0f);
+  } else {
+  perspective = make_perspective_fov(to_radians(45.0f),
       (float)(w.width) / (float)(w.height), 0.1f, 50.0f);
+  }
 
   for (unsigned int i = 0; i < scene_geom_.size(); i++) {
     scene_geom_[i]->draw(c.get_view_mat(), perspective);
@@ -31,9 +36,14 @@ void Viewer3D::draw_scene_geom(bool draw_lights) {
   }
 }
 
-void Viewer3D::draw_scene_geom(std::shared_ptr<ShaderProgram> p, bool draw_lights) {
-  Matrix4f perspective = make_perspective_fov(to_radians(45.0f),
+void Viewer3D::draw_scene_geom(std::shared_ptr<ShaderProgram> p, bool draw_lights, bool ortho) {
+  Matrix4f perspective;
+  if (ortho) {
+    perspective = make_orthographic(-20.0f, 20.0f, -20.0f, 20.0f, 1.0f, 50.0f);
+  } else {
+  perspective = make_perspective_fov(to_radians(45.0f),
       (float)(w.width) / (float)(w.height), 0.1f, 50.0f);
+  }
 
   for (unsigned int i = 0; i < scene_geom_.size(); i++) {
     scene_geom_[i]->draw(p, c.get_view_mat(), perspective);
@@ -76,18 +86,28 @@ void Viewer3D::draw_light_geom(std::shared_ptr<ShaderProgram> p) {
   }
 }
 
-void Viewer3D::draw_sdf_geom() {
-  Matrix4f perspective = make_perspective_fov(to_radians(45.0f),
+void Viewer3D::draw_sdf_geom(bool ortho) {
+  Matrix4f perspective;
+  if (ortho) {
+    perspective = make_orthographic(-20.0f, 20.0f, -20.0f, 20.0f, 1.0f, 50.0f);
+  } else {
+  perspective = make_perspective_fov(to_radians(45.0f),
       (float)(w.width) / (float)(w.height), 0.1f, 50.0f);
+  }
 
   for (unsigned int i = 0; i < sdf_geom_.size(); i++) {
     sdf_geom_[i]->draw(c.get_view_mat(), perspective);
   }
 }
 
-void Viewer3D::draw_sdf_geom(std::shared_ptr<ShaderProgram> p) {
-  Matrix4f perspective = make_perspective_fov(to_radians(45.0f),
+void Viewer3D::draw_sdf_geom(std::shared_ptr<ShaderProgram> p, bool ortho) {
+  Matrix4f perspective;
+  if (ortho) {
+    perspective = make_orthographic(-20.0f, 20.0f, -20.0f, 20.0f, 1.0f, 50.0f);
+  } else {
+  perspective = make_perspective_fov(to_radians(45.0f),
       (float)(w.width) / (float)(w.height), 0.1f, 50.0f);
+  }
 
   for (unsigned int i = 0; i < sdf_geom_.size(); i++) {
     sdf_geom_[i]->draw(p, c.get_view_mat(), perspective);
@@ -134,6 +154,14 @@ void Viewer3D::enable_skybox() {
 
 void Viewer3D::disable_skybox() {
   draw_skybox_ = false;
+}
+
+Vector3f Viewer3D::get_directional_light_pos() {
+  return -20.0 * lc_.get_directional_light()->get_dir();
+}
+
+Vector3f Viewer3D::get_directional_light_dir() {
+  return lc_.get_directional_light()->get_dir();
 }
 
 std::shared_ptr<geometry::Cube> Viewer3D::spawn_cube() {
