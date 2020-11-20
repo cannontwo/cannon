@@ -20,6 +20,7 @@ namespace cannon {
           Mesh(std::shared_ptr<ShaderProgram> p, const MatrixX3f& vertices,
               const MatrixX3f& normals, const MatrixX2f& tex_coords,
               const MatrixX3u& indices,
+              Material material,
               std::vector<std::shared_ptr<Texture>> diffuse_textures,
               std::vector<std::shared_ptr<Texture>> specular_textures) :
           vao_(new VertexArrayObject), buf_(vao_), normal_buf_(vao_),
@@ -29,6 +30,8 @@ namespace cannon {
 
             assert(diffuse_textures_.size() <= max_diffuse_tex);
             assert(specular_textures_.size() <= max_specular_tex);
+
+            material_ = material;
 
             program = p;
             populate_bufs_();
