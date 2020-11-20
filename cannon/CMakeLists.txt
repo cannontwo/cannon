@@ -12,6 +12,7 @@ add_subdirectory(control)
 add_subdirectory(physics)
 add_subdirectory(geom)
 add_subdirectory(research)
+add_subdirectory(utils)
 
 add_library(cannon SHARED ${CANNON_SOURCES}
   $<TARGET_OBJECTS:math>
@@ -24,6 +25,7 @@ add_library(cannon SHARED ${CANNON_SOURCES}
   $<TARGET_OBJECTS:physics>
   $<TARGET_OBJECTS:geom>
   $<TARGET_OBJECTS:research>
+  $<TARGET_OBJECTS:utils>
   )
 target_link_libraries(cannon ${LIBRARIES})
 
