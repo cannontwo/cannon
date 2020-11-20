@@ -56,8 +56,6 @@ VertexShader cannon::graphics::load_vertex_shader(const std::string& main_path,
 
   }
 
-  log_info("Compiled vertex shader code is", program_src);
-
   const char *c_str = program_src.c_str();
   return VertexShader(&c_str);
 }

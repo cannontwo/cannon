@@ -3,7 +3,11 @@
 
 #include <Eigen/Dense>
 
+#include <cannon/log/registry.hpp>
+
 using namespace Eigen;
+
+using namespace cannon::log;
 
 namespace cannon {
   namespace graphics {
@@ -26,12 +30,20 @@ namespace cannon {
         Vector3f get_right() const;
 
         void set_speed(float speed);
+        void set_base_speed(float base_speed);
 
         // Controls
         void move_forward();
         void move_backward();
         void strafe_left();
         void strafe_right();
+
+        void set_move_forward(bool on);
+        void set_move_backward(bool on);
+        void set_strafe_left(bool on);
+        void set_strafe_right(bool on);
+
+        void update_pos();
 
         void set_direction(const Vector3f& direction);
 
@@ -41,7 +53,13 @@ namespace cannon {
         Vector3f up_;
         Vector3f right_;
 
-        float speed_;
+        bool move_forward_ = false;
+        bool move_backward_ = false;
+        bool strafe_right_ = false;
+        bool strafe_left_ = false;
+
+        float speed_ = 1.0;
+        float base_speed_ = 0.5;
     };
 
   } // namespace graphics

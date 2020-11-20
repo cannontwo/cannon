@@ -33,8 +33,6 @@ namespace cannon {
           w.enable_face_culling();
 
           glEnable(GL_FRAMEBUFFER_SRGB); 
-          glfwSetInputMode(w.window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-          last_capture_time_ = glfwGetTime();
 
           last_x_ = w.width / 2;
           last_y_ = w.height / 2;
@@ -51,9 +49,8 @@ namespace cannon {
         void render_loop(F f, bool clear = true) {
           w.render_loop([&](){
             // Adjust camera movement speed based on render rate
-            c.set_speed(2.5 * w.delta_time_);
-
-            process_input_();
+            //c.set_speed(1e5 * w.delta_time_);
+            c.update_pos();
 
             write_imgui();
             lc_.write_imgui();
@@ -76,43 +73,20 @@ namespace cannon {
 
         template <typename F>
         void render_loop_multipass(F f, bool clear = true) {
-          int old_width = w.width;
-          int old_height = w.height;
-
           w.render_loop([&](){
             // Adjust camera movement speed based on render rate
-            c.set_speed(2.5 * w.delta_time_);
+            //c.set_speed(1e5 * w.delta_time_);
+            c.update_pos();
 
-            process_input_();
-
-            if (w.height != old_height || w.width != old_width) {
-              for (auto& pass : render_passes_) {
-                pass->framebuffer->resize(w.width, w.height);
-              }
-
-              old_height = w.height;
-              old_width = w.width;
-            }
-
-            write_imgui(true);
-            lc_.write_imgui();
-
-            for (auto &pass : render_passes_) {
-              double before = glfwGetTime();
-
-              pass->run();
-              pass->write_imgui();
-
-              double duration = glfwGetTime() - before;
-              pass->set_time_taken(duration);
-            }
-
+            draw();
 
             f();
 
           }, clear);
 
         }
+
+        void draw();
 
         void add_geom(std::shared_ptr<geometry::DrawableGeom> g);
         void add_shader(std::shared_ptr<ShaderProgram> s);
@@ -152,21 +126,22 @@ namespace cannon {
         Window w;
         Camera c; 
 
+        friend void viewer3d_framebuffer_size_callback(GLFWwindow* window, int width, int height);
+        friend void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
+        friend void cursor_pos_callback(GLFWwindow* window, double xpos, double ypos);
+
       private:
         void make_shaders_();
         void initialize_lc_();
         void set_callbacks_();
         void populate_initial_geometry_();
 
-        void process_input_();
-        void process_mouse_input_();
-
         double last_x_;
         double last_y_;
         double mouse_sensitivity_ = 0.005;
 
         bool first_mouse_ = true;
-        bool mouse_captured_ = true;
+        bool mouse_captured_ = false;
         double last_capture_time_;
         float yaw_ = M_PI/2.0;
         float pitch_ = 0.0;
@@ -187,6 +162,13 @@ namespace cannon {
     };
 
     void drop_callback(GLFWwindow *window, int path_count, const char* paths[]);
+
+    // Necessary since we change the user window pointer
+    void viewer3d_framebuffer_size_callback(GLFWwindow* window, int width, int height);
+    void viewer_key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
+
+    void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
+    void cursor_pos_callback(GLFWwindow* window, double xpos, double ypos);
 
   } // namespace graphics
 } // namespace cannon

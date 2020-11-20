@@ -38,8 +38,6 @@ FragmentShader cannon::graphics::load_fragment_shader(const std::string& main_pa
   if (second_line_loc == std::string::npos)
     throw std::runtime_error("Main shader program consists of only a single line.");
 
-  log_info("lib_paths size is", lib_paths.size());
-
   for (auto &lib_path : lib_paths) {
     std::string lib_src;
 
@@ -57,8 +55,6 @@ FragmentShader cannon::graphics::load_fragment_shader(const std::string& main_pa
     program_src.insert(second_line_loc + 1, lib_src);
 
   }
-
-  log_info("Compiled fragment shader code is", program_src);
 
   const char *c_str = program_src.c_str();
   return FragmentShader(&c_str);

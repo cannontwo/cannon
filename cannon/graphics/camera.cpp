@@ -38,7 +38,11 @@ Vector3f Camera::get_right() const {
 }
 
 void Camera::set_speed(float speed) {
-  speed_ = speed;
+  speed_ = speed * base_speed_;
+}
+
+void Camera::set_base_speed(float base_speed) {
+  base_speed_ = base_speed;
 }
 
 void Camera::move_forward() {
@@ -55,6 +59,36 @@ void Camera::strafe_left() {
 
 void Camera::strafe_right() {
   pos_ += speed_ * right_;
+}
+
+void Camera::set_move_forward(bool on) {
+  move_forward_ = on;
+}
+
+void Camera::set_move_backward(bool on) {
+  move_backward_ = on;
+}
+
+void Camera::set_strafe_left(bool on) {
+  strafe_left_ = on;
+}
+
+void Camera::set_strafe_right(bool on) {
+  strafe_right_ = on;
+}
+
+void Camera::update_pos() {
+  if (move_forward_)
+    move_forward();
+
+  if (move_backward_)
+    move_backward();
+  
+  if (strafe_left_)
+    strafe_left();
+
+  if (strafe_right_)
+    strafe_right();
 }
 
 void Camera::set_direction(const Vector3f& direction) {

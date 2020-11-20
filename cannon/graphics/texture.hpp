@@ -27,7 +27,6 @@ namespace cannon {
           data_type(data_type), width_(width), height_(height), gl_texture_unit_(texture_unit) {
 
           glGenTextures(1, &gl_texture_);
-          log_info("Created texture", gl_texture_);
 
           glBindTexture(GL_TEXTURE_2D, gl_texture_);
           glTexImage2D(GL_TEXTURE_2D, 0, internal_format, width_, height_, 0, GL_RGBA, data_type, data);
@@ -80,7 +79,6 @@ namespace cannon {
             width_(face->glyph->bitmap.width), height_(face->glyph->bitmap.rows),
             data_(face->glyph->bitmap.buffer), gl_texture_unit_(texture_unit) {
           glGenTextures(1, &gl_texture_);
-          log_info("Created texture", gl_texture_);
           bind(texture_unit);
 
           set_wrap_clamp_edge();
@@ -90,7 +88,6 @@ namespace cannon {
         }
 
         ~Texture() {
-          log_info("Deleted texture", gl_texture_);
           glDeleteTextures(1, &gl_texture_);
         }
 

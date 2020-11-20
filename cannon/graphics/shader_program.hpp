@@ -49,7 +49,6 @@ namespace cannon {
 
         void init() {
           gl_shader_program_ = glCreateProgram();
-          log_info("Created ShaderProgram", gl_shader_program_);
           initialized_ = true;
         }
 

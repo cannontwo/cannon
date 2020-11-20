@@ -2,73 +2,14 @@
 
 using namespace cannon::graphics;
 
-void Viewer3D::process_input_() {
-  if (glfwGetKey(w.window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
-    c.set_speed(0.2);
-  if (glfwGetKey(w.window, GLFW_KEY_LEFT_SHIFT) == GLFW_RELEASE)
-    c.set_speed(0.05);
+void Viewer3D::draw() {
+  write_imgui(true);
+  lc_.write_imgui();
 
-  if (glfwGetKey(w.window, GLFW_KEY_W) == GLFW_PRESS)
-    c.move_forward();
-  if (glfwGetKey(w.window, GLFW_KEY_S) == GLFW_PRESS)
-    c.move_backward();
-  if (glfwGetKey(w.window, GLFW_KEY_A) == GLFW_PRESS)
-    c.strafe_left();
-  if (glfwGetKey(w.window, GLFW_KEY_D) == GLFW_PRESS)
-    c.strafe_right();
-
-  if (glfwGetMouseButton(w.window, GLFW_MOUSE_BUTTON_MIDDLE) == GLFW_PRESS) {
-    if (!mouse_captured_) {
-      mouse_captured_ = true;
-      first_mouse_ = true;
-      glfwSetInputMode(w.window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-    } 
+  for (auto &pass : render_passes_) {
+    pass->run();
+    pass->write_imgui();
   }
-
-  if (glfwGetMouseButton(w.window, GLFW_MOUSE_BUTTON_MIDDLE) == GLFW_RELEASE) {
-    if (mouse_captured_) {
-      mouse_captured_ = false;
-      glfwSetInputMode(w.window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-    } 
-  }
-
-  process_mouse_input_();
-}
-
-void Viewer3D::process_mouse_input_() {
-  if (!mouse_captured_)
-    return;
-
-  double xpos, ypos;
-  glfwGetCursorPos(w.window, &xpos, &ypos);
-  if (first_mouse_) {
-    last_x_ = xpos;
-    last_y_ = ypos;
-    first_mouse_ = false;
-  }
-
-  float xoffset = (float)xpos - last_x_;
-  float yoffset = last_y_ - (float)ypos; // reversed due to screen coords
-  last_x_ = xpos;
-  last_y_ = ypos;
-
-  xoffset *= mouse_sensitivity_;
-  yoffset *= mouse_sensitivity_; 
-
-  yaw_ += xoffset;
-  pitch_ -= yoffset;
-
-  if (pitch_ > (M_PI / 2.1))
-    pitch_ = M_PI / 2.1;
-  if (pitch_ < (-M_PI / 2.1))
-    pitch_ = -M_PI / 2.1;
-
-  Vector3f new_dir;
-  new_dir << std::cos(yaw_) * std::cos(pitch_),
-             std::sin(pitch_),
-             std::sin(yaw_) * std::cos(pitch_);
-  new_dir.normalize();
-  c.set_direction(new_dir);
 }
 
 void Viewer3D::draw_scene_geom(bool draw_lights) {
@@ -460,6 +401,10 @@ void Viewer3D::make_shaders_() {
 void Viewer3D::set_callbacks_() {
   glfwSetWindowUserPointer(w.window, this);
   glfwSetDropCallback(w.window, drop_callback);
+  glfwSetKeyCallback(w.window, viewer_key_callback);
+  glfwSetFramebufferSizeCallback(w.window, viewer3d_framebuffer_size_callback);
+  glfwSetMouseButtonCallback(w.window, mouse_button_callback);
+  glfwSetCursorPosCallback(w.window, cursor_pos_callback);
 }
 
 void Viewer3D::populate_initial_geometry_() {
@@ -538,4 +483,109 @@ void cannon::graphics::drop_callback(GLFWwindow *window, int path_count, const c
       log_warning("Could not load model at", path);
     }
   }
+}
+
+void cannon::graphics::viewer3d_framebuffer_size_callback(GLFWwindow* window, int width, int height) {
+  glViewport(0, 0, width, height);
+
+  Viewer3D *viewer = (Viewer3D*)glfwGetWindowUserPointer(window);
+  viewer->w.width = width;
+  viewer->w.height = height;
+  viewer->w.set_viewport(0, 0, width, height);
+
+  for (auto& pass : viewer->render_passes_) {
+    pass->framebuffer->resize(width, height);
+  }
+
+  // For smooth resizing
+  viewer->w.draw([&]() {viewer->draw();});
+}
+
+void cannon::graphics::viewer_key_callback(GLFWwindow* window, int key, int
+    scancode, int action, int mods) {
+  Viewer3D *viewer = (Viewer3D*)glfwGetWindowUserPointer(window);
+
+  if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
+    glfwSetWindowShouldClose(window, true);
+
+  if (key == GLFW_KEY_LEFT_SHIFT && action == GLFW_PRESS)
+    viewer->c.set_speed(2.0);
+  if (key == GLFW_KEY_LEFT_SHIFT && action == GLFW_RELEASE)
+    viewer->c.set_speed(1.0);
+
+  if (key == GLFW_KEY_W && (action == GLFW_PRESS || action == GLFW_REPEAT))
+    viewer->c.set_move_forward(true);
+  if (key == GLFW_KEY_W && action == GLFW_RELEASE)
+    viewer->c.set_move_forward(false);
+
+  if (key == GLFW_KEY_S && (action == GLFW_PRESS || action == GLFW_REPEAT))
+    viewer->c.set_move_backward(true);
+  if (key == GLFW_KEY_S && action == GLFW_RELEASE)
+    viewer->c.set_move_backward(false);
+
+  if (key == GLFW_KEY_A && action == (GLFW_PRESS || action == GLFW_REPEAT))
+    viewer->c.set_strafe_left(true);
+  if (key == GLFW_KEY_A && action == GLFW_RELEASE)
+    viewer->c.set_strafe_left(false);
+
+  if (key == GLFW_KEY_D && (action == GLFW_PRESS || action == GLFW_REPEAT))
+    viewer->c.set_strafe_right(true);
+  if (key == GLFW_KEY_D && action == GLFW_RELEASE)
+    viewer->c.set_strafe_right(false);
+}
+
+void cannon::graphics::mouse_button_callback(GLFWwindow* window, int button,
+    int action, int mods) {
+  Viewer3D *viewer = (Viewer3D*)glfwGetWindowUserPointer(window);
+
+  if (button == GLFW_MOUSE_BUTTON_MIDDLE && action == GLFW_PRESS) {
+    if (!viewer->mouse_captured_) {
+      viewer->mouse_captured_ = true;
+      viewer->first_mouse_ = true;
+      glfwSetInputMode(viewer->w.window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    } 
+  }
+
+  if (button == GLFW_MOUSE_BUTTON_MIDDLE && action == GLFW_RELEASE) {
+    if (viewer->mouse_captured_) {
+      viewer->mouse_captured_ = false;
+      glfwSetInputMode(viewer->w.window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+    } 
+  }
+}
+
+void cannon::graphics::cursor_pos_callback(GLFWwindow* window, double xpos, double ypos) {
+  Viewer3D *viewer = (Viewer3D*)glfwGetWindowUserPointer(window);
+
+  if (!viewer->mouse_captured_)
+    return;
+
+  if (viewer->first_mouse_) {
+    viewer->last_x_ = xpos;
+    viewer->last_y_ = ypos;
+    viewer->first_mouse_ = false;
+  }
+
+  float xoffset = (float)xpos - viewer->last_x_;
+  float yoffset = viewer->last_y_ - (float)ypos; // reversed due to screen coords
+  viewer->last_x_ = xpos;
+  viewer->last_y_ = ypos;
+
+  xoffset *= viewer->mouse_sensitivity_;
+  yoffset *= viewer->mouse_sensitivity_; 
+
+  viewer->yaw_ += xoffset;
+  viewer->pitch_ -= yoffset;
+
+  if (viewer->pitch_ > (M_PI / 2.1))
+    viewer->pitch_ = M_PI / 2.1;
+  if (viewer->pitch_ < (-M_PI / 2.1))
+    viewer->pitch_ = -M_PI / 2.1;
+
+  Vector3f new_dir;
+  new_dir << std::cos(viewer->yaw_) * std::cos(viewer->pitch_),
+             std::sin(viewer->pitch_),
+             std::sin(viewer->yaw_) * std::cos(viewer->pitch_);
+  new_dir.normalize();
+  viewer->c.set_direction(new_dir);
 }

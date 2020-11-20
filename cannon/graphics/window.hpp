@@ -76,7 +76,7 @@ namespace cannon {
     void debug_message_callback(GLenum source, GLenum type, GLuint id, GLenum
         severity, GLsizei length, const GLchar *message, 
         const void *userParam);
-    void process_input(GLFWwindow* window);
+    void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
 
     class Window {
       public:
@@ -121,6 +121,8 @@ namespace cannon {
           ImGui_ImplGlfw_InitForOpenGL(window, true);
           const char *glsl_version = "#version 330 core";
           ImGui_ImplOpenGL3_Init(glsl_version);
+
+          glGenQueries(1, &gl_time_query_);
         }
 
         ~Window() {
@@ -162,33 +164,17 @@ namespace cannon {
         void draw_from_framebuffer(std::shared_ptr<Framebuffer> fb);
         void save_image(const std::string &path);
 
-        template <typename F>
-        void render_loop(F f, bool clear = true) {
+        void render_loop(std::function<void()> f, bool clear = true) {
           while (!glfwWindowShouldClose(window)) {
-            glfwPollEvents();
+            glQueryCounter(gl_time_query_, GL_TIMESTAMP);
 
-            if (render_to_framebuffer_)
-              render_fb_->bind();
-
-            ImGui_ImplOpenGL3_NewFrame();
-            ImGui_ImplGlfw_NewFrame();
-            ImGui::NewFrame();
+            GLint64 start_time;
+            glGetInteger64v(GL_TIMESTAMP, &start_time);
 
             float cur_time = glfwGetTime();
             delta_time_ = cur_time - last_frame_time_;
 
-            process_input(window);
-
-            if (clear) {
-              glClearColor(clear_color_[0], clear_color_[1], clear_color_[2], clear_color_[3]);
-              glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-            }
-
-            glfwGetFramebufferSize(window, &width, &height);
-
-            f();
-
-            draw_overlays();
+            draw(f);
 
             if (recording_) {
               save_image(std::string("img/") +
@@ -197,34 +183,36 @@ namespace cannon {
               recording_frame_ += 1;
             }
 
-            elapsed_ = glfwGetTime() - cur_time;
+            elapsed_ = glfwGetTime() - last_frame_time_;
+            last_frame_time_ = glfwGetTime();
             float smoothing = 0.9;
-            float estimate = 1.0 / (glfwGetTime() - last_frame_time_);
+            float estimate = 1.0 / (elapsed_);
+
             fps_ = (fps_ * smoothing) + (estimate * (1.0 - smoothing));
             time_cbuf_.add_point(elapsed_);
             fps_cbuf_.add_point(fps_);
 
-            write_imgui();
+            glfwPollEvents();
 
-
-            if (draw_from_framebuffer_) {
-              draw_fb_->display();
-              draw_fb_->unbind();
+            int done = 0;
+            while (!done) {
+              glGetQueryObjectiv(gl_time_query_, GL_QUERY_RESULT_AVAILABLE, &done);
             }
 
-            ImGui::Render();
-            ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-
-            last_frame_time_ = glfwGetTime();
-            glfwSwapBuffers(window);
-
+            GLuint64 end_time;
+            glGetQueryObjectui64v(gl_time_query_, GL_QUERY_RESULT, &end_time);
+            draw_time_ = (double)(end_time - start_time) / 1e9f;
+            draw_time_cbuf_.add_point(draw_time_);
           }
         }
+
+        void draw(std::function<void()> f);
 
         int width;
         int height;
 
         friend class Viewer3D;
+        friend void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
 
       private:
         void register_callbacks();
@@ -258,8 +246,12 @@ namespace cannon {
 
         CircularBuffer time_cbuf_;
         CircularBuffer fps_cbuf_;
+        CircularBuffer draw_time_cbuf_;
 
         ThreadPool<ImageData> save_pool_;
+
+        unsigned int gl_time_query_;
+        double draw_time_;
     };
 
   } // namespace graphics

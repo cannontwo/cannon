@@ -3,6 +3,34 @@
 using namespace cannon::graphics;
 using namespace cannon::log;
 
+void Window::draw(std::function<void()> f) {
+  if (render_to_framebuffer_)
+    render_fb_->bind();
+
+  ImGui_ImplOpenGL3_NewFrame();
+  ImGui_ImplGlfw_NewFrame();
+  ImGui::NewFrame();
+
+  glClearColor(clear_color_[0], clear_color_[1], clear_color_[2], clear_color_[3]);
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+
+  f();
+
+  draw_overlays();
+
+  write_imgui();
+
+  if (draw_from_framebuffer_) {
+    draw_fb_->display();
+    draw_fb_->unbind();
+  }
+
+  ImGui::Render();
+  ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
+  glfwSwapBuffers(window);
+}
+
 void Window::make_current() {
   glfwMakeContextCurrent(window);
 }
@@ -12,7 +40,9 @@ void Window::set_viewport(unsigned x, unsigned y, unsigned width, unsigned heigh
 }
 
 void Window::register_callbacks() {
+  glfwSetWindowUserPointer(window, this);
   glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+  glfwSetKeyCallback(window, key_callback);
   glDebugMessageCallback((GLDEBUGPROC)debug_message_callback, (void *)nullptr);
 }
 
@@ -98,8 +128,10 @@ void Window::write_imgui() {
     }
 
     if (ImGui::BeginMenu("Statistics")) {
-      ImGui::Text("Elapsed time: %f", elapsed_);
+      ImGui::Text("CPU time: %f", elapsed_);
       ImGui::PlotLines("Times", time_cbuf_.data, IM_ARRAYSIZE(time_cbuf_.data), time_cbuf_.offset, NULL, 0.0, 0.05);
+      ImGui::Text("GPU time: %f", draw_time_);
+      ImGui::PlotLines("Times", draw_time_cbuf_.data, IM_ARRAYSIZE(draw_time_cbuf_.data), draw_time_cbuf_.offset, NULL, 0.0, 0.05);
       ImGui::Text("FPS: %f", fps_);
       ImGui::PlotLines("FPS", fps_cbuf_.data, IM_ARRAYSIZE(fps_cbuf_.data), fps_cbuf_.offset, NULL, 0.0, 100.0);
       ImGui::EndMenu();
@@ -249,11 +281,16 @@ void Window::draw_from_framebuffer(std::shared_ptr<Framebuffer> fb) {
 // Callbacks
 void cannon::graphics::framebuffer_size_callback(GLFWwindow* window, int width, int height) {
   glViewport(0, 0, width, height);
-}
 
-void cannon::graphics::process_input(GLFWwindow* window) {
-  if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-    glfwSetWindowShouldClose(window, true);
+  Window *w = (Window*)glfwGetWindowUserPointer(window);
+  w->width = width;
+  w->height = height;
+  w->set_viewport(0, 0, width, height);
+
+  log_info("Resize drawing");
+
+  // For smooth resizing
+  w->draw([](){});
 }
 
 void cannon::graphics::debug_message_callback(GLenum source, GLenum type, GLuint id, GLenum
@@ -261,4 +298,9 @@ void cannon::graphics::debug_message_callback(GLenum source, GLenum type, GLuint
     const void *userParam) {
   if (severity != GL_DEBUG_SEVERITY_NOTIFICATION) 
     log_warning(message);
+}
+
+void cannon::graphics::key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
+  if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
+    glfwSetWindowShouldClose(window, true);
 }
