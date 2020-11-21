@@ -15,7 +15,6 @@ namespace cannon {
       public:
         VertexArrayObject() {
           glGenVertexArrays(1, &gl_vertex_array_object_);
-          bind();
         }
 
         VertexArrayObject(VertexArrayObject& vao) = delete;

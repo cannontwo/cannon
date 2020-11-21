@@ -26,6 +26,7 @@ list(APPEND GRAPHICS_SOURCES
   geometry/axes_hint.cpp
   geometry/sdf_volume.cpp
   deferred_renderer.cpp
+  opengl_state.cpp
   )
 
 add_library(graphics OBJECT ${GRAPHICS_SOURCES})

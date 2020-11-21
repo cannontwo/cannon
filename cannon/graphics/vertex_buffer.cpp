@@ -10,6 +10,7 @@ void VertexBuffer::init(std::shared_ptr<VertexArrayObject> vao) {
   glGenBuffers(1, &gl_vertex_buffer_object_);
 
   gl_vertex_attribute_num_ = vao_->get_next_vertex_attribute_num();
+  vao_->unbind();
 }
 
 void VertexBuffer::bind() const {

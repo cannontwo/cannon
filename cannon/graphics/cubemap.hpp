@@ -29,6 +29,8 @@ namespace cannon {
 
           set_filter_linear();
           set_wrap_clamp_edge();
+
+          glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
         }
 
         Cubemap(std::vector<std::string> face_paths) {
@@ -72,9 +74,15 @@ namespace cannon {
           set_filter_linear();
           set_wrap_clamp_edge();
 
+          glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
         }
 
+
+        // Sets GL_TEXTURE_CUBE_MAP to gl_cubemap_ and GL_ACTIVE_TEXTURE to
+        // texture_unit
         void bind(GLenum texture_unit) const;
+
+        // Sets GL_TEXTURE_CUBE_MAP to 0 and GL_ACTIVE_TEXTURE to GL_TEXTURE0
         void unbind() const;
 
         void set_wrap_repeat();

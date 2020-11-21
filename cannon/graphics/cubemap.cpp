@@ -9,6 +9,7 @@ void Cubemap::bind(GLenum texture_unit) const {
 
 void Cubemap::unbind() const {
   glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
+  glActiveTexture(GL_TEXTURE0);
 }
 
 void Cubemap::set_wrap_repeat() {

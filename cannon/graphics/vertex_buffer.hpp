@@ -23,6 +23,7 @@ namespace cannon {
           glGenBuffers(1, &gl_vertex_buffer_object_);
 
           gl_vertex_attribute_num_ = vao_->get_next_vertex_attribute_num();
+          vao_->unbind();
         }
 
         VertexBuffer(VertexBuffer& buf) = delete;
@@ -35,7 +36,9 @@ namespace cannon {
           }
 
         ~VertexBuffer() {
+          bind();
           glDeleteBuffers(1, &gl_vertex_buffer_object_);
+          unbind();
         }
 
         void init(std::shared_ptr<VertexArrayObject> vao);

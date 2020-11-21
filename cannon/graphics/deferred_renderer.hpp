@@ -17,6 +17,8 @@ namespace cannon {
 
         ~DeferredRenderer() {}
 
+        // We do not care if this function changes OpenGL state, as its
+        // conclusion means that the OpenGL context is destroyed.
         void render_loop(std::function<void()> f);
 
         void setup_render_passes();

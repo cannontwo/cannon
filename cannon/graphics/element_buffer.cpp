@@ -22,4 +22,5 @@ void ElementBuffer::buffer(MatrixX3u indices) {
   
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * tmp_indices.size(), 
       tmp_indices.data(), GL_STATIC_DRAW);
+  unbind();
 }

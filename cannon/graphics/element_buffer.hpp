@@ -21,6 +21,7 @@ namespace cannon {
         ElementBuffer(std::shared_ptr<VertexArrayObject> vao) : vao_(vao) {
           vao_->bind();
           glGenBuffers(1, &gl_element_buffer_object_);
+          vao_->unbind();
         }
 
         ~ElementBuffer() {
