@@ -5,7 +5,7 @@ using namespace cannon::graphics;
 void DeferredRenderer::render_loop(std::function<void()> f) {
   viewer.render_loop_multipass([&] {
       f();
-      });
+      }, true);
 }
 
 void DeferredRenderer::setup_render_passes() {
@@ -41,6 +41,8 @@ void DeferredRenderer::setup_render_passes() {
 
   gbuffer_fb_ = viewer.add_render_pass("gbuffer",
       attachments, {gbuf_program_, sdf_geom_program_}, [this](){
+            glClearColor(0.0, 0.0, 0.0, 1.0);
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
             glDisable(GL_FRAMEBUFFER_SRGB); 
             viewer.disable_skybox();
             Vector3f c_pos = viewer.c.get_pos();
@@ -70,8 +72,6 @@ void DeferredRenderer::setup_render_passes() {
             sdf_geom_program_->set_uniform("max_march_steps", max_march_steps);
             viewer.draw_sdf_geom(sdf_geom_program_);
       });
-
-      
 
     shadow_program_ = std::make_shared<ShaderProgram>("shadow_shader");
     shadow_program_->attach_vertex_shader("shaders/mvp_normals_tex.vert");
@@ -173,6 +173,8 @@ void DeferredRenderer::setup_render_passes() {
   ssao_program_->link();
 
   ssao_fb_ = viewer.add_render_pass("ssao", ssao_program_, [this, noise_tex](){
+        glClearColor(0.0, 0.0, 0.0, 1.0);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
         Vector3f c_pos = viewer.c.get_pos();
         Vector4f tmp_pos;
         tmp_pos << c_pos[0],
@@ -226,6 +228,8 @@ void DeferredRenderer::setup_render_passes() {
 
   ssao_blur_fb_ = viewer.add_render_pass("ssao blur",
       ssao_blur_program_, [this](){
+        glClearColor(0.0, 0.0, 0.0, 1.0);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
         ssao_blur_fb_->bind_read();
         ssao_blur_fb_->bind_draw();
         ssao_fb_->quad->draw(ssao_blur_program_);
@@ -237,6 +241,8 @@ void DeferredRenderer::setup_render_passes() {
   lighting_program_->link();
 
   lighting_fb_ = viewer.add_render_pass("lighting", lighting_program_, [this](){
+        glClearColor(0.0, 0.0, 0.0, 1.0);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
         Vector3f c_pos = viewer.c.get_pos();
         Vector4f tmp_pos;
         tmp_pos << c_pos[0],
@@ -283,6 +289,8 @@ void DeferredRenderer::setup_render_passes() {
   light_geom_program_->link();
 
   light_geom_fb_ = viewer.add_render_pass("light geom", light_geom_program_, [this]() {
+        glClearColor(0.0, 0.0, 0.0, 1.0);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
         Vector3f c_pos = viewer.c.get_pos();
         Vector4f tmp_pos;
         tmp_pos << c_pos[0],
@@ -316,6 +324,8 @@ void DeferredRenderer::setup_render_passes() {
   hdr_program_->link();
 
   hdr_fb_ = viewer.add_render_pass("hdr tone mapping", hdr_program_, [this]() {
+        glClearColor(0.0, 0.0, 0.0, 1.0);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
         static float exposure = 0.0;
         if (ImGui::BeginMainMenuBar()) {
           if (ImGui::BeginMenu("Lighting")) {
@@ -338,6 +348,8 @@ void DeferredRenderer::setup_render_passes() {
 
 
   axes_fb_ = viewer.add_render_pass("axes hint", axes_program_, [this]() {
+      glClearColor(0.0, 0.0, 0.0, 1.0);
+      glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
       hdr_fb_->bind_read();
       axes_fb_->bind_draw();
       hdr_fb_->quad->draw();

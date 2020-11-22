@@ -3,7 +3,6 @@
 using namespace cannon::graphics::geometry;
 
 void Mesh::draw(const Matrix4f& view, const Matrix4f& perspective) const {
-  program->activate();
   program->set_uniform("model", get_model_mat());
   program->set_uniform("view", view);
   program->set_uniform("projection", perspective);
@@ -23,6 +22,8 @@ void Mesh::draw(const Matrix4f& view, const Matrix4f& perspective) const {
         (int)(max_diffuse_tex + i));
     specular_textures_[i]->bind(specular_gl_textures_[i]);
   }
+
+  program->activate();
   
   buf_.bind();
   normal_buf_.bind();
@@ -31,6 +32,10 @@ void Mesh::draw(const Matrix4f& view, const Matrix4f& perspective) const {
 
   glDrawElements(GL_TRIANGLES, indices_.rows() * indices_.cols(), GL_UNSIGNED_INT, 0);
 
+  ebuf_.unbind();
+  tex_coord_buf_.unbind();
+  normal_buf_.unbind();
+  buf_.unbind();
 
   for (unsigned int i = 0; i < diffuse_textures_.size(); i++) {
     diffuse_textures_[i]->unbind(diffuse_gl_textures_[i]);
@@ -42,7 +47,6 @@ void Mesh::draw(const Matrix4f& view, const Matrix4f& perspective) const {
 
 void Mesh::draw(std::shared_ptr<ShaderProgram> p, const Matrix4f& view, const
     Matrix4f& perspective) const {
-  p->activate();
   p->set_uniform("model", get_model_mat());
   p->set_uniform("view", view);
   p->set_uniform("projection", perspective);
@@ -63,6 +67,8 @@ void Mesh::draw(std::shared_ptr<ShaderProgram> p, const Matrix4f& view, const
     specular_textures_[i]->bind(specular_gl_textures_[i]);
   }
   
+  p->activate();
+  
   buf_.bind();
   normal_buf_.bind();
   tex_coord_buf_.bind();
@@ -70,6 +76,10 @@ void Mesh::draw(std::shared_ptr<ShaderProgram> p, const Matrix4f& view, const
 
   glDrawElements(GL_TRIANGLES, indices_.rows() * indices_.cols(), GL_UNSIGNED_INT, 0);
 
+  ebuf_.unbind();
+  tex_coord_buf_.unbind();
+  normal_buf_.unbind();
+  buf_.unbind();
 }
 
 Matrix4f Mesh::get_model_mat() const {

@@ -3,7 +3,6 @@
 using namespace cannon::graphics::geometry;
 
 void TexturedCube::draw(const Matrix4f& view, const Matrix4f& perspective) const {
-  program->activate();
   program->set_uniform("model", get_model_mat());
   program->set_uniform("view", view);
   program->set_uniform("projection", perspective);
@@ -17,6 +16,8 @@ void TexturedCube::draw(const Matrix4f& view, const Matrix4f& perspective) const
   program->set_uniform("material.specular", material_.specular);
   program->set_uniform("material.shininess", material_.shininess);
 
+  program->activate();
+
   diffuse_tex_.bind(GL_TEXTURE0);
   specular_tex_.bind(GL_TEXTURE8);
 
@@ -24,11 +25,13 @@ void TexturedCube::draw(const Matrix4f& view, const Matrix4f& perspective) const
   normal_buf_.bind();
 
   glDrawArrays(GL_TRIANGLES, 0, vertices_.rows());
+
+  normal_buf_.unbind();
+  buf_.unbind();
 }
 
 void TexturedCube::draw(std::shared_ptr<ShaderProgram> p, const Matrix4f& view, const
     Matrix4f& perspective) const {
-  p->activate();
   p->set_uniform("model", get_model_mat());
   p->set_uniform("view", view);
   p->set_uniform("projection", perspective);
@@ -42,6 +45,8 @@ void TexturedCube::draw(std::shared_ptr<ShaderProgram> p, const Matrix4f& view, 
   p->set_uniform("material.specular_tex[0]", 8);
   p->set_uniform("material.shininess", material_.shininess);
 
+  p->activate();
+
   diffuse_tex_.bind(GL_TEXTURE0);
   specular_tex_.bind(GL_TEXTURE8);
 
@@ -49,6 +54,9 @@ void TexturedCube::draw(std::shared_ptr<ShaderProgram> p, const Matrix4f& view, 
   normal_buf_.bind();
 
   glDrawArrays(GL_TRIANGLES, 0, vertices_.rows());
+
+  normal_buf_.unbind();
+  buf_.unbind();
 }
 
 void TexturedCube::populate_bufs_() {

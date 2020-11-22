@@ -167,6 +167,11 @@ namespace cannon {
 
         void render_loop(std::function<void()> f, bool clear = true) {
           while (!glfwWindowShouldClose(window)) {
+            if (clear) {
+              glClearColor(clear_color_[0], clear_color_[1], clear_color_[2], clear_color_[3]);
+              glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+            }
+
             glQueryCounter(gl_time_query_, GL_TIMESTAMP);
 
             GLint64 start_time;

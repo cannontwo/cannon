@@ -11,9 +11,6 @@ void Window::draw(std::function<void()> f) {
   ImGui_ImplGlfw_NewFrame();
   ImGui::NewFrame();
 
-  glClearColor(clear_color_[0], clear_color_[1], clear_color_[2], clear_color_[3]);
-  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-
   f();
 
   draw_overlays();

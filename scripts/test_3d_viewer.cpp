@@ -75,6 +75,7 @@ void test() {
                c_pos[2],
                1.0;
     textured_program->set_uniform("viewPos", tmp_pos);
+    textured_program->activate();
   });
 
   log_info("Render loop finished");

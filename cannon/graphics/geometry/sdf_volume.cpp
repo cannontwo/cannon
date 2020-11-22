@@ -3,7 +3,6 @@
 using namespace cannon::graphics::geometry;
 
 void SDFVolume::draw(const Matrix4f& view, const Matrix4f& perspective) const {
-  program->activate();
   program->set_uniform("model", get_model_mat());
   program->set_uniform("view", view);
   program->set_uniform("projection", perspective);
@@ -17,15 +16,18 @@ void SDFVolume::draw(const Matrix4f& view, const Matrix4f& perspective) const {
   program->set_uniform("material.specular", material_.specular);
   program->set_uniform("material.shininess", material_.shininess);
 
+  program->activate();
+
   buf_.bind();
 
   glBindTexture(GL_TEXTURE_2D, 0);
   glDrawArrays(GL_TRIANGLES, 0, vertices_.rows());
+
+  buf_.unbind();
 }
 
 void SDFVolume::draw(std::shared_ptr<ShaderProgram> p, const Matrix4f& view, const
     Matrix4f& perspective) const {
-  p->activate();
   p->set_uniform("model", get_model_mat());
   p->set_uniform("view", view);
   p->set_uniform("projection", perspective);
@@ -39,11 +41,14 @@ void SDFVolume::draw(std::shared_ptr<ShaderProgram> p, const Matrix4f& view, con
   p->set_uniform("material.specular", material_.specular);
   p->set_uniform("material.shininess", material_.shininess);
 
+  p->activate();
+
   buf_.bind();
 
   glBindTexture(GL_TEXTURE_2D, 0);
   glDrawArrays(GL_TRIANGLES, 0, vertices_.rows());
 
+  buf_.unbind();
 }
 
 void SDFVolume::populate_bufs_() {
