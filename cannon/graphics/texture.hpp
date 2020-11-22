@@ -115,21 +115,40 @@ namespace cannon {
           return ret_tex;
         }
 
+        // Sets GL_TEXTURE_BINDING_2D to gl_texture_ and GL_ACTIVE_TEXTURE to GL_TEXTURE0
         void bind() const;
+
+        // Sets GL_TEXTURE_BINDING_2D to gl_texture_ and GL_ACTIVE_TEXTURE to texture_unit
         void bind(GLenum texture_unit) const;
+
+        // Sets GL_TEXTURE_BINDING_2D to 0 and GL_ACTIVE_TEXTURE to GL_TEXTURE0
         void unbind() const;
+
+        // Sets GL_TEXTURE_BINDING_2D to 0 and GL_ACTIVE_TEXTURE to texture_unit
         void unbind(GLenum texture_unit) const;
 
+        // Does not affect OpenGL state
         void framebuffer_bind(GLenum attachment = GL_COLOR_ATTACHMENT0) const;
 
+        // Does not affect OpenGL state
         void set_wrap_repeat();
+
+        // Does not affect OpenGL state
         void set_wrap_mirrored_repeat();
+
+        // Does not affect OpenGL state
         void set_wrap_clamp_edge();
+
+        // Does not affect OpenGL state
         void set_wrap_clamp_border();
 
+        // Does not affect OpenGL state
         void set_filter_linear();
+
+        // Does not affect OpenGL state
         void set_filter_nearest();
 
+        // Does not affect OpenGL state
         void write_imgui();
 
         std::string path;

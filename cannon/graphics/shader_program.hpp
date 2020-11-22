@@ -19,6 +19,7 @@ namespace cannon {
 
     class ShaderProgram {
       public:
+        // Does not affect OpenGL state
         ShaderProgram(const std::string& name = "shader", bool do_init=true) : name_(name) {
           if (do_init) {
             init();
@@ -42,26 +43,45 @@ namespace cannon {
           glAttachShader(gl_shader_program_, shader.gl_shader_);
         }
 
+        // Does not affect OpenGL state
         void attach_vertex_shader(const std::string& v_src, const
             std::vector<std::string>& v_libs = {});
+
+        // Does not affect OpenGL state
         void attach_fragment_shader(const std::string& f_src, const
             std::vector<std::string>& f_libs = {});
 
+        // Does not affect OpenGL state
         void init() {
           gl_shader_program_ = glCreateProgram();
           initialized_ = true;
         }
 
+        // Does not affect OpenGL state
         void reload();
 
+        // Does not affect OpenGL state
         void link();
+
+        // Sets GL_CURRENT_PROGRAM to gl_shader_program_
         void activate();
+
+        // Sets GL_CURRENT_PROGRAM to 0
         void deactivate();
+
+        // Does not affect OpenGL state
         void set_uniform(const std::string& name, int value, bool verbose=false);
+
+        // Does not affect OpenGL state
         void set_uniform(const std::string& name, float value, bool verbose=false);
+
+        // Does not affect OpenGL state
         void set_uniform(const std::string& name, Vector4f value, bool verbose=false);
+
+        // Does not affect OpenGL state
         void set_uniform(const std::string& name, Matrix4f value, bool verbose=false);
 
+        // Does not affect OpenGL state
         void write_imgui();
         
       private:
