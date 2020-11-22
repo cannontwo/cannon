@@ -141,11 +141,15 @@ void Window::write_imgui() {
 }
 
 void Window::draw_overlays() {
-  text_program_.activate();
+  glEnable(GL_BLEND);
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
   vao_->bind();
   text_program_.set_uniform("projection", make_orthographic(0.0f, (float)width,
         0.0f, (float)height, -1.0, 1.0));
   text_program_.set_uniform("textColor", text_color_);
+  text_program_.set_uniform("text", 0);
+  text_program_.activate();
 
   for (auto& o : overlays_) {
     o.update(o);
@@ -178,6 +182,9 @@ void Window::draw_overlays() {
                   xpos + w, ypos + h, 1.0f, 0.0f;
       ch->texture->bind();
       buf_.replace(vertices);      
+      buf_.bind();
+      OpenGLState s;
+      log_info(s);
 
       glDrawArrays(GL_TRIANGLES, 0, 6);
       
@@ -185,6 +192,8 @@ void Window::draw_overlays() {
       x += (ch->advance >> 6) * o.scale;
     }
   }
+
+  glDisable(GL_BLEND);
 }
 
 // Free functions
@@ -195,14 +204,13 @@ void cannon::graphics::init_glfw() {
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
   glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
   glfwWindowHint(GLFW_SAMPLES, 16);
+
 }
 
 void cannon::graphics::init_glad() {
   if (!gladLoadGLLoader((GLADloadproc) glfwGetProcAddress)) {
     throw std::runtime_error("Could not initialize glad");
   }
-  //glEnable(GL_BLEND);
-  //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
 void cannon::graphics::save_image_func(std::shared_ptr<ImageData> data) {

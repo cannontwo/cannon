@@ -3,17 +3,21 @@
 using namespace cannon::plot;
 
 void Axes::draw() {
-  program_.activate();
+  glEnable(GL_BLEND);
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
   program_.set_uniform("uColor", Vector4f(0.0, 0.0, 0.0, 1.0));
   program_.set_uniform("matrix", make_scaling_matrix());
+  program_.activate();
   buf_.bind();
   
   glDrawArrays(GL_LINES, 0, 4);
 
-  text_program_.activate();
   text_program_.set_uniform("textColor", Vector4f(0.0, 0.0, 0.0, 1.0));
   text_program_.set_uniform("projection", make_scaling_matrix());
-  
+  text_program_.set_uniform("text", 0);
+  text_program_.activate();
+
   for (auto& tick : x_ticks_) {
     float x = tick;
     std::string tick_s = get_tick_string(tick);
@@ -34,10 +38,21 @@ void Axes::draw() {
                   xpos, ypos + h,     0.0f, 0.0f,
                   xpos + w, ypos,     1.0f, 1.0f,
                   xpos + w, ypos + h, 1.0f, 0.0f;
-      ch->texture->bind(GL_TEXTURE0);
+
+      OpenGLState s;
+
+      ch->texture->bind();
       text_quad_buf_.replace(vertices);      
+      text_quad_buf_.bind();
+
+      OpenGLState s1;
+      log_info("Before", s);
+      log_info("After", s1);
 
       glDrawArrays(GL_TRIANGLES, 0, 6);
+
+      ch->texture->unbind();
+      text_quad_buf_.unbind();
       
       // Advance is stored in number of 1/64 pixels
       x += (ch->advance >> 6) * text_scale_x_;
@@ -71,11 +86,15 @@ void Axes::draw() {
 
       glDrawArrays(GL_TRIANGLES, 0, 6);
       
+      ch->texture->unbind();
+      text_quad_buf_.unbind();
+
       // Advance is stored in number of 1/64 pixels
       x += (ch->advance >> 6) * text_scale_x_;
     }
-
   }
+
+  glDisable(GL_BLEND);
 }
 
 void Axes::update_limits(float x_min, float x_max, float y_min, float y_max, int window_width, int window_height) {

@@ -4,7 +4,9 @@ using namespace cannon::plot;
 using namespace cannon::log;
 
 void Plotter::render() {
-  w_.render_loop([this] {draw_pass();});
+  w_.render_loop([this] {
+        draw_pass();
+      });
 }
 
 std::shared_ptr<Scatter> Plotter::plot_points(MatrixX2f points, Vector4f color, float size) {

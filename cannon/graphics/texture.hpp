@@ -72,6 +72,7 @@ namespace cannon {
           set_wrap_repeat();
           set_filter_linear();
 
+          bind(texture_unit);
           glGenerateMipmap(GL_TEXTURE_2D);
 
           stbi_image_free(data_);
@@ -88,6 +89,7 @@ namespace cannon {
           set_wrap_clamp_edge();
           set_filter_linear();
 
+          bind(texture_unit);
           glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, width_, height_, 0, GL_RED, GL_UNSIGNED_BYTE, data_);
 
           unbind();

@@ -13,6 +13,7 @@
 #include <cannon/graphics/vertex_buffer.hpp>
 #include <cannon/graphics/font.hpp>
 #include <cannon/log/registry.hpp>
+#include <cannon/graphics/opengl_state.hpp>
 
 using namespace Eigen;
 
@@ -27,6 +28,8 @@ namespace cannon {
         Axes(float text_scale=0.1) : x_min_(-0.01), x_max_(0.01), y_min_(-0.01), y_max_(0.01),
             padding_(0.1), text_scale_x_(text_scale), text_scale_y_(text_scale), vao_(new VertexArrayObject), buf_(vao_),
             font_(true, 12), text_vao_(new VertexArrayObject), text_quad_buf_(text_vao_)  {
+
+
           MatrixX2f lines(4, 2);
           lines << x_min_, 0.0,
                    x_max_, 0.0,
@@ -57,7 +60,6 @@ namespace cannon {
           text_program_.link();
           
           MatrixX4f vertices(MatrixX4f::Zero(6, 4));
-          text_quad_buf_.bind();
           text_quad_buf_.buffer(vertices);
         }
 

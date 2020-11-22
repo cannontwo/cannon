@@ -17,8 +17,8 @@ void Viewer3D::draw_scene_geom(bool draw_lights, bool ortho) {
   if (ortho) {
     perspective = make_orthographic(-20.0f, 20.0f, -20.0f, 20.0f, 1.0f, 50.0f);
   } else {
-  perspective = make_perspective_fov(to_radians(45.0f),
-      (float)(w.width) / (float)(w.height), 0.1f, 50.0f);
+    perspective = make_perspective_fov(to_radians(45.0f),
+        (float)(w.width) / (float)(w.height), 0.1f, 50.0f);
   }
 
   for (unsigned int i = 0; i < scene_geom_.size(); i++) {

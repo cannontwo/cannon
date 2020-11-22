@@ -27,6 +27,7 @@
 #include <cannon/graphics/vertex_array_object.hpp>
 #include <cannon/graphics/framebuffer.hpp>
 #include <cannon/utils/thread_pool.hpp>
+#include <cannon/graphics/opengl_state.hpp>
 
 // TODO
 //#include <cannon/graphics/input_handlers.hpp>

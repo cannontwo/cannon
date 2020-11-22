@@ -18,8 +18,8 @@ void Line::replace_points(MatrixX2f points) {
 }
 
 void Line::draw() {
-  program_->activate();
   program_->set_uniform("uColor", color_);
+  program_->activate();
 
   buf_.bind();
   glLineWidth(2.0);

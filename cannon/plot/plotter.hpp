@@ -29,6 +29,7 @@ namespace cannon {
 
           glEnable(GL_BLEND);
           glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+          glDisable(GL_DEPTH_TEST);
 
           w_.set_clear_color(Vector4f(1.0f, 1.0f, 1.0f, 1.0f));
           w_.disable_depth_test();
@@ -42,7 +43,6 @@ namespace cannon {
           point_program_->attach_shader(v);
           point_program_->attach_shader(f);
           point_program_->link();
-          point_program_->activate();
 
           // Set up line shader
           const char *fl_src = BASIC_FRAGMENT_SHADER.c_str();
@@ -52,7 +52,6 @@ namespace cannon {
           line_program_->attach_shader(vl);
           line_program_->attach_shader(fl);
           line_program_->link();
-          line_program_->activate();
         }
 
         void render();
