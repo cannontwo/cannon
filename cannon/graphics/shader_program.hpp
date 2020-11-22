@@ -56,6 +56,7 @@ namespace cannon {
 
         void link();
         void activate();
+        void deactivate();
         void set_uniform(const std::string& name, int value, bool verbose=false);
         void set_uniform(const std::string& name, float value, bool verbose=false);
         void set_uniform(const std::string& name, Vector4f value, bool verbose=false);

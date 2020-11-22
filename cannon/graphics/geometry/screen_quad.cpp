@@ -10,15 +10,25 @@ void ScreenQuad::resize(int w, int h) {
 void ScreenQuad::draw() {
     program->activate();
     glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     tex_->bind();
     buf_.bind();
     texture_coord_buf_.bind();
 
-    glDisable(GL_DEPTH_TEST);
+    bool depth_enabled = glIsEnabled(GL_DEPTH_TEST);
+    if (depth_enabled)
+      glDisable(GL_DEPTH_TEST);
+    
     glDrawArrays(GL_TRIANGLES, 0, 6);
-    glEnable(GL_DEPTH_TEST);
+
+    if (depth_enabled)
+      glEnable(GL_DEPTH_TEST);
+
+    tex_->unbind();
+    texture_coord_buf_.unbind();
+    buf_.unbind();
+    program->deactivate();
 }
 
 void ScreenQuad::draw(std::shared_ptr<ShaderProgram> p) {
@@ -30,9 +40,19 @@ void ScreenQuad::draw(std::shared_ptr<ShaderProgram> p) {
     buf_.bind();
     texture_coord_buf_.bind();
 
-    glDisable(GL_DEPTH_TEST);
+    bool depth_enabled = glIsEnabled(GL_DEPTH_TEST);
+    if (depth_enabled)
+      glDisable(GL_DEPTH_TEST);
+
     glDrawArrays(GL_TRIANGLES, 0, 6);
-    glEnable(GL_DEPTH_TEST);
+
+    if (depth_enabled)
+      glEnable(GL_DEPTH_TEST);
+
+    tex_->unbind();
+    texture_coord_buf_.unbind();
+    buf_.unbind();
+    p->deactivate();
 }
 
 void ScreenQuad::draw(std::shared_ptr<ShaderProgram> p,
@@ -48,9 +68,22 @@ void ScreenQuad::draw(std::shared_ptr<ShaderProgram> p,
   buf_.bind();
   texture_coord_buf_.bind();
 
-  glDisable(GL_DEPTH_TEST);
+  bool depth_enabled = glIsEnabled(GL_DEPTH_TEST);
+  if (depth_enabled)
+    glDisable(GL_DEPTH_TEST);
+
   glDrawArrays(GL_TRIANGLES, 0, 6);
-  glEnable(GL_DEPTH_TEST);
+
+  if (depth_enabled)
+    glEnable(GL_DEPTH_TEST);
+
+  for (unsigned int i = 0; i < textures.size(); i++) {
+    textures[i]->unbind(); 
+  }
+
+  texture_coord_buf_.unbind();
+  buf_.unbind();
+  p->deactivate();
 }
 
 void ScreenQuad::set_tex(std::shared_ptr<Texture> t) {

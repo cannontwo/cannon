@@ -29,6 +29,8 @@ namespace cannon {
           
           quad = std::make_shared<geometry::ScreenQuad>(color_buf, width, height);
           generate_depth_stencil_buffer_();
+
+          unbind();
         }
 
         Framebuffer(std::vector<std::shared_ptr<Texture>> attachments, int
@@ -43,39 +45,57 @@ namespace cannon {
           
           quad = std::make_shared<geometry::ScreenQuad>(color_attachments[0], width, height);
           generate_depth_stencil_buffer_();
+
+          unbind();
         }
 
         ~Framebuffer() {
           glDeleteFramebuffers(1, &gl_framebuffer_);
         }
 
-        // Bind makes the framebuffer receive draw commands. Unbind is
-        // necessary before the default framebuffer will display changes again.
-        // Display draws this framebuffer on the currently bound framebuffer.
+        // Sets GL_READ_FRAMEBUFFER to gl_framebuffer_, and GL_DRAW_FRAMEBUFFER
+        // to gl_framebuffer_
         void bind(); 
+
+        // Sets GL_READ_FRAMEBUFFER to gl_framebuffer_
         void bind_read();
+
+        // Sets GL_READ_FRAMEBUFFER to 0
         void unbind_read();
+
+        // Sets GL_DRAW_FRAMEBUFFER to gl_framebuffer_
         void bind_draw();
+
+        // Sets GL_DRAW_FRAMEBUFFER to 0
         void unbind_draw();
+
+        // Sets GL_READ_FRAMEBUFFER to 0 and GL_DRAW_FRAMEBUFFER to 0
         void unbind();
+
+        // Sets GL_READ_FRAMEBUFFER to gl_framebuffer_ and GL_DRAW_FRAMEBUFFER
+        // to gl_framebuffer_
         void display();
 
+        // Does not affect OpenGL state
         void draw_quad();
+
+        // Does not affect OpenGL state
         void draw_quad(int idx);
 
+        // Does not affect OpenGL state
         void attach_tex(std::shared_ptr<Texture> tex);
 
+        // Does not affect OpenGL state
         void resize(int w, int h);
+        
+        // Does not affect OpenGL state
+        void write_imgui();
 
         int width;
         int height;
-        
-        void write_imgui();
 
         std::shared_ptr<geometry::ScreenQuad> quad;
-
         std::string name;
-
         std::deque<std::shared_ptr<Texture>> color_attachments;
 
       private:

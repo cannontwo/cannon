@@ -41,3 +41,41 @@ bool cannon::graphics::operator==(const OpenGLState& lhs, const OpenGLState& rhs
 
   return ret;
 }
+
+std::ostream& cannon::graphics::operator<<(std::ostream& os, const OpenGLState& state) {
+  os << "Active Texture: " << state.active_texture << std::endl;
+  os << "Program: " << state.program << std::endl;
+  os << "Texture: " << state.texture << std::endl;
+  os << "Cubemap Texture: " << state.cubemap_texture << std::endl;
+  os << "Sampler: " << state.sampler << std::endl;
+  os << "Array Buffer: " << state.array_buffer << std::endl;
+  os << "Vertex Array Object: " << state.vertex_array_object << std::endl;
+  os << "Element Buffer: " << state.element_buffer << std::endl;
+  os << "Draw Buffer: " << state.draw_buffer << std::endl;
+  os << "Read Buffer: " << state.read_buffer << std::endl;
+
+  os << "Viewport[0]: " << state.viewport[0] << std::endl;
+  os << "Viewport[1]: " << state.viewport[1] << std::endl;
+  os << "Viewport[2]: " << state.viewport[2] << std::endl;
+  os << "Viewport[3]: " << state.viewport[3] << std::endl;
+
+  os << "Scissor Box[0]: " << state.scissor_box[0] << std::endl;
+  os << "Scissor Box[1]: " << state.scissor_box[1] << std::endl;
+  os << "Scissor Box[2]: " << state.scissor_box[2] << std::endl;
+  os << "Scissor Box[3]: " << state.scissor_box[3] << std::endl;
+
+  os << "Blend Src RGB: " << state.blend_src_rgb << std::endl;
+  os << "Blend Dst RGB: " << state.blend_dst_rgb << std::endl;
+  os << "Blend Src Alpha: " << state.blend_src_alpha << std::endl;
+  os << "Blend Dst Alpha: " << state.blend_dst_alpha << std::endl;
+  os << "Blend Equation RGB: " << state.blend_equation_rgb << std::endl;
+  os << "Blend Equation Alpha: " << state.blend_equation_alpha << std::endl;
+
+  os << "Enable Blend: " << state.enable_blend << std::endl;
+  os << "Enable Cull Face: " << state.enable_cull_face << std::endl;
+  os << "Enable Depth Test: " << state.enable_depth_test << std::endl;
+  os << "Enable Scissor Test: " << state.enable_scissor_test << std::endl;
+  os << "Enable Primitive Restart: " << state.enable_primitive_restart << std::endl;
+
+  return os;
+}

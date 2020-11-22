@@ -20,6 +20,10 @@ void ShaderProgram::activate() {
   glUseProgram(gl_shader_program_);
 }
 
+void ShaderProgram::deactivate() {
+  glUseProgram(0);
+}
+
 int ShaderProgram::get_uniform_loc_(const std::string &name, bool verbose) {
   int location = glGetUniformLocation(gl_shader_program_, name.c_str());
   if (location == -1 && verbose) {
@@ -34,12 +38,14 @@ void ShaderProgram::set_uniform(const std::string& name, int value, bool verbose
   int location = get_uniform_loc_(name, verbose);
   if (location != -1)
     glUniform1i(location, value);
+  deactivate();
 }
 
 void ShaderProgram::set_uniform(const std::string& name, float value, bool verbose) {
   activate();
   int location = get_uniform_loc_(name, verbose);
   glUniform1f(location, value);
+  deactivate();
 }
 
 void ShaderProgram::set_uniform(const std::string& name, Vector4f value, bool verbose) {
@@ -47,6 +53,7 @@ void ShaderProgram::set_uniform(const std::string& name, Vector4f value, bool ve
   int location = get_uniform_loc_(name, verbose);
   if (location != -1)
     glUniform4f(location, value[0], value[1], value[2], value[3]);
+  deactivate();
 }
 
 void ShaderProgram::set_uniform(const std::string& name, Matrix4f value, bool verbose) {
@@ -54,6 +61,7 @@ void ShaderProgram::set_uniform(const std::string& name, Matrix4f value, bool ve
   int location = get_uniform_loc_(name, verbose);
   if (location != -1)
     glUniformMatrix4fv(location, 1, GL_FALSE, value.data());
+  deactivate();
 }
 
 void ShaderProgram::reload() {

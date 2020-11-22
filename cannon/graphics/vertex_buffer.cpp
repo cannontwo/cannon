@@ -39,6 +39,7 @@ void VertexBuffer::buffer(MatrixX3f vertices) {
       tmp_vertices.data(), GL_DYNAMIC_DRAW);
 
   set_vertex_attribute_pointer(3);
+  unbind();
 }
 
 void VertexBuffer::buffer(MatrixX2f vertices) {
@@ -53,6 +54,7 @@ void VertexBuffer::buffer(MatrixX2f vertices) {
       tmp_vertices.data(), GL_DYNAMIC_DRAW);
 
   set_vertex_attribute_pointer(2);
+  unbind();
 }
 
 void VertexBuffer::buffer(MatrixX4f vertices) {
@@ -67,6 +69,7 @@ void VertexBuffer::buffer(MatrixX4f vertices) {
       tmp_vertices.data(), GL_DYNAMIC_DRAW);
 
   set_vertex_attribute_pointer(4);
+  unbind();
 }
 
 void VertexBuffer::replace(MatrixX2f vertices) {
@@ -84,6 +87,7 @@ void VertexBuffer::replace(MatrixX2f vertices) {
   } else {
     buffer(vertices);
   }
+  unbind();
 }
 
 void VertexBuffer::replace(MatrixX3f vertices) {
@@ -101,6 +105,7 @@ void VertexBuffer::replace(MatrixX3f vertices) {
   } else {
     buffer(vertices);
   }
+  unbind();
 }
 
 void VertexBuffer::replace(MatrixX4f vertices) {
@@ -118,6 +123,7 @@ void VertexBuffer::replace(MatrixX4f vertices) {
   } else {
     buffer(vertices);
   }
+  unbind();
 }
 
 void VertexBuffer::set_vertex_attribute_pointer(int dim) {

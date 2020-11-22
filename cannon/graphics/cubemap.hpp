@@ -15,7 +15,7 @@ namespace cannon {
     class Cubemap {
       public:
 
-        // Empty cubemap
+        // Empty cubemap. Does not change OpenGL state
         Cubemap(int width=800, int height=600, int num_channels=3) {
 
           glGenTextures(1, &gl_cubemap_);
@@ -30,7 +30,7 @@ namespace cannon {
           set_filter_linear();
           set_wrap_clamp_edge();
 
-          glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
+          unbind();
         }
 
         Cubemap(std::vector<std::string> face_paths) {

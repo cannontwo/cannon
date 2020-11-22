@@ -44,6 +44,9 @@ void Framebuffer::display() {
 }
 
 void Framebuffer::attach_tex(std::shared_ptr<Texture> tex) {
+  if (glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE)
+    bind();
+
   color_attachments.push_back(tex);
 
   if (color_attachments.size() > max_color_attachments_) {
@@ -59,7 +62,9 @@ void Framebuffer::attach_tex(std::shared_ptr<Texture> tex) {
     glFramebufferTexture2D(GL_FRAMEBUFFER,
         GL_COLOR_ATTACHMENT0+(color_attachments.size() - 1), GL_TEXTURE_2D,
         tex->gl_texture_, 0);
+    tex->unbind();
   }
+  unbind();
 }
 
 void Framebuffer::resize(int w, int h) {
@@ -75,6 +80,7 @@ void Framebuffer::resize(int w, int h) {
     color_attachments[i]->bind();
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0+i,
         GL_TEXTURE_2D, color_attachments[i]->gl_texture_, 0);
+    color_attachments[i]->unbind();
   }
 
   quad->resize(w, h);
@@ -82,6 +88,7 @@ void Framebuffer::resize(int w, int h) {
 
   glDeleteRenderbuffers(1, &gl_depth_stencil_rb_);
   generate_depth_stencil_buffer_();
+  unbind();
 }
 
 void Framebuffer::write_imgui() {
@@ -99,14 +106,16 @@ void Framebuffer::write_imgui() {
 
 void Framebuffer::generate_depth_stencil_buffer_() {
   bind();
+
   glGenRenderbuffers(1, &gl_depth_stencil_rb_);
   glBindRenderbuffer(GL_RENDERBUFFER, gl_depth_stencil_rb_);
 
-    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height);
+  glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height);
 
   glFramebufferRenderbuffer(GL_FRAMEBUFFER,
       GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER,
       gl_depth_stencil_rb_);
+  unbind();
 }
 
 void Framebuffer::draw_quad() {

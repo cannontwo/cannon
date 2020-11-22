@@ -20,6 +20,7 @@ namespace cannon {
 
     class Font {
       public:
+        // Does not change OpenGL state
         Font(bool do_init=true, int size=20, const std::string&
             path="/usr/share/fonts/truetype/open-sans/OpenSans-Regular.ttf") :
             path_(path), size_(size) {
@@ -31,11 +32,13 @@ namespace cannon {
         Font(Font& f) = delete;
         Font(Font&& f) = delete;
 
+        // Does not change OpenGL state
         ~Font() {
           FT_Done_Face(face_);
           FT_Done_FreeType(ft_);
         }
 
+        // Does not change OpenGL state
         void init();
         std::shared_ptr<Character> get_char(char c);
 

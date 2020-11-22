@@ -1,6 +1,8 @@
 #ifndef CANNON_GRAPHICS_OPENGL_STATE_H
 #define CANNON_GRAPHICS_OPENGL_STATE_H 
 
+#include <iostream>
+
 #include <glad/glad.h>
 
 namespace cannon {
@@ -66,6 +68,7 @@ namespace cannon {
     };
 
     bool operator==(const OpenGLState& lhs, const OpenGLState& rhs);
+    std::ostream& operator<<(std::ostream& os, const OpenGLState& state);
 
   } // namespace graphics
 } // namespace cannon

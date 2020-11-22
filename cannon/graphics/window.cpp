@@ -92,13 +92,11 @@ void Window::init_text_shader() {
   text_program_.attach_shader(v);
   text_program_.attach_shader(f);
   text_program_.link();
-  text_program_.activate();
 
   // Reserve space for display quads
   MatrixX4f vertices(MatrixX4f::Zero(6, 4));
   buf_.bind();
   buf_.buffer(vertices);
-  buf_.unbind();
 }
 
 void Window::write_imgui() {
@@ -187,8 +185,6 @@ void Window::draw_overlays() {
       x += (ch->advance >> 6) * o.scale;
     }
   }
-
-  vao_->unbind();
 }
 
 // Free functions

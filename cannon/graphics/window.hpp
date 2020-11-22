@@ -133,7 +133,7 @@ namespace cannon {
           //ImPlot::DestroyContext();
           ImGui::DestroyContext();
 
-          glfwMakeContextCurrent(NULL);
+          //glfwMakeContextCurrent(NULL);
           glfwDestroyWindow(window);
 
           glfwTerminate();

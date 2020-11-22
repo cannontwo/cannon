@@ -35,6 +35,7 @@ namespace cannon {
           set_wrap_repeat();
           set_filter_linear();
 
+          unbind();
         }
 
         Texture(const std::string& path, bool use_alpha=false, GLenum
@@ -74,6 +75,8 @@ namespace cannon {
           glGenerateMipmap(GL_TEXTURE_2D);
 
           stbi_image_free(data_);
+
+          unbind();
         }
 
         Texture(FT_Face &face, GLenum texture_unit=0) :
@@ -86,6 +89,8 @@ namespace cannon {
           set_filter_linear();
 
           glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, width_, height_, 0, GL_RED, GL_UNSIGNED_BYTE, data_);
+
+          unbind();
         }
 
         ~Texture() {
