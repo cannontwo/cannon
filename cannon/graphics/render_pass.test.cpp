@@ -1,10 +1,12 @@
+#include <catch2/catch.hpp>
+
 #include <cannon/graphics/window.hpp>
 #include <cannon/graphics/render_pass.hpp>
 #include <cannon/graphics/opengl_state.hpp>
 
 using namespace cannon::graphics;
 
-int main() {
+TEST_CASE("RenderPass", "[graphics]") {
   Window w;
   auto f = std::make_shared<Framebuffer>();
   auto p = std::make_shared<ShaderProgram>();
@@ -13,7 +15,7 @@ int main() {
 
   rp.run();
   OpenGLState s1;
-  assert(s == s1);
+  REQUIRE(s == s1);
 
   ImGui_ImplOpenGL3_NewFrame();
   ImGui_ImplGlfw_NewFrame();
@@ -26,9 +28,9 @@ int main() {
     ImGui::EndMainMenuBar();
   }
   OpenGLState s2;
-  assert(s2 == s1);
+  REQUIRE(s2 == s1);
 
   rp.set_time_taken(0.01);
   OpenGLState s3;
-  assert(s3 == s2);
+  REQUIRE(s3 == s2);
 }

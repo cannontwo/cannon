@@ -1,5 +1,5 @@
-int main() {
-  // Nothing to test yet
+#include <catch2/catch.hpp>
 
-  return 0;
+TEST_CASE("Level", "[log]") {
+  // Nothing to test yet
 }

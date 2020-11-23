@@ -392,3 +392,8 @@ void DeferredRenderer::setup_render_passes() {
       glViewport(0, 0, viewer.w.width, viewer.w.height);
       });
 }
+
+
+float cannon::graphics::lerp(float a, float b, float f) {
+  return a + f * (b - a);
+}

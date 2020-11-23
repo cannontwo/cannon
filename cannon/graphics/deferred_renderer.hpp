@@ -53,9 +53,7 @@ namespace cannon {
 
     };
 
-    float lerp(float a, float b, float f) {
-      return a + f * (b - a);
-    }
+    float lerp(float a, float b, float f);
 
   } // namespace graphics
 } // namespace cannon

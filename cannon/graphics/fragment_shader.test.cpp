@@ -1,10 +1,12 @@
+#include <catch2/catch.hpp>
+
 #include <cannon/graphics/fragment_shader.hpp>
 #include <cannon/graphics/window.hpp>
 #include <cannon/graphics/opengl_state.hpp>
 
 using namespace cannon::graphics;
 
-int main() {
+TEST_CASE("FragmentShader", "[graphics]") {
   Window w;
   OpenGLState s;
 
@@ -12,5 +14,5 @@ int main() {
 
   FragmentShader f(&str);
   OpenGLState s1;
-  assert(s == s1);
+  REQUIRE(s == s1);
 }

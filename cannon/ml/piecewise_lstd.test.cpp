@@ -1,10 +1,12 @@
+#include <catch2/catch.hpp>
+
 #include <cannon/ml/piecewise_lstd.hpp>
 #include <cannon/log/registry.hpp>
 
 using namespace cannon::ml;
 using namespace cannon::log;
 
-int main() {
+TEST_CASE("PiecewiseLSTD", "[ml]") {
   PiecewiseLSTDFilter f(2, 10, 0.95);
 
   VectorXd in1(2);

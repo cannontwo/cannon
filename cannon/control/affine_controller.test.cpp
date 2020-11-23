@@ -1,10 +1,12 @@
+#include <catch2/catch.hpp>
+
 #include <cannon/control/affine_controller.hpp>
 #include <cannon/log/registry.hpp>
 
 using namespace cannon::control;
 using namespace cannon::log;
 
-int main() {
+TEST_CASE("Gradient applied to affine controller", "[control]") {
   AffineController c(2, 1, 1e-4);
 
   VectorXd s(2);

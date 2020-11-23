@@ -1,14 +1,16 @@
+#include <catch2/catch.hpp>
+
 #include <cannon/graphics/window.hpp>
 #include <cannon/graphics/font.hpp>
 #include <cannon/graphics/opengl_state.hpp>
 
 using namespace cannon::graphics;
 
-int main() {
+TEST_CASE("Font", "[graphics]") {
   Window w;
   OpenGLState s;
 
   Font f;
   OpenGLState s1;
-  assert(s == s1);
+  REQUIRE(s == s1);
 }

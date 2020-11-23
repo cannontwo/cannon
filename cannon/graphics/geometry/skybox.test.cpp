@@ -1,10 +1,12 @@
+#include <catch2/catch.hpp>
+
 #include <cannon/graphics/geometry/skybox.hpp>
 #include <cannon/graphics/window.hpp>
 #include <cannon/graphics/opengl_state.hpp>
 
 using namespace cannon::graphics;
 
-int main() {
+TEST_CASE("Skybox", "[graphics]") {
   Window w;
   OpenGLState s;
 
@@ -18,10 +20,10 @@ int main() {
 
   geometry::Skybox v(faces);
   OpenGLState s1;
-  assert(s == s1);
+  REQUIRE(s == s1);
 
   Matrix4f tmp = Matrix4f::Zero();
   v.draw(tmp, tmp);
   OpenGLState s2;
-  assert(s == s2);
+  REQUIRE(s == s2);
 }

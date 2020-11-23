@@ -90,8 +90,6 @@ namespace cannon {
         DPLLState(CNFFormula f, PropositionHeuristic<F> ph,
             AssignmentHeuristic<G> ah) : formula_(f), ph_(ph), ah_(ah) {
           Assignment first = Assignment(PropAssignment::Unassigned, formula_.get_num_props());
-          log_info("Num props is", formula_.get_num_props());
-          log_info("First assignment is", first);
           Simplification second = Simplification(false, formula_.get_num_clauses());
 
           frontier_.push({first, second}); 
@@ -175,9 +173,6 @@ namespace cannon {
           Assignment a = current.first;
           Simplification s = current.second;
 
-          // TODO Delete
-          log_info("Popped assignment", a, "from stack");
-
           Assignment empty;
           auto e = formula_.eval(a, s);
           if (e == PropAssignment::True) {
@@ -219,7 +214,7 @@ namespace cannon {
         F ph_func, G ah_func) {
 
       if (f.get_num_props() == 0) {
-        std::valarray<PropAssignment> empty;
+        std::valarray<PropAssignment> empty = {};
         return {DPLLResult::Satisfiable, empty};
       }
 
@@ -231,7 +226,6 @@ namespace cannon {
         Assignment a;
         std::tie(r, a) = state.iterate();
         if (r == DPLLResult::Satisfiable) {
-          log_info("Found satisfying assignment", a);
           return std::make_pair(r, a);
         } else if (r == DPLLResult::Unsatisfiable && state.frontier_.size() == 0) {
           log_info("UNSAT");

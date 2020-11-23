@@ -1,8 +1,10 @@
+#include <catch2/catch.hpp>
+
 #include <cannon/math/barycentric_coords.hpp>
 
 using namespace cannon::math;
 
-int main() {
+TEST_CASE("BarycentricCoords", "[math]") {
   Vector3d v0;
   v0 << 0.0,
         0.0,
@@ -28,7 +30,7 @@ int main() {
                0.5,
                0.5;
 
-  assert(compute_barycentric_coords(v0, v1, v2, p) == test_bary);
+  REQUIRE(compute_barycentric_coords(v0, v1, v2, p) == test_bary);
 
   // Should throw exception, since p is non-planar
   p << 0.5,
@@ -36,6 +38,6 @@ int main() {
        1.0;
   try {
     compute_barycentric_coords(v0, v1, v2, p);
-    assert(false); 
+    REQUIRE(false); 
   } catch (...) {}
 }

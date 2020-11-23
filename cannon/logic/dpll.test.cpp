@@ -1,3 +1,5 @@
+#include <catch2/catch.hpp>
+
 #include <random>
 
 #include <cannon/logic/dpll.hpp>
@@ -14,7 +16,7 @@ std::vector<double> uniform_random_prop(const CNFFormula& form,
 
   std::vector<double> ret_vec;
   ret_vec.reserve(props.size());
-  for (int i = 0; i < props.size(); i++) {
+  for (unsigned int i = 0; i < props.size(); i++) {
     ret_vec.push_back(d(gen));
   }
 
@@ -31,27 +33,26 @@ bool uniform_random_assign(const CNFFormula& form, const Assignment& a,
   return t < 0.5;
 }
 
-int main() {
+TEST_CASE("DPLL", "[logic]") {
   DPLLResult r;
   Assignment a;
 
   // Empty
   CNFFormula f;
   std::tie(r, a) = dpll(f, uniform_random_prop, uniform_random_assign);
-  log_info("DPLL returned result", r, "with assignment", a);
-  assert(r == DPLLResult::Satisfiable);
+  REQUIRE(r == DPLLResult::Satisfiable);
 
   // Basic
   CNFFormula f1;
   f1.add_clause(parse_clause("1"));
 
   std::tie(r, a) = dpll(f1, uniform_random_prop, uniform_random_assign);
-  log_info("DPLL returned result", r, "with assignment", a);
-  assert(r == DPLLResult::Satisfiable);
+  REQUIRE(r == DPLLResult::Satisfiable);
 
-  Assignment a1 = {PropAssignment::True};
-  assert(a.size() == 1);
-  //assert(a[0] == a1[0]);
+  Assignment a1(1);
+  a1[0] = PropAssignment::True;
+  REQUIRE(a.size() == 1);
+  //REQUIRE(a[0] == a1[0]);
 
   // True and False
   CNFFormula f2;
@@ -59,12 +60,13 @@ int main() {
   f2.add_clause(parse_clause("-2"));
 
   std::tie(r, a) = dpll(f2, uniform_random_prop, uniform_random_assign);
-  log_info("DPLL returned result", r, "with assignment", a);
-  assert(r == DPLLResult::Satisfiable);
+  REQUIRE(r == DPLLResult::Satisfiable);
 
-  Assignment a2 = {PropAssignment::True, PropAssignment::False};
-  assert(a.size() == 2);
-  assert(a[0] == a2[0] && a[1] == a2[1]);
+  Assignment a2(2); 
+  a2[0] = PropAssignment::True; 
+  a2[1] = PropAssignment::False;
+  REQUIRE(a.size() == 2);
+  REQUIRE((a[0] == a2[0] && a[1] == a2[1]));
 
   // Unsatisfiable
   CNFFormula f3;
@@ -72,8 +74,7 @@ int main() {
   f3.add_clause(parse_clause("-1"));
 
   std::tie(r, a) = dpll(f3, uniform_random_prop, uniform_random_assign);
-  log_info("DPLL returned result", r, "with assignment", a);
-  assert(r == DPLLResult::Unsatisfiable);
+  REQUIRE(r == DPLLResult::Unsatisfiable);
 
   // Requiring splitting
   CNFFormula f4;
@@ -84,15 +85,14 @@ int main() {
   f4.add_clause(parse_clause("1 2 3 4"));
 
   std::tie(r, a) = dpll(f4, uniform_random_prop, uniform_random_assign);
-  log_info("DPLL returned result", r, "with assignment", a);
-  assert(r == DPLLResult::Satisfiable);
+  REQUIRE(r == DPLLResult::Satisfiable);
 
   // Larger (Einstein's Puzzle)
   //CNFFormula ein_f = load_cnf("formulas/ein.cnf"); 
   //log_info("Parsed Einstein's Puzzle as", ein_f);
   //std::tie(r, a) = dpll(ein_f, uniform_random_prop, uniform_random_assign);
   //log_info("DPLL on Einstein's Puzzle returned result", r, "with assignment", a);
-  //assert(r == DPLLResult::Satisfiable);
+  //REQUIRE(r == DPLLResult::Satisfiable);
 
   //Simplification s = std::valarray<bool>(false, 375);
   //log_info("Evaluation of formula on returned assignment is");

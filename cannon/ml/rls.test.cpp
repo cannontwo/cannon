@@ -1,3 +1,5 @@
+#include <catch2/catch.hpp>
+
 #include <Eigen/Dense>
 
 #include <cannon/ml/rls.hpp>
@@ -10,7 +12,7 @@ using namespace cannon::ml;
 using namespace cannon::log;
 using namespace cannon::math;
 
-int main() {
+TEST_CASE("RLS", "[ml]") {
   // Basic correctness
   RLSFilter f(1, 1);
 
@@ -33,7 +35,7 @@ int main() {
     VectorXd tmp_y(1);
     tmp_y << ys[i];
     log_info("Predicted", f.predict(tmp_x), "for actual", tmp_y);
-    assert((f.predict(tmp_x) - tmp_y).norm() < 0.01);
+    REQUIRE((f.predict(tmp_x) - tmp_y).norm() < 0.01);
   }
 
   f.reset();
@@ -41,6 +43,6 @@ int main() {
   VectorXd i;
   std::tie(t, i) = f.get_identified_mats();
 
-  assert(t(0,0) == 0.0);
-  assert(i[0] == 0.0);
+  REQUIRE(t(0,0) == 0.0);
+  REQUIRE(i[0] == 0.0);
 }

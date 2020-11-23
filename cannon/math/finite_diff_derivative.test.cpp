@@ -1,6 +1,7 @@
+#include <catch2/catch.hpp>
+
 #include <iostream>
 #include <cmath>
-#include <cassert>
 
 #include <cannon/math/finite_diff_derivative.hpp>
 #include <cannon/math/nearly_equal.hpp>
@@ -37,8 +38,7 @@ double quadratic(double x) {
   return x * x;
 }
 
-int main(void)
-{
+TEST_CASE("FiniteDiffDerivative", "[math]") {
   psc_f psc_o(1.0);
   auto d_psc_o = make_nth_derivative<1>(psc_o, 0.001);
 
@@ -47,11 +47,9 @@ int main(void)
   std::cout << make_nth_derivative<1>(psc_f(2.0), 0.001)(1.0) << std::endl;
   std::cout << make_nth_derivative<1>(sin_plus_cos, 0.001)(0.0) << std::endl;
 
-  assert(nearly_equal(make_nth_derivative<1>(linear, 0.001)(1.0),1.0));
-  assert(nearly_equal(make_nth_derivative<1>(linear, 0.001)(2.0),1.0));
+  REQUIRE(nearly_equal(make_nth_derivative<1>(linear, 0.001)(1.0),1.0));
+  REQUIRE(nearly_equal(make_nth_derivative<1>(linear, 0.001)(2.0),1.0));
 
-  assert(nearly_equal(make_nth_derivative<1>(quadratic, 0.00001)(1.0),2.0));
-  assert(nearly_equal(make_nth_derivative<1>(quadratic, 0.00001)(-1.0),-2.0));
-
-  return 0;
+  REQUIRE(nearly_equal(make_nth_derivative<1>(quadratic, 0.00001)(1.0),2.0));
+  REQUIRE(nearly_equal(make_nth_derivative<1>(quadratic, 0.00001)(-1.0),-2.0));
 }

@@ -1,3 +1,5 @@
+#include <catch2/catch.hpp>
+
 #include <Eigen/Dense>
 
 #include <cannon/physics/euler_integrator.hpp>
@@ -16,7 +18,7 @@ void linear_system(const VectorXd& x, VectorXd& dxdt, double /*t*/) {
   dxdt = A * x;
 }
 
-int main() {
+TEST_CASE("EulerIntegrator", "[physics]") {
   auto e = make_euler_integrator(linear_system, 2, 0.01);
   VectorXd s(2);
   s << 1.0, 0.0;
@@ -27,5 +29,5 @@ int main() {
     log_info("State is now", e.get_state(), "at time", e.get_time());
   }
 
-  assert(e.get_state().norm() < 0.001);
+  REQUIRE(e.get_state().norm() < 0.001);
 }

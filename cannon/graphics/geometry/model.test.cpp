@@ -1,10 +1,12 @@
+#include <catch2/catch.hpp>
+
 #include <cannon/graphics/geometry/model.hpp>
 #include <cannon/graphics/window.hpp>
 #include <cannon/graphics/opengl_state.hpp>
 
 using namespace cannon::graphics;
 
-int main() {
+TEST_CASE("Model", "[graphics]") {
   Window w;
   OpenGLState s;
 
@@ -15,14 +17,14 @@ int main() {
 
   geometry::Model m(p, "assets/backpack/backpack.obj");
   OpenGLState s1;
-  assert(s == s1);
+  REQUIRE(s == s1);
 
   Matrix4f tmp = Matrix4f::Zero();
   m.draw(tmp, tmp);
   OpenGLState s2;
-  assert(s == s2);
+  REQUIRE(s == s2);
 
   m.draw(p, tmp, tmp);
   OpenGLState s3;
-  assert(s == s3);
+  REQUIRE(s == s3);
 }

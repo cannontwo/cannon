@@ -114,6 +114,10 @@ find_package(assimp REQUIRED)
 include_directories(${ASSIMP_INCLUDE_DIRS})
 list(APPEND LIBRARIES ${ASSIMP_LIBRARIES})
 
+# Catch2
+find_package(Catch2 REQUIRED)
+include(Catch)
+
 # ImGui
 add_definitions(-DIMGUI_IMPL_OPENGL_LOADER_GLAD)
 include_directories(${PROJECT_SOURCE_DIR}/thirdparty/imgui)
@@ -158,13 +162,9 @@ add_subdirectory(cannon)
 
 # Find unit tests
 file( GLOB_RECURSE TEST_SOURCES cannon/*.test.cpp )
-foreach (test_source ${TEST_SOURCES})
-  get_filename_component( testname ${test_source} NAME_WE)
-  add_executable( ${testname} ${test_source} )
-  target_link_libraries( ${testname} cannon ${LIBRARIES})
-  set_target_properties(${testname} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/unit_tests")
-  add_test(${testname} "unit_tests/${testname}")
-endforeach(test_source  ${TEST_SOURCES})
+add_executable(unit_tests ${TEST_SOURCES})
+target_link_libraries(unit_tests Catch2::Catch2 cannon ${LIBRARIES})
+catch_discover_tests(unit_tests)
 
 # Find scripts
 file( GLOB_RECURSE SCRIPT_SOURCES scripts/*.cpp )

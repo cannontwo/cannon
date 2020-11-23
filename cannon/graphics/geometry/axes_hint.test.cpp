@@ -1,21 +1,23 @@
+#include <catch2/catch.hpp>
+
 #include <cannon/graphics/geometry/axes_hint.hpp>
 #include <cannon/graphics/window.hpp>
 #include <cannon/graphics/opengl_state.hpp>
 
 using namespace cannon::graphics;
 
-int main() {
+TEST_CASE("AxesHint", "[graphics]") {
   Window w;
   OpenGLState s;
 
   geometry::AxesHint ah;
   OpenGLState s1;
-  assert(s == s1);
+  REQUIRE(s == s1);
 
   Matrix4f tmp = Matrix4f::Zero();
   ah.draw(tmp, tmp);
   OpenGLState s2;
-  assert(s == s2);
+  REQUIRE(s == s2);
 
   auto p = std::make_shared<ShaderProgram>();
   p->attach_vertex_shader("shaders/pass_pos.vert");
@@ -24,5 +26,5 @@ int main() {
 
   ah.draw(p, tmp, tmp);
   OpenGLState s3;
-  assert(s == s3);
+  REQUIRE(s == s3);
 }

@@ -1,4 +1,5 @@
-#include <cassert>
+#include <catch2/catch.hpp>
+
 #include <string>
 #include <sstream>
 #include <iostream>
@@ -7,12 +8,12 @@
 
 using namespace cannon::log;
 
-int main() {
+TEST_CASE("Logger", "[log]") {
   // Basic test
   std::stringstream ss1;
   Logger l1(ss1);
   l1.log(Level::info, "Test");
-  assert(ss1.str().compare("[INFO] Test\n") == 0);
+  REQUIRE(ss1.str().compare("[INFO] Test\n") == 0);
 
   // Logging disabled by level
   std::stringstream ss2;
@@ -22,14 +23,12 @@ int main() {
   l2.log(Level::warning, "Test2");
   l2.log(Level::error, "Test3");
 
-  assert(ss2.str().compare("[WARN] Test2\n[ERR] Test3\n") == 0);
+  REQUIRE(ss2.str().compare("[WARN] Test2\n[ERR] Test3\n") == 0);
 
   // Set logging level
   std::stringstream ss3;
   Logger l3(ss3);
   l3.set_level(Level::error);
   l3.log(Level::info, "Test");
-  assert(ss3.str().compare("") == 0);
-  
-  return 0;
+  REQUIRE(ss3.str().compare("") == 0);
 }

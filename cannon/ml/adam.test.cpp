@@ -1,10 +1,12 @@
+#include <catch2/catch.hpp>
+
 #include <cannon/ml/adam.hpp>
 #include <cannon/log/registry.hpp>
 
 using namespace cannon::ml;
 using namespace cannon::log;
 
-int main() {
+TEST_CASE("Adam", "[ml]") {
   AdamOptimizer a(2, 1, 1e-1); 
   VectorXd state = VectorXd::Random(2);
 
@@ -14,5 +16,5 @@ int main() {
     log_info("On iteration", i, "state is", state);
   }
 
-  assert(state.norm() < 0.01);
+  REQUIRE(state.norm() < 0.01);
 }
