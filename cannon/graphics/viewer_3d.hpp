@@ -126,6 +126,10 @@ namespace cannon {
         void spawn_sdf_volume();
 
         void write_imgui(bool multipass=false);
+
+        ImageData get_image(const std::string &path = "") const;
+
+        void close() const;
         
         Window w;
         Camera c; 

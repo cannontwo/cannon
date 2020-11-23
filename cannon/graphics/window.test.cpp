@@ -1,27 +1,24 @@
 #include <catch2/catch.hpp>
 #include <thirdparty/approval_tests/ApprovalTests.hpp>
 
-#include <cannon/graphics/deferred_renderer.hpp>
-#include <cannon/graphics/opengl_state.hpp>
+#include <cannon/graphics/window.hpp>
 #include <cannon/graphics/opengl_writer.hpp>
 
 using namespace cannon::graphics;
+using namespace ApprovalTests;
 
-TEST_CASE("DeferredRenderer", "[graphics]") {
-  DeferredRenderer d;
-  OpenGLState s;
-
+TEST_CASE("Window", "[graphics]") {
+  Window w;
+  
   // TODO Set up test render scene
 
-  d.render_loop([&]() {
+  w.render_loop([&]() {
         static int i = 0;
         i++;
 
-        if (i == 5) {
-          OpenGLWriter writer(d.viewer);
+        if (i == 4) {
+          OpenGLWriter writer(w);
           Approvals::verify(writer);
         }
       });
 }
-
-

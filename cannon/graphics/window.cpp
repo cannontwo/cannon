@@ -3,6 +3,10 @@
 using namespace cannon::graphics;
 using namespace cannon::log;
 
+void Window::close() const {
+  glfwSetWindowShouldClose(window, true);
+}
+
 void Window::draw(std::function<void()> f) {
   if (render_to_framebuffer_)
     render_fb_->bind();
@@ -245,6 +249,11 @@ void Window::disable_face_culling() {
 }
 
 void Window::save_image(const std::string &path) {
+  ImageData data = get_image(path);
+  save_pool_.enqueue(data);
+}
+
+ImageData Window::get_image(const std::string &path) const {
   int num_channels = 3;
   int stride = num_channels * width;
   stride += (stride % 4) ? (4 - stride % 4) : 0; // Alignment
@@ -269,7 +278,7 @@ void Window::save_image(const std::string &path) {
   int tmp_height = height;
 
   ImageData data = {std::string(path), buffer, num_channels, tmp_width, tmp_height, stride};
-  save_pool_.enqueue(data);
+  return data;
 }
 
 void Window::render_to_framebuffer(std::shared_ptr<Framebuffer> fb) {

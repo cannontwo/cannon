@@ -164,6 +164,9 @@ namespace cannon {
         void render_to_framebuffer(std::shared_ptr<Framebuffer> fb);
         void draw_from_framebuffer(std::shared_ptr<Framebuffer> fb);
         void save_image(const std::string &path);
+        ImageData get_image(const std::string &path = "") const;
+
+        void close() const;
 
         void render_loop(std::function<void()> f, bool clear = true) {
           while (!glfwWindowShouldClose(window)) {

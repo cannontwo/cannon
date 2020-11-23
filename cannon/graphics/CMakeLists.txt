@@ -28,6 +28,7 @@ list(APPEND GRAPHICS_SOURCES
   deferred_renderer.cpp
   opengl_state.cpp
   render_pass.cpp
+  opengl_writer.cpp
   )
 
 add_library(graphics OBJECT ${GRAPHICS_SOURCES})

@@ -2,6 +2,14 @@
 
 using namespace cannon::graphics;
 
+ImageData Viewer3D::get_image(const std::string &path) const {
+  return w.get_image(path);
+}
+
+void Viewer3D::close() const {
+  glfwSetWindowShouldClose(w.window, true);
+}
+
 void Viewer3D::draw() {
   write_imgui(true);
   lc_.write_imgui();
