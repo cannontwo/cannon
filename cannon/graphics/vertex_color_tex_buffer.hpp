@@ -11,6 +11,8 @@ using namespace Eigen;
 
 namespace cannon {
   namespace graphics {
+
+    // TODO Remove entirely, this is deprecated and not certified by unit tests
     class VertexColorTexBuffer {
       public:
         VertexColorTexBuffer() = delete;

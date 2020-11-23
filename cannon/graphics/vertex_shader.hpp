@@ -18,6 +18,7 @@ namespace cannon {
 
     class VertexShader {
       public:
+        // Does not affect OpenGL state
         VertexShader(const char** source) {
           gl_shader_ = glCreateShader(GL_VERTEX_SHADER);
           if (gl_shader_ == 0) 

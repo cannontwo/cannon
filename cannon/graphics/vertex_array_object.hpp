@@ -13,6 +13,7 @@ namespace cannon {
 
     class VertexArrayObject {
       public:
+        // Does not change OpenGL state
         VertexArrayObject() {
           glGenVertexArrays(1, &gl_vertex_array_object_);
         }
@@ -30,8 +31,13 @@ namespace cannon {
           glDeleteVertexArrays(1, &gl_vertex_array_object_);
         }
 
+        // Sets GL_VERTEX_ARRAY_BINDING to gl_vertex_array_object_
         void bind();
+
+        // Sets GL_VERTEX_ARRAY_BINDING to 0
         void unbind();
+
+        // Does not affect OpenGL state
         int get_next_vertex_attribute_num();
 
         friend std::ostream& operator<<(std::ostream&, const VertexArrayObject&);

@@ -12,6 +12,7 @@ void ShaderProgram::link() {
   if (!success) {
     glGetShaderInfoLog(gl_shader_program_, 512, NULL, info);
     log_error(info);
+    log_error("Shader object is", gl_shader_program_);
     throw std::runtime_error("Could not compile shader source.");
   }
 }

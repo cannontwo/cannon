@@ -14,6 +14,7 @@ namespace cannon {
         public:
           ScreenQuad() = delete;
 
+          // Does not affect OpenGL state
           ScreenQuad(std::shared_ptr<Texture> tex, int width=800, int
               height=600) : width(width), height(height), tex_(tex) , vao_(new
                 VertexArrayObject), buf_(vao_), texture_coord_buf_(vao_),
@@ -28,13 +29,20 @@ namespace cannon {
 
           }
 
+          // Does not affect OpenGL state
           void resize(int w, int h);
 
+          // Does not affect OpenGL state
           void draw();
+
+          // Does not affect OpenGL state
           void draw(std::shared_ptr<ShaderProgram> p);
+
+          // Does not affect OpenGL state
           void draw(std::shared_ptr<ShaderProgram> p,
               std::vector<std::shared_ptr<Texture>> textures);
 
+          // Does not affect OpenGL state
           void set_tex(std::shared_ptr<Texture> t);
 
           int width;

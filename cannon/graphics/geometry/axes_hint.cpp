@@ -7,6 +7,14 @@ void AxesHint::draw(const Matrix4f& view, const Matrix4f& perspective) const {
   program->set_uniform("view", view);
   program->set_uniform("projection", perspective);
 
+  GLenum blend_src_rgb, blend_dst_rgb, blend_src_alpha, blend_dst_alpha;
+  GLboolean enable_blend;
+
+  enable_blend = glIsEnabled(GL_BLEND);
+  glGetIntegerv(GL_BLEND_SRC_RGB, (GLint*)&blend_src_rgb);
+  glGetIntegerv(GL_BLEND_DST_RGB, (GLint*)&blend_dst_rgb);
+  glGetIntegerv(GL_BLEND_SRC_ALPHA, (GLint*)&blend_src_alpha);
+  glGetIntegerv(GL_BLEND_DST_ALPHA, (GLint*)&blend_dst_alpha);
 
   // Basically just draw three lines with different materials (red, green, blue) for (x, y, z)
   glEnable(GL_BLEND);
@@ -25,8 +33,15 @@ void AxesHint::draw(const Matrix4f& view, const Matrix4f& perspective) const {
   program->set_uniform("uColor", Vector4f{0.0, 0.0, 1.0, 0.5});
   program->activate();
   glDrawArrays(GL_LINES, 0, vertices_z_.rows());
-  glDisable(GL_BLEND);
 
+  if (!enable_blend)
+    glDisable(GL_BLEND);
+
+  // Reset blend parameters
+  glBlendFunc(blend_src_alpha, blend_dst_alpha);
+  glBlendFunc(blend_src_rgb, blend_dst_rgb);
+
+  program->deactivate();
   buf_z_.unbind();
 }
 
@@ -35,6 +50,15 @@ void AxesHint::draw(std::shared_ptr<ShaderProgram> p, const Matrix4f& view, cons
   p->set_uniform("model", get_model_mat());
   p->set_uniform("view", view);
   p->set_uniform("projection", perspective);
+
+  GLenum blend_src_rgb, blend_dst_rgb, blend_src_alpha, blend_dst_alpha;
+  GLboolean enable_blend;
+
+  enable_blend = glIsEnabled(GL_BLEND);
+  glGetIntegerv(GL_BLEND_SRC_RGB, (GLint*)&blend_src_rgb);
+  glGetIntegerv(GL_BLEND_DST_RGB, (GLint*)&blend_dst_rgb);
+  glGetIntegerv(GL_BLEND_SRC_ALPHA, (GLint*)&blend_src_alpha);
+  glGetIntegerv(GL_BLEND_DST_ALPHA, (GLint*)&blend_dst_alpha);
 
   // Basically just draw three lines with different materials (red, green, blue) for (x, y, z)
   glEnable(GL_BLEND);
@@ -53,8 +77,15 @@ void AxesHint::draw(std::shared_ptr<ShaderProgram> p, const Matrix4f& view, cons
   p->set_uniform("uColor", Vector4f{0.0, 0.0, 1.0, 0.5});
   p->activate();
   glDrawArrays(GL_LINES, 0, vertices_z_.rows());
-  glDisable(GL_BLEND);
 
+  if (!enable_blend)
+    glDisable(GL_BLEND);
+
+  // Reset blend parameters
+  glBlendFunc(blend_src_alpha, blend_dst_alpha);
+  glBlendFunc(blend_src_rgb, blend_dst_rgb);
+
+  p->deactivate();
   buf_z_.unbind();
 }
 

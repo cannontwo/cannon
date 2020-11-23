@@ -22,6 +22,8 @@ void Plane::draw(const Matrix4f& view, const Matrix4f& perspective) const {
   glBindTexture(GL_TEXTURE_2D, 0);
   glDrawArrays(GL_TRIANGLES, 0, vertices_.rows());
 
+  program->deactivate();
+
   normal_buf_.unbind();
   buf_.unbind();
 }
@@ -46,6 +48,8 @@ void Plane::draw(std::shared_ptr<ShaderProgram> p, const Matrix4f& view, const
 
   glBindTexture(GL_TEXTURE_2D, 0);
   glDrawArrays(GL_TRIANGLES, 0, vertices_.rows());
+
+  p->deactivate();
 
   normal_buf_.unbind();
   buf_.unbind();

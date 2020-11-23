@@ -26,6 +26,11 @@ void TexturedCube::draw(const Matrix4f& view, const Matrix4f& perspective) const
 
   glDrawArrays(GL_TRIANGLES, 0, vertices_.rows());
 
+  program->deactivate();
+
+  specular_tex_.unbind(GL_TEXTURE8);
+  diffuse_tex_.unbind();
+
   normal_buf_.unbind();
   buf_.unbind();
 }
@@ -54,6 +59,11 @@ void TexturedCube::draw(std::shared_ptr<ShaderProgram> p, const Matrix4f& view, 
   normal_buf_.bind();
 
   glDrawArrays(GL_TRIANGLES, 0, vertices_.rows());
+
+  p->deactivate();
+
+  specular_tex_.unbind(GL_TEXTURE8);
+  diffuse_tex_.unbind();
 
   normal_buf_.unbind();
   buf_.unbind();

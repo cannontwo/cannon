@@ -33,10 +33,14 @@ namespace cannon {
             name_ = std::string("Model");
           }
 
+          // Does not affect OpenGL state
           virtual void draw(const Matrix4f& view, const Matrix4f& perspective) const override;
+
+          // Does not affect OpenGL state
           virtual void draw(std::shared_ptr<ShaderProgram> p, const Matrix4f&
               view, const Matrix4f& perspective) const override;
 
+          // Does not affect OpenGL state
           virtual void write_imgui(int idx) override;
 
         private:

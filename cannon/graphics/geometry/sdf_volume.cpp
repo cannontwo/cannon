@@ -23,6 +23,8 @@ void SDFVolume::draw(const Matrix4f& view, const Matrix4f& perspective) const {
   glBindTexture(GL_TEXTURE_2D, 0);
   glDrawArrays(GL_TRIANGLES, 0, vertices_.rows());
 
+  program->deactivate();
+
   buf_.unbind();
 }
 
@@ -47,6 +49,8 @@ void SDFVolume::draw(std::shared_ptr<ShaderProgram> p, const Matrix4f& view, con
 
   glBindTexture(GL_TEXTURE_2D, 0);
   glDrawArrays(GL_TRIANGLES, 0, vertices_.rows());
+
+  p->deactivate();
 
   buf_.unbind();
 }

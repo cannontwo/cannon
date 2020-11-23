@@ -12,6 +12,8 @@ namespace cannon {
 
       class Plane : public DrawableGeom {
         public:
+
+          // Does not affect OpenGL state
           Plane(std::shared_ptr<ShaderProgram> p) : vao_(new
               VertexArrayObject), buf_(vao_), normal_buf_(vao_),
           vertices_(6, 3), normals_(6, 3) {
@@ -50,7 +52,10 @@ namespace cannon {
 
           virtual ~Plane() override {}
 
+          // Does not affect OpenGL state
           virtual void draw(const Matrix4f& view, const Matrix4f& perspective) const override;
+
+          // Does not affect OpenGL state
           virtual void draw(std::shared_ptr<ShaderProgram> p, const Matrix4f&
               view, const Matrix4f& perspective) const override;
 

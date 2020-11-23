@@ -41,14 +41,32 @@ namespace cannon {
           unbind();
         }
 
+        // Does not affect OpenGL State
         void init(std::shared_ptr<VertexArrayObject> vao);
+
+        // Sets GL_VERTEX_ARRAY_BINDING to vao_->gl_vertex_array_object_ and
+        // GL_ARRAY_BUFFER_BINDING to gl_vertex_buffer_object
         void bind() const;
+
+        // Sets GL_VERTEX_ARRAY_BINDING to 0 and GL_ARRAY_BUFFER_BINDING to 0
         void unbind() const;
+
+        // Does not affect OpenGL state
         void buffer(MatrixX2f vertices);
+
+        // Does not affect OpenGL state
         void buffer(MatrixX3f vertices);
+
+        // Does not affect OpenGL state
         void buffer(MatrixX4f vertices);
+
+        // Does not affect OpenGL state
         void replace(MatrixX2f vertices);
+
+        // Does not affect OpenGL state
         void replace(MatrixX3f vertices);
+
+        // Does not affect OpenGL state
         void replace(MatrixX4f vertices);
 
         friend std::ostream& operator<<(std::ostream&, const VertexBuffer&);

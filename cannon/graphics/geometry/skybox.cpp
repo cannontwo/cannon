@@ -21,6 +21,8 @@ void Skybox::draw(const Matrix4f& view, const Matrix4f& perspective) {
   glDrawArrays(GL_TRIANGLES, 0, vertices_.rows());
   glDepthFunc(GL_LESS);
 
+  program->deactivate();
+
   cubemap_.unbind();
   buf_.unbind();
 }

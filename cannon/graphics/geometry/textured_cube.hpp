@@ -19,29 +19,9 @@ namespace cannon {
 
       class TexturedCube : public DrawableGeom {
         public:
-          TexturedCube(const std::string& v_src="shaders/mvp_normals_tex.vert",
-              const std::string& f_src="shaders/material_light_tex.frag", const
-              std::string& d_tex="assets/container2.png", const std::string&
-              s_tex="assets/container2_specular.png") : vao_(new
-                VertexArrayObject), buf_(vao_), normal_buf_(vao_),
-            texture_coord_buf_(vao_),
-            diffuse_tex_(d_tex, true, GL_TEXTURE0), 
-            specular_tex_(s_tex, true, GL_TEXTURE1), 
-            vertices_(36, 3), normals_(36, 3), texture_coords_(36, 2) {
+          TexturedCube() = delete;
 
-            program = std::make_shared<ShaderProgram>();
-
-            auto v = load_vertex_shader(v_src);
-            auto f = load_fragment_shader(f_src);
-            program->attach_shader(v);
-            program->attach_shader(f);
-            program->link();
-            
-            populate_bufs_();
-
-            name_ = std::string("Textured Cube");
-          }
-
+          // Does not affect OpenGL state
           TexturedCube (std::shared_ptr<ShaderProgram> p, const
               std::string& d_tex="assets/container2.png", const std::string&
               s_tex="assets/container2_specular.png" ) : 
@@ -86,7 +66,10 @@ namespace cannon {
 
           virtual ~TexturedCube() override {}
 
+          // Does not affect OpenGL state
           virtual void draw(const Matrix4f& view, const Matrix4f& perspective) const override;
+
+          // Does not affect OpenGL state
           virtual void draw(std::shared_ptr<ShaderProgram> p, const Matrix4f&
               view, const Matrix4f& perspective) const override;
 

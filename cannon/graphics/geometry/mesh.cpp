@@ -32,6 +32,8 @@ void Mesh::draw(const Matrix4f& view, const Matrix4f& perspective) const {
 
   glDrawElements(GL_TRIANGLES, indices_.rows() * indices_.cols(), GL_UNSIGNED_INT, 0);
 
+  program->deactivate();
+
   ebuf_.unbind();
   tex_coord_buf_.unbind();
   normal_buf_.unbind();
@@ -43,6 +45,8 @@ void Mesh::draw(const Matrix4f& view, const Matrix4f& perspective) const {
   for (unsigned int i = 0; i < specular_textures_.size(); i++) {
     specular_textures_[i]->unbind(specular_gl_textures_[i]);
   }
+
+  glActiveTexture(GL_TEXTURE0);
 }
 
 void Mesh::draw(std::shared_ptr<ShaderProgram> p, const Matrix4f& view, const
@@ -76,10 +80,21 @@ void Mesh::draw(std::shared_ptr<ShaderProgram> p, const Matrix4f& view, const
 
   glDrawElements(GL_TRIANGLES, indices_.rows() * indices_.cols(), GL_UNSIGNED_INT, 0);
 
+  program->deactivate();
+
   ebuf_.unbind();
   tex_coord_buf_.unbind();
   normal_buf_.unbind();
   buf_.unbind();
+
+  for (unsigned int i = 0; i < diffuse_textures_.size(); i++) {
+    diffuse_textures_[i]->unbind(diffuse_gl_textures_[i]);
+  }
+  for (unsigned int i = 0; i < specular_textures_.size(); i++) {
+    specular_textures_[i]->unbind(specular_gl_textures_[i]);
+  }
+
+  glActiveTexture(GL_TEXTURE0);
 }
 
 Matrix4f Mesh::get_model_mat() const {

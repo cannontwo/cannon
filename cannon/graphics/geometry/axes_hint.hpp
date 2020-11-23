@@ -12,6 +12,7 @@ namespace cannon {
       class AxesHint : public DrawableGeom {
         public:
 
+          // Does not affect OpenGL state
           AxesHint() : vao_x_(new VertexArrayObject), vao_y_(new
               VertexArrayObject), vao_z_(new VertexArrayObject),
           buf_x_(vao_x_), buf_y_(vao_y_), buf_z_(vao_z_), vertices_x_(2, 3),
@@ -29,7 +30,10 @@ namespace cannon {
 
           virtual ~AxesHint() {}
 
+          // Does not affect OpenGL state
           virtual void draw(const Matrix4f& view, const Matrix4f& perspective) const override;
+
+          // Does not affect OpenGL state
           virtual void draw(std::shared_ptr<ShaderProgram> p, const Matrix4f&
               view, const Matrix4f& perspective) const override;
 

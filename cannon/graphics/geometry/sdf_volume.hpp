@@ -11,6 +11,8 @@ namespace cannon {
 
       class SDFVolume : public DrawableGeom {
         public:
+
+          // Does not affect OpenGL state
           SDFVolume(std::shared_ptr<ShaderProgram> p) : vao_(new VertexArrayObject), buf_(vao_),
           vertices_(36, 3) {
 
@@ -47,7 +49,10 @@ namespace cannon {
 
           virtual ~SDFVolume() override {}
 
+          // Does not affect OpenGL state
           virtual void draw(const Matrix4f& view, const Matrix4f& perspective) const override;
+
+          // Does not affect OpenGL state
           virtual void draw(std::shared_ptr<ShaderProgram> p, const Matrix4f&
               view, const Matrix4f& perspective) const override;
 

@@ -18,6 +18,7 @@ namespace cannon {
         public:
           Skybox() = delete;
 
+          // Does not affect OpenGL state
           Skybox(std::vector<std::string> face_paths, const std::string&
               v_src="shaders/skybox.vert", const std::string&
               f_src="shaders/skybox.frag") : cubemap_(face_paths), 
@@ -32,6 +33,7 @@ namespace cannon {
 
           }
 
+          // Does not affect OpenGL state
           void draw(const Matrix4f& view, const Matrix4f& perspective);
 
           std::shared_ptr<ShaderProgram> program;

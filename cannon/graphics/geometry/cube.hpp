@@ -18,6 +18,8 @@ namespace cannon {
 
       class Cube : public DrawableGeom {
         public:
+
+          // Does not affect OpenGL state
           Cube(const std::string& v_src="shaders/mvp_uniform_color.vert", const
               std::string& f_src="shaders/pass_color.frag") : 
             vao_(new VertexArrayObject), buf_(vao_), normal_buf_(vao_), 
@@ -40,6 +42,7 @@ namespace cannon {
             material_.specular = {1.0, 1.0, 1.0, 1.0};
           }
 
+          // Does not affect OpenGL state
           Cube (std::shared_ptr<ShaderProgram> p) : vao_(new
               VertexArrayObject), buf_(vao_), normal_buf_(vao_),
           vertices_(36, 3), normals_(36, 3) {
@@ -79,7 +82,10 @@ namespace cannon {
 
           virtual ~Cube() override {}
 
+          // Does not affect OpenGL state
           virtual void draw(const Matrix4f& view, const Matrix4f& perspective) const override;
+
+          // Does not affect OpenGL state
           virtual void draw(std::shared_ptr<ShaderProgram> p, const Matrix4f&
               view, const Matrix4f& perspective) const override;
 
