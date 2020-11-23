@@ -128,8 +128,7 @@ void DeferredRenderer::setup_render_passes() {
         viewer.c = c_backup;
       });
 
-  std::random_device rd;
-  std::mt19937 gen(rd());
+  std::mt19937 gen;
   std::uniform_real_distribution<float> d(0.0, 1.0);
   for (int i = 0; i < 64; ++i) {
     float t1 = d(gen) * 2.0 - 1.0;
