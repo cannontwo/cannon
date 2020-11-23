@@ -7,8 +7,10 @@
 
 #include <cannon/graphics/window.hpp>
 #include <cannon/graphics/viewer_3d.hpp>
+#include <cannon/plot/plotter.hpp>
 
 using namespace ApprovalTests;
+using namespace cannon::plot;
 
 namespace cannon {
   namespace graphics {
@@ -26,6 +28,11 @@ namespace cannon {
         OpenGLWriter(const Viewer3D& v) {
           data_ = v.get_image();
           close_func_ = [&](){v.close();};
+        }
+
+        OpenGLWriter(const Plotter& p) {
+          data_ = p.get_image();
+          close_func_ = [&](){p.close();};
         }
 
         std::string getFileExtensionWithDot() const override;

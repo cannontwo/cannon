@@ -11,7 +11,6 @@ using namespace cannon::log;
 int main() {
   Plotter plotter;
 
-  // TODO
   MatrixX2f pts(2, 2);
   float t = glfwGetTime();
   pts << -5.0 * std::cos(t), -5.0 * std::sin(t),

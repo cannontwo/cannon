@@ -27,9 +27,9 @@ namespace cannon {
         Plotter() : w_(), point_program_(new ShaderProgram), line_program_(new
             ShaderProgram), axes_(2.0f / (float)w_.height) {
 
-          glEnable(GL_BLEND);
-          glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-          glDisable(GL_DEPTH_TEST);
+          //glEnable(GL_BLEND);
+          //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+          //glDisable(GL_DEPTH_TEST);
 
           w_.set_clear_color(Vector4f(1.0f, 1.0f, 1.0f, 1.0f));
           w_.disable_depth_test();
@@ -55,6 +55,9 @@ namespace cannon {
         }
 
         void render();
+        void close() const;
+
+        ImageData get_image() const;
 
         // Variant for rendering an animated plot
         template <typename F>

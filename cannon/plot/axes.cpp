@@ -39,15 +39,9 @@ void Axes::draw() {
                   xpos + w, ypos,     1.0f, 1.0f,
                   xpos + w, ypos + h, 1.0f, 0.0f;
 
-      OpenGLState s;
-
       ch->texture->bind();
       text_quad_buf_.replace(vertices);      
       text_quad_buf_.bind();
-
-      OpenGLState s1;
-      log_info("Before", s);
-      log_info("After", s1);
 
       glDrawArrays(GL_TRIANGLES, 0, 6);
 

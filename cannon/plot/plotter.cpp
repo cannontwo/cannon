@@ -3,6 +3,14 @@
 using namespace cannon::plot;
 using namespace cannon::log;
 
+void Plotter::close() const {
+  w_.close();
+}
+
+ImageData Plotter::get_image() const {
+  return w_.get_image();
+}
+
 void Plotter::render() {
   w_.render_loop([this] {
         draw_pass();
