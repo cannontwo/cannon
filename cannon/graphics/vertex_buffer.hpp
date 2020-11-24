@@ -36,9 +36,16 @@ namespace cannon {
           }
 
         ~VertexBuffer() {
-          bind();
-          glDeleteBuffers(1, &gl_vertex_buffer_object_);
-          unbind();
+          try {
+            if (vao_ != nullptr)
+              bind();
+
+            glDeleteBuffers(1, &gl_vertex_buffer_object_);
+
+            unbind();
+          } catch (...) {
+            // This may fail if the OpenGL context is destroyed, which is fine 
+          }
         }
 
         // Does not affect OpenGL State

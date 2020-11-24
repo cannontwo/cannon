@@ -27,7 +27,11 @@ namespace cannon {
 
         // Sets GL_ELEMENT_ARRAY_BUFFER_BINDING to 0
         ~ElementBuffer() {
-          glDeleteBuffers(1, &gl_element_buffer_object_);
+          try {
+            glDeleteBuffers(1, &gl_element_buffer_object_);
+          } catch (...) {
+            // This may fail if the OpenGL context is destroyed, which is fine 
+          }
         }
 
         // Sets GL_VERTEX_ARRAY_BINDING to vao_->gl_vertex_array_object_ and

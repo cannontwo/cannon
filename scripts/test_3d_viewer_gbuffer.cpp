@@ -19,6 +19,8 @@ float lerp(float a, float b, float f) {
 }
 
 void test() {
+  GLFWwindow *gl_window;
+  {
   std::vector<std::string> faces;
   faces.push_back("assets/skybox/right.jpg");
   faces.push_back("assets/skybox/left.jpg");
@@ -28,6 +30,7 @@ void test() {
   faces.push_back("assets/skybox/back.jpg");
 
   Viewer3D viewer;
+  gl_window = viewer.w.get_gl_window();
   viewer.set_skybox(faces);
   viewer.w.set_clear_color({0.0, 0.0, 0.0, 1.0});
 
@@ -399,6 +402,8 @@ void test() {
   viewer.render_loop_multipass([&] {});
 
   log_info("Render loop finished");
+  }
+  terminate_opengl_context(gl_window);
 }
 
 int main() {

@@ -8,7 +8,10 @@ using namespace cannon::graphics;
 using namespace ApprovalTests;
 
 TEST_CASE("Viewer3D", "[graphics]") {
+  GLFWwindow *gl_window;
+  {
   Viewer3D v;
+  gl_window = v.w.get_gl_window();
   
   // Set up test render scene
   v.spawn_model("assets/test/test.obj");
@@ -24,5 +27,6 @@ TEST_CASE("Viewer3D", "[graphics]") {
           Approvals::verify(writer);
         }
       });
-
+  }
+  terminate_opengl_context(gl_window);
 }

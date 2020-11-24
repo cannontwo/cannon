@@ -8,7 +8,10 @@ using namespace cannon::graphics;
 using namespace ApprovalTests;
 
 TEST_CASE("Window", "[graphics]") {
+  GLFWwindow *gl_window;
+  {
   Window w;
+  gl_window = w.get_gl_window();
   
   // TODO Set up test render scene
 
@@ -21,4 +24,6 @@ TEST_CASE("Window", "[graphics]") {
           Approvals::verify(writer);
         }
       });
+  }
+  terminate_opengl_context(gl_window);
 }

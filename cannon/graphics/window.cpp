@@ -291,6 +291,10 @@ void Window::draw_from_framebuffer(std::shared_ptr<Framebuffer> fb) {
   draw_fb_ = fb;
 }
 
+GLFWwindow* Window::get_gl_window() {
+  return window;
+}
+
 // Callbacks
 void cannon::graphics::framebuffer_size_callback(GLFWwindow* window, int width, int height) {
   glViewport(0, 0, width, height);
@@ -316,4 +320,10 @@ void cannon::graphics::debug_message_callback(GLenum source, GLenum type, GLuint
 void cannon::graphics::key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
   if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
     glfwSetWindowShouldClose(window, true);
+}
+
+// Free Functions
+void cannon::graphics::terminate_opengl_context(GLFWwindow *w) {
+  glfwDestroyWindow(w);
+  glfwTerminate();
 }

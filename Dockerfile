@@ -63,10 +63,26 @@ RUN apt-get update && apt-get install -y gcovr \
 
 RUN update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 90 --slave /usr/bin/g++ g++ /usr/bin/g++-9
 
+RUN apt-get update && apt-get install -y libglvnd0 \
+        libgl1 \
+        libglx0 \
+        libegl1 \
+        libxext6 \
+        libx11-6 \
+        libglvnd-dev \
+        libgl1-mesa-dev \
+        libegl1-mesa-dev \
+        pkg-config
+
+ENV NVIDIA_VISIBLE_DEVICES all
+ENV NVIDIA_DRIVER_CAPABILITIES graphics,utility
+
 COPY . /cannon
 RUN mkdir -p /cannon/build
 WORKDIR /cannon/build
 RUN cmake ..
 RUN make -j4
+
+RUN apt-get update && apt-get install -y fonts-open-sans
 
 ENTRYPOINT ["make", "test"]

@@ -135,13 +135,12 @@ namespace cannon {
           ImGui::DestroyContext();
 
           //glfwMakeContextCurrent(NULL);
-          glfwDestroyWindow(window);
-
-          glfwTerminate();
         }
 
         void make_current();
         void set_viewport(unsigned x, unsigned y, unsigned width, unsigned height);
+
+        GLFWwindow* get_gl_window();
         
         void set_clear_color(Vector4f color);
         void set_text_color(Vector4f color);
@@ -262,6 +261,10 @@ namespace cannon {
         unsigned int gl_time_query_;
         double draw_time_;
     };
+
+    // This is necessary to prevent segfault on destruction; is there a better
+    // way to encapsulate this?
+    void terminate_opengl_context(GLFWwindow *w);
 
   } // namespace graphics
 } // namespace cannon

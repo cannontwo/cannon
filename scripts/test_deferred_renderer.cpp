@@ -5,13 +5,13 @@
 using namespace cannon::graphics;
 
 void test() {
+  GLFWwindow *gl_window;
+  {
   DeferredRenderer r;
-
-  r.viewer.spawn_model("assets/test/test.obj");
-  r.viewer.c.set_pos({5.0, 5.0, 10.0});
-  r.viewer.c.set_direction({0.5, 0.75, 1.0});
-
+  gl_window = r.viewer.w.get_gl_window();
   r.render_loop([](){});
+  }
+  terminate_opengl_context(gl_window);
 }
 
 int main() {

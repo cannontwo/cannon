@@ -27,8 +27,12 @@ namespace cannon {
         } 
 
         ~VertexArrayObject() {
-          unbind();
-          glDeleteVertexArrays(1, &gl_vertex_array_object_);
+          try {
+            unbind();
+            glDeleteVertexArrays(1, &gl_vertex_array_object_);
+          } catch (...) {
+            // This may fail if the OpenGL context is destroyed, which is fine 
+          }
         }
 
         // Sets GL_VERTEX_ARRAY_BINDING to gl_vertex_array_object_

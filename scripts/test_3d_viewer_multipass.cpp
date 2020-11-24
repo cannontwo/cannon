@@ -12,6 +12,8 @@ using namespace cannon::graphics;
 using namespace cannon::log;
 
 void test() {
+  GLFWwindow *gl_window;
+  {
   std::vector<std::string> faces;
   faces.push_back("assets/skybox/right.jpg");
   faces.push_back("assets/skybox/left.jpg");
@@ -21,6 +23,7 @@ void test() {
   faces.push_back("assets/skybox/back.jpg");
 
   Viewer3D viewer;
+  gl_window = viewer.w.get_gl_window();
   viewer.set_skybox(faces);
 
   auto geom_program = std::make_shared<ShaderProgram>("geom_shader");
@@ -57,6 +60,8 @@ void test() {
   viewer.render_loop_multipass([&] {});
 
   log_info("Render loop finished");
+  }
+  terminate_opengl_context(gl_window);
 }
 
 int main() {
