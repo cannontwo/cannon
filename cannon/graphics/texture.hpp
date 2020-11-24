@@ -5,6 +5,7 @@
 #include <stdexcept>
 
 #include <glad/glad.h>
+#include <GLFW/glfw3.h>
 #include <stb_image/stb_image.h>
 #include <imgui.h>
 
@@ -96,7 +97,9 @@ namespace cannon {
         }
 
         ~Texture() {
-          glDeleteTextures(1, &gl_texture_);
+          if (glfwGetCurrentContext() != NULL) {
+            glDeleteTextures(1, &gl_texture_);
+          }
         }
 
         static std::vector<std::shared_ptr<Texture>>& get_loaded_textures() {

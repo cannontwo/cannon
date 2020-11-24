@@ -52,3 +52,11 @@ ADD_CUSTOM_COMMAND(
     ${CMAKE_CURRENT_SOURCE_DIR}/graphics/assets ${CMAKE_CURRENT_BINARY_DIR}/../assets
   COMMENT "Copying assets" VERBATIM
   )
+
+# Copy parl configs
+ADD_CUSTOM_COMMAND(
+  TARGET cannon POST_BUILD
+  COMMAND ${CMAKE_COMMAND} -E create_symlink
+    ${CMAKE_CURRENT_SOURCE_DIR}/research/experiments/parl_configs ${CMAKE_CURRENT_BINARY_DIR}/../experiments/parl_configs
+  COMMENT "Copying parl_configs" VERBATIM
+  )

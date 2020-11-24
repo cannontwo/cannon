@@ -6,6 +6,7 @@
 #include <Eigen/Dense>
 #include <imgui.h>
 #include <imgui_stdlib.h>
+#include <GLFW/glfw3.h>
 
 #include <cannon/log/registry.hpp>
 #include <cannon/graphics/vertex_shader.hpp>
@@ -35,7 +36,9 @@ namespace cannon {
           }
 
         ~ShaderProgram() {
-          glDeleteProgram(gl_shader_program_);
+          if (glfwGetCurrentContext() != NULL) {
+            glDeleteProgram(gl_shader_program_);
+          }
         }
 
         template <typename T>

@@ -2,6 +2,7 @@
 #define CANNON_GRAPHICS_VERTEX_BUFFER_H 
 
 #include <glad/glad.h>
+#include <GLFW/glfw3.h>
 #include <Eigen/Dense>
 #include <iostream>
 
@@ -36,15 +37,13 @@ namespace cannon {
           }
 
         ~VertexBuffer() {
-          try {
+          if (glfwGetCurrentContext() != NULL) {
             if (vao_ != nullptr)
               bind();
 
             glDeleteBuffers(1, &gl_vertex_buffer_object_);
 
             unbind();
-          } catch (...) {
-            // This may fail if the OpenGL context is destroyed, which is fine 
           }
         }
 

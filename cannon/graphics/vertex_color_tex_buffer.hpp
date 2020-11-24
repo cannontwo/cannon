@@ -2,6 +2,7 @@
 #define CANNON_GRAPHICS_VERTEX_COLOR_TEX_BUFFER_H 
 
 #include <glad/glad.h>
+#include <GLFW/glfw3.h>
 #include <Eigen/Dense>
 
 #include <cannon/graphics/vertex_array_object.hpp>
@@ -27,7 +28,9 @@ namespace cannon {
         }
 
         ~VertexColorTexBuffer() {
-          glDeleteBuffers(1, &gl_vertex_buffer_object_);
+          if (glfwGetCurrentContext() != NULL) {
+            glDeleteBuffers(1, &gl_vertex_buffer_object_);
+          }
         }
 
         void bind();

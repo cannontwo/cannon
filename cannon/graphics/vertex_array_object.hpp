@@ -1,7 +1,9 @@
 #ifndef CANNON_GRAPHICS_VERTEX_ARRAY_OBJECT_H
 #define CANNON_GRAPHICS_VERTEX_ARRAY_OBJECT_H 
 
+
 #include <glad/glad.h>
+#include <GLFW/glfw3.h>
 #include <iostream>
 
 #include <cannon/log/registry.hpp>
@@ -27,11 +29,9 @@ namespace cannon {
         } 
 
         ~VertexArrayObject() {
-          try {
+          if (glfwGetCurrentContext() != NULL) {
             unbind();
             glDeleteVertexArrays(1, &gl_vertex_array_object_);
-          } catch (...) {
-            // This may fail if the OpenGL context is destroyed, which is fine 
           }
         }
 

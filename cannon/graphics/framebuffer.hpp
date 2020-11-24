@@ -6,6 +6,7 @@
 #include <queue>
 
 #include <glad/glad.h>
+#include <GLFW/glfw3.h>
 
 #include <cannon/graphics/texture.hpp>
 #include <cannon/graphics/shader_program.hpp>
@@ -50,7 +51,9 @@ namespace cannon {
         }
 
         ~Framebuffer() {
-          glDeleteFramebuffers(1, &gl_framebuffer_);
+          if (glfwGetCurrentContext() != NULL) {
+            glDeleteFramebuffers(1, &gl_framebuffer_);
+          }
         }
 
         // Sets GL_READ_FRAMEBUFFER to gl_framebuffer_, and GL_DRAW_FRAMEBUFFER

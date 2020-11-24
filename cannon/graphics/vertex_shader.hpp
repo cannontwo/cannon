@@ -7,6 +7,7 @@
 #include <fstream>
 #include <stdexcept>
 #include <glad/glad.h>
+#include <GLFW/glfw3.h>
 
 #include <cannon/log/registry.hpp>
 #include <cannon/graphics/shader_program.hpp>
@@ -39,7 +40,9 @@ namespace cannon {
         }
 
         ~VertexShader() {
-          glDeleteShader(gl_shader_);
+          if (glfwGetCurrentContext() != NULL) {
+            glDeleteShader(gl_shader_);
+          }
         }
 
       private:

@@ -2,6 +2,7 @@
 #define CANNON_GRAPHICS_ELEMENT_BUFFER_H 
 
 #include <glad/glad.h>
+#include <GLFW/glfw3.h>
 #include <Eigen/Dense>
 
 #include <cannon/graphics/vertex_array_object.hpp>
@@ -27,10 +28,8 @@ namespace cannon {
 
         // Sets GL_ELEMENT_ARRAY_BUFFER_BINDING to 0
         ~ElementBuffer() {
-          try {
+          if (glfwGetCurrentContext() != NULL) {
             glDeleteBuffers(1, &gl_element_buffer_object_);
-          } catch (...) {
-            // This may fail if the OpenGL context is destroyed, which is fine 
           }
         }
 

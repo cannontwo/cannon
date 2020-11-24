@@ -5,6 +5,8 @@
 #include <functional>
 
 #include <imgui.h>
+#include <glad/glad.h>
+#include <GLFW/glfw3.h>
 
 #include <cannon/graphics/window.hpp>
 #include <cannon/graphics/framebuffer.hpp>
@@ -57,8 +59,10 @@ namespace cannon {
         }
 
         ~RenderPass() {
-          glDeleteQueries(1, &gl_front_query_);
-          glDeleteQueries(1, &gl_back_query_);
+          if (glfwGetCurrentContext() != NULL) {
+            glDeleteQueries(1, &gl_front_query_);
+            glDeleteQueries(1, &gl_back_query_);
+          }
         }
 
         // Does not affect OpenGL state
