@@ -67,4 +67,6 @@ COPY . /cannon
 RUN mkdir -p /cannon/build
 WORKDIR /cannon/build
 RUN cmake ..
-RUN make
+RUN make -j4
+
+ENTRYPOINT ["make", "test"]
