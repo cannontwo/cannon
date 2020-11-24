@@ -30,6 +30,7 @@ namespace cannon {
         std::shared_ptr<ShaderProgram> sdf_geom_program_;
         std::shared_ptr<ShaderProgram> shadow_program_;
         std::shared_ptr<ShaderProgram> sdf_shadow_program_;
+        std::shared_ptr<ShaderProgram> shadow_blur_program_;
         std::shared_ptr<ShaderProgram> ssao_program_;
         std::shared_ptr<ShaderProgram> ssao_blur_program_;
         std::shared_ptr<ShaderProgram> lighting_program_;
@@ -39,6 +40,8 @@ namespace cannon {
 
         std::shared_ptr<Framebuffer> gbuffer_fb_;
         std::shared_ptr<Framebuffer> shadow_fb_;
+        std::shared_ptr<Framebuffer> shadow_blur_1_fb_;
+        std::shared_ptr<Framebuffer> shadow_blur_2_fb_;
         std::shared_ptr<Framebuffer> ssao_fb_;
         std::shared_ptr<Framebuffer> ssao_blur_fb_;
         std::shared_ptr<Framebuffer> lighting_fb_;

@@ -25,9 +25,9 @@ namespace cannon {
           }
 
         virtual void apply(const std::shared_ptr<geometry::DrawableGeom> geom) const override {
-          geom->program->set_uniform("light.ambient", ambient_);
-          geom->program->set_uniform("light.diffuse", diffuse_);
-          geom->program->set_uniform("light.specular", specular_);
+          geom->program->set_uniform("light.ambient", (Vector4f)(ambient_ * std::pow(2.0, intensity_)));
+          geom->program->set_uniform("light.diffuse", (Vector4f)(diffuse_ * std::pow(2.0, intensity_)));
+          geom->program->set_uniform("light.specular", (Vector4f)(specular_ * std::pow(2.0, intensity_)));
 
           geom->program->set_uniform("light.position", pos_);
           geom->program->set_uniform("light.direction", direction_);
@@ -48,9 +48,9 @@ namespace cannon {
           preamble += std::to_string(idx);
           preamble += "]";
 
-          s->set_uniform(preamble + ".ambient", ambient_);
-          s->set_uniform(preamble + ".diffuse", diffuse_);
-          s->set_uniform(preamble + ".specular", specular_);
+          s->set_uniform(preamble + ".ambient", (Vector4f)(ambient_ * std::pow(2.0, intensity_)));
+          s->set_uniform(preamble + ".diffuse", (Vector4f)(diffuse_ * std::pow(2.0, intensity_)));
+          s->set_uniform(preamble + ".specular", (Vector4f)(specular_ * std::pow(2.0, intensity_)));
 
           s->set_uniform(preamble + ".position", pos_);
           s->set_uniform(preamble + ".direction", direction_);
@@ -75,6 +75,8 @@ namespace cannon {
             ImGui::ColorEdit3("color", specular_.data());
             ambient_.head(3) = specular_.head(3) * 0.2;
             diffuse_.head(3) = specular_.head(3) * 0.5;
+
+            ImGui::SliderFloat("intensity", &intensity_, 0.0, 10.0);
 
             ImGui::SliderFloat("linear", &linear_, 0.0, 1.0);
             ImGui::SliderFloat("quadratic", &quadratic_, 0.0, 2.0);

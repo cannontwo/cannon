@@ -20,9 +20,9 @@ namespace cannon {
         }
 
         void apply(const std::shared_ptr<ShaderProgram> s) const {
-          s->set_uniform("directional_light.ambient", ambient_);
-          s->set_uniform("directional_light.diffuse", diffuse_);
-          s->set_uniform("directional_light.specular", specular_);
+          s->set_uniform("directional_light.ambient", (Vector4f)(ambient_ * std::pow(2.0, intensity_)));
+          s->set_uniform("directional_light.diffuse", (Vector4f)(diffuse_ * std::pow(2.0, intensity_)));
+          s->set_uniform("directional_light.specular", (Vector4f)(specular_ * std::pow(2.0, intensity_)));
           s->set_uniform("directional_light.direction", direction_);
         }
 
@@ -35,6 +35,8 @@ namespace cannon {
             ImGui::ColorEdit3("color", specular_.data());
             ambient_.head(3) = specular_.head(3) * 0.2;
             diffuse_.head(3) = specular_.head(3) * 0.5;
+
+            ImGui::SliderFloat("intensity", &intensity_, 0.0, 10.0);
 
             ImGui::SliderFloat3("direction", direction_.data(), -1.0, 1.0);
             direction_.head(3).normalize();

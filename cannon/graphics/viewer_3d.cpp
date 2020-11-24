@@ -165,7 +165,7 @@ void Viewer3D::disable_skybox() {
 }
 
 Vector3f Viewer3D::get_directional_light_pos() {
-  return -20.0 * lc_.get_directional_light()->get_dir();
+  return -10.0 * lc_.get_directional_light()->get_dir();
 }
 
 Vector3f Viewer3D::get_directional_light_dir() {
@@ -392,10 +392,10 @@ std::shared_ptr<Framebuffer> Viewer3D::add_render_pass(const std::string& name,
 
 void Viewer3D::initialize_lc_() {
   Vector4f light_color;
-  light_color << 0.5,
-                 0.5,
-                 0.5,
-                 0.5;
+  light_color << 1.0,
+                 1.0,
+                 1.0,
+                 1.0;
   auto dl = std::make_shared<DirectionalLight>(light_color*0.2, light_color*0.5, light_color);
   dl->set_direction({-0.2, -1.0, -0.3, -1.0});
   lc_.add_light(dl);
