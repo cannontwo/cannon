@@ -29,6 +29,7 @@ namespace cannon {
         Vector3f get_direction() const;
         Vector3f get_right() const;
 
+
         void set_speed(float speed);
         void set_base_speed(float base_speed);
 
@@ -45,6 +46,7 @@ namespace cannon {
 
         void update_pos();
 
+        void set_pos(const Vector3f& pos);
         void set_direction(const Vector3f& direction);
 
       private:

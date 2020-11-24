@@ -39,8 +39,8 @@ namespace cannon {
         }
 
         Texture(const std::string& path, bool use_alpha=false, GLenum
-            texture_unit=GL_TEXTURE0) : path(path), gl_texture_unit_(texture_unit) {
-          stbi_set_flip_vertically_on_load(true);
+            texture_unit=GL_TEXTURE0, bool flip=true) : path(path), gl_texture_unit_(texture_unit) {
+          stbi_set_flip_vertically_on_load(flip);
           data_ = stbi_load(path.c_str(), &width_, &height_, &num_channels_, 0);
           if (data_ == nullptr) 
             throw std::runtime_error("Could not load image for texture");
@@ -112,7 +112,7 @@ namespace cannon {
           }
 
           // We need to actually create the new texture
-          auto ret_tex = std::make_shared<Texture>(path);
+          auto ret_tex = std::make_shared<Texture>(path, false, GL_TEXTURE0, false);
           get_loaded_textures().push_back(ret_tex);
           return ret_tex;
         }

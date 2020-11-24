@@ -16,7 +16,7 @@ TEST_CASE("Window", "[graphics]") {
         static int i = 0;
         i++;
 
-        if (i == 4) {
+        if (i == 20) {
           OpenGLWriter writer(w);
           Approvals::verify(writer);
         }

@@ -25,6 +25,10 @@ Matrix4f Camera::get_view_mat() const {
   return rot_mat * trans_mat;
 }
 
+void Camera::set_pos(const Vector3f& pos) {
+  pos_ = pos;
+}
+
 Vector3f Camera::get_pos() const {
   return pos_;
 }

@@ -93,8 +93,8 @@ void DeferredRenderer::setup_render_passes() {
         viewer.c = Camera({viewer.get_directional_light_pos()},
             {0.0, 0.0, 0.0}, {0.0, 1.0, 0.0});
 
-        light_space_mat_ = make_orthographic(-30.0f, 30.0f, -30.0f, 30.0f, 1.0f,
-            75.0f) * viewer.c.get_view_mat();
+        light_space_mat_ = make_orthographic(-20.0f, 20.0f, -20.0f, 20.0f, 1.0f,
+            50.0f) * viewer.c.get_view_mat();
 
         Vector3f c_pos = viewer.c.get_pos();
         Vector4f tmp_pos;
