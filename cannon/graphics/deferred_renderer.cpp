@@ -93,8 +93,8 @@ void DeferredRenderer::setup_render_passes() {
         viewer.c = Camera({viewer.get_directional_light_pos()},
             {0.0, 0.0, 0.0}, {0.0, 1.0, 0.0});
 
-        light_space_mat_ = make_orthographic(-20.0f, 20.0f, -20.0f, 20.0f, 1.0f,
-            50.0f) * viewer.c.get_view_mat();
+        light_space_mat_ = make_orthographic(-30.0f, 30.0f, -30.0f, 30.0f, 1.0f,
+            75.0f) * viewer.c.get_view_mat();
 
         Vector3f c_pos = viewer.c.get_pos();
         Vector4f tmp_pos;
@@ -141,7 +141,11 @@ void DeferredRenderer::setup_render_passes() {
         tmp_dir << 1.0, 0.0, 0.0, 0.0;
         shadow_blur_program_->set_uniform("direction", tmp_dir);
 
-        shadow_fb_->color_attachments[0]->set_wrap_clamp_edge();
+        shadow_blur_1_fb_->color_attachments[0]->set_wrap_clamp_border();
+        float borderColor[] = {1.0, 1.0, 1.0, 1.0};
+        shadow_blur_1_fb_->color_attachments[0]->bind();
+        glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
+
         shadow_fb_->bind_read();
         shadow_blur_1_fb_->bind_draw();
         shadow_fb_->quad->draw(shadow_blur_program_);
@@ -154,6 +158,11 @@ void DeferredRenderer::setup_render_passes() {
         Vector4f tmp_dir;
         tmp_dir << 0.0, 1.0, 0.0, 0.0;
         shadow_blur_program_->set_uniform("direction", tmp_dir);
+
+        shadow_blur_2_fb_->color_attachments[0]->set_wrap_clamp_border();
+        float borderColor[] = {1.0, 1.0, 1.0, 1.0};
+        shadow_blur_2_fb_->color_attachments[0]->bind();
+        glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
 
         shadow_blur_1_fb_->bind_read();
         shadow_blur_2_fb_->bind_draw();
@@ -309,7 +318,6 @@ void DeferredRenderer::setup_render_passes() {
         lighting_attachments.push_back(gbuffer_fb_->color_attachments[2]);
         lighting_attachments.push_back(ssao_blur_fb_->color_attachments[0]);
         lighting_attachments.push_back(shadow_blur_2_fb_->color_attachments[0]);
-        shadow_blur_2_fb_->color_attachments[0]->set_wrap_clamp_edge();
 
         lighting_fb_->quad->draw(lighting_program_, lighting_attachments);
       });
