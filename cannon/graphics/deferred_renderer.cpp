@@ -73,18 +73,18 @@ void DeferredRenderer::setup_render_passes() {
             viewer.draw_sdf_geom(sdf_geom_program_);
       });
 
-    shadow_program_ = std::make_shared<ShaderProgram>("shadow_shader");
-    shadow_program_->attach_vertex_shader("shaders/mvp_normals_tex.vert");
-    shadow_program_->attach_fragment_shader("shaders/empty.frag");
-    shadow_program_->link();
+    shadow_depth_program_ = std::make_shared<ShaderProgram>("shadow_depth_shader");
+    shadow_depth_program_->attach_vertex_shader("shaders/mvp_normals_tex.vert");
+    shadow_depth_program_->attach_fragment_shader("shaders/empty.frag");
+    shadow_depth_program_->link();
 
-    sdf_shadow_program_ = std::make_shared<ShaderProgram>("sdf_shadow_shader");
-    sdf_shadow_program_->attach_vertex_shader("shaders/sdf.vert");
+    sdf_shadow_depth_program_ = std::make_shared<ShaderProgram>("sdf_shadow_depth_shader");
+    sdf_shadow_depth_program_->attach_vertex_shader("shaders/sdf.vert");
     std::vector<std::string> shadow_libs = {"shaders/libs/sdf.glsl"};
-    sdf_shadow_program_->attach_fragment_shader("shaders/sdf_shadow.frag", shadow_libs);
-    sdf_shadow_program_->link();
+    sdf_shadow_depth_program_->attach_fragment_shader("shaders/sdf_shadow.frag", shadow_libs);
+    sdf_shadow_depth_program_->link();
 
-    shadow_fb_ = viewer.add_render_pass("shadow", shadow_program_, [this](){
+    shadow_depth_fb_ = viewer.add_render_pass("shadow depth", shadow_depth_program_, [this](){
         glClearColor(0.0, 0.0, 0.0, 1.0);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
@@ -102,18 +102,18 @@ void DeferredRenderer::setup_render_passes() {
                    c_pos[1],
                    c_pos[2],
                    1.0;
-        shadow_program_->set_uniform("viewPos", tmp_pos);
-        sdf_shadow_program_->set_uniform("viewPos", tmp_pos);
+        shadow_depth_program_->set_uniform("viewPos", tmp_pos);
+        sdf_shadow_depth_program_->set_uniform("viewPos", tmp_pos);
 
-        shadow_fb_->color_attachments[0]->set_wrap_clamp_border();
+        shadow_depth_fb_->color_attachments[0]->set_wrap_clamp_border();
         float borderColor[] = {1.0, 1.0, 1.0, 1.0};
-        shadow_fb_->color_attachments[0]->bind();
+        shadow_depth_fb_->color_attachments[0]->bind();
         glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
 
-        viewer.draw_scene_geom(shadow_program_, false, true);
+        viewer.draw_scene_geom(shadow_depth_program_, false, true);
 
-        sdf_shadow_program_->activate();
-        sdf_shadow_program_->set_uniform("time", (float)glfwGetTime());
+        sdf_shadow_depth_program_->activate();
+        sdf_shadow_depth_program_->set_uniform("time", (float)glfwGetTime());
         static int max_march_steps = 255;
         if (ImGui::BeginMainMenuBar()) {
           if (ImGui::BeginMenu("SDF Shadow")) {
@@ -122,10 +122,45 @@ void DeferredRenderer::setup_render_passes() {
           }
           ImGui::EndMainMenuBar();
         }
-        sdf_shadow_program_->set_uniform("max_march_steps", max_march_steps);
-        viewer.draw_sdf_geom(sdf_shadow_program_, true);
+        sdf_shadow_depth_program_->set_uniform("max_march_steps", max_march_steps);
+        viewer.draw_sdf_geom(sdf_shadow_depth_program_, true);
         
         viewer.c = c_backup;
+      });
+
+  shadow_program_ = std::make_shared<ShaderProgram>("shadow_shader");
+  shadow_program_->attach_vertex_shader("shaders/pass_pos_tex.vert");
+  shadow_program_->attach_fragment_shader("shaders/shadow.frag");
+  shadow_program_->link();
+
+  shadow_fb_ = viewer.add_render_pass("shadow", shadow_program_, [this]() {
+        glClearColor(0.0, 0.0, 0.0, 1.0);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+
+        shadow_fb_->color_attachments[0]->set_wrap_clamp_border();
+        float borderColor[] = {1.0, 1.0, 1.0, 1.0};
+        shadow_fb_->color_attachments[0]->bind();
+        glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
+
+        // TODO Set uniforms necessary to compute shadow buffer
+        // gPosition, gNormal, shadowDepth
+        
+        shadow_program_->set_uniform("lightSpaceMatrix", light_space_mat_);
+
+        shadow_program_->set_uniform("gPosition", 0);
+        shadow_program_->set_uniform("gNormal", 1);
+        shadow_program_->set_uniform("shadowMap", 2);
+
+        viewer.apply_light_collection(shadow_program_);
+
+        std::vector<std::shared_ptr<Texture>> shadow_attachments;
+        shadow_attachments.push_back(gbuffer_fb_->color_attachments[0]);
+        shadow_attachments.push_back(gbuffer_fb_->color_attachments[1]);
+        shadow_attachments.push_back(shadow_depth_fb_->color_attachments[0]);
+
+        shadow_depth_fb_->bind_read();
+        shadow_fb_->bind_draw();
+        shadow_depth_fb_->quad->draw(shadow_program_, shadow_attachments);
       });
 
   shadow_blur_program_ = std::make_shared<ShaderProgram>("shadow_blur_shader");
