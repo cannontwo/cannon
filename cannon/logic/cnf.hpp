@@ -8,6 +8,7 @@
 #include <valarray>
 #include <cmath>
 #include <algorithm>
+#include <random>
 
 #include <cannon/log/registry.hpp>
 
@@ -53,7 +54,6 @@ namespace cannon {
         friend class Clause;
         friend class CNFFormula;
 
-      private:
         unsigned int prop_;
         bool negated_;
     };
@@ -84,8 +84,9 @@ namespace cannon {
           return true;
         }
 
-      private:
         std::set<Literal> literals_;
+
+      private:
         unsigned int num_props_ = 0;
     };
 
@@ -119,10 +120,14 @@ namespace cannon {
 
         friend std::ostream& operator<<(std::ostream& os, const CNFFormula& f);
 
-      private:
         std::vector<Clause> clauses_;
+
+      private:
         unsigned int num_props_ = 0;
     };
+
+    Clause generate_random_clause(unsigned int num_props);
+    CNFFormula generate_random_formula(unsigned int num_props, unsigned int num_clauses);
 
     std::ostream& operator<<(std::ostream& os, const PropAssignment& a);
     std::ostream& operator<<(std::ostream& os, const Literal& l);

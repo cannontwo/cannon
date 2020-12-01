@@ -106,7 +106,7 @@ namespace cannon {
           bool first_assignment = ah_.choose_assignment(formula_, a, s, prop);
 
           assert(a[prop] == PropAssignment::Unassigned);
-          log_info("Splitting on", prop);
+          //log_info("Splitting on", prop);
           
           Assignment split_first_a(a);
           split_first_a[prop] = first_assignment ? PropAssignment::True : PropAssignment::False;
@@ -142,7 +142,7 @@ namespace cannon {
           unit_prop_vec.insert(unit_prop_vec.end(), unit_props.begin(), unit_props.end());
 
           unsigned int prop = ph_.choose_prop(formula_, a, s, unit_prop_vec);
-          log_info("Doing unit preference on", prop);
+          //log_info("Doing unit preference on", prop);
           Assignment unit_a(a);
 
           auto idx = std::find_if(units.begin(), units.end(), 
@@ -232,7 +232,7 @@ namespace cannon {
           return std::make_pair(r, a);
         }
 
-        log_info("Iterating DPLL with", state.frontier_.size(), "assignments in stack");
+        //log_info("Iterating DPLL with", state.frontier_.size(), "assignments in stack");
       }
     }
 

@@ -172,6 +172,51 @@ Simplification CNFFormula::simplify(const Assignment& a, const Simplification& s
 }
 
 // Free Functions
+Clause cannon::logic::generate_random_clause(unsigned int num_props) {
+  if (num_props < 3) {
+    throw std::runtime_error("Cannot generate a random 3-SAT clause with fewer \
+        than 3 propositions to choose from");
+  }
+
+  std::random_device rd;
+  std::default_random_engine gen(rd());
+  std::uniform_int_distribution<unsigned int> dist(0, num_props - 1);
+  std::bernoulli_distribution n_dist(0.5);
+
+  unsigned int p1 = dist(gen);
+  unsigned int p2 = dist(gen);
+  unsigned int p3 = dist(gen);
+
+  // Whether to negate propositions
+  bool n1 = n_dist(gen);
+  bool n2 = n_dist(gen);
+  bool n3 = n_dist(gen);
+
+  // We need distinct propositions
+  while (p2 == p1) {
+    p2 = dist(gen);
+  }
+  while (p3 == p1 || p3 == p2) {
+    p3 = dist(gen);
+  }
+
+  Clause c;
+  c.add_literal(p1, n1);
+  c.add_literal(p2, n2);
+  c.add_literal(p3, n3);
+
+  return c;
+}
+
+CNFFormula cannon::logic::generate_random_formula(unsigned int num_props, unsigned int num_clauses) {
+  CNFFormula f;
+  for (unsigned int i = 0; i < num_clauses; i++) {
+    f.add_clause(generate_random_clause(num_props));
+  }
+
+  return f;
+}
+
 std::ostream& cannon::logic::operator<<(std::ostream& os, const PropAssignment& a) {
   if (a == PropAssignment::True)
     os << "True";
