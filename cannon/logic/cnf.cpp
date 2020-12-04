@@ -59,6 +59,20 @@ std::set<unsigned int> Clause::get_props(const Assignment& a) {
   return ret_set;
 }
 
+PropAssignment Clause::get_assignment_for_literal(unsigned int prop) {
+  for (auto& l : literals_) {
+    if (l.prop_ == prop) {
+      if (l.negated_) {
+        return PropAssignment::False;
+      } else {
+        return PropAssignment::True;
+      }
+    }
+  }
+
+  return PropAssignment::Unassigned;
+}
+
 PropAssignment Clause::eval(const Assignment& assignment) const {
   bool found_unassigned = false;
 
@@ -152,6 +166,42 @@ std::vector<unsigned int> CNFFormula::get_props(const Assignment& a, const Simpl
   ret_vec.insert(ret_vec.end(), all_props.begin(), all_props.end());
 
   return ret_vec;
+}
+
+std::multiset<unsigned int> CNFFormula::get_props_multiset(const Assignment& a, const
+    Simplification& s) {
+  std::multiset<unsigned int> all_props;
+  for (unsigned int i = 0; i < get_num_clauses(); i++) {
+    if (s[i])
+      continue;
+    
+    auto c_props = clauses_[i].get_props(a);
+    all_props.insert(c_props.begin(), c_props.end());
+  }
+
+  return all_props;
+}
+
+PropAssignment CNFFormula::is_pure_literal(const Assignment& a, const Simplification& s,
+    unsigned int prop) {
+  PropAssignment tmp = PropAssignment::Unassigned;
+
+  for (unsigned int i = 0; i < get_num_clauses(); i++) {
+    if (s[i])
+      continue;
+
+    if (tmp == PropAssignment::Unassigned) {
+      // This is expensive, but should only be called during preprocessing
+      tmp = clauses_[i].get_assignment_for_literal(prop);
+    } else {
+      PropAssignment t2 = clauses_[i].get_assignment_for_literal(prop);
+      if (t2 != PropAssignment::Unassigned && tmp != t2) {
+        return PropAssignment::Unassigned;
+      }
+    }
+  }
+
+  return tmp;
 }
 
 Simplification CNFFormula::simplify(const Assignment& a, const Simplification& s) const {

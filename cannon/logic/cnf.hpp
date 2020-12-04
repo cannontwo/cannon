@@ -70,6 +70,8 @@ namespace cannon {
         std::set<unsigned int> get_props(const Assignment& a);
         PropAssignment eval(const Assignment& assignment) const;
 
+        PropAssignment get_assignment_for_literal(unsigned int prop);
+
         friend std::ostream& operator<<(std::ostream& os, const Clause& c);
 
         friend class CNFFormula;
@@ -104,6 +106,12 @@ namespace cannon {
         std::vector<unsigned int> get_props(const Assignment& a,
             const Simplification& s);
         std::vector<unsigned int> get_props(std::vector<bool> s);
+
+        std::multiset<unsigned int> get_props_multiset(const Assignment& a,
+            const Simplification& s);
+
+        PropAssignment is_pure_literal(const Assignment& a, const Simplification& s,
+            unsigned int prop);
 
         Simplification simplify(const Assignment& a,
             const Simplification& s) const;

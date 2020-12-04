@@ -6,6 +6,7 @@
 #include <cassert>
 #include <algorithm>
 #include <tuple>
+#include <chrono>
 
 #include <cannon/logic/cnf.hpp>
 #include <cannon/log/registry.hpp>
@@ -31,8 +32,8 @@ namespace cannon {
     class DPLLState;
 
     template <typename F, typename G>
-    std::pair<DPLLResult, Assignment> dpll(CNFFormula f,
-        F ph_func, G ah_func);
+    std::tuple<DPLLResult, Assignment, int> dpll(CNFFormula f,
+        F ph_func, G ah_func, const std::chrono::seconds cutoff=std::chrono::seconds(1200));
 
     // Heuristic functor for use when choosing propositions
     template <typename F>
@@ -89,10 +90,35 @@ namespace cannon {
         
         DPLLState(CNFFormula f, PropositionHeuristic<F> ph,
             AssignmentHeuristic<G> ah) : formula_(f), ph_(ph), ah_(ah) {
-          Assignment first = Assignment(PropAssignment::Unassigned, formula_.get_num_props());
-          Simplification second = Simplification(false, formula_.get_num_clauses());
+          do_preprocessing();
+        }
 
-          frontier_.push({first, second}); 
+        Assignment do_pure_literal_deletion(const Assignment& a_0, const Simplification& s_0) {
+          Assignment a = a_0;
+
+          std::multiset<unsigned int> all_props = formula_.get_props_multiset(a_0, s_0);
+          int num_removed_props = 0;
+          for (unsigned int i = 0; i < formula_.get_num_props(); i++) {
+            int prop_count = all_props.count(i);
+            if (prop_count != 0 && a[i] == PropAssignment::Unassigned) {
+              a[i] = formula_.is_pure_literal(a, s_0, i);
+
+              if (a[i] != PropAssignment::Unassigned)
+                num_removed_props += 1;
+            }
+          }
+
+          return a;
+        }
+
+        void do_preprocessing() {
+          Assignment a_0 = Assignment(PropAssignment::Unassigned, formula_.get_num_props());
+          Simplification s_0 = Simplification(false, formula_.get_num_clauses());
+
+          Assignment pld_a = do_pure_literal_deletion(a_0, s_0);
+          Simplification s = formula_.simplify(pld_a, s_0);
+
+          frontier_.push({pld_a, s}); 
         }
 
         void do_splitting_rule(Assignment& a, Simplification& s) {
@@ -195,7 +221,8 @@ namespace cannon {
           return {DPLLResult::Unknown, empty};
         }
 
-        friend std::pair<DPLLResult, Assignment> dpll<F, G>(CNFFormula f, F ph_func, G ah_func);
+        friend std::tuple<DPLLResult, Assignment, int> dpll<F, G>(CNFFormula f,
+            F ph_func, G ah_func, const std::chrono::seconds cutoff);
 
       private:
         CNFFormula formula_;
@@ -210,26 +237,51 @@ namespace cannon {
     // ph_func should return a vector of ranks with the same length as its
     // input vector, and ah_func should return true or false for assignments.
     template <typename F, typename G>
-    std::pair<DPLLResult, Assignment> dpll(CNFFormula f,
-        F ph_func, G ah_func) {
+    std::tuple<DPLLResult, Assignment, int> dpll(CNFFormula f,
+        F ph_func, G ah_func, const std::chrono::seconds cutoff) {
 
       if (f.get_num_props() == 0) {
         std::valarray<PropAssignment> empty = {};
-        return {DPLLResult::Satisfiable, empty};
+        return {DPLLResult::Satisfiable, empty, 0};
       }
 
       DPLLState<F, G> state(f, PropositionHeuristic<F>(ph_func),
           AssignmentHeuristic<G>(ah_func));
 
+      int calls = 0;
+      auto start_time = std::chrono::steady_clock::now();
       while (true) {
         DPLLResult r;
         Assignment a;
+        calls += 1;
+
         std::tie(r, a) = state.iterate();
         if (r == DPLLResult::Satisfiable) {
-          return std::make_pair(r, a);
+          return std::make_tuple(r, a, calls);
         } else if (r == DPLLResult::Unsatisfiable && state.frontier_.size() == 0) {
           log_info("UNSAT");
-          return std::make_pair(r, a);
+          return std::make_tuple(r, a, calls);
+        }
+        // TODO
+        // else if (r == DPLLResult::Unsatisfiable) {
+        //   // TODO Do CDCL: Add conflicting clause to formula, call dpll recursively
+        //   CNFFormula f_conflict = f;
+        //   Clause conflict_clause = f_conflict.get_conflict_clause(a));
+        //   log_info("Adding conflicting clause", conflict_clause, "and recursing");
+        //   f_conflict.add_clause(conflict_clause);
+        //
+        //   int c;
+        //   std::tie(r, a, c) = dpll(f_conflict, ph_func, ah_func, cutoff);
+        //   return std::make_tuple(r, a, c + calls);
+        // }
+
+        auto current_time = std::chrono::steady_clock::now();
+        auto time_taken =
+          std::chrono::duration_cast<std::chrono::seconds>(current_time -
+              start_time);
+        if (time_taken > cutoff) {
+          log_info("Cutoff time of", cutoff.count(), "seconds exceeded");
+          return std::make_tuple(r, a, calls);   
         }
 
         //log_info("Iterating DPLL with", state.frontier_.size(), "assignments in stack");

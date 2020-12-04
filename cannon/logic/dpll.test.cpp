@@ -36,17 +36,18 @@ bool uniform_random_assign(const CNFFormula& form, const Assignment& a,
 TEST_CASE("DPLL", "[logic]") {
   DPLLResult r;
   Assignment a;
+  int c;
 
   // Empty
   CNFFormula f;
-  std::tie(r, a) = dpll(f, uniform_random_prop, uniform_random_assign);
+  std::tie(r, a, c) = dpll(f, uniform_random_prop, uniform_random_assign);
   REQUIRE(r == DPLLResult::Satisfiable);
 
   // Basic
   CNFFormula f1;
   f1.add_clause(parse_clause("1"));
 
-  std::tie(r, a) = dpll(f1, uniform_random_prop, uniform_random_assign);
+  std::tie(r, a, c) = dpll(f1, uniform_random_prop, uniform_random_assign);
   REQUIRE(r == DPLLResult::Satisfiable);
 
   Assignment a1(1);
@@ -59,7 +60,7 @@ TEST_CASE("DPLL", "[logic]") {
   f2.add_clause(parse_clause("1"));
   f2.add_clause(parse_clause("-2"));
 
-  std::tie(r, a) = dpll(f2, uniform_random_prop, uniform_random_assign);
+  std::tie(r, a, c) = dpll(f2, uniform_random_prop, uniform_random_assign);
   REQUIRE(r == DPLLResult::Satisfiable);
 
   Assignment a2(2); 
@@ -73,7 +74,7 @@ TEST_CASE("DPLL", "[logic]") {
   f3.add_clause(parse_clause("1"));
   f3.add_clause(parse_clause("-1"));
 
-  std::tie(r, a) = dpll(f3, uniform_random_prop, uniform_random_assign);
+  std::tie(r, a, c) = dpll(f3, uniform_random_prop, uniform_random_assign);
   REQUIRE(r == DPLLResult::Unsatisfiable);
 
   // Requiring splitting
@@ -84,7 +85,7 @@ TEST_CASE("DPLL", "[logic]") {
   f4.add_clause(parse_clause("-4 1"));
   f4.add_clause(parse_clause("1 2 3 4"));
 
-  std::tie(r, a) = dpll(f4, uniform_random_prop, uniform_random_assign);
+  std::tie(r, a, c) = dpll(f4, uniform_random_prop, uniform_random_assign);
   REQUIRE(r == DPLLResult::Satisfiable);
 
   // Larger (Einstein's Puzzle)
