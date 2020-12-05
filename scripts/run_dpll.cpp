@@ -41,6 +41,7 @@ bool uniform_random_assign(const CNFFormula& form, const Assignment& a,
 int main(int argc, char **argv) {
   DPLLResult r;
   Assignment a;
+  int c;
 
   assert(argc >= 2);
   std::string filename(argv[1]);
@@ -64,10 +65,14 @@ int main(int argc, char **argv) {
   os << "Parsed passed CNF file " << filename << " as " << std::endl << f << std::endl << std::endl;
 
   auto start = std::chrono::steady_clock::now();
-  std::tie(r, a) = dpll(f, uniform_random_prop, uniform_random_assign);
+  std::tie(r, a, c) = dpll(f, uniform_random_prop, uniform_random_assign);
   auto end = std::chrono::steady_clock::now();
   auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
   y_os << "  time_micros: " << std::to_string(duration.count()) << std::endl;
+  
+  log_info("DPLL recursively called", c, "times");
+  os << "DPLL recursively called " << c << " times" << std::endl << std::endl;
+  y_os << "  calls: " << std::to_string(c) << std::endl;
   
   log_info("DPLL on", filename, "returned result", r, "with assignment", a);
   os << "DPLL returned result " << r << " with assignment " << a << std::endl << std::endl;
@@ -78,12 +83,18 @@ int main(int argc, char **argv) {
   else 
     y_os << "false" << std::endl;
 
+  y_os << "  cutoff: ";
+  if (r == DPLLResult::Unknown) 
+    y_os << "true" << std::endl;
+  else
+    y_os << "false" << std::endl;
+
   // TODO Report number of DPLL calls as well
 
   Simplification s = std::valarray<bool>(false, f.get_num_props());
-  log_info("Evaluation of formula on returned assignment is");
-  log_info(f.eval(a, s));
+  //log_info("Evaluation of formula on returned assignment is");
+  //log_info(f.eval(a, s));
 
-  os << "Evaluation of formula on returned assignment is " << f.eval(a, s);
-  os.close();
+  //os << "Evaluation of formula on returned assignment is " << f.eval(a, s);
+  //os.close();
 }

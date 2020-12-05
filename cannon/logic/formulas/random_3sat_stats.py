@@ -5,7 +5,8 @@ import matplotlib.pyplot as plt
 import collections
 
 def run():
-    stat_files = glob.glob("/home/cannon/Documents/cannon/cannon/logic/formulas/random_3sat/*.yaml")
+    stat_files = list(glob.glob("/home/cannon/Documents/cannon/cannon/logic/formulas/random_3sat/*.yaml"))
+    stat_files.sort()
 
     times = collections.defaultdict(list)
     calls = collections.defaultdict(list)
