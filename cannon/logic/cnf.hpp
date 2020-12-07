@@ -64,10 +64,12 @@ namespace cannon {
         void add_literal(unsigned int prop_num, bool negated);
 
         unsigned int size() const;
+        unsigned int size(const Assignment& a) const;
         bool is_unit() const;
         bool is_unit(const Assignment& a) const;
 
         std::set<unsigned int> get_props(const Assignment& a);
+        bool contains_prop(const Assignment& a, unsigned int prop) const;
         PropAssignment eval(const Assignment& assignment) const;
 
         PropAssignment get_assignment_for_literal(unsigned int prop);
@@ -103,6 +105,10 @@ namespace cannon {
             Assignment& a, const Simplification& s) const;
         unsigned int get_num_props() const;
         unsigned int get_num_clauses() const;
+        unsigned int get_num_two_clauses(const Assignment& a, const
+            Simplification& s, unsigned int prop) const;
+        std::vector<unsigned int> get_num_two_clauses(const Assignment& a, const
+            Simplification& s, const std::vector<unsigned int>& props) const;
         std::vector<unsigned int> get_props(const Assignment& a,
             const Simplification& s);
         std::vector<unsigned int> get_props(std::vector<bool> s);

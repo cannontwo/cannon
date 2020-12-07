@@ -34,6 +34,17 @@ unsigned int Clause::size() const {
   return literals_.size();
 }
 
+unsigned int Clause::size(const Assignment& a) const {
+  unsigned int count = 0;
+
+  for (auto &l : literals_) {
+    if (a[l.prop_] != PropAssignment::Unassigned)
+      count++;
+  }
+
+  return count;
+}
+
 bool Clause::is_unit() const {
   return literals_.size() == 1;
 }
@@ -57,6 +68,15 @@ std::set<unsigned int> Clause::get_props(const Assignment& a) {
   }
 
   return ret_set;
+}
+
+bool Clause::contains_prop(const Assignment& a, unsigned int prop) const {
+  for (auto& l : literals_) {
+    if (a[l.prop_] == PropAssignment::Unassigned && l.prop_ == prop)
+      return true;
+  }
+
+  return false;
 }
 
 PropAssignment Clause::get_assignment_for_literal(unsigned int prop) {
@@ -149,6 +169,44 @@ unsigned int CNFFormula::get_num_props() const {
 
 unsigned int CNFFormula::get_num_clauses() const {
   return clauses_.size();
+}
+
+unsigned int CNFFormula::get_num_two_clauses(const Assignment& a, const
+    Simplification& s, unsigned int prop) const {
+  int num_two_clauses = 0; 
+  for (unsigned int i = 0; i < get_num_clauses(); i++) {
+    if (s[i])
+      continue;
+
+    if (clauses_[i].size(a) == 2 && clauses_[i].contains_prop(a, prop))
+      num_two_clauses++;
+  }
+
+  return num_two_clauses;
+}
+
+std::vector<unsigned int> CNFFormula::get_num_two_clauses(const Assignment& a, const
+    Simplification& s, const std::vector<unsigned int>& props) const {
+  std::vector<unsigned int> num_two_clauses(props.size(), 0); 
+
+  for (unsigned int i = 0; i < get_num_clauses(); i++) {
+    if (s[i])
+      continue;
+
+    if (clauses_[i].size(a) == 2) {
+      for (auto &l : clauses_[i].literals_) {
+        if (a[l.prop_] != PropAssignment::Unassigned)
+          continue;
+
+        auto it = std::find(props.begin(), props.end(), l.prop_);
+        if (it != props.end()) {
+          num_two_clauses[std::distance(props.begin(), it)] += 1;  
+        }
+      }
+    }
+  }
+
+  return num_two_clauses;
 }
 
 std::vector<unsigned int> CNFFormula::get_props(const Assignment& a, const Simplification& s) {

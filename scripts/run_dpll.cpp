@@ -17,12 +17,40 @@ std::vector<double> uniform_random_prop(const CNFFormula& form,
     const std::vector<unsigned int>& props) {
   std::random_device rd;
   std::mt19937 gen(rd());
-  std::uniform_real_distribution<double> d;
+  std::uniform_real_distribution<double> d(0.0, 1.0);
 
   std::vector<double> ret_vec;
   ret_vec.reserve(props.size());
   for (unsigned int i = 0; i < props.size(); i++) {
     ret_vec.push_back(d(gen));
+  }
+
+  return ret_vec;
+}
+
+std::vector<double> two_clause_prop(const CNFFormula& form, 
+    const Assignment& a,const Simplification& s, 
+    const std::vector<unsigned int>& props) {
+  std::random_device rd;
+  std::mt19937 gen(rd());
+  std::uniform_real_distribution<double> d;
+
+  //std::vector<double> clause_num_vec;
+  //clause_num_vec.reserve(props.size());
+  //for (unsigned int i = 0; i < props.size(); i++) {
+  //  clause_num_vec[i] = form.get_num_two_clauses(a, s, props[i]);
+  //}
+  
+  auto clause_num_vec = form.get_num_two_clauses(a, s, props);
+  unsigned int max_two_clauses = *std::max_element(clause_num_vec.begin(), clause_num_vec.end());
+
+  std::vector<double> ret_vec;
+  ret_vec.reserve(props.size());
+  for (unsigned int i = 0; i < props.size(); i++) {
+    if (clause_num_vec[i] == max_two_clauses)
+      ret_vec.push_back(d(gen));
+    else
+      ret_vec.push_back(-1.0);
   }
 
   return ret_vec;
@@ -65,7 +93,8 @@ int main(int argc, char **argv) {
   os << "Parsed passed CNF file " << filename << " as " << std::endl << f << std::endl << std::endl;
 
   auto start = std::chrono::steady_clock::now();
-  std::tie(r, a, c) = dpll(f, uniform_random_prop, uniform_random_assign);
+  //std::tie(r, a, c) = dpll(f, uniform_random_prop, uniform_random_assign); // Random heuristic
+  std::tie(r, a, c) = dpll(f, two_clause_prop, uniform_random_assign); // 2-clause heuristic
   auto end = std::chrono::steady_clock::now();
   auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
   y_os << "  time_micros: " << std::to_string(duration.count()) << std::endl;
