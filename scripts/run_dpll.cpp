@@ -4,17 +4,21 @@
 #include <fstream>
 #include <chrono>
 
+#include <Eigen/Dense>
+
 #include <cannon/logic/cnf.hpp>
 #include <cannon/logic/dpll.hpp>
 #include <cannon/logic/read_dimacs_cnf.hpp>
 #include <cannon/log/registry.hpp>
+
+using namespace Eigen;
 
 using namespace cannon::logic;
 using namespace cannon::log;
 
 std::vector<double> uniform_random_prop(const CNFFormula& form, 
     const Assignment& a,const Simplification& s, 
-    const std::vector<unsigned int>& props) {
+    const std::vector<unsigned int>& props, std::vector<std::vector<unsigned int>> watched) {
   std::random_device rd;
   std::mt19937 gen(rd());
   std::uniform_real_distribution<double> d(0.0, 1.0);
@@ -30,17 +34,11 @@ std::vector<double> uniform_random_prop(const CNFFormula& form,
 
 std::vector<double> two_clause_prop(const CNFFormula& form, 
     const Assignment& a,const Simplification& s, 
-    const std::vector<unsigned int>& props) {
+    const std::vector<unsigned int>& props, std::vector<std::vector<unsigned int>> watched) {
   std::random_device rd;
   std::mt19937 gen(rd());
   std::uniform_real_distribution<double> d;
 
-  //std::vector<double> clause_num_vec;
-  //clause_num_vec.reserve(props.size());
-  //for (unsigned int i = 0; i < props.size(); i++) {
-  //  clause_num_vec[i] = form.get_num_two_clauses(a, s, props[i]);
-  //}
-  
   auto clause_num_vec = form.get_num_two_clauses(a, s, props);
   unsigned int max_two_clauses = *std::max_element(clause_num_vec.begin(), clause_num_vec.end());
 
@@ -56,14 +54,67 @@ std::vector<double> two_clause_prop(const CNFFormula& form,
   return ret_vec;
 }
 
+std::vector<double> adj_mat_eig_prop(const CNFFormula& form, 
+    const Assignment& a,const Simplification& s, 
+    const std::vector<unsigned int>& props, std::vector<std::vector<unsigned int>> watched) {
+  MatrixXd adj_mat = form.make_adjacency_mat(a, s);
+  SelfAdjointEigenSolver<MatrixXd> solver(adj_mat);
+
+  if (solver.info() != Success) {
+    log_info("Couldn't compute eigenvalues");
+    return uniform_random_prop(form, a, s, props, watched);
+  }
+  VectorXd largest_eigenvector = solver.eigenvectors().col(form.get_num_props() - 1);
+
+  // Elements of the eigenvector corresponding to the largest eigenvalue of the
+  // adjacency matrix have the greatest centrality to the graph formed by the
+  // CNF clauses.
+  std::vector<double> ret_vec;
+  ret_vec.reserve(props.size());
+  for (auto &p : props) {
+    ret_vec.push_back(largest_eigenvector[p]);
+  }
+
+  return ret_vec;
+}
+
 bool uniform_random_assign(const CNFFormula& form, const Assignment& a, 
-    const Simplification& s, unsigned int prop) {
+    const Simplification& s, unsigned int prop, std::vector<std::vector<unsigned int>> watched) {
   std::random_device rd;
   std::mt19937 gen(rd());
   std::uniform_real_distribution<double> d;
 
   double t = d(gen);
   return t < 0.5;
+}
+
+bool max_vote_assign(const CNFFormula& form, const Assignment& a, const
+    Simplification& s, unsigned int prop, std::vector<std::vector<unsigned int>> watched) {
+  std::random_device rd;
+  std::mt19937 gen(rd());
+  std::uniform_real_distribution<double> d;
+
+  int num_pos = 0;
+  int num_neg = 0;
+  for (unsigned int c_num : watched[prop]) {
+    if (s[c_num])
+      continue;
+
+    for (auto &l : form.clauses_[c_num].literals_) {
+      if (l.prop_ == prop && l.negated_)
+        num_neg += 1;
+
+      if (l.prop_ == prop && !l.negated_)
+        num_pos += 1;
+    }
+  }
+
+  if (num_pos == num_neg) {
+    double t = d(gen);
+    return t < 0.5;
+  } else {
+    return num_pos > num_neg;
+  }
 }
 
 int main(int argc, char **argv) {
@@ -94,7 +145,9 @@ int main(int argc, char **argv) {
 
   auto start = std::chrono::steady_clock::now();
   //std::tie(r, a, c) = dpll(f, uniform_random_prop, uniform_random_assign); // Random heuristic
-  std::tie(r, a, c) = dpll(f, two_clause_prop, uniform_random_assign); // 2-clause heuristic
+  //std::tie(r, a, c) = dpll(f, two_clause_prop, uniform_random_assign); // 2-clause heuristic
+  std::tie(r, a, c) = dpll(f, two_clause_prop, max_vote_assign); // custom heuristic
+  //std::tie(r, a, c) = dpll(f, adj_mat_eig_prop, max_vote_assign); // custom heuristic
   auto end = std::chrono::steady_clock::now();
   auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
   y_os << "  time_micros: " << std::to_string(duration.count()) << std::endl;

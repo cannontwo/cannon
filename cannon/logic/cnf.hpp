@@ -10,7 +10,11 @@
 #include <algorithm>
 #include <random>
 
+#include <Eigen/Dense>
+
 #include <cannon/log/registry.hpp>
+
+using namespace Eigen;
 
 using namespace cannon::log;
 
@@ -101,8 +105,15 @@ namespace cannon {
         PropAssignment eval(const Assignment& assignment,
             const Simplification& s) const;
 
-        std::vector<std::pair<unsigned int, bool>> get_unit_clause_props(const
+        std::vector<std::tuple<unsigned int, bool, int>> get_unit_clause_props(const
             Assignment& a, const Simplification& s) const;
+        std::vector<std::tuple<unsigned int, bool, int>> get_unit_clause_props(const
+            Assignment& a, const Simplification& s,
+            std::vector<std::vector<unsigned int>> watched) const;
+        std::vector<std::tuple<unsigned int, bool, int>> get_unit_clause_props(const
+            Assignment& a, const Simplification& s, std::vector<unsigned int>
+            unit_clauses) const;
+
         unsigned int get_num_props() const;
         unsigned int get_num_clauses() const;
         unsigned int get_num_two_clauses(const Assignment& a, const
@@ -112,6 +123,8 @@ namespace cannon {
         std::vector<unsigned int> get_props(const Assignment& a,
             const Simplification& s);
         std::vector<unsigned int> get_props(std::vector<bool> s);
+
+        MatrixXd make_adjacency_mat(const Assignment& a, const Simplification& s) const;
 
         std::multiset<unsigned int> get_props_multiset(const Assignment& a,
             const Simplification& s);
@@ -142,6 +155,8 @@ namespace cannon {
 
     Clause generate_random_clause(unsigned int num_props);
     CNFFormula generate_random_formula(unsigned int num_props, unsigned int num_clauses);
+
+    Clause resolve(const Clause& c1, const Clause& c2, unsigned int prop);
 
     std::ostream& operator<<(std::ostream& os, const PropAssignment& a);
     std::ostream& operator<<(std::ostream& os, const Literal& l);

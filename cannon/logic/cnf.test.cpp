@@ -111,6 +111,5 @@ TEST_CASE("CNF", "[logic]") {
 
   // Testing getting unit clauses
   REQUIRE(f.get_unit_clause_props(a1, s).size() == 0);
-  auto p = std::pair<unsigned int, bool>(0, false);
-  REQUIRE(f.get_unit_clause_props(a3, s)[0] == p);
+  REQUIRE(std::get<0>(f.get_unit_clause_props(a3, s)[0]) == 0);
 }

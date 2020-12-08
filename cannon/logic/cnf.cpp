@@ -140,9 +140,9 @@ PropAssignment CNFFormula::eval(const Assignment& assignment,
     return PropAssignment::True;
 }
 
-std::vector<std::pair<unsigned int, bool>> CNFFormula::get_unit_clause_props(const
+std::vector<std::tuple<unsigned int, bool, int>> CNFFormula::get_unit_clause_props(const
     Assignment& a, const Simplification& s) const {
-  std::vector<std::pair<unsigned int, bool>> idxs; 
+  std::vector<std::tuple<unsigned int, bool, int>> idxs; 
 
   for (unsigned int i=0; i < clauses_.size(); i++) {
     // We only want to get unit clauses that have not yet been assigned or simplified
@@ -153,8 +153,51 @@ std::vector<std::pair<unsigned int, bool>> CNFFormula::get_unit_clause_props(con
     if (c.is_unit(a)) {
       for (auto& l : c.literals_) {
         if (l.eval(a) == PropAssignment::Unassigned) {
-          idxs.emplace_back(l.prop_, l.negated_);
+          idxs.emplace_back(l.prop_, l.negated_, i);
           break;
+        }
+      }
+    }
+  }
+
+  return idxs;
+}
+
+std::vector<std::tuple<unsigned int, bool, int>> CNFFormula::get_unit_clause_props(const
+    Assignment& a, const Simplification& s, std::vector<unsigned int> unit_clauses) const {
+  std::vector<std::tuple<unsigned int, bool, int>> idxs; 
+
+  for (unsigned int c_num : unit_clauses) {
+    if (clauses_[c_num].is_unit(a)) {
+      for (auto& l : clauses_[c_num].literals_) {
+        if (l.eval(a) == PropAssignment::Unassigned) {
+          idxs.emplace_back(l.prop_, l.negated_, c_num);
+          break;
+        }
+      }
+    }
+  }
+
+  return idxs;
+}
+
+std::vector<std::tuple<unsigned int, bool, int>> CNFFormula::get_unit_clause_props(const
+    Assignment& a, const Simplification& s,
+    std::vector<std::vector<unsigned int>> watched) const {
+  std::vector<std::tuple<unsigned int, bool, int>> idxs; 
+
+  for (unsigned int i=0; i < get_num_props(); i++) {
+    // We only want to get unit clauses that have not yet been assigned or simplified
+    for (unsigned int c_num : watched[i]) {
+      if (s[c_num])
+        continue;
+
+      if (clauses_[c_num].is_unit(a)) {
+        for (auto& l : clauses_[c_num].literals_) {
+          if (l.eval(a) == PropAssignment::Unassigned) {
+            idxs.emplace_back(l.prop_, l.negated_, c_num);
+            break;
+          }
         }
       }
     }
@@ -224,6 +267,31 @@ std::vector<unsigned int> CNFFormula::get_props(const Assignment& a, const Simpl
   ret_vec.insert(ret_vec.end(), all_props.begin(), all_props.end());
 
   return ret_vec;
+}
+
+MatrixXd CNFFormula::make_adjacency_mat(const Assignment& a, const Simplification& s) const {
+  MatrixXd adj_mat(get_num_props(), get_num_props());
+
+  for (unsigned int i = 0; i < clauses_.size(); i++) {
+    if (s[i])
+      continue;
+
+    std::vector<unsigned int> ps;
+    for (auto &l : clauses_[i].literals_) {
+      if (a[l.prop_] == PropAssignment::Unassigned) {
+        ps.push_back(l.prop_);  
+      }
+    }
+
+    for (unsigned int i = 0; i < ps.size(); i++) {
+      for (unsigned int j = i+1; j < ps.size(); j++) {
+        adj_mat(ps[i], ps[j]) = 1.0;
+        adj_mat(ps[j], ps[i]) = 1.0;
+      }
+    }
+  }
+
+  return adj_mat;
 }
 
 std::multiset<unsigned int> CNFFormula::get_props_multiset(const Assignment& a, const
@@ -323,6 +391,38 @@ CNFFormula cannon::logic::generate_random_formula(unsigned int num_props, unsign
   }
 
   return f;
+}
+
+Clause cannon::logic::resolve(const Clause& c1, const Clause& c2, unsigned int prop) {
+  bool c1_has_prop = false;
+  bool c1_negated = false;
+  bool c2_has_prop = false;
+  bool c2_negated = false;
+  Clause ret_clause;
+
+  for (auto& l : c1.literals_) {
+    if (l.prop_ == prop) {
+      c1_has_prop = true;
+      c1_negated = l.negated_;
+      continue;
+    }
+
+    ret_clause.add_literal(l.prop_, l.negated_);
+  }
+
+  for (auto& l : c2.literals_) {
+    if (l.prop_ == prop) {
+      c2_has_prop = true;
+      c2_negated = l.negated_;
+      continue;
+    }
+
+    ret_clause.add_literal(l.prop_, l.negated_);
+  }
+
+  assert(c1_has_prop && c2_has_prop);
+  assert(c1_negated != c2_negated);
+  return ret_clause;
 }
 
 std::ostream& cannon::logic::operator<<(std::ostream& os, const PropAssignment& a) {

@@ -122,6 +122,13 @@ def run():
     custom_sat_avg_150_y = []
 
     for k in custom_times.keys():
+        print("Stats for {} with {} exps".format(k, len(custom_times[k])))
+        print("\tAverage time: {} seconds".format(np.array([float(t)/1e6 for t in custom_times[k]]).mean()))
+        print("\tMedian time: {} seconds".format(np.median(np.array([float(t)/1e6 for t in custom_times[k]]))))
+        print("\tAverage calls: {}".format(np.array([float(c) for c in custom_calls[k]]).mean()))
+        print("\tMedian calls: {}".format(np.median(np.array([float(c) for c in custom_calls[k]]))))
+        print("\tAverage sat: {}".format(np.array([float(s) for s in custom_sats[k]]).mean()))
+
         if k[1:4] == '100':
             custom_x_100.append(float(k[5:8]) / 100.0)
             custom_time_medians_100_y.append(np.median(np.array([float(t)/1e6 for t in custom_times[k]])))

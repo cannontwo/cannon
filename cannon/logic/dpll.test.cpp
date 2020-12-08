@@ -9,7 +9,7 @@ using namespace cannon::logic;
 
 std::vector<double> uniform_random_prop(const CNFFormula& form, 
     const Assignment& a,const Simplification& s, 
-    const std::vector<unsigned int>& props) {
+    const std::vector<unsigned int>& props, std::vector<std::vector<unsigned int>> watched) {
   std::random_device rd;
   std::mt19937 gen(rd());
   std::uniform_real_distribution<double> d;
@@ -24,7 +24,7 @@ std::vector<double> uniform_random_prop(const CNFFormula& form,
 }
 
 bool uniform_random_assign(const CNFFormula& form, const Assignment& a, 
-    const Simplification& s, unsigned int prop) {
+    const Simplification& s, unsigned int prop, std::vector<std::vector<unsigned int>> watched) {
   std::random_device rd;
   std::mt19937 gen(rd());
   std::uniform_real_distribution<double> d;
@@ -91,7 +91,7 @@ TEST_CASE("DPLL", "[logic]") {
   // Larger (Einstein's Puzzle)
   //CNFFormula ein_f = load_cnf("formulas/ein.cnf"); 
   //log_info("Parsed Einstein's Puzzle as", ein_f);
-  //std::tie(r, a) = dpll(ein_f, uniform_random_prop, uniform_random_assign);
+  //std::tie(r, a, c) = dpll(ein_f, uniform_random_prop, uniform_random_assign);
   //log_info("DPLL on Einstein's Puzzle returned result", r, "with assignment", a);
   //REQUIRE(r == DPLLResult::Satisfiable);
 
