@@ -16,11 +16,12 @@ using namespace Eigen;
 using namespace cannon::logic;
 using namespace cannon::log;
 
-std::vector<double> uniform_random_prop(const CNFFormula& form, 
-    const Assignment& a,const Simplification& s, 
-    const std::vector<unsigned int>& props, std::vector<std::vector<unsigned int>> watched) {
+std::vector<double> uniform_random_prop(const CNFFormula& form, const
+    Assignment& a,const Simplification& s, const std::vector<unsigned int>&
+    props, std::vector<std::vector<unsigned int>> watched, const
+    VectorXd& vsids) {
   std::random_device rd;
-  std::mt19937 gen(rd());
+  std::default_random_engine gen(rd());
   std::uniform_real_distribution<double> d(0.0, 1.0);
 
   std::vector<double> ret_vec;
@@ -32,11 +33,12 @@ std::vector<double> uniform_random_prop(const CNFFormula& form,
   return ret_vec;
 }
 
-std::vector<double> two_clause_prop(const CNFFormula& form, 
-    const Assignment& a,const Simplification& s, 
-    const std::vector<unsigned int>& props, std::vector<std::vector<unsigned int>> watched) {
+std::vector<double> two_clause_prop(const CNFFormula& form, const Assignment&
+    a,const Simplification& s, const std::vector<unsigned int>& props,
+    std::vector<std::vector<unsigned int>> watched, const VectorXd&
+    vsids) {
   std::random_device rd;
-  std::mt19937 gen(rd());
+  static std::default_random_engine gen(rd());
   std::uniform_real_distribution<double> d;
 
   auto clause_num_vec = form.get_num_two_clauses(a, s, props);
@@ -56,13 +58,14 @@ std::vector<double> two_clause_prop(const CNFFormula& form,
 
 std::vector<double> adj_mat_eig_prop(const CNFFormula& form, 
     const Assignment& a,const Simplification& s, 
-    const std::vector<unsigned int>& props, std::vector<std::vector<unsigned int>> watched) {
+    const std::vector<unsigned int>& props, std::vector<std::vector<unsigned int>> watched,
+    const VectorXd& vsids) {
   MatrixXd adj_mat = form.make_adjacency_mat(a, s);
   SelfAdjointEigenSolver<MatrixXd> solver(adj_mat);
 
   if (solver.info() != Success) {
     log_info("Couldn't compute eigenvalues");
-    return uniform_random_prop(form, a, s, props, watched);
+    return uniform_random_prop(form, a, s, props, watched, vsids);
   }
   VectorXd largest_eigenvector = solver.eigenvectors().col(form.get_num_props() - 1);
 
@@ -78,10 +81,23 @@ std::vector<double> adj_mat_eig_prop(const CNFFormula& form,
   return ret_vec;
 }
 
+std::vector<double> vsids_prop(const CNFFormula& form, const Assignment&
+    a,const Simplification& s, const std::vector<unsigned int>& props,
+    std::vector<std::vector<unsigned int>> watched, const VectorXd& vsids) {
+  std::vector<double> vsids_vec;
+
+  for (auto &prop : props) {
+    vsids_vec.push_back(vsids[prop]);
+  }
+
+  return vsids_vec;
+}
+
+
 bool uniform_random_assign(const CNFFormula& form, const Assignment& a, 
     const Simplification& s, unsigned int prop, std::vector<std::vector<unsigned int>> watched) {
   std::random_device rd;
-  std::mt19937 gen(rd());
+  static std::default_random_engine gen(rd());
   std::uniform_real_distribution<double> d;
 
   double t = d(gen);
@@ -91,7 +107,7 @@ bool uniform_random_assign(const CNFFormula& form, const Assignment& a,
 bool max_vote_assign(const CNFFormula& form, const Assignment& a, const
     Simplification& s, unsigned int prop, std::vector<std::vector<unsigned int>> watched) {
   std::random_device rd;
-  std::mt19937 gen(rd());
+  static std::default_random_engine gen(rd());
   std::uniform_real_distribution<double> d;
 
   int num_pos = 0;
@@ -146,8 +162,8 @@ int main(int argc, char **argv) {
   auto start = std::chrono::steady_clock::now();
   //std::tie(r, a, c) = dpll(f, uniform_random_prop, uniform_random_assign); // Random heuristic
   //std::tie(r, a, c) = dpll(f, two_clause_prop, uniform_random_assign); // 2-clause heuristic
-  std::tie(r, a, c) = dpll(f, two_clause_prop, max_vote_assign); // custom heuristic
-  //std::tie(r, a, c) = dpll(f, adj_mat_eig_prop, max_vote_assign); // custom heuristic
+  //std::tie(r, a, c) = dpll(f, two_clause_prop, max_vote_assign); // custom heuristic
+  std::tie(r, a, c) = dpll(f, vsids_prop, max_vote_assign); // custom heuristic
   auto end = std::chrono::steady_clock::now();
   auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
   y_os << "  time_micros: " << std::to_string(duration.count()) << std::endl;
@@ -174,9 +190,9 @@ int main(int argc, char **argv) {
   // TODO Report number of DPLL calls as well
 
   Simplification s = std::valarray<bool>(false, f.get_num_props());
-  //log_info("Evaluation of formula on returned assignment is");
-  //log_info(f.eval(a, s));
+  log_info("Evaluation of formula on returned assignment is");
+  log_info(f.eval(a, s));
 
-  //os << "Evaluation of formula on returned assignment is " << f.eval(a, s);
-  //os.close();
+  os << "Evaluation of formula on returned assignment is " << f.eval(a, s);
+  os.close();
 }

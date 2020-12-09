@@ -9,7 +9,7 @@ using namespace cannon::logic;
 
 std::vector<double> uniform_random_prop(const CNFFormula& form, 
     const Assignment& a,const Simplification& s, 
-    const std::vector<unsigned int>& props, std::vector<std::vector<unsigned int>> watched) {
+    const std::vector<unsigned int>& props, std::vector<std::vector<unsigned int>> watched, const VectorXd& vsids) {
   std::random_device rd;
   std::mt19937 gen(rd());
   std::uniform_real_distribution<double> d;

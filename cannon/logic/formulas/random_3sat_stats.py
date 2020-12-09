@@ -185,6 +185,7 @@ def run():
     plt.legend()
     plt.xlabel("L/N ratio")
     plt.ylabel("Median runtime (seconds)")
+    plt.yscale('log')
 
     # Median calls
     plt.subplot(1, 3, 2)
@@ -197,6 +198,7 @@ def run():
     plt.legend()
     plt.xlabel("L/N ratio")
     plt.ylabel("Median DPLL calls")
+    plt.yscale('log')
 
     # Average sat
     plt.subplot(1, 3, 3)

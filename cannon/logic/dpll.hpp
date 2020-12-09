@@ -8,6 +8,7 @@
 #include <tuple>
 #include <chrono>
 #include <map>
+#include <queue>
 
 #include <cannon/logic/cnf.hpp>
 #include <cannon/log/registry.hpp>
@@ -56,14 +57,14 @@ namespace cannon {
         PropositionHeuristic(F f) : f_(f) {}
 
         std::vector<double> rank_props(const CNFFormula& form, const Assignment& a,
-            const Simplification& s, const std::vector<unsigned int>& props, std::vector<std::vector<unsigned int>> watched) {
-          return f_(form, a, s, props, watched);
+            const Simplification& s, const std::vector<unsigned int>& props, std::vector<std::vector<unsigned int>> watched, const VectorXd& vsids) {
+          return f_(form, a, s, props, watched, vsids);
         }
 
         unsigned int choose_prop(const CNFFormula& form, const Assignment& a,
             const Simplification& s, const std::vector<unsigned int>& props,
-            std::vector<std::vector<unsigned int>> watched) {
-          auto prop_ranks = rank_props(form, a, s, props, watched);
+            std::vector<std::vector<unsigned int>> watched, const VectorXd& vsids) {
+          auto prop_ranks = rank_props(form, a, s, props, watched, vsids);
 
           unsigned int prop_idx = std::distance(prop_ranks.begin(),
               std::max_element(prop_ranks.begin(), prop_ranks.end()));
@@ -103,6 +104,54 @@ namespace cannon {
         
         DPLLState(CNFFormula f, PropositionHeuristic<F> ph,
             AssignmentHeuristic<G> ah) : formula_(f), ph_(ph), ah_(ah) {
+          vsids_ = VectorXd::Zero(formula_.get_num_props());
+
+          num_original_clauses_ = formula_.clauses_.size(); 
+          max_original_clause_size_ = 0;
+          for (auto &c : formula_.clauses_) {
+            if (c.literals_.size() > max_original_clause_size_)
+              max_original_clause_size_ = c.literals_.size();
+
+            for (auto &l : c.literals_) {
+              vsids_[l.prop_] += 1.0;
+            }
+          }
+          do_preprocessing();
+        }
+
+        void restart(bool forget_clauses) {
+
+          while (!frontier_.empty()) {
+            frontier_.pop();
+          }
+
+          if (forget_clauses) {
+            log_info("Before removing learned clauses there are", formula_.clauses_.size());
+            std::vector<Clause> rem_clauses;
+            for (unsigned int i = num_original_clauses_; i < formula_.clauses_.size(); i++) {
+              const Clause& c = formula_.clauses_[i];
+              //if (c.literals_.size() >= 4 * max_original_clause_size_ ||
+              
+              // We explicitly keep unit clauses, since they're so valuable
+              if (learned_usage[i - num_original_clauses_] < 1 && c.literals_.size() != 1) 
+                rem_clauses.push_back(c);
+            }
+
+            std::vector<Clause>::iterator new_end = formula_.clauses_.end();
+            for (auto &c : rem_clauses) {
+              new_end = std::remove(formula_.clauses_.begin(), new_end, c);
+            }
+            formula_.clauses_.erase(new_end, formula_.clauses_.end());
+
+            learned_usage = std::vector<int>();
+            for (unsigned int i = num_original_clauses_; i < formula_.clauses_.size(); i++) {
+              learned_usage.push_back(0);
+            }
+          }
+
+          // Inject some randomness
+          vsids_ += VectorXd::Random(formula_.get_num_props());
+          log_info("Restarting with", formula_.get_num_clauses(), "clauses");
           do_preprocessing();
         }
 
@@ -235,6 +284,10 @@ namespace cannon {
                 if (l.prop_ == prop)
                   continue;
 
+                if (num_watched == 2) {
+                  break;
+                }
+
                 if (std::find(w[l.prop_].begin(), w[l.prop_].end(), c) != w[l.prop_].end()) {
                   // This literal is already watched, so move on
                   num_watched += 1;
@@ -274,50 +327,112 @@ namespace cannon {
                   //    resolve(formula_.clauses_[parents[prop]],
                   //      formula_.clauses_[c], prop));
 
+                  if (parents[prop] > num_original_clauses_) {
+                    learned_usage[parents[prop] - num_original_clauses_] += 1;
+                  }
+                  if (c > num_original_clauses_) {
+                    learned_usage[c - num_original_clauses_] += 1;
+                  }
+
                   // Do all possible resolutions
-                  Clause learned_c = resolve(formula_.clauses_[parents[prop]],
-                      formula_.clauses_[c], prop);
-                  while (true) {
-                    std::vector<Literal> resolve_literals;
-                    for (auto &l : learned_c.literals_) {
-                      if (parents[l.prop_] >= 0) {
-                        resolve_literals.push_back(l);
-                      }
-                    }
+                  Clause learned_c = formula_.clauses_[c];
+                  std::queue<Literal> resolve_literals;
+                  int num_current_level = 0;
+                  for (auto &l : learned_c.literals_) {
+                    if (parents[l.prop_] >= 0 && levels[l.prop_] == fs.decision_level)
+                      resolve_literals.push(l);
+                    
+                    if (levels[l.prop_] == fs.decision_level)
+                      num_current_level += 1;
+                  }
 
-                    if (resolve_literals.size() == 0) {
-                      break;
-                    }
+                  while (num_current_level > 1) {
+                    while (resolve_literals.size() != 0) {
+                      Literal l = resolve_literals.front();
+                      resolve_literals.pop();
 
-                    for (auto &l : resolve_literals) {
+                      //log_info("Resolving", learned_c, "on", l, "with parent",
+                      //    formula_.clauses_[parents[l.prop_]]);
                       learned_c = resolve(learned_c, formula_.clauses_[parents[l.prop_]], l.prop_);
+
+                      if (parents[l.prop_] > num_original_clauses_) {
+                        learned_usage[parents[l.prop_] - num_original_clauses_] += 1;
+                      }
+
+                      num_current_level = 0;
+                      for (auto &ll : learned_c.literals_) {
+                        if (levels[ll.prop_] == fs.decision_level) {
+                          num_current_level += 1;
+                        }
+                      }
+
+                      if (num_current_level == 1) {
+                        break;
+                      } 
+                    }
+                    num_current_level = 0;
+                    for (auto &ll : learned_c.literals_) {
+                      if (parents[ll.prop_] >= 0 && levels[ll.prop_] == fs.decision_level)
+                        resolve_literals.push(ll);
+
+                      if (levels[ll.prop_] == fs.decision_level)
+                        num_current_level += 1;
                     }
                   }
-                  formula_.add_clause(learned_c);
 
+                  //log_info("Current level is", fs.decision_level);
                   //log_info("Learned clause", learned_c);
                   //log_info("Clause levels are");
                   //for (auto &l : learned_c.literals_) {
                   //  log_info("\t", levels[l.prop_], ",", level_open[levels[l.prop_]]);  
                   //}
 
+                  // Exponential moving average vsids
+                  vsids_ *= (1.0 - vsids_decay_);
+
+                  for (auto &l : learned_c.literals_) {
+                    vsids_[l.prop_] += vsids_decay_;
+                  }
+                  formula_.add_clause(learned_c);
+
+                  // Keep track of usage of learned clauses
+                  learned_usage.push_back(0);
+
+                  //log_info("Current level is", fs.decision_level);
+                  //log_info("Learned clause", learned_c);
+                  //log_info("Clause levels are");
+                  //for (auto &l : learned_c.literals_) {
+                  //  log_info("\t", levels[l.prop_], ",", level_open[levels[l.prop_]]);  
+                  //}
+
+                  if (learned_c.literals_.size() == 1) {
+                    log_info("Learned unit clause", learned_c);
+                    should_restart_ = true;
+                  }
+
+                  if (learned_c.literals_.size() == 0) {
+                    log_info("Learned empty clause (conflict)", learned_c);
+                    found_unsat_ = true;
+                  }
+
                   //log_info("Formula is now", formula_);
 
                   int new_clause_num = formula_.get_num_clauses();
-                  int num_watched = 0;
+                  int num_learned_watched = 0;
                   int max_decision_level = 0;
                   for (auto &l : learned_c.literals_) {
-                    if (num_watched == 2)
-                      break;
 
                     // Keep track of latest decision level contributing to this conflict
-                    if (levels[l.prop_] > max_decision_level && level_open[levels[l.prop_]]) 
+                    if (levels[l.prop_] > max_decision_level &&
+                        level_open[levels[l.prop_] && levels[l.prop_] != fs.decision_level]) 
                       max_decision_level = levels[l.prop_];
 
-                    if ((!l.negated_ && a[l.prop_] != PropAssignment::False) ||
-                        (l.negated_ && a[l.prop_] != PropAssignment::True)) {
-                      w[l.prop_].push_back(new_clause_num);
-                      num_watched += 1;
+                    if (num_learned_watched < 2) {
+                      if ((!l.negated_ && a[l.prop_] != PropAssignment::False)
+                          || (l.negated_ && a[l.prop_] != PropAssignment::True)) {
+                        w[l.prop_].push_back(new_clause_num);
+                        num_learned_watched += 1;
+                      }
                     }
                   }
 
@@ -336,7 +451,7 @@ namespace cannon {
                       num_jumped += 1;
                     }
 
-                    // TODO Push restored branch
+                    // Push restored branch
                     Assignment restored_a = Assignment(PropAssignment::Unassigned, formula_.get_num_props());
                     Simplification restored_s = Simplification(false, formula_.get_num_clauses());
                     AssignmentParents restored_parents = AssignmentParents(-1, formula_.get_num_props());
@@ -362,9 +477,6 @@ namespace cannon {
                     restored_s = formula_.simplify(restored_a, restored_s);
 
                     for (unsigned int i = 0; i < formula_.clauses_.size(); i++) {
-                      if (restored_s[i])
-                        continue;
-
                       int num_watched = 0;
                       for (auto &l : formula_.clauses_[i].literals_) {
                         if (num_watched == 2)
@@ -374,7 +486,7 @@ namespace cannon {
                             (l.negated_ && restored_a[l.prop_] != PropAssignment::True)) {
                           restored_w[l.prop_].push_back(i);
                           num_watched += 1;
-                        }
+                        } 
                       }
                     }
 
@@ -382,7 +494,11 @@ namespace cannon {
                     FormulaState tmp_fs = {restored_a, check_simplification_size(restored_s),
                       restored_parents, restored_levels, restored_w,
                       restored_level_open, max_decision_level};
-                    frontier_.push(tmp_fs);
+                    FormulaState push_fs;
+                    std::vector<unsigned int> learned_unit_clause;
+                    learned_unit_clause.push_back(formula_.clauses_.size() - 1);
+                    std::tie(push_fs, found_conflict) = do_unit_preference(tmp_fs, learned_unit_clause);
+                    frontier_.push(push_fs);
 
                     //if (num_jumped > 0)
                     //  log_info("Jumped back", num_jumped, "levels");
@@ -428,7 +544,7 @@ namespace cannon {
             return;
           }
 
-          unsigned int prop = ph_.choose_prop(formula_, a, s, all_props, w);
+          unsigned int prop = ph_.choose_prop(formula_, a, s, all_props, w, vsids_);
           bool first_assignment = ah_.choose_assignment(formula_, a, s, prop, w);
 
           assert(a[prop] == PropAssignment::Unassigned);
@@ -595,11 +711,35 @@ namespace cannon {
           return std::make_pair(tmp_fs, found_conflict);
         }
 
+        void check_watched(const FormulaState& fs) {
+          for (unsigned int i = 0; i < formula_.clauses_.size(); i++) {
+            if (fs.s[i])
+              continue;
+
+            int num_watched = 0;
+            for (auto &l : formula_.clauses_[i].literals_) {
+              if (std::find(fs.watched[l.prop_].begin(),
+                    fs.watched[l.prop_].end(), i) != fs.watched[l.prop_].end()) {
+                num_watched += 1;
+              }
+            }
+
+            if (num_watched != 2) {
+              log_info("Clause", formula_.clauses_[i], " (", i, ") not watched correctly");
+              log_info("Had", num_watched, "watchers");
+            }
+          }
+        }
+
         // The Assignment portion of the return value will be empty unless the
         // DPLLResult part is "Satisfiable"
         std::pair<DPLLResult, Assignment> iterate() {
+          //log_info("Before popping, frontier has", frontier_.size(), "elements");
           FormulaState current = frontier_.top();
           frontier_.pop();
+
+
+          iterations_ += 1;
 
           //log_info("Popped assignment");
           //for (auto &t : a)
@@ -630,6 +770,25 @@ namespace cannon {
           } else if (e == PropAssignment::False) {
             //log_info("Returning on unsatisfiable");
             return {DPLLResult::Unsatisfiable, empty};
+          } else if (found_conflict) {
+            log_info("Returning on found conflict");
+            return {DPLLResult::Unsatisfiable, empty};
+          }
+
+          // If we learn the empty clause, then this formula is unsatisfiable
+          if (found_unsat_) {
+            while (!frontier_.empty()) {
+              frontier_.pop();
+            }
+            return {DPLLResult::Unsatisfiable, empty};
+          }
+
+          if (should_restart_) {
+            log_info("Restarting due to learned unit clause");
+            restart(false);
+            iterations_ = 0;
+            should_restart_ = false;
+            return {DPLLResult::Unknown, empty};
           }
 
           // TODO This logic shouldn't be necessary anymore, as we do unit
@@ -644,8 +803,19 @@ namespace cannon {
           //frontier_.push(do_unit_preference(current));
           
           
-          if (!found_conflict)
+          //if (iterations_ > restart_iterations_) {
+          //  restart(true);
+          //  iterations_ = 0;
+          //  return {DPLLResult::Unknown, empty};
+          //}
+
+          if (!found_conflict) {
+            // Remove, just for debugging
+            // TODO Resume here; 0 watcher issue when restarting is turned off
+            check_watched(current);
+
             do_splitting_rule(current); 
+          }
            
           return {DPLLResult::Unknown, empty};
         }
@@ -658,6 +828,20 @@ namespace cannon {
         std::stack<FormulaState> frontier_;
         PropositionHeuristic<F> ph_;
         AssignmentHeuristic<G> ah_; 
+
+        VectorXd vsids_;
+        const double vsids_decay_ = 0.5;
+        
+        int iterations_ = 0;
+        const int restart_iterations_ = 1000;
+
+        std::vector<int> learned_usage;
+
+        int max_original_clause_size_;
+        int num_original_clauses_;
+
+        bool found_unsat_ = false;
+        bool should_restart_ = false;
 
     };
 
