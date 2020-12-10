@@ -39,7 +39,7 @@ std::vector<double> two_clause_prop(const CNFFormula& form, const Assignment&
     vsids) {
   std::random_device rd;
   static std::default_random_engine gen(rd());
-  std::uniform_real_distribution<double> d;
+  static std::uniform_real_distribution<double> d;
 
   auto clause_num_vec = form.get_num_two_clauses(a, s, props);
   unsigned int max_two_clauses = *std::max_element(clause_num_vec.begin(), clause_num_vec.end());
@@ -85,14 +85,16 @@ std::vector<double> vsids_prop(const CNFFormula& form, const Assignment&
     a,const Simplification& s, const std::vector<unsigned int>& props,
     std::vector<std::vector<unsigned int>> watched, const VectorXd& vsids) {
   std::vector<double> vsids_vec;
+  std::random_device rd;
+  static std::default_random_engine gen(rd());
+  static std::uniform_real_distribution<double> d;
 
   for (auto &prop : props) {
-    vsids_vec.push_back(vsids[prop]);
+    vsids_vec.push_back(vsids[prop] + d(gen));
   }
 
   return vsids_vec;
 }
-
 
 bool uniform_random_assign(const CNFFormula& form, const Assignment& a, 
     const Simplification& s, unsigned int prop, std::vector<std::vector<unsigned int>> watched) {
@@ -190,9 +192,12 @@ int main(int argc, char **argv) {
   // TODO Report number of DPLL calls as well
 
   Simplification s = std::valarray<bool>(false, f.get_num_props());
-  log_info("Evaluation of formula on returned assignment is");
-  log_info(f.eval(a, s));
+  if (r == DPLLResult::Satisfiable) {
+    log_info("Evaluation of formula on returned assignment is");
+    log_info(f.eval(a, s));
+    assert(f.eval(a, s) == PropAssignment::True);
 
-  os << "Evaluation of formula on returned assignment is " << f.eval(a, s);
-  os.close();
+    os << "Evaluation of formula on returned assignment is " << f.eval(a, s);
+    os.close();
+  }
 }
