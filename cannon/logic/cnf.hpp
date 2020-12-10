@@ -40,6 +40,12 @@ namespace cannon {
         
         Literal(Literal&& l) : prop_(l.prop_), negated_(l.negated_) {}
 
+        Literal& operator=(const Literal &o) {
+          prop_ = o.prop_;
+          negated_ = o.negated_;
+          return *this;
+        }
+
         PropAssignment eval(const Assignment& assignment) const;
 
 

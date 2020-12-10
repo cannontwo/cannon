@@ -126,6 +126,10 @@ namespace cannon {
             frontier_.pop();
           }
 
+          while (!trail_.empty()) {
+            trail_.pop();
+          }
+
           if (forget_clauses) {
             if (verbose_)
               log_info("Before removing learned clauses there are", formula_.clauses_.size());
@@ -296,7 +300,7 @@ namespace cannon {
             log_info("Finished preprocessing");
         }
 
-        void learn_clause(FormulaState &fs, unsigned int c, unsigned int prop) {
+        int learn_clause(FormulaState &fs, unsigned int c, unsigned int prop) {
           // We have a conflict, so we can terminate
           if (verbose_) {
             log_info("learn_clause called with", c, prop);
@@ -333,12 +337,11 @@ namespace cannon {
 
             // Do all possible resolutions
             Clause learned_c = formula_.clauses_[c];
-            std::queue<Literal> resolve_literals;
+            Literal resolve_literal = *(learned_c.literals_.begin());
             int num_current_level = 0;
             for (auto &l : learned_c.literals_) {
-              if (fs.parents[l.prop_] >= 0 && fs.levels[l.prop_] == fs.decision_level)
-              //if (fs.parents[l.prop_] >= 0)
-                resolve_literals.push(l);
+              if (fs.parents[l.prop_] >= 0 && (fs.levels[l.prop_] >= fs.levels[resolve_literal.prop_]))
+                resolve_literal = l;
               
               if (fs.levels[l.prop_] == fs.decision_level)
                 num_current_level += 1;
@@ -347,54 +350,51 @@ namespace cannon {
             // Exponential moving average vsids
             vsids_ *= (1.0 - vsids_decay_);
 
-            while (num_current_level > 1) {
+            while (num_current_level > 1 && learned_c.size() > 0) {
               num_current_level = 0;
-              while (resolve_literals.size() != 0) {
-                Literal l = resolve_literals.front();
-                resolve_literals.pop();
 
-                if (verbose_) {
-                  log_info("Resolving", learned_c, "on", l, "with parent",
-                      formula_.clauses_[fs.parents[l.prop_]]);
-                }
-
-                learned_c = resolve(learned_c, formula_.clauses_[fs.parents[l.prop_]], l.prop_);
-
-                for (auto &l : formula_.clauses_[fs.parents[l.prop_]].literals_) {
-                  vsids_[l.prop_] += vsids_decay_;
-                }
-
-                if (fs.parents[l.prop_] > num_original_clauses_) {
-                  learned_usage[fs.parents[l.prop_] - num_original_clauses_] += 1;
-                }
-
-                for (auto &ll : learned_c.literals_) {
-                  if (fs.levels[ll.prop_] == fs.decision_level) {
-                    num_current_level += 1;
-                  }
-                }
-
-                if (num_current_level == 1) {
-                  break;
-                } 
+              if (verbose_) {
+                log_info("Resolving", learned_c, "on", resolve_literal, "with parent",
+                    formula_.clauses_[fs.parents[resolve_literal.prop_]], "set at level", fs.levels[resolve_literal.prop_]);
               }
-              num_current_level = 0;
-              for (auto &ll : learned_c.literals_) {
-                if (fs.parents[ll.prop_] >= 0 && fs.levels[ll.prop_] == fs.decision_level)
-                //if (fs.parents[ll.prop_] >= 0)
-                  resolve_literals.push(ll);
 
-                if (fs.levels[ll.prop_] == fs.decision_level)
+              learned_c = resolve(learned_c,
+                  formula_.clauses_[fs.parents[resolve_literal.prop_]],
+                  resolve_literal.prop_);
+
+              for (auto &l : formula_.clauses_[fs.parents[resolve_literal.prop_]].literals_) {
+                vsids_[l.prop_] += vsids_decay_;
+              }
+
+              if (fs.parents[resolve_literal.prop_] > num_original_clauses_) {
+                learned_usage[fs.parents[resolve_literal.prop_] - num_original_clauses_] += 1;
+              }
+
+              num_current_level = 0;
+              resolve_literal = *(learned_c.literals_.begin());
+              for (auto &l : learned_c.literals_) {
+                if ((fs.parents[l.prop_] >= 0) && (fs.levels[l.prop_] >=
+                      fs.levels[resolve_literal.prop_])) {
+                  resolve_literal = l;
+                }
+                
+                if (fs.levels[l.prop_] == fs.decision_level) {
                   num_current_level += 1;
+                }
               }
+
+              if (num_current_level == 1) {
+                break;
+              } 
             }
 
+            int prev_clauses = formula_.get_num_clauses();
             formula_.add_clause(learned_c);
+            int post_clauses = formula_.get_num_clauses();
 
             // TODO Calculate LBD, add to vector
 
             // Keep track of usage of learned clauses
-            learned_usage.push_back(0);
 
             if (verbose_) {
               log_info("Current level is", fs.decision_level);
@@ -415,7 +415,6 @@ namespace cannon {
               found_unsat_ = true;
             }
 
-            int new_clause_num = formula_.get_num_clauses();
             int num_learned_watched = 0;
             int max_decision_level = -1;
             for (auto &l : learned_c.literals_) {
@@ -427,36 +426,52 @@ namespace cannon {
                   fs.level_open[fs.levels[l.prop_]]) 
                 max_decision_level = fs.levels[l.prop_];
 
-              if (num_learned_watched < 2) {
-                if ((!l.negated_ && fs.a[l.prop_] != PropAssignment::False)
-                    || (l.negated_ && fs.a[l.prop_] != PropAssignment::True)) {
-                  fs.watched[l.prop_].push_back(new_clause_num);
-                  num_learned_watched += 1;
+            }
+
+            if (prev_clauses != post_clauses) {
+              learned_usage.push_back(0);
+              int new_clause_num = formula_.get_num_clauses();
+
+              for (auto &l : learned_c.literals_) {
+                if (num_learned_watched < 2) {
+                  if ((!l.negated_ && fs.a[l.prop_] != PropAssignment::False)
+                      || (l.negated_ && fs.a[l.prop_] != PropAssignment::True)) {
+                    fs.watched[l.prop_].push_back(new_clause_num);
+                    num_learned_watched += 1;
+                  }
                 }
               }
             }
 
             // Backjump by unwinding the stack of formulas states
-            if (frontier_.size() > 0 && max_decision_level != -1) {
-              if (verbose_) {
-                log_info("max_decision_level is", max_decision_level);
-                log_info("Decision level at top of stack is", frontier_.top().decision_level);
-              }
+            if (verbose_)
+              log_info("Should backjump to level", max_decision_level);
 
-              int jumped_decision_level = frontier_.top().decision_level;
+            return max_decision_level;
 
-              int num_jumped = 0;
-              while (jumped_decision_level > max_decision_level) {
-                frontier_.pop();
-                jumped_decision_level = frontier_.top().decision_level;
-                num_jumped += 1;
+            // TODO Move
 
-                if (verbose_) {
-                  log_info("Popped formula state at level", jumped_decision_level, "from frontier");
-                  log_info("Decision level at top of stack is", frontier_.top().decision_level);
-                } 
-                
-              }
+              //assert(jumped_decision_level == max_decision_level);
+              // ============
+
+
+              //if (num_jumped > 0) {
+                // Swap
+                //if (frontier_.top().decision_level == pop_fs.decision_level) {
+                //  FormulaState swap_fs = frontier_.top();
+                //  frontier_.pop();
+
+                //  if (verbose_)
+                //    log_info("Swapping formula states for level", swap_fs.decision_level);
+
+                //  swap_fs.level_open[swap_fs.decision_level] = !swap_fs.level_open[swap_fs.decision_level];
+                //  pop_fs.level_open[pop_fs.decision_level] = !pop_fs.level_open[pop_fs.decision_level];
+
+                //  frontier_.push(pop_fs);
+                //  frontier_.push(swap_fs);
+                //} else {
+                //}
+              //}
 
               // TODO Delete?
               // Push restored branch
@@ -471,15 +486,14 @@ namespace cannon {
 
               //std::vector<bool> restored_level_open;
               //for (int i = 0; i <= max_decision_level; i++) {
-              //  restored_level_open.push_back(level_open[i]);
-              //
+              //  restored_level_open.push_back(fs.level_open[i]);
               //}
 
               //for (int i = 0; i < formula_.get_num_props(); i++) {
-              //  if (levels[i] <= max_decision_level) {
-              //    restored_a[i] = a[i];
-              //    restored_parents[i] = parents[i];
-              //    restored_levels[i] = levels[i];
+              //  if (fs.levels[i] <= max_decision_level) {
+              //    restored_a[i] = fs.a[i];
+              //    restored_parents[i] = fs.parents[i];
+              //    restored_levels[i] = fs.levels[i];
               //  }
               //}
 
@@ -503,24 +517,24 @@ namespace cannon {
               //  }
               //}
 
-              ////log_info("Restoring branch at level", max_decision_level);
+              //if (verbose_)
+              //  log_info("Restoring branch at level", max_decision_level);
+
               //FormulaState tmp_fs = {restored_a, check_simplification_size(restored_s),
               //  restored_parents, restored_levels, restored_w,
               //  restored_level_open, max_decision_level};
-              //FormulaState push_fs;
-              //std::vector<unsigned int> learned_unit_clause;
-              //learned_unit_clause.push_back(formula_.clauses_.size() - 1);
-              //std::tie(push_fs, found_conflict) = do_unit_preference(tmp_fs, learned_unit_clause);
-              //frontier_.push(push_fs);
+              //frontier_.push(tmp_fs);
 
-              if (verbose_) {
-                if (num_jumped > 0)
-                  log_info("Jumped back", num_jumped, "levels");
-              }
-            }
+              //if (verbose_) {
+              //  if (num_jumped > 0)
+              //    log_info("Jumped back", num_jumped, "levels");
+              //}
           } else {
             throw std::runtime_error("Conflict arose from unset proposition");
+            return -1;
           }
+
+          return -1;
         }
 
         std::pair<std::set<std::pair<unsigned int, unsigned int>>,
@@ -628,7 +642,7 @@ namespace cannon {
           // First branch
           Assignment split_first_a(fs.a);
           split_first_a[prop] = first_assignment ? PropAssignment::True : PropAssignment::False;
-          Simplification split_first_s = check_simplification_size(formula_.simplify(split_first_a, fs.s));
+          Simplification split_first_s = formula_.simplify(split_first_a, fs.s);
 
           AssignmentParents split_first_parents(fs.parents);
           AssignmentLevels split_first_levels(fs.levels);
@@ -648,7 +662,7 @@ namespace cannon {
           // Second branch
           Assignment split_second_a(fs.a);
           split_second_a[prop] = first_assignment ? PropAssignment::False : PropAssignment::True;
-          Simplification split_second_s = check_simplification_size(formula_.simplify(split_second_a, fs.s));
+          Simplification split_second_s = formula_.simplify(split_second_a, fs.s);
 
           AssignmentParents split_second_parents(fs.parents);
           AssignmentLevels split_second_levels(fs.levels);
@@ -707,14 +721,14 @@ namespace cannon {
           if (verbose_)
             log_info("Prop", unit_prop, "was set to", fs.a[unit_prop], "with parent", formula_.clauses_[fs.parents[unit_prop]]);
 
-          fs.s = check_simplification_size(formula_.simplify(fs.a, fs.s));
+          fs.s = formula_.simplify(fs.a, fs.s);
         }
 
         // TODO Modify to take starting clause, so that only newly added clauses are checked
         // Problem only arises when new clauses have been added, but FormulaState popped from stack isn't watching them
-        void check_watched(FormulaState& fs, bool fix = false) {
+        std::set<std::pair<unsigned int, unsigned int>> check_watched(FormulaState& fs, bool fix = false, unsigned int start_at = 0) {
           std::set<std::pair<unsigned int, unsigned int>> unit_props;
-          for (unsigned int i = 0; i < formula_.clauses_.size(); i++) {
+          for (unsigned int i = start_at; i < formula_.clauses_.size(); i++) {
             if (fs.s[i])
               continue;
 
@@ -745,22 +759,29 @@ namespace cannon {
                 }
               }
             }
-            // Do update_watched as well
 
-            //if (num_watched == 1) {
-            //  log_info("After fixing, found unit clause");
-            //  unit_props.insert(std::make_pair(i, watch_prop));
-            //}
+            if (num_watched == 1) {
+              if (verbose_)
+                log_info("After fixing, found unit clause");
+              unit_props.insert(std::make_pair(i, watch_prop));
+            }
+
+            if (num_watched == 0) {
+              if (verbose_)
+                log_info("After fixing, found conflict clause");
+            }
           }
 
+          return unit_props;
+
           if (!unit_props.empty()) {
-            if (verbose_)
-              log_info("Running update_watch_and_propagate in check_watched");
+            //if (verbose_)
+            //  log_info("Running update_watch_and_propagate in check_watched");
 
-            bool found_conflict = update_watch_and_propagate(fs, unit_props);
+            //bool found_conflict = update_watch_and_propagate(fs, unit_props);
 
-            if (verbose_ && found_conflict)
-              log_info("Found conflict in check_watched"); 
+            //if (verbose_ && found_conflict)
+            //  log_info("Found conflict in check_watched"); 
           }
         }
 
@@ -792,6 +813,10 @@ namespace cannon {
 
               if (verbose_)
                 log_info("Skipping because clause", formula_.clauses_[unit_clause], "resolved already as", formula_.clauses_[unit_clause].eval(fs.a));
+
+              // Return since we found a conflict in this clause
+              if (formula_.clauses_[unit_clause].eval(fs.a) == PropAssignment::False)
+                return true;
               
               should_do_unit_preference = false;
             }
@@ -799,7 +824,6 @@ namespace cannon {
             if (should_do_unit_preference) {
               do_unit_preference(fs, unit_clause);
 
-              // Do this when working empty
               to_watch.push(unit_prop);
             }
 
@@ -821,8 +845,12 @@ namespace cannon {
               
                 if (tmp_conflict_clause.first >= 0) {
                   found_conflict = true;
-                  learn_clause(fs, tmp_conflict_clause.first, tmp_conflict_clause.second);
-                  break;
+                  int backjump_level = learn_clause(fs, tmp_conflict_clause.first, tmp_conflict_clause.second);
+                  if (backjump_level >= 0) {
+                    backjump_ = backjump_level;
+                    should_backjump_ = true;
+                  }
+                  return true;
                 } else {
                   for (auto &t : tmp_unit_clauses)
                     working.push(t);
@@ -841,10 +869,63 @@ namespace cannon {
             log_info("Before popping, frontier has", frontier_.size(), "elements");
           }
 
+          if (should_backjump_) {
+            assert(backjump_ >= 0);
+
+            if (frontier_.size() > 0) {
+              if (verbose_) {
+                log_info("backjumping to level", backjump_);
+                log_info("Decision level at top of stack is", frontier_.top().decision_level);
+              }
+
+              int jumped_decision_level = frontier_.top().decision_level;
+
+              // TODO There's some kind of bug with backjumping which needs to be resolved
+              // Backjumping
+              // =============
+              int num_jumped = 0;
+              while (jumped_decision_level > backjump_) {
+                if (verbose_) {
+                  log_info("Popped formula state at level", jumped_decision_level, "from frontier");
+                }
+                frontier_.pop();
+                jumped_decision_level = frontier_.top().decision_level;
+                num_jumped += 1;
+
+                if (verbose_) {
+                  log_info("Decision level at top of stack is", frontier_.top().decision_level);
+                } 
+              }
+
+              //// Restore branch using trail
+              jumped_decision_level = trail_.top().decision_level;
+              FormulaState pop_fs = trail_.top();
+              while (jumped_decision_level >= backjump_) {
+                pop_fs = trail_.top();
+                trail_.pop();
+                jumped_decision_level = trail_.top().decision_level;
+                if (verbose_) {
+                  log_info("Decision level at top of trail is", trail_.top().decision_level);
+                } 
+              }
+
+              if (num_jumped > 0) {
+                if (verbose_) {
+                  log_info("Restoring branch at level", pop_fs.decision_level);
+                }
+                frontier_.push(pop_fs);
+              }
+            }
+
+            should_backjump_ = false;
+            backjump_ = -1;
+          }
+
           FormulaState current = frontier_.top();
           frontier_.pop();
 
-          check_watched(current, true);
+          unsigned int num_known_clauses = current.s.size();
+          current.s = check_simplification_size(current.s);
 
           if (verbose_) {
             log_info("Level open is");
@@ -852,44 +933,7 @@ namespace cannon {
               log_info(i, ":", current.level_open[i]);
           }
 
-          iterations_ += 1;
-
-          bool found_conflict = false;
-          int prev_decision_prop = current.decision_prop;
-          //for (unsigned int i = 0; i < formula_.get_num_props(); i++) {
-          //  if (current.parents[i] == -2 && current.levels[i] == current.decision_level) {
-          //    prev_decision_prop = i;
-          //  }
-          //}
-          assert(frontier_.size() == 0 || prev_decision_prop != -1);
-          if (frontier_.size() != 0) {
-            
-            bool found_conflict = false;
-
-            std::set<std::pair<unsigned int, unsigned int>> unit_clauses;
-            std::pair<int, int> conflict_clause;
-            std::tie(unit_clauses, conflict_clause) = update_watched(current, prev_decision_prop);
-
-            if (conflict_clause.first >= 0) {
-              found_conflict = true;
-              learn_clause(current, conflict_clause.first, conflict_clause.second);
-            } else {
-              found_conflict = update_watch_and_propagate(current, unit_clauses);
-            }
-          }
-
           Assignment empty;
-          if (should_restart_) {
-            log_info("Restarting due to learned unit clause");
-            restart(false);
-            iterations_ = 0;
-            should_restart_ = false;
-            return std::make_pair(DPLLResult::Unknown, empty);
-          }
-
-          if (verbose_)
-            log_info("assignment is", current.a);
-
           auto e = formula_.eval(current.a, current.s);
           if (e == PropAssignment::True) {
             if (verbose_)
@@ -901,7 +945,74 @@ namespace cannon {
               log_info("Returning on unsatisfiable");
 
             return {DPLLResult::Unsatisfiable, empty};
-          } else if (found_conflict) {
+          } 
+
+          // TODO Make check_watched take an index to start at, feed it num_known_clauses
+          std::set<std::pair<unsigned int, unsigned int>> check_unit_clauses =
+            check_watched(current, true, num_known_clauses);
+
+          if (verbose_)
+            log_info("check_watched returned", check_unit_clauses.size(), "unit clauses");
+
+          iterations_ += 1;
+
+          bool found_conflict = false;
+          int prev_decision_prop = current.decision_prop;
+          //for (unsigned int i = 0; i < formula_.get_num_props(); i++) {
+          //  if (current.parents[i] == -2 && current.levels[i] == current.decision_level) {
+          //    prev_decision_prop = i;
+          //  }
+          //}
+          assert(frontier_.size() == 0 || prev_decision_prop != -1);
+          if (prev_decision_prop != -1) {
+            
+            bool found_conflict = false;
+
+            std::set<std::pair<unsigned int, unsigned int>> unit_clauses;
+            std::pair<int, int> conflict_clause;
+            std::tie(unit_clauses, conflict_clause) = update_watched(current, prev_decision_prop);
+
+            unit_clauses.insert(check_unit_clauses.begin(), check_unit_clauses.end());
+
+            if (conflict_clause.first >= 0) {
+              found_conflict = true;
+              int backjump_level = learn_clause(current, conflict_clause.first, conflict_clause.second);
+
+              if (backjump_level >= 0) {
+                backjump_ = backjump_level;
+                should_backjump_ = true;
+              }
+            } else {
+              found_conflict = update_watch_and_propagate(current, unit_clauses);
+            }
+          }
+
+          e = formula_.eval(current.a, current.s);
+          if (e == PropAssignment::True) {
+            if (verbose_)
+              log_info("Returning on satisfiable after update_watch_and_propagate");
+
+            return {DPLLResult::Satisfiable, current.a}; 
+          } else if (e == PropAssignment::False) {
+            if (verbose_)
+              log_info("Returning on unsatisfiable after update_watch_and_propagate");
+
+            return {DPLLResult::Unsatisfiable, empty};
+          } 
+
+          if (should_restart_) {
+            log_info("Restarting due to learned unit clause");
+            restart(false);
+            iterations_ = 0;
+            should_restart_ = false;
+            return std::make_pair(DPLLResult::Unknown, empty);
+          }
+
+          if (verbose_) {
+            log_info("assignment is", current.a);
+          }
+          
+          if (found_conflict) {
             if (verbose_)
               log_info("Returning on found conflict");
 
@@ -915,9 +1026,11 @@ namespace cannon {
             while (!frontier_.empty()) {
               frontier_.pop();
             }
+            while (!trail_.empty()) {
+              trail_.pop();
+            }
             return {DPLLResult::Unsatisfiable, empty};
           }
-
 
           if (iterations_ > restart_iterations_) {
             log_info("Currently have", formula_.get_num_clauses(), "clauses");
@@ -925,6 +1038,12 @@ namespace cannon {
 
             //restart(true);
             //return {DPLLResult::Unknown, empty};
+          }
+
+          trail_.push(current);
+
+          if (verbose_) {
+            log_info("Trail has size", trail_.size());
           }
 
           if (!found_conflict) {
@@ -943,6 +1062,7 @@ namespace cannon {
       private:
         CNFFormula formula_;
         std::stack<FormulaState> frontier_;
+        std::stack<FormulaState> trail_;
         PropositionHeuristic<F> ph_;
         AssignmentHeuristic<G> ah_; 
 
@@ -961,6 +1081,9 @@ namespace cannon {
         bool should_restart_ = false;
 
         bool verbose_ = false;
+
+        int backjump_ = -1;
+        bool should_backjump_ = false;
 
     };
 
