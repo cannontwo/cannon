@@ -777,6 +777,7 @@ namespace cannon {
           for (auto &t : unit_clauses)
             working.push(t);
 
+          std::queue<unsigned int> to_watch;
           while (working.size() != 0) {
             bool should_do_unit_preference = true;
             unsigned int unit_clause, unit_prop;
@@ -787,7 +788,7 @@ namespace cannon {
               log_info("update_watched revealed unit clause", formula_.clauses_[unit_clause], "with", formula_.clauses_[unit_clause].size(fs.a));
 
             if (!formula_.clauses_[unit_clause].is_unit(fs.a)) {
-              assert(formula_.clauses_[unit_clause].eval(fs.a) == PropAssignment::True);
+              //assert(formula_.clauses_[unit_clause].eval(fs.a) == PropAssignment::True);
 
               if (verbose_)
                 log_info("Skipping because clause", formula_.clauses_[unit_clause], "resolved already as", formula_.clauses_[unit_clause].eval(fs.a));
@@ -798,25 +799,34 @@ namespace cannon {
             if (should_do_unit_preference) {
               do_unit_preference(fs, unit_clause);
 
-              std::set<std::pair<unsigned int, unsigned int>> tmp_unit_clauses;
-              std::pair<int, int> tmp_conflict_clause;
-              std::tie(tmp_unit_clauses, tmp_conflict_clause) =
-                update_watched(fs, unit_prop);
+              // Do this when working empty
+              to_watch.push(unit_prop);
+            }
 
-              if (verbose_) {
-                log_info("In loop update_watched returned");
-                for (auto &t : tmp_unit_clauses) {
-                  log_info("\t(", t.first, ",", t.second, ")");
+            if (working.size() == 0) {
+              while (!to_watch.empty()) {
+                unsigned int unit_prop = to_watch.front(); 
+                to_watch.pop();
+                std::set<std::pair<unsigned int, unsigned int>> tmp_unit_clauses;
+                std::pair<int, int> tmp_conflict_clause;
+                std::tie(tmp_unit_clauses, tmp_conflict_clause) =
+                  update_watched(fs, unit_prop);
+
+                if (verbose_) {
+                  log_info("In loop update_watched returned");
+                  for (auto &t : tmp_unit_clauses) {
+                    log_info("\t(", t.first, ",", t.second, ")");
+                  }
                 }
-              }
-            
-              if (tmp_conflict_clause.first >= 0) {
-                found_conflict = true;
-                learn_clause(fs, tmp_conflict_clause.first, tmp_conflict_clause.second);
-                break;
-              } else {
-                for (auto &t : tmp_unit_clauses)
-                  working.push(t);
+              
+                if (tmp_conflict_clause.first >= 0) {
+                  found_conflict = true;
+                  learn_clause(fs, tmp_conflict_clause.first, tmp_conflict_clause.second);
+                  break;
+                } else {
+                  for (auto &t : tmp_unit_clauses)
+                    working.push(t);
+                }
               }
             }
           }

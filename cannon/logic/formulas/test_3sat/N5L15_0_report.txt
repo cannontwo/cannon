@@ -1,9 +1,0 @@
-Parsed passed CNF file formulas/test_3sat/N5L15_0.cnf as 
-{
-}
-
-DPLL recursively called 0 times
-
-DPLL returned result Satisfiable with assignment [False]
-
-Evaluation of formula on returned assignment is True
