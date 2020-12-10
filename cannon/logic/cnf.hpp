@@ -76,6 +76,9 @@ namespace cannon {
         bool contains_prop(const Assignment& a, unsigned int prop) const;
         PropAssignment eval(const Assignment& assignment) const;
 
+        unsigned int get_unit_prop(const Assignment& a);
+        bool get_unit_negated(const Assignment& a);
+
         PropAssignment get_assignment_for_literal(unsigned int prop);
 
         friend std::ostream& operator<<(std::ostream& os, const Clause& c);

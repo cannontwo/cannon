@@ -1,0 +1,39 @@
+Parsed passed CNF file formulas/test_3sat/N10L30_0.cnf as 
+{
+( !p0 v !p3 v p4 ),
+( p0 v p3 v !p8 ),
+( p2 v p3 v !p4 ),
+( p3 v !p4 v p8 ),
+( !p2 v !p3 v !p9 ),
+( p4 v !p5 v p6 ),
+( !p1 v !p3 v !p8 ),
+( p3 v p5 v !p8 ),
+( p6 v p7 v !p9 ),
+( p0 v p5 v !p9 ),
+( !p4 v p5 v p8 ),
+( !p2 v !p7 v p8 ),
+( p0 v !p3 v !p8 ),
+( p0 v p6 v p9 ),
+( !p5 v !p6 v p7 ),
+( p2 v p6 v p9 ),
+( p1 v !p5 v !p7 ),
+( p1 v !p7 v p9 ),
+( !p2 v p5 v !p9 ),
+( p0 v !p4 v p7 ),
+( !p0 v !p2 v p8 ),
+( p0 v p1 v p9 ),
+( p5 v !p6 v p7 ),
+( !p5 v p6 v p9 ),
+( p0 v p2 v p7 ),
+( p0 v !p3 v !p4 ),
+( p0 v p7 v !p9 ),
+( p0 v p2 v !p3 ),
+( p0 v p6 v !p8 ),
+( p3 v !p5 v p7 ),
+}
+
+DPLL recursively called 5 times
+
+DPLL returned result Satisfiable with assignment [True, False, True, True, True, False, False, False, True, False]
+
+Evaluation of formula on returned assignment is True

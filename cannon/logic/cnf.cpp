@@ -38,7 +38,7 @@ unsigned int Clause::size(const Assignment& a) const {
   unsigned int count = 0;
 
   for (auto &l : literals_) {
-    if (a[l.prop_] != PropAssignment::Unassigned)
+    if (a[l.prop_] == PropAssignment::Unassigned)
       count++;
   }
 
@@ -113,6 +113,30 @@ PropAssignment Clause::eval(const Assignment& assignment) const {
     return PropAssignment::False;
 }
 
+unsigned int Clause::get_unit_prop(const Assignment& a) {
+  assert(is_unit(a));
+
+  for (auto &l : literals_) { 
+    if (l.eval(a) == PropAssignment::Unassigned) {
+      return l.prop_;
+    }
+  }
+
+  throw std::runtime_error("Reached impossible point");
+}
+
+bool Clause::get_unit_negated(const Assignment& a) {
+  assert(is_unit(a));
+
+  for (auto &l : literals_) { 
+    if (l.eval(a) == PropAssignment::Unassigned) {
+      return l.negated_;
+    }
+  }
+
+  throw std::runtime_error("Reached impossible point");
+}
+
 // CNFFormula 
 void CNFFormula::add_clause(Clause c) {
   num_props_ = std::max(num_props_, c.num_props_);
@@ -128,9 +152,10 @@ PropAssignment CNFFormula::eval(const Assignment& assignment,
       continue;
 
     auto a = clauses_[i].eval(assignment);
-    if (a == PropAssignment::False)
+    if (a == PropAssignment::False) {
+      //log_info("Clause", clauses_[i], "evaluated to false");
       return PropAssignment::False;
-    else if (a == PropAssignment::Unassigned)
+    } else if (a == PropAssignment::Unassigned)
       found_unassigned = true;
   }
 
