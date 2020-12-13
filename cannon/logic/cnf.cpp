@@ -138,13 +138,13 @@ bool Clause::get_unit_negated(const Assignment& a) {
 }
 
 // CNFFormula 
-void CNFFormula::add_clause(Clause c) {
+void CNFFormula::add_clause(Clause&& c) {
   num_props_ = std::max(num_props_, c.num_props_);
 
-  for (Clause &c2 : clauses_) {
-    if (c == c2)
-      return;
-  }
+  //for (Clause &c2 : clauses_) {
+  //  if (c == c2)
+  //    return;
+  //}
 
   clauses_.push_back(c);
 }
@@ -424,22 +424,26 @@ CNFFormula cannon::logic::generate_random_formula(unsigned int num_props, unsign
   return f;
 }
 
-Clause cannon::logic::resolve(const Clause& c1, const Clause& c2, unsigned int prop) {
+void cannon::logic::resolve(Clause& c1, const Clause& c2, unsigned int prop) {
   bool c1_has_prop = false;
   bool c1_negated = false;
   bool c2_has_prop = false;
   bool c2_negated = false;
   Clause ret_clause;
+  std::set<Literal>::iterator rem_it = c1.literals_.end();
 
-  for (auto& l : c1.literals_) {
+  for (auto it = c1.literals_.begin(); it != c1.literals_.end(); it++) {
+    const Literal& l = *it;
     if (l.prop_ == prop) {
       c1_has_prop = true;
       c1_negated = l.negated_;
+      rem_it = it;
       continue;
     }
-
-    ret_clause.add_literal(l.prop_, l.negated_);
   }
+
+  assert(rem_it != c1.literals_.end());
+  c1.literals_.erase(rem_it);
 
   for (auto& l : c2.literals_) {
     if (l.prop_ == prop) {
@@ -448,12 +452,11 @@ Clause cannon::logic::resolve(const Clause& c1, const Clause& c2, unsigned int p
       continue;
     }
 
-    ret_clause.add_literal(l.prop_, l.negated_);
+    c1.add_literal(l.prop_, l.negated_);
   }
 
-  assert(c1_has_prop && c2_has_prop);
-  assert(c1_negated != c2_negated);
-  return ret_clause;
+  if ((!c1_has_prop || !c2_has_prop) || (c1_negated == c2_negated))
+    throw std::runtime_error("Applied resolution to incompatible clauses");
 }
 
 std::ostream& cannon::logic::operator<<(std::ostream& os, const PropAssignment& a) {

@@ -9,6 +9,7 @@
 #include <chrono>
 #include <map>
 #include <queue>
+#include <functional>
 
 #include <cannon/logic/cnf.hpp>
 #include <cannon/log/registry.hpp>
@@ -22,6 +23,21 @@ namespace cannon {
     using Simplification=std::valarray<bool>;
     using AssignmentParents=std::valarray<int>;
     using AssignmentLevels=std::valarray<int>;
+
+    using PropFunc = std::function<std::vector<double>(const CNFFormula&, 
+        const Assignment&, 
+        const Simplification&, 
+        const std::vector<unsigned int>&, 
+        const std::vector<std::vector<unsigned int>>&,
+        const VectorXd& 
+        )>;
+
+    using AssignFunc = std::function<bool(const CNFFormula&, 
+        const Assignment&, 
+        const Simplification&, 
+        unsigned int,
+        const std::vector<std::vector<unsigned int>>&
+        )>;
 
     struct FormulaState {
       Assignment a;
@@ -42,20 +58,18 @@ namespace cannon {
     };
 
     // Forward declarations
-    template <typename F, typename G>
     class DPLLState;
 
-    template <typename F, typename G>
     std::tuple<DPLLResult, Assignment, int> dpll(CNFFormula f,
-        F ph_func, G ah_func, const std::chrono::seconds cutoff=std::chrono::seconds(1200));
+        PropFunc ph_func, AssignFunc ah_func, const std::chrono::seconds cutoff=std::chrono::seconds(1200));
 
     // Heuristic functor for use when choosing propositions
-    template <typename F>
     class PropositionHeuristic {
       public:
+
         PropositionHeuristic() = delete;
 
-        PropositionHeuristic(F f) : f_(f) {}
+        PropositionHeuristic(PropFunc f) : f_(f) {}
 
         std::vector<double> rank_props(const CNFFormula& form, const Assignment& a,
             const Simplification& s, const std::vector<unsigned int>& props, std::vector<std::vector<unsigned int>> watched, const VectorXd& vsids) {
@@ -74,37 +88,35 @@ namespace cannon {
         }
 
       private:
-        F f_;
+        PropFunc f_;
 
     };
 
     // Heuristic functor for use when applying splitting rule
-    template <typename F>
     class AssignmentHeuristic {
       public:
         AssignmentHeuristic() = delete;
 
-        AssignmentHeuristic(F f) : f_(f) {}
+        AssignmentHeuristic(AssignFunc f) : f_(f) {}
 
         bool choose_assignment(const CNFFormula& form, const Assignment& a, const
-            Simplification& s, unsigned int prop, std::vector<std::vector<unsigned int>> watched) {
+            Simplification& s, unsigned int prop, const std::vector<std::vector<unsigned int>>& watched) {
           return f_(form, a, s, prop, watched);
         }
 
       private:
-        F f_;
+        AssignFunc f_;
       
     };
 
 
-    template <typename F, typename G>
     class DPLLState {
       public:
 
         DPLLState() = delete; 
         
-        DPLLState(CNFFormula f, PropositionHeuristic<F> ph,
-            AssignmentHeuristic<G> ah) : formula_(f), ph_(ph), ah_(ah) {
+        DPLLState(CNFFormula f, PropositionHeuristic ph,
+            AssignmentHeuristic ah) : formula_(f), ph_(ph), ah_(ah) {
           vsids_ = VectorXd::Zero(formula_.get_num_props());
 
           num_original_clauses_ = formula_.clauses_.size(); 
@@ -120,7 +132,7 @@ namespace cannon {
           do_preprocessing();
         }
 
-        void restart(bool forget_clauses) {
+        void restart() {
 
           while (!frontier_.empty()) {
             frontier_.pop();
@@ -128,31 +140,6 @@ namespace cannon {
 
           while (!trail_.empty()) {
             trail_.pop();
-          }
-
-          if (forget_clauses) {
-            if (verbose_)
-              log_info("Before removing learned clauses there are", formula_.clauses_.size());
-            std::vector<Clause> rem_clauses;
-            for (unsigned int i = num_original_clauses_; i < formula_.clauses_.size(); i++) {
-              const Clause& c = formula_.clauses_[i];
-              //if (c.literals_.size() >= 4 * max_original_clause_size_ ||
-              
-              // We explicitly keep unit clauses, since they're so valuable
-              if (learned_usage[i - num_original_clauses_] < 1 && c.literals_.size() != 1) 
-                rem_clauses.push_back(c);
-            }
-
-            std::vector<Clause>::iterator new_end = formula_.clauses_.end();
-            for (auto &c : rem_clauses) {
-              new_end = std::remove(formula_.clauses_.begin(), new_end, c);
-            }
-            formula_.clauses_.erase(new_end, formula_.clauses_.end());
-
-            learned_usage = std::vector<int>();
-            for (unsigned int i = num_original_clauses_; i < formula_.clauses_.size(); i++) {
-              learned_usage.push_back(0);
-            }
           }
 
           // Inject some randomness
@@ -358,7 +345,7 @@ namespace cannon {
                     formula_.clauses_[fs.parents[resolve_literal.prop_]], "set at level", fs.levels[resolve_literal.prop_]);
               }
 
-              learned_c = resolve(learned_c,
+              resolve(learned_c,
                   formula_.clauses_[fs.parents[resolve_literal.prop_]],
                   resolve_literal.prop_);
 
@@ -389,7 +376,7 @@ namespace cannon {
             }
 
             int prev_clauses = formula_.get_num_clauses();
-            formula_.add_clause(learned_c);
+            formula_.add_clause(std::move(learned_c));
             int post_clauses = formula_.get_num_clauses();
 
             // TODO Calculate LBD, add to vector
@@ -696,7 +683,7 @@ namespace cannon {
             log_info(formula_.clauses_[unit_clause]);
           }
 
-          Clause unit_c = formula_.clauses_[unit_clause];
+          Clause& unit_c = formula_.clauses_[unit_clause];
           assert(unit_c.is_unit(fs.a));
 
           unsigned int unit_prop = unit_c.get_unit_prop(fs.a);
@@ -878,43 +865,43 @@ namespace cannon {
                 log_info("Decision level at top of stack is", frontier_.top().decision_level);
               }
 
-              int jumped_decision_level = frontier_.top().decision_level;
+              //int jumped_decision_level = frontier_.top().decision_level;
 
               // TODO There's some kind of bug with backjumping which needs to be resolved
               // Backjumping
               // =============
-              int num_jumped = 0;
-              while (jumped_decision_level > backjump_) {
-                if (verbose_) {
-                  log_info("Popped formula state at level", jumped_decision_level, "from frontier");
-                }
-                frontier_.pop();
-                jumped_decision_level = frontier_.top().decision_level;
-                num_jumped += 1;
+              //int num_jumped = 0;
+              //while (jumped_decision_level > backjump_) {
+              //  if (verbose_) {
+              //    log_info("Popped formula state at level", jumped_decision_level, "from frontier");
+              //  }
+              //  frontier_.pop();
+              //  jumped_decision_level = frontier_.top().decision_level;
+              //  num_jumped += 1;
 
-                if (verbose_) {
-                  log_info("Decision level at top of stack is", frontier_.top().decision_level);
-                } 
-              }
+              //  if (verbose_) {
+              //    log_info("Decision level at top of stack is", frontier_.top().decision_level);
+              //  } 
+              //}
 
               //// Restore branch using trail
-              jumped_decision_level = trail_.top().decision_level;
-              FormulaState pop_fs = trail_.top();
-              while (jumped_decision_level >= backjump_) {
-                pop_fs = trail_.top();
-                trail_.pop();
-                jumped_decision_level = trail_.top().decision_level;
-                if (verbose_) {
-                  log_info("Decision level at top of trail is", trail_.top().decision_level);
-                } 
-              }
+              //jumped_decision_level = trail_.top().decision_level;
+              //FormulaState pop_fs = trail_.top();
+              //while (jumped_decision_level >= backjump_) {
+              //  pop_fs = trail_.top();
+              //  trail_.pop();
+              //  jumped_decision_level = trail_.top().decision_level;
+              //  if (verbose_) {
+              //    log_info("Decision level at top of trail is", trail_.top().decision_level);
+              //  } 
+              //}
 
-              if (num_jumped > 0) {
-                if (verbose_) {
-                  log_info("Restoring branch at level", pop_fs.decision_level);
-                }
-                frontier_.push(pop_fs);
-              }
+              //if (num_jumped > 0) {
+              //  if (verbose_) {
+              //    log_info("Restoring branch at level", pop_fs.decision_level);
+              //  }
+              //  frontier_.push(pop_fs);
+              //}
             }
 
             should_backjump_ = false;
@@ -1002,7 +989,7 @@ namespace cannon {
 
           if (should_restart_) {
             log_info("Restarting due to learned unit clause");
-            restart(false);
+            restart();
             iterations_ = 0;
             should_restart_ = false;
             return std::make_pair(DPLLResult::Unknown, empty);
@@ -1035,7 +1022,6 @@ namespace cannon {
           if (iterations_ > restart_iterations_) {
             log_info("Currently have", formula_.get_num_clauses(), "clauses");
             iterations_ = 0;
-
             //restart(true);
             //return {DPLLResult::Unknown, empty};
           }
@@ -1056,15 +1042,15 @@ namespace cannon {
           return {DPLLResult::Unknown, empty};
         }
 
-        friend std::tuple<DPLLResult, Assignment, int> dpll<F, G>(CNFFormula f,
-            F ph_func, G ah_func, const std::chrono::seconds cutoff);
+        friend std::tuple<DPLLResult, Assignment, int> dpll(CNFFormula f,
+            PropFunc ph_func, AssignFunc ah_func, const std::chrono::seconds cutoff);
 
       private:
         CNFFormula formula_;
         std::stack<FormulaState> frontier_;
         std::stack<FormulaState> trail_;
-        PropositionHeuristic<F> ph_;
-        AssignmentHeuristic<G> ah_; 
+        PropositionHeuristic ph_;
+        AssignmentHeuristic ah_; 
 
         VectorXd vsids_;
         const double vsids_decay_ = 0.5;
@@ -1091,17 +1077,17 @@ namespace cannon {
     
     // ph_func should return a vector of ranks with the same length as its
     // input vector, and ah_func should return true or false for assignments.
-    template <typename F, typename G>
     std::tuple<DPLLResult, Assignment, int> dpll(CNFFormula f,
-        F ph_func, G ah_func, const std::chrono::seconds cutoff) {
+        PropFunc ph_func, AssignFunc
+        ah_func, const std::chrono::seconds cutoff) {
 
       if (f.get_num_props() == 0) {
         std::valarray<PropAssignment> empty = {};
         return {DPLLResult::Satisfiable, empty, 0};
       }
 
-      DPLLState<F, G> state(f, PropositionHeuristic<F>(ph_func),
-          AssignmentHeuristic<G>(ah_func));
+      DPLLState state(f, PropositionHeuristic(ph_func),
+          AssignmentHeuristic(ah_func));
 
       int calls = 0;
       auto start_time = std::chrono::steady_clock::now();

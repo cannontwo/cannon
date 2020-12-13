@@ -70,6 +70,18 @@ namespace cannon {
 
     class Clause {
       public:
+        
+        Clause() {}
+        Clause(const Clause& o) : literals_(o.literals_), num_props_(o.num_props_) {}
+        Clause(Clause&& o) : literals_(std::move(o.literals_)), num_props_(o.num_props_) {}
+        ~Clause() {}
+
+        Clause& operator=(const Clause& o) {
+          literals_ = o.literals_;
+          num_props_ = o.num_props_;
+          return *this;
+        }
+
         void add_literal(Literal l);
         void add_literal(unsigned int prop_num, bool negated);
 
@@ -91,7 +103,7 @@ namespace cannon {
 
         friend class CNFFormula;
 
-        bool operator==(const Clause c) const {
+        bool operator==(const Clause& c) const {
           for (auto& l : literals_) {
             if (c.literals_.find(l) == c.literals_.end()) {
               return false;
@@ -109,7 +121,7 @@ namespace cannon {
 
     class CNFFormula {
       public:
-        void add_clause(Clause c);
+        void add_clause(Clause&& c);
 
         PropAssignment eval(const Assignment& assignment,
             const Simplification& s) const;
@@ -165,7 +177,7 @@ namespace cannon {
     Clause generate_random_clause(unsigned int num_props);
     CNFFormula generate_random_formula(unsigned int num_props, unsigned int num_clauses);
 
-    Clause resolve(const Clause& c1, const Clause& c2, unsigned int prop);
+    void resolve(Clause& c1, const Clause& c2, unsigned int prop);
 
     std::ostream& operator<<(std::ostream& os, const PropAssignment& a);
     std::ostream& operator<<(std::ostream& os, const Literal& l);

@@ -18,7 +18,7 @@ using namespace cannon::log;
 
 std::vector<double> uniform_random_prop(const CNFFormula& form, const
     Assignment& a,const Simplification& s, const std::vector<unsigned int>&
-    props, std::vector<std::vector<unsigned int>> watched, const
+    props, const std::vector<std::vector<unsigned int>>& watched, const
     VectorXd& vsids) {
   std::random_device rd;
   std::default_random_engine gen(rd());
@@ -35,7 +35,7 @@ std::vector<double> uniform_random_prop(const CNFFormula& form, const
 
 std::vector<double> two_clause_prop(const CNFFormula& form, const Assignment&
     a,const Simplification& s, const std::vector<unsigned int>& props,
-    std::vector<std::vector<unsigned int>> watched, const VectorXd&
+    const std::vector<std::vector<unsigned int>>& watched, const VectorXd&
     vsids) {
   std::random_device rd;
   static std::default_random_engine gen(rd());
@@ -58,7 +58,7 @@ std::vector<double> two_clause_prop(const CNFFormula& form, const Assignment&
 
 std::vector<double> adj_mat_eig_prop(const CNFFormula& form, 
     const Assignment& a,const Simplification& s, 
-    const std::vector<unsigned int>& props, std::vector<std::vector<unsigned int>> watched,
+    const std::vector<unsigned int>& props, const std::vector<std::vector<unsigned int>>& watched,
     const VectorXd& vsids) {
   MatrixXd adj_mat = form.make_adjacency_mat(a, s);
   SelfAdjointEigenSolver<MatrixXd> solver(adj_mat);
@@ -83,7 +83,7 @@ std::vector<double> adj_mat_eig_prop(const CNFFormula& form,
 
 std::vector<double> vsids_prop(const CNFFormula& form, const Assignment&
     a,const Simplification& s, const std::vector<unsigned int>& props,
-    std::vector<std::vector<unsigned int>> watched, const VectorXd& vsids) {
+    const std::vector<std::vector<unsigned int>>& watched, const VectorXd& vsids) {
   std::vector<double> vsids_vec;
   std::random_device rd;
   static std::default_random_engine gen(rd());
@@ -97,7 +97,7 @@ std::vector<double> vsids_prop(const CNFFormula& form, const Assignment&
 }
 
 bool uniform_random_assign(const CNFFormula& form, const Assignment& a, 
-    const Simplification& s, unsigned int prop, std::vector<std::vector<unsigned int>> watched) {
+    const Simplification& s, unsigned int prop, const std::vector<std::vector<unsigned int>>& watched) {
   std::random_device rd;
   static std::default_random_engine gen(rd());
   std::uniform_real_distribution<double> d;
@@ -107,7 +107,7 @@ bool uniform_random_assign(const CNFFormula& form, const Assignment& a,
 }
 
 bool max_vote_assign(const CNFFormula& form, const Assignment& a, const
-    Simplification& s, unsigned int prop, std::vector<std::vector<unsigned int>> watched) {
+    Simplification& s, unsigned int prop, const std::vector<std::vector<unsigned int>>& watched) {
   std::random_device rd;
   static std::default_random_engine gen(rd());
   std::uniform_real_distribution<double> d;

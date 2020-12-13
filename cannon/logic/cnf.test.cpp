@@ -90,8 +90,8 @@ TEST_CASE("CNF", "[logic]") {
 
   c2.add_literal(0, false);
   c2.add_literal(0, false);
-  f.add_clause(c);
-  f.add_clause(c2);
+  f.add_clause(std::move(c));
+  f.add_clause(std::move(c2));
 
   // Fake simplification array
   std::valarray<bool> s(false, 2);
