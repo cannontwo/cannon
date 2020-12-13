@@ -372,24 +372,48 @@ namespace cannon {
               if ((fs.levels[l.prop_] > max_decision_level) &&
                   fs.level_open[fs.levels[l.prop_]]) 
                 max_decision_level = fs.levels[l.prop_];
-
             }
 
             if (prev_clauses != post_clauses) {
               learned_usage.push_back(0);
               int new_clause_num = formula_.get_num_clauses();
+              
+              if (learned_c.size() > 1) {
+                unsigned int w1 = 0;
+                unsigned int w2 = 0;
 
-              for (auto &l : learned_c.literals_) {
-                if (num_learned_watched < 2) {
-                  if ((!l.negated_ && fs.a[l.prop_] != PropAssignment::False)
-                      || (l.negated_ && fs.a[l.prop_] != PropAssignment::True)) {
-                    watched[l.prop_].push_back(new_clause_num);
-                    num_learned_watched += 1;
+                unsigned int w1_level = 0;
+                unsigned int w2_level = 0;
+
+                for (auto &l : learned_c.literals_) {
+                  if (fs.levels[l.prop_] >= w2_level) {
+                    w1 = w2;
+                    w1_level = w2_level;
+
+                    w2 = l.prop_;
+                    w2_level = fs.levels[l.prop_];
                   }
                 }
+
+                // Watch the literals with the highest decision level
+                if (verbose_) {
+                  log_info("w1 is", w1);
+                  log_info("w2 is", w2);
+                }
+
+                watched[w1].push_back(new_clause_num - 1);
+                watched[w2].push_back(new_clause_num - 1);
+                num_learned_watched = 2;
+              } else if (learned_c.size() == 1) {
+                watched[(*learned_c.literals_.begin()).prop_].push_back(new_clause_num - 1);
+                num_learned_watched = 1;
               }
 
-              assert(num_learned_watched == 2);
+              if (verbose_) {
+                log_info("num_learned_watched in", learned_c," is", num_learned_watched);
+              }
+
+              assert(learned_c.size() == 1 || num_learned_watched == 2);
             }
 
             if (verbose_) {
@@ -685,9 +709,7 @@ namespace cannon {
           for (auto &t : unit_clauses)
             working.push(t);
 
-          std::queue<unsigned int> to_watch;
           while (working.size() != 0) {
-            bool should_do_unit_preference = true;
             unsigned int unit_clause, unit_prop;
             std::tie(unit_clause, unit_prop) = working.top();
             working.pop();
@@ -701,52 +723,47 @@ namespace cannon {
               if (verbose_)
                 log_info("Skipping because clause", formula_.clauses_[unit_clause], "resolved already as", formula_.clauses_[unit_clause].eval(fs.a));
 
-              // Return since we found a conflict in this clause
+              // We found a conflict in this clause not previously caught by update_watched
               if (formula_.clauses_[unit_clause].eval(fs.a) == PropAssignment::False) {
+                int backjump_level = learn_clause(fs, unit_clause, unit_prop);
+                if (backjump_level >= 0) {
+                  backjump_ = backjump_level;
+                  should_backjump_ = true;
+                }
+
                 if (verbose_)
                   log_info("Found conflict in update_watch_and_propagate");
-
-                throw std::runtime_error();
+                return true;
               }
               
-              should_do_unit_preference = false;
-            }
-
-            if (should_do_unit_preference) {
+              continue;
+            } else {
               do_unit_preference(fs, unit_clause);
-
-              to_watch.push(unit_prop);
             }
 
-            if (working.size() == 0) {
-              while (!to_watch.empty()) {
-                unsigned int unit_prop = to_watch.front(); 
-                to_watch.pop();
-                std::set<std::pair<unsigned int, unsigned int>> tmp_unit_clauses;
-                std::pair<int, int> tmp_conflict_clause;
-                std::tie(tmp_unit_clauses, tmp_conflict_clause) =
-                  update_watched(fs, unit_prop);
+            std::set<std::pair<unsigned int, unsigned int>> tmp_unit_clauses;
+            std::pair<int, int> tmp_conflict_clause;
+            std::tie(tmp_unit_clauses, tmp_conflict_clause) =
+              update_watched(fs, unit_prop);
 
-                if (verbose_) {
-                  log_info("In loop update_watched returned");
-                  for (auto &t : tmp_unit_clauses) {
-                    log_info("\t(", t.first, ",", t.second, ")");
-                  }
-                }
-              
-                if (tmp_conflict_clause.first >= 0) {
-                  found_conflict = true;
-                  int backjump_level = learn_clause(fs, tmp_conflict_clause.first, tmp_conflict_clause.second);
-                  if (backjump_level >= 0) {
-                    backjump_ = backjump_level;
-                    should_backjump_ = true;
-                  }
-                  return true;
-                } else {
-                  for (auto &t : tmp_unit_clauses)
-                    working.push(t);
-                }
+            if (verbose_) {
+              log_info("In loop update_watched returned");
+              for (auto &t : tmp_unit_clauses) {
+                log_info("\t(", t.first, ",", t.second, ")");
               }
+            }
+          
+            if (tmp_conflict_clause.first >= 0) {
+              found_conflict = true;
+              int backjump_level = learn_clause(fs, tmp_conflict_clause.first, tmp_conflict_clause.second);
+              if (backjump_level >= 0) {
+                backjump_ = backjump_level;
+                should_backjump_ = true;
+              }
+              return true;
+            } else {
+              for (auto &t : tmp_unit_clauses)
+                working.push(t);
             }
           }
 
@@ -965,7 +982,7 @@ namespace cannon {
         bool found_unsat_ = false;
         bool should_restart_ = false;
 
-        bool verbose_ = true;
+        bool verbose_ = false;
 
         int backjump_ = -1;
         bool should_backjump_ = false;
