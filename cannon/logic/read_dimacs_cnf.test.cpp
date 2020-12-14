@@ -46,6 +46,7 @@ TEST_CASE("ReadDimacsCNF", "[logic]") {
 
   // Test loading from file
   f = load_cnf("formulas/test.cnf"); 
+  log_info("Loaded formula", f);
 
   CNFFormula test_load_f;
   test_load_f.add_clause(parse_clause("1 3 -4"));
