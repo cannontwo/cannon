@@ -28,7 +28,7 @@ def run():
                 random_calls[exp_part].append(int(stats["calls"]))
                 random_sats[exp_part].append(bool(stats["sat"]))
             except:
-                print("Ill-formed yaml found")
+                print("Ill-formed yaml found in {}".format(f))
 
     random_x_100 = []
     random_time_medians_100_y = []
@@ -109,7 +109,7 @@ def run():
                 custom_calls[exp_part].append(int(stats["calls"]))
                 custom_sats[exp_part].append(bool(stats["sat"]))
             except:
-                print("Ill-formed yaml found")
+                print("Ill-formed yaml found in {}".format(f))
 
     custom_x_100 = []
     custom_time_medians_100_y = []

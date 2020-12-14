@@ -199,7 +199,7 @@ namespace cannon {
 
           for (unsigned int i = 0; i < formula_.clauses_.size(); i++) {
             int num_watched = 0;
-            unsigned int watch_prop;
+            unsigned int watch_prop = (*formula_.clauses_[i].literals_.begin()).prop_;
             for (auto &l : formula_.clauses_[i].literals_) {
               if (num_watched == 2)
                 break;
@@ -238,11 +238,6 @@ namespace cannon {
           } else
             frontier_.push(tmp_fs); 
 
-          if (verbose_) {
-            log_info("In preprocessing");
-            check_watched(tmp_fs);
-          }
-
           if (verbose_)
             log_info("Finished preprocessing");
         }
@@ -275,7 +270,7 @@ namespace cannon {
               log_info("Conflict clause", formula_.clauses_[c]);
             }
 
-            if (fs.parents[prop] > num_original_clauses_) {
+            if (fs.parents[prop] > (int)num_original_clauses_) {
               learned_usage[fs.parents[prop] - num_original_clauses_] += 1;
             }
             if (c > num_original_clauses_) {
@@ -285,20 +280,24 @@ namespace cannon {
             // Do all possible resolutions
             Clause learned_c = formula_.clauses_[c];
             Literal resolve_literal = *(learned_c.literals_.begin());
-            int num_current_level = 0;
+            unsigned int max_level = 0;
+            bool can_resolve = false;
             for (auto &l : learned_c.literals_) {
-              if (fs.parents[l.prop_] >= 0 && (fs.levels[l.prop_] >= fs.levels[resolve_literal.prop_]))
+              if ((fs.parents[l.prop_] >= 0) && (fs.levels[l.prop_] >= (int)max_level)) {
                 resolve_literal = l;
+                max_level = fs.levels[resolve_literal.prop_];
+              }
               
-              if (fs.levels[l.prop_] == fs.decision_level)
-                num_current_level += 1;
+              if (fs.parents[l.prop_] >= 0)
+                can_resolve = true;
             }
 
             // Exponential moving average vsids
             vsids_ *= (1.0 - vsids_decay_);
 
-            while (num_current_level > 1 && learned_c.size() > 0) {
-              num_current_level = 0;
+            //while (num_current_level > 1 && learned_c.size() > 0) {
+            while (can_resolve) {
+              can_resolve = false;
 
               if (verbose_) {
                 log_info("Resolving", learned_c, "on", resolve_literal, "with parent",
@@ -313,26 +312,21 @@ namespace cannon {
                 vsids_[l.prop_] += vsids_decay_;
               }
 
-              if (fs.parents[resolve_literal.prop_] > num_original_clauses_) {
+              if (fs.parents[resolve_literal.prop_] > (int)num_original_clauses_) {
                 learned_usage[fs.parents[resolve_literal.prop_] - num_original_clauses_] += 1;
               }
 
-              num_current_level = 0;
               resolve_literal = *(learned_c.literals_.begin());
+              unsigned int max_level = 0;
               for (auto &l : learned_c.literals_) {
-                if ((fs.parents[l.prop_] >= 0) && (fs.levels[l.prop_] >=
-                      fs.levels[resolve_literal.prop_])) {
+                if ((fs.parents[l.prop_] >= 0) && (fs.levels[l.prop_] >= (int)max_level)) {
                   resolve_literal = l;
+                  max_level = fs.levels[resolve_literal.prop_];
                 }
                 
-                if (fs.levels[l.prop_] == fs.decision_level) {
-                  num_current_level += 1;
-                }
+                if (fs.parents[l.prop_] >= 0)
+                  can_resolve = true;
               }
-
-              if (num_current_level == 1) {
-                break;
-              } 
             }
 
             int prev_clauses = formula_.get_num_clauses();
@@ -382,14 +376,11 @@ namespace cannon {
                 unsigned int w1 = 0;
                 unsigned int w2 = 0;
 
-                unsigned int w1_level = 0;
                 unsigned int w2_level = 0;
 
                 for (auto &l : learned_c.literals_) {
-                  if (fs.levels[l.prop_] >= w2_level) {
+                  if (fs.levels[l.prop_] >= (int)w2_level) {
                     w1 = w2;
-                    w1_level = w2_level;
-
                     w2 = l.prop_;
                     w2_level = fs.levels[l.prop_];
                   }
@@ -413,12 +404,7 @@ namespace cannon {
                 log_info("num_learned_watched in", learned_c," is", num_learned_watched);
               }
 
-              assert(learned_c.size() == 1 || num_learned_watched == 2);
-            }
-
-            if (verbose_) {
-              log_info("In learn_clause");
-              check_watched(fs);
+              assert(learned_c.size() == 0 || learned_c.size() == 1 || num_learned_watched == 2);
             }
 
             // Backjump by unwinding the stack of formulas states
@@ -436,7 +422,7 @@ namespace cannon {
 
         std::pair<std::set<std::pair<unsigned int, unsigned int>>,
           std::pair<int, int>> update_watched(FormulaState& fs, unsigned int prop) {
-          assert(fs.level_open.size() == fs.decision_level + 1);
+          assert(fs.level_open.size() == (unsigned int)(fs.decision_level + 1));
 
           if (verbose_)
             log_info("Doing update_watched on", prop);
@@ -470,7 +456,7 @@ namespace cannon {
 
             if (watch_new) {
               int num_watched = 0;
-              unsigned int watch_prop;
+              unsigned int watch_prop = (*formula_.clauses_[c].literals_.begin()).prop_;
 
               std::vector<Literal> unwatched_literals;
               for (auto &l : formula_.clauses_[c].literals_) {
@@ -556,11 +542,6 @@ namespace cannon {
             for (unsigned int t : watched[prop])
               log_info("\t", t);
 
-          }
-
-          if (verbose_) {
-            log_info("In update_watched");
-            check_watched(fs);
           }
 
           return std::make_pair(unit_clauses, conflict_clause);
@@ -674,7 +655,7 @@ namespace cannon {
           std::set<std::pair<unsigned int, unsigned int>> unit_props;
           for (unsigned int i = 0; i < formula_.clauses_.size(); i++) {
             int num_watched = 0;
-            unsigned int watch_prop;
+            unsigned int watch_prop = (*formula_.clauses_[i].literals_.begin()).prop_;
             for (auto &l : formula_.clauses_[i].literals_) {
               if (std::find(watched[l.prop_].begin(),
                     watched[l.prop_].end(), i) != watched[l.prop_].end()) {
@@ -773,12 +754,15 @@ namespace cannon {
         // The Assignment portion of the return value will be empty unless the
         // DPLLResult part is "Satisfiable"
         std::pair<DPLLResult, Assignment> iterate() {
+          Assignment empty;
+
           if (verbose_) {
             log_info("Before popping, frontier has", frontier_.size(), "elements");
           }
 
           if (should_backjump_) {
             assert(backjump_ >= 0);
+            should_backjump_ = false;
 
             if (frontier_.size() > 0) {
               if (verbose_) {
@@ -786,32 +770,32 @@ namespace cannon {
                 log_info("Decision level at top of stack is", frontier_.top().decision_level);
               }
 
-              //int jumped_decision_level = frontier_.top().decision_level;
-
               // TODO There's some kind of bug with backjumping which needs to be resolved
               // Backjumping
               // =============
-              //int num_jumped = 0;
-              //while (jumped_decision_level > backjump_) {
-              //  if (verbose_) {
-              //    log_info("Popped formula state at level", jumped_decision_level, "from frontier");
-              //  }
-              //  frontier_.pop();
-              //  jumped_decision_level = frontier_.top().decision_level;
-              //  num_jumped += 1;
+              int num_jumped = 0;
+              while (frontier_.top().decision_level > backjump_ + 1 && frontier_.size() > 1) {
+                if (verbose_) {
+                  log_info("Popped formula state at level", frontier_.top().decision_level, "from frontier");
+                }
 
-              //  if (verbose_) {
-              //    log_info("Decision level at top of stack is", frontier_.top().decision_level);
-              //  } 
-              //}
+                frontier_.pop();
+                num_jumped += 1;
+              }
 
-              //// Restore branch using trail
-              //jumped_decision_level = trail_.top().decision_level;
+              if (verbose_) {
+                log_info("Decision level at top of stack is", frontier_.top().decision_level);
+              } 
+
+              if (frontier_.size() == 0) {
+                return {DPLLResult::Unsatisfiable, empty};
+              }
+
+              // Restore branch using trail
               //FormulaState pop_fs = trail_.top();
-              //while (jumped_decision_level >= backjump_) {
+              //while (trail_.top().decision_level >= backjump_) {
               //  pop_fs = trail_.top();
               //  trail_.pop();
-              //  jumped_decision_level = trail_.top().decision_level;
               //  if (verbose_) {
               //    log_info("Decision level at top of trail is", trail_.top().decision_level);
               //  } 
@@ -823,6 +807,8 @@ namespace cannon {
               //  }
               //  frontier_.push(pop_fs);
               //}
+
+              //assert(frontier_.top().decision_level == backjump_);
             }
 
             should_backjump_ = false;
@@ -840,7 +826,6 @@ namespace cannon {
               log_info(i, ":", current.level_open[i]);
           }
 
-          Assignment empty;
           auto e = formula_.eval(current.a, current.s);
           if (e == PropAssignment::True) {
             if (verbose_)
@@ -854,8 +839,8 @@ namespace cannon {
             return {DPLLResult::Unsatisfiable, empty};
           } 
 
-          if (verbose_)
-            check_watched(current);
+          //if (verbose_)
+          //  check_watched(current);
 
           iterations_ += 1;
 
@@ -937,8 +922,10 @@ namespace cannon {
           if (iterations_ > restart_iterations_) {
             log_info("Currently have", formula_.get_num_clauses(), "clauses");
             iterations_ = 0;
-            //restart(true);
-            //return {DPLLResult::Unknown, empty};
+
+            //restart_iterations_ += 0.5 * restart_iterations_;
+            //restart();
+            return {DPLLResult::Unknown, empty};
           }
 
           trail_.push(current);
@@ -948,9 +935,6 @@ namespace cannon {
           }
 
           if (!found_conflict) {
-            // Remove, just for debugging
-            //check_watched(current, true);
-
             do_splitting_rule(current); 
           }
            
@@ -972,12 +956,12 @@ namespace cannon {
         const double vsids_decay_ = 0.5;
         
         int iterations_ = 0;
-        const int restart_iterations_ = 1000;
+        int restart_iterations_ = 1000;
 
         std::vector<int> learned_usage;
 
-        int max_original_clause_size_;
-        int num_original_clauses_;
+        unsigned int max_original_clause_size_;
+        unsigned int num_original_clauses_;
 
         bool found_unsat_ = false;
         bool should_restart_ = false;

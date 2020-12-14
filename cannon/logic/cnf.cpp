@@ -141,12 +141,13 @@ bool Clause::get_unit_negated(const Assignment& a) {
 void CNFFormula::add_clause(Clause&& c) {
   num_props_ = std::max(num_props_, c.num_props_);
 
-  //for (Clause &c2 : clauses_) {
-  //  if (c == c2)
-  //    return;
-  //}
+  for (Clause &c2 : clauses_) {
+    if (c == c2) {
+      return;
+    }
+  }
 
-  clauses_.push_back(c);
+  clauses_.emplace_back(c);
 }
 
 PropAssignment CNFFormula::eval(const Assignment& assignment,

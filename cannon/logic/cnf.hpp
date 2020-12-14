@@ -104,13 +104,17 @@ namespace cannon {
         friend class CNFFormula;
 
         bool operator==(const Clause& c) const {
-          for (auto& l : literals_) {
-            if (c.literals_.find(l) == c.literals_.end()) {
-              return false;
+          if (c.literals_.size() == literals_.size()) {
+            for (auto& l : literals_) {
+              if (c.literals_.find(l) == c.literals_.end()) {
+                return false;
+              }
             }
+
+            return true;
+          } else {
+            return false;
           }
-          
-          return true;
         }
 
         std::set<Literal> literals_;
@@ -157,13 +161,17 @@ namespace cannon {
             const Simplification& s) const;
 
         bool operator==(const CNFFormula f) const {
-          for (auto& c : clauses_) {
-            if (std::find(f.clauses_.begin(), f.clauses_.end(), c) == f.clauses_.end()) {
-              return false;
+          if (f.clauses_.size() == clauses_.size()) {
+            for (auto& c : clauses_) {
+              if (std::find(f.clauses_.begin(), f.clauses_.end(), c) == f.clauses_.end()) {
+                return false;
+              }
             }
+
+            return true;
+          } else {
+            return false;
           }
-          
-          return true;
         }
 
         friend std::ostream& operator<<(std::ostream& os, const CNFFormula& f);
