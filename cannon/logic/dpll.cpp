@@ -233,7 +233,7 @@ int DPLLState::learn_clause(std::shared_ptr<FormulaState> fs, unsigned int c, un
     }
 
     if (prev_clauses != post_clauses) {
-      learned_usage.push_back(0);
+      learned_usage.push_back(1);
       int new_clause_num = formula_.get_num_clauses() - 1;
       clause_watched.emplace_back();
       
