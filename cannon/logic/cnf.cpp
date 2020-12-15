@@ -79,6 +79,15 @@ bool Clause::contains_prop(const Assignment& a, unsigned int prop) const {
   return false;
 }
 
+bool Clause::has_pos_literal(const Assignment& a, unsigned int prop) const {
+  for (auto& l : literals_) {
+    if ((a[l.prop_] == PropAssignment::Unassigned) && (l.prop_ == prop) && !l.negated_)
+      return true;
+  }
+
+  return false;
+}
+
 PropAssignment Clause::get_assignment_for_literal(unsigned int prop) {
   for (auto& l : literals_) {
     if (l.prop_ == prop) {
@@ -141,11 +150,11 @@ bool Clause::get_unit_negated(const Assignment& a) {
 void CNFFormula::add_clause(Clause&& c) {
   num_props_ = std::max(num_props_, c.num_props_);
 
-  for (Clause &c2 : clauses_) {
-    if (c == c2) {
-      return;
-    }
-  }
+  //for (Clause &c2 : clauses_) {
+  //  if (c == c2) {
+  //    return;
+  //  }
+  //}
 
   clauses_.emplace_back(c);
 }
@@ -160,7 +169,6 @@ PropAssignment CNFFormula::eval(const Assignment& assignment,
 
     auto a = clauses_[i].eval(assignment);
     if (a == PropAssignment::False) {
-      //log_info("Clause", clauses_[i], "evaluated to false");
       return PropAssignment::False;
     } else if (a == PropAssignment::Unassigned)
       found_unassigned = true;
@@ -284,19 +292,42 @@ std::vector<unsigned int> CNFFormula::get_num_two_clauses(const Assignment& a, c
   return num_two_clauses;
 }
 
-std::vector<unsigned int> CNFFormula::get_props(const Assignment& a, const Simplification& s) {
-  std::set<unsigned int> all_props;
-  for (unsigned int i = 0; i < get_num_clauses(); i++) {
+
+unsigned int CNFFormula::get_smallest_clause_size(const Assignment& a, const Simplification& s) const {
+  if (clauses_.size() == 0)
+    return 0;
+
+  unsigned int smallest_size = clauses_[0].size();
+  for (unsigned int i = 0; i < clauses_.size(); i++) {
     if (s[i])
       continue;
-    
-    auto c_props = clauses_[i].get_props(a);
-    all_props.insert(c_props.begin(), c_props.end());
+
+    if (clauses_[i].size(a) < smallest_size)
+      smallest_size = clauses_[i].size(a);
   }
 
+  return smallest_size;
+}
+
+std::vector<unsigned int> CNFFormula::get_props(const Assignment& a, const Simplification& s) {
+  // Way too inefficient
+  //std::set<unsigned int> all_props;
+  //for (unsigned int i = 0; i < get_num_clauses(); i++) {
+  //  if (s[i])
+  //    continue;
+  //  
+  //  auto c_props = clauses_[i].get_props(a);
+  //  all_props.insert(c_props.begin(), c_props.end());
+  //}
+  //ret_vec.reserve(all_props.size());
+  //ret_vec.insert(ret_vec.end(), all_props.begin(), all_props.end());
+
   std::vector<unsigned int> ret_vec;
-  ret_vec.reserve(all_props.size());
-  ret_vec.insert(ret_vec.end(), all_props.begin(), all_props.end());
+  for (unsigned int i = 0; i < a.size(); i++) {
+    if (a[i] == PropAssignment::Unassigned) {
+      ret_vec.push_back(i);
+    }
+  }
 
   return ret_vec;
 }
@@ -460,13 +491,12 @@ void cannon::logic::resolve(Clause& c1, const Clause& c2, unsigned int prop) {
     throw std::runtime_error("Applied resolution to incompatible clauses");
 }
 
-std::ostream& cannon::logic::operator<<(std::ostream& os, const PropAssignment& a) {
-  if (a == PropAssignment::True)
-    os << "True";
-  else if (a == PropAssignment::False)
-    os << "False";
-  else
-    os << "Unassigned";
+std::ostream& cannon::logic::operator<<(std::ostream& os, PropAssignment a) {
+  switch (a) {
+    case PropAssignment::True: os << "True"; break;
+    case PropAssignment::False: os << "False"; break;
+    case PropAssignment::Unassigned: os << "Unassigned"; break;
+  }
 
   return os;
 }
@@ -505,13 +535,15 @@ std::ostream& cannon::logic::operator<<(std::ostream& os, const CNFFormula& f) {
 }
 
 std::ostream& cannon::logic::operator<<(std::ostream& os, const std::valarray<PropAssignment>& v) {
-  os << "[";
   if (v.size() > 0) {
+    os << "[" << std::endl;
     for (unsigned int i = 0; i < (v.size()-1); i++) {
-      os << v[i] << ", ";
+      os << "p" << i << " = " << v[i] << ", " << std::endl;
     }
+    os << "p" << v.size() - 1 << " = " << v[v.size()-1] << "]";
+  } else {
+    os << "[]";
   }
-  os << v[v.size()-1] << "]";
 
   return os;
 }
@@ -521,7 +553,7 @@ bool cannon::logic::operator==(const std::valarray<PropAssignment>& v1, const
   if (v1.size() != v2.size())
     return false;
 
-  for (int i = 0; i < v1.size(); i++) {
+  for (unsigned int i = 0; i < v1.size(); i++) {
     if (v1[i] != v2[i])
       return false;
   }

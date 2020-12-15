@@ -4,10 +4,6 @@
 #include <iostream>
 #include <vector>
 
-#include <cannon/log/registry.hpp>
-
-using namespace cannon::log;
-
 namespace cannon {
   namespace logic {
 
@@ -23,9 +19,6 @@ namespace cannon {
           if (idx >= assignment.size()) {
             throw "Not enough propositions in truth assignment";
           }
-
-          log_info(assignment.size());
-          log_info(idx);
 
           return assignment[idx];
         }

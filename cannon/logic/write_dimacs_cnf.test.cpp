@@ -11,8 +11,5 @@ TEST_CASE("WriteDimacsCNF", "[logic]") {
   CNFFormula f = parse_cnf(f_s);
 
   auto r_s = write_cnf(f);
-  log_info(r_s);
   REQUIRE(r_s.compare("p cnf 3 3\n1 2 0\n-1 -2 0\n-1 3 0\n") == 0);
-
-  log_info(write_cnf(generate_random_formula(10, 10)));
 }

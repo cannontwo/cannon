@@ -37,9 +37,8 @@ CNFFormula cannon::logic::parse_cnf(const std::string& s) {
 
   rest_str = rest_str.erase(0, rest_str.find('p'));
   rest_str = rest_str.erase(0, rest_str.find_first_of("\n")+1);
-
   for (unsigned int i = 0; i < num_clauses; i++) {
-    Clause c = parse_clause(rest_str);
+    auto c = parse_clause(rest_str);
     f.add_clause(std::move(c));
     rest_str = rest_str.erase(0, rest_str.find_first_not_of("0"));
   }
@@ -94,6 +93,6 @@ Clause cannon::logic::parse_clause(std::string& s) {
     s = s.erase(0, s.find_first_of(" \t\r\n"));
     s = s.erase(0, s.find_first_not_of(" \t\r\n"));
   }
-
+  
   return c;
 }

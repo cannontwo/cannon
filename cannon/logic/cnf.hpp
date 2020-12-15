@@ -9,14 +9,11 @@
 #include <cmath>
 #include <algorithm>
 #include <random>
+#include <iostream>
 
 #include <Eigen/Dense>
 
-#include <cannon/log/registry.hpp>
-
 using namespace Eigen;
-
-using namespace cannon::log;
 
 namespace cannon {
   namespace logic {
@@ -92,6 +89,8 @@ namespace cannon {
 
         std::set<unsigned int> get_props(const Assignment& a);
         bool contains_prop(const Assignment& a, unsigned int prop) const;
+        bool has_pos_literal(const Assignment& a, unsigned int prop) const;
+
         PropAssignment eval(const Assignment& assignment) const;
 
         unsigned int get_unit_prop(const Assignment& a);
@@ -138,6 +137,8 @@ namespace cannon {
         std::vector<std::tuple<unsigned int, bool, int>> get_unit_clause_props(const
             Assignment& a, const Simplification& s, std::vector<unsigned int>
             unit_clauses) const;
+
+        unsigned int get_smallest_clause_size(const Assignment& a, const Simplification& s) const;
 
         unsigned int get_num_props() const;
         unsigned int get_num_clauses() const;
@@ -187,7 +188,7 @@ namespace cannon {
 
     void resolve(Clause& c1, const Clause& c2, unsigned int prop);
 
-    std::ostream& operator<<(std::ostream& os, const PropAssignment& a);
+    std::ostream& operator<<(std::ostream& os, PropAssignment a);
     std::ostream& operator<<(std::ostream& os, const Literal& l);
     std::ostream& operator<<(std::ostream& os, const Clause& c);
     std::ostream& operator<<(std::ostream& os, const CNFFormula& f);

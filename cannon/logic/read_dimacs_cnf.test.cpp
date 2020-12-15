@@ -34,19 +34,16 @@ TEST_CASE("ReadDimacsCNF", "[logic]") {
   // Test parsing formula
   const std::string f_s1("c foobar\nc barfoo\np cnf 3 3\n1 2 0\n-2\t-1 0\n3 -1");
   CNFFormula f = parse_cnf(f_s1);
-  log_info("Parsed formula", f);
 
   CNFFormula test_f;
   test_f.add_clause(parse_clause("1 2 0"));
   test_f.add_clause(parse_clause("-2 -1 0"));
   test_f.add_clause(parse_clause("3 -1"));
-  log_info("Test formula", test_f);
 
   REQUIRE(f == test_f);
 
   // Test loading from file
   f = load_cnf("formulas/test.cnf"); 
-  log_info("Loaded formula", f);
 
   CNFFormula test_load_f;
   test_load_f.add_clause(parse_clause("1 3 -4"));

@@ -3,10 +3,8 @@
 #include <sstream>
 
 #include <cannon/logic/cnf.hpp>
-#include <cannon/log/registry.hpp>
 
 using namespace cannon::logic;
-using namespace cannon::log;
 
 TEST_CASE("CNF", "[logic]") {
   // PropAssignment printing

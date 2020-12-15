@@ -9,12 +9,11 @@
 #include <cannon/logic/cnf.hpp>
 #include <cannon/logic/dpll.hpp>
 #include <cannon/logic/read_dimacs_cnf.hpp>
-#include <cannon/log/registry.hpp>
+
 
 using namespace Eigen;
 
 using namespace cannon::logic;
-using namespace cannon::log;
 
 std::vector<double> uniform_random_prop(const CNFFormula& form, const
     Assignment& a,const Simplification& s, const std::vector<unsigned int>&
@@ -56,29 +55,31 @@ std::vector<double> two_clause_prop(const CNFFormula& form, const Assignment&
   return ret_vec;
 }
 
-std::vector<double> adj_mat_eig_prop(const CNFFormula& form, 
-    const Assignment& a,const Simplification& s, 
-    const std::vector<unsigned int>& props, const std::vector<std::vector<unsigned int>>& watched,
-    const VectorXd& vsids) {
-  MatrixXd adj_mat = form.make_adjacency_mat(a, s);
-  SelfAdjointEigenSolver<MatrixXd> solver(adj_mat);
+double calculate_moms(const CNFFormula& form, const Assignment& a, const
+    Simplification& s, unsigned int prop) {
+  unsigned int num_smallest_pos = 0; 
+  unsigned int num_smallest_neg = 0; 
+  unsigned int smallest_clause_size = form.get_smallest_clause_size(a, s);
 
-  if (solver.info() != Success) {
-    log_info("Couldn't compute eigenvalues");
-    return uniform_random_prop(form, a, s, props, watched, vsids);
+  for (unsigned int i = 0; i < form.clauses_.size(); i++) {
+    if (s[i])
+      continue;
+
+    if (form.clauses_[i].contains_prop(a, prop)) {
+      if (form.clauses_[i].size(a) == smallest_clause_size) {
+        if (form.clauses_[i].has_pos_literal(a, prop)) {
+          num_smallest_pos += 1;
+        } else {
+          num_smallest_neg += 1;
+        }
+      }
+    }
   }
-  VectorXd largest_eigenvector = solver.eigenvectors().col(form.get_num_props() - 1);
 
-  // Elements of the eigenvector corresponding to the largest eigenvalue of the
-  // adjacency matrix have the greatest centrality to the graph formed by the
-  // CNF clauses.
-  std::vector<double> ret_vec;
-  ret_vec.reserve(props.size());
-  for (auto &p : props) {
-    ret_vec.push_back(largest_eigenvector[p]);
-  }
+  double first_part = (double)(num_smallest_pos + num_smallest_neg) * std::pow(2.0, 3.0);
+  double second_part = num_smallest_pos * num_smallest_neg;
 
-  return ret_vec;
+  return first_part + second_part;
 }
 
 std::vector<double> vsids_prop(const CNFFormula& form, const Assignment&
@@ -89,11 +90,22 @@ std::vector<double> vsids_prop(const CNFFormula& form, const Assignment&
   static std::default_random_engine gen(rd());
   static std::uniform_real_distribution<double> d;
 
-  for (auto &prop : props) {
-    vsids_vec.push_back(vsids[prop] + d(gen));
+  double max_vsids = vsids.maxCoeff();
+  
+  auto clause_num_vec = form.get_num_two_clauses(a, s, props);
+  unsigned int max_two_clauses = *std::max_element(clause_num_vec.begin(), clause_num_vec.end());
+
+  std::vector<double> ret_vec;
+  ret_vec.reserve(props.size());
+  for (unsigned int i = 0; i < props.size(); i++) {
+    if (clause_num_vec[i] == max_two_clauses)
+      //ret_vec.push_back(max_vsids + calculate_moms(form, a, s, i) + d(gen));
+      ret_vec.push_back(max_vsids + vsids[i]);
+    else
+      ret_vec.push_back(vsids[i]);
   }
 
-  return vsids_vec;
+  return ret_vec;
 }
 
 bool uniform_random_assign(const CNFFormula& form, const Assignment& a, 
@@ -135,6 +147,35 @@ bool max_vote_assign(const CNFFormula& form, const Assignment& a, const
   }
 }
 
+bool min_vote_assign(const CNFFormula& form, const Assignment& a, const
+    Simplification& s, unsigned int prop, const std::vector<std::vector<unsigned int>>& watched) {
+  std::random_device rd;
+  static std::default_random_engine gen(rd());
+  std::uniform_real_distribution<double> d;
+
+  int num_pos = 0;
+  int num_neg = 0;
+  for (unsigned int c_num : watched[prop]) {
+    if (s[c_num])
+      continue;
+
+    for (auto &l : form.clauses_[c_num].literals_) {
+      if (l.prop_ == prop && l.negated_)
+        num_neg += 1;
+
+      if (l.prop_ == prop && !l.negated_)
+        num_pos += 1;
+    }
+  }
+
+  if (num_pos == num_neg) {
+    double t = d(gen);
+    return t < 0.5;
+  } else {
+    return num_pos < num_neg;
+  }
+}
+
 int main(int argc, char **argv) {
   DPLLResult r;
   Assignment a;
@@ -158,23 +199,22 @@ int main(int argc, char **argv) {
   y_os << "stats:" << std::endl;
 
   CNFFormula f = load_cnf(filename); 
-  log_info("Parsed passed CNF file as", f);
+  std::cout << "Parsed passed CNF file as " << f << std::endl;
   os << "Parsed passed CNF file " << filename << " as " << std::endl << f << std::endl << std::endl;
 
   auto start = std::chrono::steady_clock::now();
-  //std::tie(r, a, c) = dpll(f, uniform_random_prop, uniform_random_assign); // Random heuristic
+  //std::tie(r, a, c) = dpll(f, uniform_random_prop, uniform_random_assign, std::chrono::seconds(1200)); // Random heuristic
   //std::tie(r, a, c) = dpll(f, two_clause_prop, uniform_random_assign); // 2-clause heuristic
-  //std::tie(r, a, c) = dpll(f, two_clause_prop, max_vote_assign); // custom heuristic
-  std::tie(r, a, c) = dpll(f, vsids_prop, max_vote_assign); // custom heuristic
+  std::tie(r, a, c) = dpll(f, vsids_prop, min_vote_assign, std::chrono::seconds(1200)); // custom heuristic
   auto end = std::chrono::steady_clock::now();
   auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
   y_os << "  time_micros: " << std::to_string(duration.count()) << std::endl;
   
-  log_info("DPLL recursively called", c, "times");
+  std::cout << "DPLL recursively called " << c << " times" << std::endl;
   os << "DPLL recursively called " << c << " times" << std::endl << std::endl;
   y_os << "  calls: " << std::to_string(c) << std::endl;
   
-  log_info("DPLL on", filename, "returned result", r, "with assignment", a);
+  std::cout << "DPLL on " << filename << " returned result " << r << " with assignment " << a << std::endl;
   os << "DPLL returned result " << r << " with assignment " << a << std::endl << std::endl;
 
   y_os << "  sat: ";
@@ -189,12 +229,10 @@ int main(int argc, char **argv) {
   else
     y_os << "false" << std::endl;
 
-  // TODO Report number of DPLL calls as well
-
-  Simplification s = std::valarray<bool>(false, f.get_num_props());
+  Simplification s = std::valarray<bool>(false, f.get_num_clauses());
   if (r == DPLLResult::Satisfiable) {
-    log_info("Evaluation of formula on returned assignment is");
-    log_info(f.eval(a, s));
+    std::cout << "Evaluation of formula on returned assignment is" << std::endl;
+    std::cout << f.eval(a, s) << std::endl;
     assert(f.eval(a, s) == PropAssignment::True);
 
     os << "Evaluation of formula on returned assignment is " << f.eval(a, s);
