@@ -11,6 +11,7 @@ using namespace boost::numeric::odeint;
 namespace cannon {
   namespace physics {
 
+    // TODO Refactor to use std::function
     template <typename F>
     class EulerIntegrator {
       public:
