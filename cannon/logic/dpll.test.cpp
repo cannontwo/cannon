@@ -7,50 +7,22 @@
 
 using namespace cannon::logic;
 
-std::vector<double> det_prop(const CNFFormula& form, 
-    const Assignment& a,const Simplification& s, 
-    const std::vector<unsigned int>& props, std::vector<std::vector<unsigned int>> watched, const VectorXd& vsids) {
+unsigned int uniform_random_prop(const DPLLState& ds,
+    const Assignment& a, const Simplification& s, std::vector<unsigned int>& props) {
+  RandomComparator comp(ds);
+  std::sort(props.begin(), props.end(), comp);
 
-  std::vector<double> ret_vec;
-  ret_vec.reserve(props.size());
-
-  // Deterministically select lowest prop
-  for (unsigned int i = 0; i < props.size(); i++) {
-    ret_vec.push_back(0.0 - (double)props[i]);
-  }
-
-  return ret_vec;
+  return props[props.size() - 1];
 }
 
-std::vector<double> uniform_random_prop(const CNFFormula& form, 
-    const Assignment& a,const Simplification& s, 
-    const std::vector<unsigned int>& props, std::vector<std::vector<unsigned int>> watched, const VectorXd& vsids) {
-  std::random_device rd;
-  std::mt19937 gen(rd());
-  std::uniform_real_distribution<double> d;
+unsigned int vsids_prop(const DPLLState& ds, const Assignment& a, const Simplification& s,
+    std::vector<unsigned int>& props) {
+  RandomComparator rc(ds);
+  VsidsComparator vc(ds, rc);
+  TwoClauseComparator tc(ds, a, s, props, vc);
 
-  std::vector<double> ret_vec;
-  ret_vec.reserve(props.size());
-  for (unsigned int i = 0; i < props.size(); i++) {
-    ret_vec.push_back(d(gen));
-  }
-
-  return ret_vec;
-}
-
-std::vector<double> vsids_prop(const CNFFormula& form, const Assignment&
-    a,const Simplification& s, const std::vector<unsigned int>& props,
-    const std::vector<std::vector<unsigned int>>& watched, const VectorXd& vsids) {
-  std::vector<double> vsids_vec;
-  std::random_device rd;
-  static std::default_random_engine gen(rd());
-  static std::uniform_real_distribution<double> d;
-
-  for (auto &prop : props) {
-    vsids_vec.push_back(vsids[prop] + d(gen));
-  }
-
-  return vsids_vec;
+  std::sort(props.begin(), props.end(), tc);
+  return props[props.size() - 1];
 }
 
 bool det_assign(const CNFFormula& form, const Assignment& a, 

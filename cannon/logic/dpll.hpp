@@ -22,18 +22,16 @@ using namespace cannon::log;
 namespace cannon {
   namespace logic {
 
+    class DPLLState;
+    class FormulaState;
+
     using Assignment=std::valarray<PropAssignment>;
     using Simplification=std::valarray<bool>;
     using AssignmentParents=std::valarray<int>;
     using AssignmentLevels=std::valarray<int>;
 
-    using PropFunc = std::function<std::vector<double>(const CNFFormula&, 
-        const Assignment&, 
-        const Simplification&, 
-        const std::vector<unsigned int>&, 
-        const std::vector<std::vector<unsigned int>>&,
-        const VectorXd& 
-        )>;
+    using PropFunc = std::function<unsigned int(const DPLLState& ds,
+        const Assignment&, const Simplification&, std::vector<unsigned int>&)>;
 
     using AssignFunc = std::function<bool(const CNFFormula&, 
         const Assignment&, 
@@ -42,13 +40,13 @@ namespace cannon {
         const std::vector<std::vector<unsigned int>>&
         )>;
 
-    std::vector<double> default_prop(const CNFFormula& form, const Assignment&
-        a,const Simplification& s, const std::vector<unsigned int>& props,
-        const std::vector<std::vector<unsigned int>>& watched, const VectorXd& vsids);
+    unsigned int default_prop(const DPLLState& ds, const Assignment& a,
+        const Simplification& s, std::vector<unsigned int>& props);
 
     bool default_assign(const CNFFormula& form, const
         Assignment& a, const Simplification& s, unsigned int prop, const
         std::vector<std::vector<unsigned int>>& watched);
+
 
     class FormulaState {
       public:
@@ -132,22 +130,9 @@ namespace cannon {
 
         PropositionHeuristic(PropFunc f) : f_(f) {}
 
-        std::vector<double> rank_props(const CNFFormula& form, const
-            Assignment& a, const Simplification& s, const std::vector<unsigned
-            int>& props, const std::vector<std::vector<unsigned int>>& watched,
-            const VectorXd& vsids) {
-          return f_(form, a, s, props, watched, vsids);
-        }
-
-        unsigned int choose_prop(const CNFFormula& form, const Assignment& a,
-            const Simplification& s, const std::vector<unsigned int>& props,
-            const std::vector<std::vector<unsigned int>>& watched, const VectorXd& vsids) {
-          auto prop_ranks = rank_props(form, a, s, props, watched, vsids);
-
-          unsigned int prop_idx = std::distance(prop_ranks.begin(),
-              std::max_element(prop_ranks.begin(), prop_ranks.end()));
-
-          return props[prop_idx];
+        unsigned int choose_prop(const DPLLState& ds,
+            const Assignment& a, const Simplification& s, std::vector<unsigned int>& props) {
+          return f_(ds, a, s, props);
         }
 
       private:
@@ -224,7 +209,6 @@ namespace cannon {
         friend std::tuple<DPLLResult, Assignment, int> dpll(CNFFormula f,
             PropFunc ph_func, AssignFunc ah_func, const std::chrono::seconds cutoff);
 
-      private:
         CNFFormula formula_;
         std::stack<std::shared_ptr<FormulaState>> frontier_;
         PropositionHeuristic ph_;
@@ -254,6 +238,91 @@ namespace cannon {
         bool should_backjump_ = false;
 
         bool learned_clause_ = false;
+    };
+
+    using Comparator = std::function<bool(const unsigned int&, const unsigned int&)>;
+
+    struct FalseComparator {
+      bool operator()(const unsigned int& idx1, const unsigned int& idx2) {
+        return false;
+      }
+    };
+
+    struct RandomComparator {
+      RandomComparator(const DPLLState &ds) {
+        std::random_device rd;
+        std::default_random_engine gen(rd());
+        std::uniform_real_distribution<double> d(0.0, 1.0);
+
+        for (unsigned int i = 0; i < ds.formula_.get_num_props(); i++) {
+          random_vec.push_back(d(gen));
+        }
+      }
+
+      RandomComparator(const RandomComparator& rc) : random_vec(rc.random_vec) {}
+
+      RandomComparator(RandomComparator&& rc) : random_vec(std::move(rc.random_vec)) {}
+
+      bool operator()(const unsigned int& idx1, const unsigned int& idx2) {
+        return random_vec[idx1] < random_vec[idx2];
+      }
+
+      std::vector<unsigned int> random_vec;
+
+    };
+
+    struct TwoClauseComparator {
+      TwoClauseComparator(const DPLLState &ds, const Assignment& a, const Simplification& s,
+          const std::vector<unsigned int>& props, Comparator next) : next(next) {
+
+        for (unsigned int i = 0; i < ds.formula_.get_num_props(); i++) {
+          clause_num_vec.push_back(0);
+        }
+
+        std::vector<unsigned int> tmp_clause_num_vec = ds.formula_.get_num_two_clauses(a, s, props);
+        for (unsigned int i = 0; i < tmp_clause_num_vec.size(); i++) {
+          clause_num_vec[props[i]] = tmp_clause_num_vec[i];
+        }
+
+        max_two_clauses = *std::max_element(clause_num_vec.begin(), clause_num_vec.end());
+      }
+
+      TwoClauseComparator(const TwoClauseComparator& tc) : next(tc.next),
+      clause_num_vec(tc.clause_num_vec), max_two_clauses(tc.max_two_clauses) {}
+
+      TwoClauseComparator(TwoClauseComparator&& tc) : next(std::move(tc.next)),
+      clause_num_vec(std::move(tc.clause_num_vec)), max_two_clauses(tc.max_two_clauses) {}
+
+      bool operator()(const unsigned int& idx1, const unsigned int& idx2) {
+        if (clause_num_vec[idx1] == clause_num_vec[idx2]) {
+          return next(idx1, idx2);
+        } else {
+          return clause_num_vec[idx1] < clause_num_vec[idx2];
+        }
+      }
+
+      Comparator next;
+      std::vector<unsigned int> clause_num_vec;
+      unsigned int max_two_clauses;
+    };
+
+    struct VsidsComparator {
+      VsidsComparator(const DPLLState &ds, Comparator next) : next(next), vsids(ds.vsids_) {}
+      
+      VsidsComparator(const VsidsComparator& vc) : next(vc.next), vsids(vc.vsids) {}
+
+      VsidsComparator(VsidsComparator&& vc) : next(std::move(vc.next)), vsids(std::move(vc.vsids)) {}
+
+      bool operator()(const unsigned int& idx1, const unsigned int& idx2) {
+        if (vsids[idx1] == vsids[idx2]) 
+          return next(idx1, idx2);
+        else
+          return vsids[idx1] < vsids[idx2];
+      }
+
+      Comparator next;
+      VectorXd vsids;
+
     };
 
     // Free Functions

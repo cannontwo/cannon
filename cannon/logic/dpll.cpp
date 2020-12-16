@@ -18,6 +18,9 @@ void DPLLState::restart() {
     frontier_.pop();
   }
 
+  // TODO Straight up copy from Mini-SAT reduceDB()
+  // reduce_clauses();
+
   // Inject some randomness
   //vsids_ = VectorXd::Random(formula_.get_num_props());
   do_preprocessing();
@@ -124,6 +127,7 @@ void DPLLState::do_all_resolutions(std::shared_ptr<FormulaState> fs, Clause& c) 
   Literal resolve_literal = *(c.literals_.begin());
   unsigned int max_level = 0;
   bool can_resolve = false;
+  unsigned int num_current_level = 0;
 
   for (auto &l : c.literals_) {
     if ((fs->parents[l.prop_] >= 0) && (fs->levels[l.prop_] >= (int)max_level)) {
@@ -131,6 +135,9 @@ void DPLLState::do_all_resolutions(std::shared_ptr<FormulaState> fs, Clause& c) 
       max_level = fs->levels[resolve_literal.prop_];
       can_resolve = true;
     }
+
+    if (fs->levels[l.prop_] == fs->decision_level)
+      num_current_level += 1;
   }
 
   // Exponential moving average vsids
@@ -141,7 +148,7 @@ void DPLLState::do_all_resolutions(std::shared_ptr<FormulaState> fs, Clause& c) 
   // the current level, binary clauses, or clauses with lbd <= 2. To implement
   // this will need to make it so that clause ordering can change.
 
-  while (can_resolve) {
+  while (can_resolve && num_current_level > 1) {
     can_resolve = false;
 
     resolve(c, formula_.clauses_[fs->parents[resolve_literal.prop_]],
@@ -165,6 +172,9 @@ void DPLLState::do_all_resolutions(std::shared_ptr<FormulaState> fs, Clause& c) 
       
       if (fs->parents[l.prop_] >= 0)
         can_resolve = true;
+
+      if (fs->levels[l.prop_] == fs->decision_level)
+        num_current_level += 1;
     }
   }
 }
@@ -392,7 +402,7 @@ bool DPLLState::do_splitting_rule(const std::shared_ptr<FormulaState> fs) {
     return false;
   } 
 
-  unsigned int prop = ph_.choose_prop(formula_, fs->a, fs->s, all_props, watched, vsids_);
+  unsigned int prop = ph_.choose_prop(*this, fs->a, fs->s, all_props);
   bool first_assignment = ah_.choose_assignment(formula_, fs->a, fs->s, prop, watched);
 
   assert(fs->a[prop] == PropAssignment::Unassigned);
@@ -696,32 +706,15 @@ std::tuple<DPLLResult, Assignment, int> cannon::logic::dpll(CNFFormula f, const
   return dpll(f, default_prop, default_assign, cutoff);
 }
 
-
 // Default heuristics
-std::vector<double> cannon::logic::default_prop(const CNFFormula& form, const Assignment&
-    a,const Simplification& s, const std::vector<unsigned int>& props,
-    const std::vector<std::vector<unsigned int>>& watched, const VectorXd& vsids) {
-  std::vector<double> vsids_vec;
-  std::random_device rd;
-  static std::default_random_engine gen(rd());
-  static std::uniform_real_distribution<double> d;
+unsigned int cannon::logic::default_prop(const DPLLState& ds, const Assignment&
+    a, const Simplification& s, std::vector<unsigned int>& props) {
+  RandomComparator rc(ds);
+  VsidsComparator vc(ds, rc);
+  TwoClauseComparator tc(ds, a, s, props, vc);
 
-  double max_vsids = vsids.maxCoeff();
-  
-  auto clause_num_vec = form.get_num_two_clauses(a, s, props);
-  unsigned int max_two_clauses = *std::max_element(clause_num_vec.begin(), clause_num_vec.end());
-
-  std::vector<double> ret_vec;
-  ret_vec.reserve(props.size());
-  for (unsigned int i = 0; i < props.size(); i++) {
-    if (clause_num_vec[i] == max_two_clauses)
-      //ret_vec.push_back(max_vsids + calculate_moms(form, a, s, i) + d(gen));
-      ret_vec.push_back(max_vsids + vsids[i]);
-    else
-      ret_vec.push_back(vsids[i]);
-  }
-
-  return ret_vec;
+  std::sort(props.begin(), props.end(), tc);
+  return props[props.size() - 1];
 }
 
 bool cannon::logic::default_assign(const CNFFormula& form, const Assignment& a, const

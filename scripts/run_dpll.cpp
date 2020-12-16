@@ -15,45 +15,6 @@ using namespace Eigen;
 
 using namespace cannon::logic;
 
-std::vector<double> uniform_random_prop(const CNFFormula& form, const
-    Assignment& a,const Simplification& s, const std::vector<unsigned int>&
-    props, const std::vector<std::vector<unsigned int>>& watched, const
-    VectorXd& vsids) {
-  std::random_device rd;
-  std::default_random_engine gen(rd());
-  std::uniform_real_distribution<double> d(0.0, 1.0);
-
-  std::vector<double> ret_vec;
-  ret_vec.reserve(props.size());
-  for (unsigned int i = 0; i < props.size(); i++) {
-    ret_vec.push_back(d(gen));
-  }
-
-  return ret_vec;
-}
-
-std::vector<double> two_clause_prop(const CNFFormula& form, const Assignment&
-    a,const Simplification& s, const std::vector<unsigned int>& props,
-    const std::vector<std::vector<unsigned int>>& watched, const VectorXd&
-    vsids) {
-  std::random_device rd;
-  static std::default_random_engine gen(rd());
-  static std::uniform_real_distribution<double> d;
-
-  auto clause_num_vec = form.get_num_two_clauses(a, s, props);
-  unsigned int max_two_clauses = *std::max_element(clause_num_vec.begin(), clause_num_vec.end());
-
-  std::vector<double> ret_vec;
-  ret_vec.reserve(props.size());
-  for (unsigned int i = 0; i < props.size(); i++) {
-    if (clause_num_vec[i] == max_two_clauses)
-      ret_vec.push_back(d(gen));
-    else
-      ret_vec.push_back(-1.0);
-  }
-
-  return ret_vec;
-}
 
 double calculate_moms(const CNFFormula& form, const Assignment& a, const
     Simplification& s, unsigned int prop) {
@@ -82,30 +43,31 @@ double calculate_moms(const CNFFormula& form, const Assignment& a, const
   return first_part + second_part;
 }
 
-std::vector<double> vsids_prop(const CNFFormula& form, const Assignment&
-    a,const Simplification& s, const std::vector<unsigned int>& props,
-    const std::vector<std::vector<unsigned int>>& watched, const VectorXd& vsids) {
-  std::vector<double> vsids_vec;
-  std::random_device rd;
-  static std::default_random_engine gen(rd());
-  static std::uniform_real_distribution<double> d;
+unsigned int uniform_random_prop(const DPLLState& ds,
+    const Assignment& a, const Simplification& s, std::vector<unsigned int>& props) {
+  RandomComparator comp(ds);
+  std::sort(props.begin(), props.end(), comp);
 
-  double max_vsids = vsids.maxCoeff();
-  
-  auto clause_num_vec = form.get_num_two_clauses(a, s, props);
-  unsigned int max_two_clauses = *std::max_element(clause_num_vec.begin(), clause_num_vec.end());
+  return props[props.size() - 1];
+}
 
-  std::vector<double> ret_vec;
-  ret_vec.reserve(props.size());
-  for (unsigned int i = 0; i < props.size(); i++) {
-    if (clause_num_vec[i] == max_two_clauses)
-      //ret_vec.push_back(max_vsids + calculate_moms(form, a, s, i) + d(gen));
-      ret_vec.push_back(max_vsids + vsids[i]);
-    else
-      ret_vec.push_back(vsids[i]);
-  }
+unsigned int two_clause_prop(const DPLLState& ds,
+    const Assignment& a, const Simplification& s, std::vector<unsigned int>& props) {
+  RandomComparator rc(ds);
+  TwoClauseComparator tc(ds, a, s, props, rc);
 
-  return ret_vec;
+  std::sort(props.begin(), props.end(), tc);
+  return props[props.size() - 1];
+}
+
+unsigned int vsids_prop(const DPLLState& ds, const Assignment& a, const Simplification& s,
+    std::vector<unsigned int>& props) {
+  RandomComparator rc(ds);
+  VsidsComparator vc(ds, rc);
+  TwoClauseComparator tc(ds, a, s, props, vc);
+
+  std::sort(props.begin(), props.end(), tc);
+  return props[props.size() - 1];
 }
 
 bool uniform_random_assign(const CNFFormula& form, const Assignment& a, 
