@@ -3,165 +3,118 @@
 
 #include <iostream>
 #include <vector>
+#include<memory>
+
+#include <cannon/logic/cnf.hpp>
 
 namespace cannon {
   namespace logic {
 
     // Note below we use not short-circuiting 'or' and 'and' so that we throw
     // correctly if not enough truth values are provided to eval().
+    
+    class Formula {
+      public:
+        virtual bool eval(const std::vector<bool>& assignment) const = 0;
+        virtual CNFFormula to_cnf(bool negated = false) const = 0;
 
-    class Atomic {
+        virtual ~Formula() {}
+    };
+
+    class Atomic : public Formula {
       public:
         Atomic(unsigned idx) : idx(idx) {}
 
         // May throw if not enough truth values passed
-        bool eval(const std::vector<bool>& assignment) const {
-          if (idx >= assignment.size()) {
-            throw "Not enough propositions in truth assignment";
-          }
+        virtual bool eval(const std::vector<bool>& assignment) const override;
+        virtual CNFFormula to_cnf(bool negated = false) const override;
 
-          return assignment[idx];
-        }
+        virtual ~Atomic() {}
 
         const unsigned idx;
     };
 
-    template <typename F>
-    class Negation {
+    class Negation : public Formula {
       public:
-        Negation(const F& formula) : formula(formula) {}
+        Negation(const Formula& formula) : formula(std::make_shared<Negation>(formula)) {}
+
+        Negation(std::shared_ptr<Formula> formula) : formula(formula) {}
 
         // May throw if not enough truth values passed
-        bool eval(const std::vector<bool>& assignment) const {
-          return !formula.eval(assignment);
-        }
+        virtual bool eval(const std::vector<bool>& assignment) const override;
+        virtual CNFFormula to_cnf(bool negated = false) const override;
 
-        const F formula;
+        virtual ~Negation() {}
+
+        const std::shared_ptr<Formula> formula;
     };
 
-    template <typename F, typename G>
-    class And {
+    class And : public Formula {
       public:
-        And(const F& left, const G& right) : left(left), right(right) {}
+        And(std::shared_ptr<Formula> left, std::shared_ptr<Formula> right) :
+          left(left), right(right) {}
 
         // May throw if not enough truth values passed
-        bool eval(const std::vector<bool>& assignment) const {
-          return (left.eval(assignment) & right.eval(assignment));
-        }
+        virtual bool eval(const std::vector<bool>& assignment) const override;
+        virtual CNFFormula to_cnf(bool negated = false) const override;
 
-        const F left;
-        const G right;
+        virtual ~And() {}
+
+        const std::shared_ptr<Formula> left;
+        const std::shared_ptr<Formula> right;
     };
 
-    template <typename F, typename G>
-    class Or {
+    class Or : public Formula {
       public:
-        Or(const F& left, const G& right) : left(left), right(right) {}
+        Or(std::shared_ptr<Formula> left, std::shared_ptr<Formula> right) :
+          left(left), right(right) {}
 
         // May throw if not enough truth values passed
-        bool eval(const std::vector<bool>& assignment) const {
-          return (left.eval(assignment) | right.eval(assignment));
-        }
+        virtual bool eval(const std::vector<bool>& assignment) const override;
+        virtual CNFFormula to_cnf(bool negated = false) const override;
 
-        const F left;
-        const G right;
+        virtual ~Or() {}
+
+        const std::shared_ptr<Formula> left;
+        const std::shared_ptr<Formula> right;
     };
 
-    template <typename F, typename G>
-    class Implies {
+    class Implies : public Formula {
       public:
-        Implies(const F& left, const G& right) : left(left), right(right) {}
+        Implies(std::shared_ptr<Formula> left, std::shared_ptr<Formula> right) :
+          left(left), right(right) {}
 
         // May throw if not enough truth values passed
-        bool eval(const std::vector<bool>& assignment) const {
-          return (!left.eval(assignment) | right.eval(assignment));
-        }
+        virtual bool eval(const std::vector<bool>& assignment) const override;
+        virtual CNFFormula to_cnf(bool negated = false) const override;
 
-        const F left;
-        const G right;
+        virtual ~Implies() {}
+
+        const std::shared_ptr<Formula> left;
+        const std::shared_ptr<Formula> right;
     };
 
-    template <typename F, typename G>
-    class Iff {
+    class Iff : public Formula {
       public:
-        Iff(const F& left, const G& right) : left(left), right(right) {}
+        Iff(std::shared_ptr<Formula> left, std::shared_ptr<Formula> right) :
+          left(left), right(right) {}
 
         // May throw if not enough truth values passed
-        bool eval(const std::vector<bool>& assignment) const {
-          return ((left.eval(assignment) & right.eval(assignment)) | (!left.eval(assignment) & !right.eval(assignment)));
-        }
+        virtual bool eval(const std::vector<bool>& assignment) const override;
+        virtual CNFFormula to_cnf(bool negated = false) const override;
 
-        const F left;
-        const G right;
+        virtual ~Iff() {}
+
+        const std::shared_ptr<Formula> left;
+        const std::shared_ptr<Formula> right;
     };
 
     // Free functions
-    template <typename F>
-    Negation<F> make_negation(const F& f) {
-      return Negation<F>(f);
-    }
-
-    template <typename F, typename G>
-    And<F, G> make_and(const F& f, const G& g) {
-      return And<F, G>(f, g);
-    }
-
-    template <typename F, typename G>
-    Or<F, G> make_or(const F& f, const G& g) {
-      return Or<F, G>(f, g);
-    }
-
-    template <typename F, typename G>
-    Implies<F, G> make_implies(const F& f, const G& g) {
-      return Implies<F, G>(f, g);
-    }
-
-    template <typename F, typename G>
-    Iff<F, G> make_iff(const F& f, const G& g) {
-      return Iff<F, G>(f, g);
-    }
-
-    // Operator overloading
-    std::ostream& operator<<(std::ostream& os, const Atomic& f) {
-      os << "p" << f.idx;
-
-      return os;
-    }
-
-    template <typename F>
-    std::ostream& operator<<(std::ostream& os, const Negation<F>& f) {
-      os << "(!" << f.formula << ")";
-
-      return os;
-    }
-
-    template <typename F, typename G>
-    std::ostream& operator<<(std::ostream& os, const And<F, G>& f) {
-      os << "(" << f.left << "^" << f.right << ")";
-
-      return os;
-    }
-
-    template <typename F, typename G>
-    std::ostream& operator<<(std::ostream& os, const Or<F, G>& f) {
-      os << "(" << f.left << "v" << f.right << ")";
-
-      return os;
-    }
-
-    template <typename F, typename G>
-    std::ostream& operator<<(std::ostream& os, const Implies<F, G>& f) {
-      os << "(" << f.left << ">" << f.right << ")";
-
-      return os;
-    }
-
-    template <typename F, typename G>
-    std::ostream& operator<<(std::ostream& os, const Iff<F, G>& f) {
-      os << "(" << f.left << "-" << f.right << ")";
-
-      return os;
-    }
+    std::shared_ptr<Negation> make_negation(std::shared_ptr<Formula> f);
+    std::shared_ptr<And> make_and(std::shared_ptr<Formula> f, std::shared_ptr<Formula> g);
+    std::shared_ptr<Or> make_or(std::shared_ptr<Formula> f, std::shared_ptr<Formula> g);
+    std::shared_ptr<Implies> make_implies(std::shared_ptr<Formula> f, std::shared_ptr<Formula> g);
+    std::shared_ptr<Iff> make_iff(std::shared_ptr<Formula> f, std::shared_ptr<Formula> g);
 
   } // namespace logic
 } // namespace cannon
