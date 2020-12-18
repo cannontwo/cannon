@@ -111,8 +111,40 @@ std::shared_ptr<And> cannon::logic::make_and(std::shared_ptr<Formula> f, std::sh
   return std::make_shared<And>(f, g);
 }
 
+std::shared_ptr<And> cannon::logic::make_and(std::shared_ptr<Formula> f,
+    std::stack<std::shared_ptr<Formula>>& fs) {
+  if (fs.size() == 0) {
+    throw std::runtime_error("Too few formulas passed to And");
+  }
+
+  auto g = fs.top();
+  fs.pop();
+
+  if (fs.size() == 0) {
+    return make_and(f, g);
+  } else {
+    return make_and(f, make_and(g, fs));
+  }
+}
+
 std::shared_ptr<Or> cannon::logic::make_or(std::shared_ptr<Formula> f, std::shared_ptr<Formula> g) {
   return std::make_shared<Or>(f, g);
+}
+
+std::shared_ptr<Or> cannon::logic::make_or(std::shared_ptr<Formula> f,
+    std::stack<std::shared_ptr<Formula>>& fs) {
+  if (fs.size() == 0) {
+    throw std::runtime_error("Too few formulas passed to Or");
+  }
+
+  auto g = fs.top();
+  fs.pop();
+
+  if (fs.size() == 0) {
+    return make_or(f, g);
+  } else {
+    return make_or(f, make_or(g, fs));
+  }
 }
 
 std::shared_ptr<Implies> cannon::logic::make_implies(std::shared_ptr<Formula> f, std::shared_ptr<Formula> g) {

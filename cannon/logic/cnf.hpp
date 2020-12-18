@@ -161,6 +161,8 @@ namespace cannon {
         Simplification simplify(const Assignment& a,
             const Simplification& s) const;
 
+        void merge(CNFFormula&& f);
+
         bool operator==(const CNFFormula f) const {
           if (f.clauses_.size() == clauses_.size()) {
             for (auto& c : clauses_) {

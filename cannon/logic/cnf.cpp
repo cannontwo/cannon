@@ -410,6 +410,12 @@ Simplification CNFFormula::simplify(const Assignment& a, const Simplification& s
   return new_s;
 }
 
+void CNFFormula::merge(CNFFormula&& f) {
+  for (auto &c : f.clauses_) {
+    add_clause(std::move(c));
+  }
+}
+
 // Free Functions
 Clause cannon::logic::generate_random_clause(unsigned int num_props) {
   if (num_props < 3) {

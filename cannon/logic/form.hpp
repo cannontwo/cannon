@@ -3,7 +3,8 @@
 
 #include <iostream>
 #include <vector>
-#include<memory>
+#include <memory>
+#include <stack>
 
 #include <cannon/logic/cnf.hpp>
 
@@ -112,7 +113,9 @@ namespace cannon {
     // Free functions
     std::shared_ptr<Negation> make_negation(std::shared_ptr<Formula> f);
     std::shared_ptr<And> make_and(std::shared_ptr<Formula> f, std::shared_ptr<Formula> g);
+    std::shared_ptr<And> make_and(std::shared_ptr<Formula> f, std::stack<std::shared_ptr<Formula>>& fs);
     std::shared_ptr<Or> make_or(std::shared_ptr<Formula> f, std::shared_ptr<Formula> g);
+    std::shared_ptr<Or> make_or(std::shared_ptr<Formula> f, std::stack<std::shared_ptr<Formula>>& fs);
     std::shared_ptr<Implies> make_implies(std::shared_ptr<Formula> f, std::shared_ptr<Formula> g);
     std::shared_ptr<Iff> make_iff(std::shared_ptr<Formula> f, std::shared_ptr<Formula> g);
 
