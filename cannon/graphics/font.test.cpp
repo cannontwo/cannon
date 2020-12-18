@@ -1,3 +1,4 @@
+#ifdef CANNON_BUILD_GRAPHICS
 #include <catch2/catch.hpp>
 
 #include <cannon/graphics/window.hpp>
@@ -14,3 +15,4 @@ TEST_CASE("Font", "[graphics]") {
   OpenGLState s1;
   REQUIRE(s == s1);
 }
+#endif

@@ -1,3 +1,4 @@
+#ifdef CANNON_BUILD_GRAPHICS
 #include <catch2/catch.hpp>
 
 #include <cannon/graphics/fragment_shader.hpp>
@@ -16,3 +17,4 @@ TEST_CASE("FragmentShader", "[graphics]") {
   OpenGLState s1;
   REQUIRE(s == s1);
 }
+#endif

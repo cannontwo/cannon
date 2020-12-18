@@ -1,3 +1,5 @@
+#ifdef CANNON_BUILD_GRAPHICS
+
 #include <cmath>
 
 #include <cannon/log/registry.hpp>
@@ -35,3 +37,6 @@ int main() {
       l->replace_points(new_pts);
       });
 }
+#else
+int main() {}
+#endif

@@ -1,3 +1,5 @@
+#ifdef CANNON_BUILD_GRAPHICS
+
 #include <cannon/graphics/window.hpp>
 #include <cannon/log/registry.hpp>
 
@@ -11,3 +13,6 @@ int main() {
   Window w;
   w.render_loop(render_func);
 }
+#else
+int main() {}
+#endif

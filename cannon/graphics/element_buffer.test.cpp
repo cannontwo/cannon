@@ -1,3 +1,4 @@
+#ifdef CANNON_BUILD_GRAPHICS
 #include <catch2/catch.hpp>
 
 #include <cannon/graphics/element_buffer.hpp>
@@ -38,3 +39,4 @@ TEST_CASE("ElementBuffer", "[graphics]") {
   OpenGLState s4;
   REQUIRE(s == s4);
 }
+#endif

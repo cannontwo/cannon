@@ -1,3 +1,4 @@
+#ifdef CANNON_BUILD_GRAPHICS
 #include <cannon/graphics/window.hpp>
 
 using namespace cannon::graphics;
@@ -13,3 +14,6 @@ int main() {
       });
   w.render_loop([] {});
 }
+#else
+int main() {}
+#endif

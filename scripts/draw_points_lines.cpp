@@ -1,3 +1,5 @@
+#ifdef CANNON_BUILD_GRAPHICS
+
 #include <glad/glad.h>
 #include <Eigen/Dense>
 
@@ -58,3 +60,6 @@ int main() {
       glDrawArrays(GL_LINES, 0, 4);
       });
 }
+#else
+int main() {}
+#endif

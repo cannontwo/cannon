@@ -1,3 +1,4 @@
+#ifdef CANNON_BUILD_GRAPHICS
 #include <catch2/catch.hpp>
 
 #include <cannon/graphics/shader_program.hpp>
@@ -76,3 +77,4 @@ TEST_CASE("ShaderProgram", "[graphics]") {
   OpenGLState s12;
   REQUIRE(s12 == s11);
 }
+#endif

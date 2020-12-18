@@ -1,3 +1,4 @@
+#ifdef CANNON_BUILD_GRAPHICS
 #include <catch2/catch.hpp>
 
 #include <cannon/graphics/vertex_array_object.hpp>
@@ -27,3 +28,4 @@ TEST_CASE("VertexArrayObject", "[graphics]") {
   OpenGLState s4;
   REQUIRE(s4 == s1);
 }
+#endif

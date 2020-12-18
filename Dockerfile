@@ -1,4 +1,9 @@
-FROM ubuntu:bionic
+FROM ubuntu:bionic AS base
+
+ARG build_graphics=1
+
+RUN apt-get update && apt-get install -y software-properties-common
+RUN add-apt-repository ppa:ubuntu-toolchain-r/test
 
 RUN apt-get update && apt-get install -y build-essential \ 
         cmake \
@@ -12,7 +17,25 @@ RUN apt-get update && apt-get install -y build-essential \
         libassimp-dev \
         libboost-all-dev \
         git \
-        wget
+        wget \
+        gcovr \
+        libompl-dev \
+        clang \
+        gcc-9 \
+        g++-9 \
+        libglvnd0 \
+        libgl1 \
+        libglx0 \
+        libegl1 \
+        libxext6 \
+        libx11-6 \
+        libglvnd-dev \
+        libgl1-mesa-dev \
+        libegl1-mesa-dev \
+        pkg-config \
+        fonts-open-sans
+
+RUN update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 90 --slave /usr/bin/g++ g++ /usr/bin/g++-9
 
 # YAML-Cpp
 WORKDIR /
@@ -44,14 +67,6 @@ RUN ./b2
 RUN ./b2 install
 WORKDIR /
 
-RUN apt-get install -y software-properties-common
-RUN add-apt-repository ppa:ubuntu-toolchain-r/test
-RUN apt-get update && apt-get install -y gcovr \
-        libompl-dev \
-        clang \
-        gcc-9 \
-        g++-9
-
 # OMPL
 #WORKDIR /
 #RUN wget https://ompl.kavrakilab.org/install-ompl-ubuntu.sh
@@ -61,28 +76,20 @@ RUN apt-get update && apt-get install -y gcovr \
 #RUN cmake -DCMAKE_INSTALL_PREFIX=/usr/local/
 #RUN make install
 
-RUN update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 90 --slave /usr/bin/g++ g++ /usr/bin/g++-9
-
-RUN apt-get update && apt-get install -y libglvnd0 \
-        libgl1 \
-        libglx0 \
-        libegl1 \
-        libxext6 \
-        libx11-6 \
-        libglvnd-dev \
-        libgl1-mesa-dev \
-        libegl1-mesa-dev \
-        pkg-config
-
-ENV NVIDIA_VISIBLE_DEVICES all
-ENV NVIDIA_DRIVER_CAPABILITIES graphics,utility
-
 COPY . /cannon
 RUN mkdir -p /cannon/build
 WORKDIR /cannon/build
-RUN cmake ..
+RUN cmake .. -DCANNON_BUILD_GRAPHICS=OFF
 RUN make -j4
 
-RUN apt-get update && apt-get install -y fonts-open-sans
+
+# Building with graphics capability
+#ENV NVIDIA_VISIBLE_DEVICES all
+#ENV NVIDIA_DRIVER_CAPABILITIES graphics,utility
+#COPY . /cannon
+#RUN mkdir -p /cannon/build
+#WORKDIR /cannon/build
+#RUN cmake ..
+#RUN make -j4
 
 ENTRYPOINT ["make", "test"]

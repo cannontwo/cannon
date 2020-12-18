@@ -1,3 +1,4 @@
+#ifdef CANNON_BUILD_GRAPHICS
 #include <catch2/catch.hpp>
 
 #include <cannon/graphics/window.hpp>
@@ -34,3 +35,4 @@ TEST_CASE("RenderPass", "[graphics]") {
   OpenGLState s3;
   REQUIRE(s3 == s2);
 }
+#endif

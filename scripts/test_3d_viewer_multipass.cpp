@@ -1,3 +1,5 @@
+#ifdef CANNON_BUILD_GRAPHICS
+
 #include <glad/glad.h>
 #include <thread>
 
@@ -71,3 +73,6 @@ int main() {
   // There appears to be a driver bug that causes a segfault on thread destruction
   render_thread.join();
 }
+#else
+int main() {}
+#endif

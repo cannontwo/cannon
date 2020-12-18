@@ -1,3 +1,4 @@
+#ifdef CANNON_BUILD_GRAPHICS
 #include <catch2/catch.hpp>
 
 #include <cannon/graphics/geometry/screen_quad.hpp>
@@ -44,3 +45,4 @@ TEST_CASE("ScreenQuad", "[graphics]") {
   OpenGLState s6;
   REQUIRE(s == s6);
 }
+#endif

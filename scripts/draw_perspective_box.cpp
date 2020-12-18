@@ -1,3 +1,4 @@
+#ifdef CANNON_BUILD_GRAPHICS
 #include <glad/glad.h>
 #include <Eigen/Dense>
 #include <stb_image/stb_image.h>
@@ -107,3 +108,6 @@ int main() {
   vbuf.unbind();
   ebuf.unbind();
 }
+#else
+int main() {}
+#endif

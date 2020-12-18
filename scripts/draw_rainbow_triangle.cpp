@@ -1,3 +1,5 @@
+#ifdef CANNON_BUILD_GRAPHICS
+
 #include <glad/glad.h>
 
 #include <cannon/graphics/window.hpp>
@@ -46,3 +48,6 @@ int main() {
       glDrawArrays(GL_TRIANGLES, 0, 3);
       });
 }
+#else
+int main() {}
+#endif

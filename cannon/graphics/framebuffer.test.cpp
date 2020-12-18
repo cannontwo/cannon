@@ -1,3 +1,4 @@
+#ifdef CANNON_BUILD_GRAPHICS
 #include <catch2/catch.hpp>
 
 #include <cannon/graphics/framebuffer.hpp>
@@ -86,3 +87,4 @@ TEST_CASE("Framebuffer", "[graphics]") {
   OpenGLState s14;
   REQUIRE(s14 == s13);
 }
+#endif

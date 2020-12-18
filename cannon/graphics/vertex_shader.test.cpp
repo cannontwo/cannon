@@ -1,3 +1,4 @@
+#ifdef CANNON_BUILD_GRAPHICS
 #include <catch2/catch.hpp>
 
 #include <cannon/graphics/vertex_shader.hpp>
@@ -15,3 +16,4 @@ TEST_CASE("VertexShader", "[graphics]") {
   OpenGLState s1;
   REQUIRE(s == s1);
 }
+#endif

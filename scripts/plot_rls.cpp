@@ -1,3 +1,5 @@
+#ifdef CANNON_BUILD_GRAPHICS
+
 #include <cmath>
 
 #include <Eigen/Dense>
@@ -65,3 +67,6 @@ int main() {
       last_time = t;
       });
 }
+#else
+int main() {}
+#endif

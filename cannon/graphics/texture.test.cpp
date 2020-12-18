@@ -1,3 +1,4 @@
+#ifdef CANNON_BUILD_GRAPHICS
 #include <catch2/catch.hpp>
 
 #include <cannon/graphics/texture.hpp>
@@ -81,3 +82,4 @@ TEST_CASE("Texture", "[graphics]") {
   REQUIRE(s == s12);
 
 }
+#endif

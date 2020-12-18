@@ -1,3 +1,4 @@
+#ifdef CANNON_BUILD_GRAPHICS
 #include <catch2/catch.hpp>
 
 #include <cannon/graphics/geometry/textured_cube.hpp>
@@ -33,3 +34,4 @@ TEST_CASE("TexturedCube", "[graphics]") {
   OpenGLState s3;
   REQUIRE(s == s3);
 }
+#endif

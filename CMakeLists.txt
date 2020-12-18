@@ -1,6 +1,12 @@
 cmake_minimum_required(VERSION 3.10)
 project(Cannon C CXX)
 
+# Options
+option(CANNON_BUILD_GRAPHICS "Whether to build graphics portions of the project" ON)
+if(CANNON_BUILD_GRAPHICS)
+  add_definitions( -DCANNON_BUILD_GRAPHICS=1 )
+endif()
+
 # Compilation configuration
 ADD_DEFINITIONS(
   -Wall
@@ -74,32 +80,6 @@ find_package(CGAL REQUIRED COMPONENTS Core)
 include_directories(${CGAL_INCLUDE_DIRS})
 list(APPEND LIBRARIES ${CGAL_LIBRARY})
 
-# OpenGL
-find_package(OpenGL 4.3 REQUIRED)
-include_directories(${OPENGL_INCLUDE_DIRS})
-list(APPEND LIBRARIES ${OPENGL_LIBRARIES})
-
-# GLAD
-add_library(GLAD "thirdparty/glad/src/glad.c")
-target_link_libraries(GLAD ${CMAKE_DL_LIBS})
-include_directories("thirdparty/glad/include")
-list(APPEND LIBRARIES GLAD)
-
-# STB_IMAGE
-add_library(STB_IMAGE "thirdparty/stb_image/stb_image.cpp")
-include_directories("thirdparty/stb_image/include")
-list(APPEND LIBRARIES STB_IMAGE)
-
-# GLFW
-find_package(GLFW3 REQUIRED)
-include_directories(${GLFW3_INCLUDE_DIR})
-list(APPEND LIBRARIES ${GLFW3_LIBRARY})
-
-# FreeType
-find_package(Freetype REQUIRED)
-include_directories(${FREETYPE_INCLUDE_DIRS})
-list(APPEND LIBRARIES ${FREETYPE_LIBRARIES})
-
 # Boost
 find_package(Boost 1.74.0 REQUIRED)
 include_directories(${Boost_INCLUDE_DIRS})
@@ -109,52 +89,80 @@ find_package(yaml-cpp 0.6.0 REQUIRED)
 include_directories(${YAML_CPP_INCLUDE_DIR})
 list(APPEND LIBRARIES ${YAML_CPP_LIBRARIES})
 
-# Assimp
-find_package(assimp REQUIRED)
-include_directories(${ASSIMP_INCLUDE_DIRS})
-list(APPEND LIBRARIES ${ASSIMP_LIBRARIES})
-
 # Catch2
 find_package(Catch2 REQUIRED)
 include(Catch)
 
-# ImGui
-add_definitions(-DIMGUI_IMPL_OPENGL_LOADER_GLAD)
-include_directories(${PROJECT_SOURCE_DIR}/thirdparty/imgui)
-include_directories(${PROJECT_SOURCE_DIR}/thirdparty/imgui/backends)
-include_directories(${PROJECT_SOURCE_DIR}/thirdparty/imgui/misc/cpp)
-list(APPEND IMGUI_SOURCES
-  ${PROJECT_SOURCE_DIR}/thirdparty/imgui/imgui.cpp
-  ${PROJECT_SOURCE_DIR}/thirdparty/imgui/imgui_draw.cpp
-  ${PROJECT_SOURCE_DIR}/thirdparty/imgui/imgui_demo.cpp
-  ${PROJECT_SOURCE_DIR}/thirdparty/imgui/imgui_widgets.cpp
-  ${PROJECT_SOURCE_DIR}/thirdparty/imgui/imconfig.h
-  ${PROJECT_SOURCE_DIR}/thirdparty/imgui/imgui.h
-  ${PROJECT_SOURCE_DIR}/thirdparty/imgui/misc/cpp/imgui_stdlib.h
-  ${PROJECT_SOURCE_DIR}/thirdparty/imgui/misc/cpp/imgui_stdlib.cpp
-  ${PROJECT_SOURCE_DIR}/thirdparty/imgui/imgui_internal.h
-  ${PROJECT_SOURCE_DIR}/thirdparty/imgui/imstb_rectpack.h
-  ${PROJECT_SOURCE_DIR}/thirdparty/imgui/imstb_textedit.h
-  ${PROJECT_SOURCE_DIR}/thirdparty/imgui/imstb_truetype.h
-  ${PROJECT_SOURCE_DIR}/thirdparty/imgui/backends/imgui_impl_glfw.cpp
-  ${PROJECT_SOURCE_DIR}/thirdparty/imgui/backends/imgui_impl_glfw.h
-  ${PROJECT_SOURCE_DIR}/thirdparty/imgui/backends/imgui_impl_opengl3.cpp
-  ${PROJECT_SOURCE_DIR}/thirdparty/imgui/backends/imgui_impl_opengl3.h
-  )
-add_library(imgui ${IMGUI_SOURCES})
-target_link_libraries(imgui ${GLFW3_LIBRARY} ${OPENGL_LIBRARIES})
-list(APPEND LIBRARIES imgui)
+if (CANNON_BUILD_GRAPHICS)
+  # OpenGL
+  find_package(OpenGL 4.3 REQUIRED)
+  include_directories(${OPENGL_INCLUDE_DIRS})
+  list(APPEND LIBRARIES ${OPENGL_LIBRARIES})
 
-# ImPlot
-#include_directories(${PROJECT_SOURCE_DIR}/thirdparty/implot)
-#list(APPEND IMPLOT_SOURCES
-#  ${PROJECT_SOURCE_DIR}/thirdparty/implot/implot.h
-#  ${PROJECT_SOURCE_DIR}/thirdparty/implot/implot.cpp
-#  ${PROJECT_SOURCE_DIR}/thirdparty/implot/implot_internal.h
-#  ${PROJECT_SOURCE_DIR}/thirdparty/implot/implot_items.cpp
-#  )
-#add_library(implot ${IMPLOT_SOURCES})
-#list(APPEND LIBRARIES implot)
+  # GLAD
+  add_library(GLAD "thirdparty/glad/src/glad.c")
+  target_link_libraries(GLAD ${CMAKE_DL_LIBS})
+  include_directories("thirdparty/glad/include")
+  list(APPEND LIBRARIES GLAD)
+
+  # STB_IMAGE
+  add_library(STB_IMAGE "thirdparty/stb_image/stb_image.cpp")
+  include_directories("thirdparty/stb_image/include")
+  list(APPEND LIBRARIES STB_IMAGE)
+
+  # GLFW
+  find_package(GLFW3 REQUIRED)
+  include_directories(${GLFW3_INCLUDE_DIR})
+  list(APPEND LIBRARIES ${GLFW3_LIBRARY})
+
+  # FreeType
+  find_package(Freetype REQUIRED)
+  include_directories(${FREETYPE_INCLUDE_DIRS})
+  list(APPEND LIBRARIES ${FREETYPE_LIBRARIES})
+
+  # Assimp
+  find_package(assimp REQUIRED)
+  include_directories(${ASSIMP_INCLUDE_DIRS})
+  list(APPEND LIBRARIES ${ASSIMP_LIBRARIES})
+
+  # ImGui
+  add_definitions(-DIMGUI_IMPL_OPENGL_LOADER_GLAD)
+  include_directories(${PROJECT_SOURCE_DIR}/thirdparty/imgui)
+  include_directories(${PROJECT_SOURCE_DIR}/thirdparty/imgui/backends)
+  include_directories(${PROJECT_SOURCE_DIR}/thirdparty/imgui/misc/cpp)
+  list(APPEND IMGUI_SOURCES
+    ${PROJECT_SOURCE_DIR}/thirdparty/imgui/imgui.cpp
+    ${PROJECT_SOURCE_DIR}/thirdparty/imgui/imgui_draw.cpp
+    ${PROJECT_SOURCE_DIR}/thirdparty/imgui/imgui_demo.cpp
+    ${PROJECT_SOURCE_DIR}/thirdparty/imgui/imgui_widgets.cpp
+    ${PROJECT_SOURCE_DIR}/thirdparty/imgui/imconfig.h
+    ${PROJECT_SOURCE_DIR}/thirdparty/imgui/imgui.h
+    ${PROJECT_SOURCE_DIR}/thirdparty/imgui/misc/cpp/imgui_stdlib.h
+    ${PROJECT_SOURCE_DIR}/thirdparty/imgui/misc/cpp/imgui_stdlib.cpp
+    ${PROJECT_SOURCE_DIR}/thirdparty/imgui/imgui_internal.h
+    ${PROJECT_SOURCE_DIR}/thirdparty/imgui/imstb_rectpack.h
+    ${PROJECT_SOURCE_DIR}/thirdparty/imgui/imstb_textedit.h
+    ${PROJECT_SOURCE_DIR}/thirdparty/imgui/imstb_truetype.h
+    ${PROJECT_SOURCE_DIR}/thirdparty/imgui/backends/imgui_impl_glfw.cpp
+    ${PROJECT_SOURCE_DIR}/thirdparty/imgui/backends/imgui_impl_glfw.h
+    ${PROJECT_SOURCE_DIR}/thirdparty/imgui/backends/imgui_impl_opengl3.cpp
+    ${PROJECT_SOURCE_DIR}/thirdparty/imgui/backends/imgui_impl_opengl3.h
+    )
+  add_library(imgui ${IMGUI_SOURCES})
+  target_link_libraries(imgui ${GLFW3_LIBRARY} ${OPENGL_LIBRARIES})
+  list(APPEND LIBRARIES imgui)
+
+  # ImPlot
+  #include_directories(${PROJECT_SOURCE_DIR}/thirdparty/implot)
+  #list(APPEND IMPLOT_SOURCES
+  #  ${PROJECT_SOURCE_DIR}/thirdparty/implot/implot.h
+  #  ${PROJECT_SOURCE_DIR}/thirdparty/implot/implot.cpp
+  #  ${PROJECT_SOURCE_DIR}/thirdparty/implot/implot_internal.h
+  #  ${PROJECT_SOURCE_DIR}/thirdparty/implot/implot_items.cpp
+  #  )
+  #add_library(implot ${IMPLOT_SOURCES})
+  #list(APPEND LIBRARIES implot)
+endif()
 
 ## Source code
 include_directories("${PROJECT_SOURCE_DIR}")

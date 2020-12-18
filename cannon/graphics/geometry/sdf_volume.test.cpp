@@ -1,3 +1,4 @@
+#ifdef CANNON_BUILD_GRAPHICS
 #include <catch2/catch.hpp>
 
 #include <cannon/graphics/geometry/sdf_volume.hpp>
@@ -28,3 +29,4 @@ TEST_CASE("SDFVolume", "[graphics]") {
   OpenGLState s3;
   REQUIRE(s == s3);
 }
+#endif

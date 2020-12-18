@@ -1,3 +1,4 @@
+#ifdef CANNON_BUILD_GRAPHICS
 #include <catch2/catch.hpp>
 
 #include <cannon/graphics/vertex_buffer.hpp>
@@ -58,3 +59,4 @@ TEST_CASE("VertexBuffer", "[graphics]") {
   OpenGLState s10;
   REQUIRE(s10 == s);
 }
+#endif

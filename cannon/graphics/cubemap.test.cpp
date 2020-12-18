@@ -1,3 +1,5 @@
+#ifdef CANNON_BUILD_GRAPHICS
+
 #include <catch2/catch.hpp>
 
 #include <cannon/graphics/cubemap.hpp>
@@ -25,3 +27,4 @@ TEST_CASE("Cubemap", "[graphics]") {
   OpenGLState s3;
   REQUIRE(s3 == s);
 }
+#endif

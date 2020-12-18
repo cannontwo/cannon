@@ -1,3 +1,4 @@
+#ifdef CANNON_BUILD_GRAPHICS
 #include <catch2/catch.hpp>
 #include <thirdparty/approval_tests/ApprovalTests.hpp>
 
@@ -27,3 +28,4 @@ TEST_CASE("Window", "[graphics]") {
   }
   terminate_opengl_context(gl_window);
 }
+#endif

@@ -1,3 +1,5 @@
+#ifdef CANNON_BUILD_GRAPHICS
+
 #include <cannon/log/registry.hpp>
 
 #include <cannon/plot/plotter.hpp>
@@ -24,3 +26,6 @@ int main() {
       }
       });
 }
+#else
+int main() {}
+#endif

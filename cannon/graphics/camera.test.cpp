@@ -1,3 +1,4 @@
+#ifdef CANNON_BUILD_GRAPHICS
 #include <catch2/catch.hpp>
 
 #include <cannon/graphics/window.hpp>
@@ -27,3 +28,4 @@ TEST_CASE("Camera", "[graphics]") {
   OpenGLState end_state;
   REQUIRE(start_state == end_state);
 }
+#endif

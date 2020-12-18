@@ -1,3 +1,4 @@
+#ifdef CANNON_BUILD_GRAPHICS
 #include <catch2/catch.hpp>
 
 #include <cannon/graphics/geometry/skybox.hpp>
@@ -27,3 +28,4 @@ TEST_CASE("Skybox", "[graphics]") {
   OpenGLState s2;
   REQUIRE(s == s2);
 }
+#endif

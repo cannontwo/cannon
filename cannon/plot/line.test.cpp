@@ -1,3 +1,4 @@
+#ifdef CANNON_BUILD_GRAPHICS
 #include <catch2/catch.hpp>
 #include <thirdparty/approval_tests/ApprovalTests.hpp>
 
@@ -30,3 +31,4 @@ TEST_CASE("Line", "[plot]") {
         }
       });
 }
+#endif

@@ -1,3 +1,5 @@
+#ifdef CANNON_BUILD_GRAPHICS
+
 #include <glad/glad.h>
 
 #include <cannon/graphics/window.hpp>
@@ -69,3 +71,6 @@ int main() {
   vbuf.unbind();
   ebuf.unbind();
 }
+#else
+int main() {}
+#endif
