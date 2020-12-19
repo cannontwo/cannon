@@ -1,8 +1,6 @@
 #ifndef CANNON_PHYSICS_SYSTEMS_INVERTED_PENDULUM_H
 #define CANNON_PHYSICS_SYSTEMS_INVERTED_PENDULUM_H 
 
-#include <random>
-
 #include <Eigen/Dense>
 
 #include <cannon/physics/rk4_integrator.hpp>
@@ -36,9 +34,6 @@ namespace cannon {
           Holonomic2D() = delete;
 
           Holonomic2D(Vector2d s, Vector2d g) : e_(s_, 4, 0.01), start_(s), goal_(g) {
-            std::random_device rd;
-            gen_ = std::mt19937(rd());
-
             state_ = Vector4d::Zero(); 
             reset();
           }
@@ -77,10 +72,6 @@ namespace cannon {
 
           Vector2d start_;
           Vector2d goal_;
-
-          std::mt19937 gen_;
-          std::uniform_real_distribution<double> dis0_;
-          std::uniform_real_distribution<double> dis1_;
 
       };
 
