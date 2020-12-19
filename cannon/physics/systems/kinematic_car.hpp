@@ -3,6 +3,11 @@
 
 #include <random>
 
+#include <ompl/control/ODESolver.h>
+#include <ompl/control/spaces/RealVectorControlSpace.h>
+#include <ompl/base/spaces/SO2StateSpace.h>
+#include <ompl/base/spaces/SE2StateSpace.h>
+
 #include <Eigen/Dense>
 
 #include <cannon/physics/rk4_integrator.hpp>
@@ -11,6 +16,9 @@
 using namespace Eigen;
 
 using namespace cannon::log;
+
+namespace oc = ompl::control;
+namespace ob = ompl::base;
 
 namespace cannon {
   namespace physics {
@@ -30,6 +38,35 @@ namespace cannon {
           dsdt[2] = (uv / l) * std::tan(uth);
           dsdt[3] = 0.0;
           dsdt[4] = 0.0;
+        }
+
+        void ompl_ode_adaptor(const oc::ODESolver::StateType& q, 
+            const oc::Control* control, oc::ODESolver::StateType& qdot) {
+
+          const double uv = control->as<oc::RealVectorControlSpace::ControlType>()->values[0];
+          const double uth = control->as<oc::RealVectorControlSpace::ControlType>()->values[1];
+
+          VectorXd s(5);
+          s[0] = q[0];
+          s[1] = q[1];
+          s[2] = q[2];
+          s[3] = uv;
+          s[4] = uth;
+          VectorXd dsdt(5);
+
+          (*this)(s, dsdt, 0.0);
+
+          qdot.resize(q.size(), 0);
+          for (unsigned int i = 0; i < q.size(); i++) {
+            qdot[i] = dsdt[i];
+          }
+        }
+
+        static void ompl_post_integration(const ob::State* /*state*/, const
+            oc::Control* /*control*/, const double /*duration*/, ob::State *result) {
+
+          ob::SO2StateSpace SO2;
+          SO2.enforceBounds(result->as<ob::SE2StateSpace::StateType>()->as<ob::SO2StateSpace::StateType>(1));
         }
 
         // Parameters
@@ -78,6 +115,18 @@ namespace cannon {
             state_[4] = 0.0;
 
             return state_.head(3);
+          }
+
+          VectorXd reset(const VectorXd& s) {
+            state_[0] = s[0];
+            state_[1] = s[1];
+            state_[2] = s[2];
+            
+            state_[3] = 0.0;
+            state_[4] = 0.0;
+
+            return state_.head(3);
+
           }
           
         private:
