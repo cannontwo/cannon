@@ -125,6 +125,7 @@ namespace cannon {
     class CNFFormula {
       public:
         void add_clause(Clause&& c);
+        void add_unit_clause(unsigned int prop, bool negated);
 
         PropAssignment eval(const Assignment& assignment,
             const Simplification& s) const;

@@ -159,6 +159,12 @@ void CNFFormula::add_clause(Clause&& c) {
   clauses_.emplace_back(c);
 }
 
+void CNFFormula::add_unit_clause(unsigned int prop, bool negated) {
+  Clause c;
+  c.add_literal(prop, negated);
+  add_clause(std::move(c));
+}
+
 PropAssignment CNFFormula::eval(const Assignment& assignment,
     const Simplification& s) const {
   bool found_unassigned = false;

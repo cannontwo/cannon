@@ -4,6 +4,7 @@ list(APPEND LOGIC_SOURCES
   read_dimacs_cnf.cpp
   write_dimacs_cnf.cpp
   dpll.cpp
+  circuit.cpp
   )
 
 add_library(logic OBJECT ${LOGIC_SOURCES})
