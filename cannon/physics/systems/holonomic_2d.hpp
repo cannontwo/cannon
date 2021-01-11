@@ -3,7 +3,14 @@
 
 #include <Eigen/Dense>
 
+#include <ompl/control/ODESolver.h>
+#include <ompl/control/spaces/RealVectorControlSpace.h>
+
+#include <cannon/physics/systems/system.hpp>
 #include <cannon/physics/rk4_integrator.hpp>
+
+namespace oc = ompl::control;
+namespace ob = ompl::base;
 
 using namespace Eigen;
 
@@ -11,10 +18,10 @@ namespace cannon {
   namespace physics {
     namespace systems {
 
-      struct Hol2DSystem {
+      struct Hol2DSystem : System {
         Hol2DSystem() {}
 
-        void operator()(const VectorXd& s, VectorXd& dsdt, const double /*t*/) {
+        virtual void operator()(const VectorXd& s, VectorXd& dsdt, const double /*t*/) override {
           double ux = s[2];
           double uy = s[3];
 
@@ -23,6 +30,32 @@ namespace cannon {
           dsdt[1] = uy;
           dsdt[2] = 0.0;
           dsdt[3] = 0.0;
+        }
+
+        virtual void ompl_ode_adaptor(const oc::ODESolver::StateType& q, 
+            const oc::Control* control, oc::ODESolver::StateType& qdot) override {
+
+          const double ux = control->as<oc::RealVectorControlSpace::ControlType>()->values[0];
+          const double uy = control->as<oc::RealVectorControlSpace::ControlType>()->values[1];
+
+          VectorXd s(4);
+          s[0] = q[0];
+          s[1] = q[1];
+          s[2] = ux;
+          s[3] = uy;
+          VectorXd dsdt(4);
+
+          (*this)(s, dsdt, 0.0);
+
+          qdot.resize(q.size(), 0);
+          for (unsigned int i = 0; i < q.size(); i++) {
+            qdot[i] = dsdt[i];
+          }
+        }
+
+        static void ompl_post_integration(const ob::State* /*state*/, const
+            oc::Control* /*control*/, const double /*duration*/, ob::State *result) {
+          // Nothing necessary
         }
 
         // Parameters?
@@ -64,8 +97,9 @@ namespace cannon {
             return state_.head(2);
           }
 
-        private:
           Hol2DSystem s_;
+
+        private:
           RK4Integrator e_;
 
           Vector4d state_;

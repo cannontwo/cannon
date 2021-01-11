@@ -7,6 +7,10 @@
 
 #include <Eigen/Dense>
 
+#include <ompl/control/ODESolver.h>
+#include <ompl/control/spaces/RealVectorControlSpace.h>
+
+#include <cannon/physics/systems/system.hpp>
 #include <cannon/physics/euler_integrator.hpp>
 #include <cannon/log/registry.hpp>
 
@@ -14,16 +18,19 @@ using namespace Eigen;
 
 using namespace cannon::log;
 
+namespace oc = ompl::control;
+namespace ob = ompl::base;
+
 namespace cannon {
   namespace physics {
     namespace systems {
 
-      struct PendSystem {
+      struct PendSystem : System {
         PendSystem(double g = 10.0, double m = 1.0, double l = 1.0, double dt =
             0.05, double max_speed = 8.0) : g_(g), m_(m), l_(l), dt_(dt),
         max_speed_(max_speed) {}
 
-        void operator()(const VectorXd& x, VectorXd& dxdt, const double /*t*/) {
+        virtual void operator()(const VectorXd& x, VectorXd& dxdt, const double /*t*/) override {
           double th = x[0];
           double thdot = x[1];
           double u = x[2];
@@ -38,6 +45,30 @@ namespace cannon {
           dxdt[2] = 0.0;
         }
 
+        virtual void ompl_ode_adaptor(const oc::ODESolver::StateType& q, 
+            const oc::Control* control, oc::ODESolver::StateType& qdot) override {
+
+          const double u = control->as<oc::RealVectorControlSpace::ControlType>()->values[0];
+
+          VectorXd s(3);
+          s[0] = q[0];
+          s[1] = q[1];
+          s[2] = u;
+          VectorXd dsdt(3);
+
+          (*this)(s, dsdt, 0.0);
+
+          qdot.resize(q.size(), 0);
+          for (unsigned int i = 0; i < q.size(); i++) {
+            qdot[i] = dsdt[i];
+          }
+        }
+
+        static void ompl_post_integration(const ob::State* /*state*/, const
+            oc::Control* /*control*/, const double /*duration*/, ob::State *result) {
+          // Nothing needed
+        }
+
         // Parameters
         double g_;
         double m_;
@@ -45,6 +76,7 @@ namespace cannon {
         double dt_;
         double max_speed_;
       };
+
 
       class InvertedPendulum {
         public:
@@ -90,6 +122,8 @@ namespace cannon {
             return state_.head(2);
           }
 
+          PendSystem s_;
+
         private:
           inline double normalize_(double th) {
             return (std::fmod((th + M_PI), (2.0 * M_PI)) - M_PI); 
@@ -97,7 +131,6 @@ namespace cannon {
 
           double max_torque_;
 
-          PendSystem s_;
           EulerIntegrator<PendSystem> e_;
 
           Vector3d state_;

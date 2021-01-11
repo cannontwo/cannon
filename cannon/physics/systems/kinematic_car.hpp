@@ -11,6 +11,7 @@
 #include <Eigen/Dense>
 
 #include <cannon/physics/rk4_integrator.hpp>
+#include <cannon/physics/systems/system.hpp>
 #include <cannon/log/registry.hpp>
 
 using namespace Eigen;
@@ -24,10 +25,10 @@ namespace cannon {
   namespace physics {
     namespace systems {
 
-      struct KinCarSystem {
+      struct KinCarSystem : System {
         KinCarSystem(double l = 1.0) : l(l) {}
 
-        void operator()(const VectorXd& s, VectorXd& dsdt, const double /*t*/) {
+        virtual void operator()(const VectorXd& s, VectorXd& dsdt, const double /*t*/) override {
           double th = s[2];
           double uv = s[3];
           double uth = s[4];
@@ -40,8 +41,8 @@ namespace cannon {
           dsdt[4] = 0.0;
         }
 
-        void ompl_ode_adaptor(const oc::ODESolver::StateType& q, 
-            const oc::Control* control, oc::ODESolver::StateType& qdot) {
+        virtual void ompl_ode_adaptor(const oc::ODESolver::StateType& q, 
+            const oc::Control* control, oc::ODESolver::StateType& qdot) override {
 
           const double uv = control->as<oc::RealVectorControlSpace::ControlType>()->values[0];
           const double uth = control->as<oc::RealVectorControlSpace::ControlType>()->values[1];
@@ -128,9 +129,10 @@ namespace cannon {
             return state_.head(3);
 
           }
+
+          KinCarSystem s_;
           
         private:
-          KinCarSystem s_;
           RK4Integrator e_;
 
           VectorXd state_;
