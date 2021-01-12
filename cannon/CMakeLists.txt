@@ -9,39 +9,36 @@ add_subdirectory(ml)
 add_subdirectory(control)
 add_subdirectory(physics)
 add_subdirectory(geom)
-add_subdirectory(research)
 add_subdirectory(utils)
+
+list(APPEND CANNON_OBJS
+    $<TARGET_OBJECTS:math>
+    $<TARGET_OBJECTS:log>
+    $<TARGET_OBJECTS:logic>
+    $<TARGET_OBJECTS:ml>
+    $<TARGET_OBJECTS:control>
+    $<TARGET_OBJECTS:physics>
+    $<TARGET_OBJECTS:geom>
+    $<TARGET_OBJECTS:utils>
+  )
 
 if (CANNON_BUILD_GRAPHICS)
   add_subdirectory(graphics)
   add_subdirectory(plot)
-  add_library(cannon SHARED ${CANNON_SOURCES}
-    $<TARGET_OBJECTS:math>
-    $<TARGET_OBJECTS:log>
-    $<TARGET_OBJECTS:logic>
+  list(APPEND CANNON_OBJS
     $<TARGET_OBJECTS:graphics>
     $<TARGET_OBJECTS:plot>
-    $<TARGET_OBJECTS:ml>
-    $<TARGET_OBJECTS:control>
-    $<TARGET_OBJECTS:physics>
-    $<TARGET_OBJECTS:geom>
-    $<TARGET_OBJECTS:research>
-    $<TARGET_OBJECTS:utils>
-    )
-else()
-  add_library(cannon SHARED ${CANNON_SOURCES}
-    $<TARGET_OBJECTS:math>
-    $<TARGET_OBJECTS:log>
-    $<TARGET_OBJECTS:logic>
-    $<TARGET_OBJECTS:ml>
-    $<TARGET_OBJECTS:control>
-    $<TARGET_OBJECTS:physics>
-    $<TARGET_OBJECTS:geom>
-    $<TARGET_OBJECTS:research>
-    $<TARGET_OBJECTS:utils>
     )
 endif()
 
+if (CANNON_BUILD_RESEARCH)
+  add_subdirectory(research)
+  list(APPEND CANNON_OBJS
+    $<TARGET_OBJECTS:research>
+    )
+endif()
+
+add_library(cannon SHARED ${CANNON_SOURCES} ${CANNON_OBJS})
 target_link_libraries(cannon ${LIBRARIES})
 
 # Copy CNF formulas
@@ -50,14 +47,6 @@ ADD_CUSTOM_COMMAND(
   COMMAND ${CMAKE_COMMAND} -E create_symlink
     ${CMAKE_CURRENT_SOURCE_DIR}/logic/formulas ${CMAKE_CURRENT_BINARY_DIR}/../formulas
   COMMENT "Copying formulas" VERBATIM
-  )
-
-# Copy parl configs
-ADD_CUSTOM_COMMAND(
-  TARGET cannon POST_BUILD
-  COMMAND ${CMAKE_COMMAND} -E create_symlink
-    ${CMAKE_CURRENT_SOURCE_DIR}/research/experiments/parl_configs ${CMAKE_CURRENT_BINARY_DIR}/../experiments/parl_configs
-  COMMENT "Copying parl_configs" VERBATIM
   )
 
 if (CANNON_BUILD_GRAPHICS)
@@ -77,3 +66,14 @@ if (CANNON_BUILD_GRAPHICS)
     COMMENT "Copying assets" VERBATIM
     )
 endif()
+
+# Copy parl configs
+if (CANNON_BUILD_RESEARCH)
+  ADD_CUSTOM_COMMAND(
+    TARGET cannon POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E create_symlink
+      ${CMAKE_CURRENT_SOURCE_DIR}/research/experiments/parl_configs ${CMAKE_CURRENT_BINARY_DIR}/../experiments/parl_configs
+    COMMENT "Copying parl_configs" VERBATIM
+    )
+endif()
+
