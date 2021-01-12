@@ -7,7 +7,7 @@ if(CANNON_BUILD_GRAPHICS)
   add_definitions( -DCANNON_BUILD_GRAPHICS=1 )
 endif()
 
-option(CANNON_BUILD_RESEARCH "Whether to build research portions of the project" ON)
+option(CANNON_BUILD_RESEARCH "Whether to build research portions of the project (will not work unless you have access to my private research repo)" OFF)
 if(CANNON_BUILD_RESEARCH)
   add_definitions( -DCANNON_BUILD_RESEARCH=1 )
 endif()
