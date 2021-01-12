@@ -4,3 +4,6 @@
 [submodule "thirdparty/implot"]
 	path = thirdparty/implot
 	url = https://github.com/cannontwo/implot.git
+[submodule "cannon/research"]
+	path = cannon/research
+	url = https://github.com/cannontwo/research.git
