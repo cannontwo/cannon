@@ -54,6 +54,28 @@ SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pg")
 SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -pg")
 SET(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -pg")
 
+# Doxygen
+option(CANNON_BUILD_DOC "Build documentation" ON)
+
+# check if Doxygen is installed
+if (CANNON_BUILD_DOC)
+  find_package(Doxygen REQUIRED)
+  # set input and output files
+  set(DOXYGEN_IN ${CMAKE_CURRENT_SOURCE_DIR}/docs/Doxyfile.in)
+  set(DOXYGEN_OUT ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile)
+
+  # request to configure the file
+  configure_file(${DOXYGEN_IN} ${DOXYGEN_OUT} @ONLY)
+  message("Doxygen build started")
+
+  # note the option ALL which allows to build the docs together with the application
+  add_custom_target( doc_doxygen ALL
+      COMMAND ${DOXYGEN_EXECUTABLE} ${DOXYGEN_OUT}
+      WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+      COMMENT "Generating API documentation with Doxygen"
+      VERBATIM )
+endif (CANNON_BUILD_DOC)
+
 # Clang Tidy
 find_program (CLANG_TIDY_EXE NAMES "clang-tidy")
 if(CLANG_TIDY_EXE)

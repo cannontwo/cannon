@@ -33,7 +33,8 @@ RUN apt-get update && apt-get install -y build-essential \
         libgl1-mesa-dev \
         libegl1-mesa-dev \
         pkg-config \
-        fonts-open-sans
+        fonts-open-sans \
+        doxygen
 
 RUN update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 90 --slave /usr/bin/g++ g++ /usr/bin/g++-9
 
