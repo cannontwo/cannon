@@ -1,3 +1,3 @@
-# W. Cannon Lewis II's Lifetime Repository
+# Cannon's Lifetime Repository
 
 More information TODO
