@@ -54,11 +54,13 @@ SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pg")
 SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -pg")
 SET(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -pg")
 
-# Doxygen
+# Building Documentation
 option(CANNON_BUILD_DOC "Build documentation" ON)
 
 # check if Doxygen is installed
 if (CANNON_BUILD_DOC)
+
+  # Doxygen
   find_package(Doxygen REQUIRED)
   # set input and output files
   set(DOXYGEN_IN ${CMAKE_CURRENT_SOURCE_DIR}/docs/Doxyfile.in)
@@ -74,7 +76,24 @@ if (CANNON_BUILD_DOC)
       WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
       COMMENT "Generating API documentation with Doxygen"
       VERBATIM )
+
+  # Sphinx
+  find_package(Sphinx REQUIRED)
+  set(SPHINX_SOURCE ${CMAKE_CURRENT_SOURCE_DIR}/docs/source)
+  set(SPHINX_BUILD ${CMAKE_CURRENT_BINARY_DIR}/docs/sphinx)
+
+  add_custom_target(doc_sphinx ALL
+                    COMMAND
+                    ${SPHINX_EXECUTABLE} -b html
+                    # Tell Breathe where to find Doxygen output
+                    -Dbreathe_projects.Cannon=${CMAKE_CURRENT_BINARY_DIR}/docs/doxygen/xml
+                    ${SPHINX_SOURCE} ${SPHINX_BUILD}
+                    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+                    COMMENT "Generating documentation with Sphinx")
+  add_dependencies(doc_sphinx doc_doxygen)
+
 endif (CANNON_BUILD_DOC)
+
 
 # Clang Tidy
 find_program (CLANG_TIDY_EXE NAMES "clang-tidy")

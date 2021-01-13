@@ -80,7 +80,7 @@ WORKDIR /
 COPY . /cannon
 RUN mkdir -p /cannon/build
 WORKDIR /cannon/build
-RUN cmake .. -DCANNON_BUILD_GRAPHICS=OFF
+RUN cmake .. -DCANNON_BUILD_GRAPHICS=OFF -DCANNON_BUILD_DOC=OFF
 RUN make -j4
 
 
