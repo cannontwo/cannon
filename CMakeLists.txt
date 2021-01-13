@@ -55,7 +55,7 @@ SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -pg")
 SET(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -pg")
 
 # Building Documentation
-option(CANNON_BUILD_DOC "Build documentation" ON)
+option(CANNON_BUILD_DOC "Build documentation" OFF)
 
 # check if Doxygen is installed
 if (CANNON_BUILD_DOC)

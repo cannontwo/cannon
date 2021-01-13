@@ -9,7 +9,7 @@ Welcome to Cannon's documentation!
 .. toctree::
   :maxdepth: 2
 
-  listing
+  api/library_root
 
 
 Indices and tables
