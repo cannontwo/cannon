@@ -29,8 +29,11 @@ author = 'Cannon Lewis'
 # ones.
 extensions = [
         "breathe",
-        "exhale"
+        "exhale",
+        "sphinx.ext.todo"
 ]
+
+todo_include_todos = True
 
 autosummary_generate = True
 
@@ -57,6 +60,25 @@ html_static_path = ['_static']
 
 breathe_default_project = "Cannon"
 
+
+def specificationsForKind(kind):
+    '''
+    For a given input ``kind``, return the list of reStructuredText specifications
+    for the associated Breathe directive.
+    '''
+    # Change the defaults for .. doxygenclass:: and .. doxygenstruct::
+    if kind == "class" or kind == "struct":
+        return [
+          ":members:",
+          ":protected-members:",
+          ":private-members:",
+          ":undoc-members:"
+        ]
+    else:
+        return []
+
+from exhale import utils
+
 # Setup the exhale extension
 exhale_args = {
     # These arguments are required
@@ -70,6 +92,12 @@ exhale_args = {
     # "treeViewIsBootstrap": True,
     #"exhaleExecutesDoxygen": True,
     #"exhaleDoxygenStdin":    "INPUT = ../include"
+
+    # Use exhale's utility function to transform `specificationsForKind`
+    # defined above into something Exhale can use
+    "customSpecificationsMapping": utils.makeCustomSpecificationsMapping(
+        specificationsForKind
+    )
 }
 
 primary_domain = "cpp"

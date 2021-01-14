@@ -10,6 +10,7 @@ Welcome to Cannon's documentation!
   :maxdepth: 2
 
   api/library_root
+  todo
 
 
 Indices and tables
