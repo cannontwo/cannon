@@ -1,6 +1,18 @@
 #ifndef CANNON_GEOM_KD_TREE_H
 #define CANNON_GEOM_KD_TREE_H 
 
+/*!
+ * \file cannon/geom/kd_tree.hpp
+ * File containing KDTree class definition.
+ *
+ */
+
+/*!
+ * \namespace cannon::geom
+ * Namespace containing computational geometry classes and functions, largely
+ * wrapping CGAL.
+ */
+
 #include <stdexcept>
 
 #include <Eigen/Core>
@@ -16,6 +28,14 @@ using namespace cannon::log;
 namespace cannon {
   namespace geom {
 
+    /*!
+     * \brief Class representing a kd-tree.
+     * 
+     * A kd-tree can be used for nearest neighbor searches. This class
+     * primarily wraps the same functionality in CGAL. 
+     * 
+     * \sa cannon::geom::KDTreeIndexed
+     */
     class KDTree {
       public:
         using Kernel = CGAL::Epick_d<CGAL::Dynamic_dimension_tag>;
@@ -26,19 +46,46 @@ namespace cannon {
 
         KDTree() = delete;
 
+        /*!
+         * Constructor taking the dimensionality of points that this kd-tree will hold.
+         *
+         * \param dim The dimension of points to be held.
+         */
         KDTree(int dim) : dim_(dim) {}
 
-        // Each column should be a point to be inserted, matching insertion of
-        // a single point being insertion of a column vector
+        /*!
+         * Method to insert points into the kd-tree. 
+         *
+         * \param pts Matrix of points to be added to the kd-tree. Each column
+         * should be a point to be inserted, matching insertion of a single
+         * point being insertion of a column vector
+         */
         void insert(const MatrixXd& pts);
+
+        /*! 
+         * Method to clear this kd-tree, removing all held points.
+         */
         void clear();
 
+        /*!
+         * Method to query the nearest neighbor of the input point.
+         *
+         * \param query Point to find nearest neighbor of.
+         *
+         * \returns The closest previously inserted point to the query point.
+         */
         VectorXd get_nearest_neighbor(const VectorXd& query);
+
+        /*!
+         * Method to get the number of points in this kd-tree.
+         *
+         * \returns Number of points in this tree.
+         */
         int get_size();
 
       private:
-        int dim_;
-        Tree tree_;
+        int dim_; //!< Dimension of points in this kd-tree
+        Tree tree_; //!< Internal CGAL kd-tree object
     };
     
   } // namespace geom
