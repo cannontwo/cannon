@@ -1,6 +1,11 @@
 #ifndef CANNON_GRAPHICS_CHARACTER_H
 #define CANNON_GRAPHICS_CHARACTER_H
 
+/*!
+ * \file cannon/graphics/character.hpp
+ * File containing Character class definition.
+ */
+
 #include <Eigen/Dense>
 
 #include <cannon/graphics/texture.hpp>
