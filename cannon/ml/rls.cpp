@@ -154,3 +154,8 @@ void RLSFilter::update_pred_error_covar_(const VectorXd& in_vec, const VectorXd&
           err.transpose()) - (forgetting_ * pred_error_covar_)));
 }
 
+unsigned int RLSFilter::get_num_data() const {
+  assert(t_ >= 0.0);
+
+  return (unsigned int)t_;
+}

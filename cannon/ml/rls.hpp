@@ -39,6 +39,8 @@ namespace cannon {
           pred_error_covar_ = MatrixXd::Zero(out_dim_, out_dim_);
         };
 
+        unsigned int get_num_data() const;
+
         void process_datum(const VectorXd& in_vec, const VectorXd& output);
 
         std::pair<MatrixXd, VectorXd> get_identified_mats() const;
