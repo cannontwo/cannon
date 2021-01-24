@@ -57,26 +57,18 @@ LocalTuple Path::get_local_tuple(double t) const {
 }
 
 VectorXd Path::to_vec() {
-  VectorXd ret(2 + waypoints.size());
-
-  ret[0] = t0;
-  ret[1] = t1;
-
+  VectorXd ret(waypoints.size());
   for (unsigned int i = 0; i < waypoints.size(); i++) {
-    ret.segment(2 + i*waypoints[0].size(), waypoints[0].size()) = waypoints[i];
+    ret.segment(i*waypoints[0].size(), waypoints[0].size()) = waypoints[i];
   }
 
   return ret;
 }
 
 void Path::from_vec(unsigned int dim, const VectorXd& vec) {
-  assert((vec.size() - 2) % dim == 0);
-
-  t0 = vec[0];
-  t1 = vec[1];
-
-  for (unsigned int i = 0; i < (vec.size() - 2) / dim; i++) {
-    waypoints.push_back(vec.segment(2 + i*dim, dim));
+  assert(vec.size() % dim == 0);
+  for (unsigned int i = 0; i < vec.size() / dim; i++) {
+    waypoints.push_back(vec.segment(i*dim, dim));
   }
 }
 

@@ -2,7 +2,7 @@
 
 #include <cannon/physics/lagrangian_mechanics.hpp>
 #include <cannon/log/registry.hpp>
-#include <cannon/ml/bfgs.hpp>
+#include <cannon/ml/pattern_search.hpp>
 
 using namespace cannon::physics;
 using namespace cannon::log;
@@ -20,30 +20,23 @@ double L(const LocalTuple& local) {
 
 double f(const VectorXd& x) {
   Path q(1, x);
+  VectorXd start(1);
+  start[0] = M_PI/2.0;
+
+  VectorXd end(1);
+  end[0] = 0;
+
+  q.waypoints[0] = start;
+  q.waypoints[q.waypoints.size() - 1] = end;
+  q.t0 = 0.0;
+  q.t1 = 1.0;
 
   return compute_path_action(L, q);
 }
 
-VectorXd f_grad(const VectorXd& x) {
-  VectorXd ret = VectorXd::Zero(x.size());
-  Path q(1, x);
-
-  // Time variables
-  ret[0] = 0.0;
-  ret[1] = 0.0;
-
-  double time_delta = (q.t1 - q.t0) / (double)(q.waypoints.size() - 1);
-
-  for (unsigned int i = 0; i < x.size() - 2; i++) {
-    ret[i+2] = L(q.get_local_tuple(q.t0 + i * time_delta));
-  }
-
-  return ret;
-}
-
 int main() {
   VectorXd start(1);
-  start[0] = 1;
+  start[0] = M_PI/2.0;
 
   VectorXd end(1);
   end[0] = 0;
@@ -51,12 +44,16 @@ int main() {
   Path q(0.0, M_PI/2.0, start, end, 10);
   log_info("Initial action is", compute_path_action(L, q));
 
-  BFGSOptimizer opt(f, f_grad);
+  PatternSearchOptimizer opt(f, 10, true);
   OptimizationResult result = opt.optimize(q.to_vec());
 
   log_info(result);
 
   Path q1(1, result.solution);
+  q1.t0 = 0.0;
+  q1.t1 = 1.0;
+  q1.waypoints[0] = start;
+  q1.waypoints[q1.waypoints.size() - 1] = end;
   log_info("Action after optimization is", compute_path_action(L, q1));
 
   // TODO This doesn't currently work because the gradient is too finicky.

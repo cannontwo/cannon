@@ -5,6 +5,7 @@ list(APPEND ML_SOURCES
   bfgs.cpp
   wolfe_conditions.cpp
   optimization_result.cpp
+  pattern_search.cpp
   )
 
 add_library(ml OBJECT ${ML_SOURCES})
