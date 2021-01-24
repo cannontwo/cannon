@@ -105,6 +105,7 @@ double cannon::ml::wolfe_condition_line_search(RealFunc f, MultiFunc f_grad,
 
     if ((psi_i > psi_0 + (c_1 * current_step * d_psi_0)) ||
         ((psi_i >= last_psi_i) && (i > 0))) {
+      log_info("Returning on first if statement");
       return line_search_zoom(f, f_grad, x, direction, last_step,
           current_step, c_1, c_2);
     }
