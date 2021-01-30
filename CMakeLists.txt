@@ -139,6 +139,12 @@ list(APPEND LIBRARIES ${YAML_CPP_LIBRARIES})
 find_package(Catch2 REQUIRED)
 include(Catch)
 
+# Gurobi
+find_package(GUROBI REQUIRED)
+include_directories(${GUROBI_INCLUDE_DIRS})
+# A hack, for some reason findGUROBI isn't working
+list(APPEND LIBRARIES ${GUROBI_LIBRARIES})
+
 if (CANNON_BUILD_GRAPHICS)
   # OpenGL
   find_package(OpenGL 4.3 REQUIRED)
