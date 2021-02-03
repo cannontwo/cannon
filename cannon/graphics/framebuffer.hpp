@@ -2,7 +2,7 @@
 #define CANNON_GRAPHICS_FRAMEBUFFER_H 
 
 /*!
- * \file graphics/framebuffer.hpp
+ * \file cannon/graphics/framebuffer.hpp
  * File containing Framebuffer class definition.
  */
 

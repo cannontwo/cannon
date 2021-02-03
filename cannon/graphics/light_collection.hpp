@@ -2,7 +2,7 @@
 #define CANNON_GRAPHICS_LIGHT_COLLECTION 
 
 /*!
- * \file graphics/light_collection.hpp
+ * \file cannon/graphics/light_collection.hpp
  * File containing LightCollection class definition.
  */
 
