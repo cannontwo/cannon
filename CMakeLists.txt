@@ -124,7 +124,8 @@ include_directories(${EIGEN3_INCLUDE_DIR})
 # CGAL
 find_package(CGAL REQUIRED COMPONENTS Core)
 include_directories(${CGAL_INCLUDE_DIRS})
-list(APPEND LIBRARIES ${CGAL_LIBRARY})
+#list(APPEND LIBRARIES ${CGAL_LIBRARY})
+list(APPEND LIBRARIES CGAL::CGAL CGAL::CGAL_Core)
 
 # Boost
 find_package(Boost 1.74.0 REQUIRED)
