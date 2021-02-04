@@ -1,6 +1,11 @@
 #ifndef CANNON_GRAPHICS_OPENGL_STATE_H
 #define CANNON_GRAPHICS_OPENGL_STATE_H 
 
+/*!
+ * \file cannon/graphics/opengl_state.hpp
+ * File containing OpenGLState class definition.
+ */
+
 #include <iostream>
 
 #include <glad/glad.h>
@@ -8,8 +13,18 @@
 namespace cannon {
   namespace graphics {
 
+    /*!
+     * \brief Class encapsulating current OpenGL state.
+     *
+     * This class is primarily used to test postconditions of graphics package
+     * methods that change OpenGL state.
+     */
     struct OpenGLState {
 
+      /*!
+       * Constructor. Reads current OpenGL state, so objects should not be
+       * created until just before the method to be tested.
+       */
       OpenGLState() {
         glGetIntegerv(GL_ACTIVE_TEXTURE, (GLint*)&active_texture);
         glGetIntegerv(GL_CURRENT_PROGRAM, (GLint*)&program);
@@ -39,35 +54,42 @@ namespace cannon {
       }
 
 
-      GLenum active_texture;
-      GLuint program;
-      GLuint texture;
-      GLuint cubemap_texture;
-      GLuint sampler;
-      GLuint array_buffer;
-      GLuint element_buffer;
-      GLuint vertex_array_object;
-      GLuint read_buffer;
-      GLuint draw_buffer;
-      GLint viewport[4];
-      GLint scissor_box[4];
+      GLenum active_texture; //!< The current active texture
+      GLuint program; //!< The current shader program
+      GLuint texture; //!< The current bound texture
+      GLuint cubemap_texture; //!< The current bound cubemap texture
+      GLuint sampler; //!< The current texture sampler
+      GLuint array_buffer; //!< The current bound array buffer
+      GLuint element_buffer; //!< The current bound element buffer
+      GLuint vertex_array_object; //!< The current bound vertex array object
+      GLuint read_buffer; //!< The current bound read framebuffer
+      GLuint draw_buffer; //!< The current bound read framebuffer
+      GLint viewport[4]; //!< The current viewport
+      GLint scissor_box[4]; //!< The current scissorbox
 
-      GLenum blend_src_rgb;
-      GLenum blend_dst_rgb;
-      GLenum blend_src_alpha;
-      GLenum blend_dst_alpha;
-      GLenum blend_equation_rgb;
-      GLenum blend_equation_alpha;
+      GLenum blend_src_rgb; //!< The current blend source rgb setting
+      GLenum blend_dst_rgb; //!< The current blend destination rgb setting
+      GLenum blend_src_alpha; //!< The current blend source alpha setting
+      GLenum blend_dst_alpha; //!< The current blend destination alpha setting
+      GLenum blend_equation_rgb; //!< The current blend equation RGB mode
+      GLenum blend_equation_alpha; //!< The current blend equation alpha mode
       
-      GLboolean enable_blend;
-      GLboolean enable_cull_face;
-      GLboolean enable_depth_test;
-      GLboolean enable_scissor_test;
-      GLboolean enable_primitive_restart;
+      GLboolean enable_blend; //!< Whether blending is enabled
+      GLboolean enable_cull_face; //!< Whether face culling is enabled
+      GLboolean enable_depth_test; //!< Whether depth testing is enabled
+      GLboolean enable_scissor_test; //!< Whether scissor testing is enabled
+      GLboolean enable_primitive_restart; //!< Whether primitive restart is enabled
 
     };
 
-    bool operator==(const OpenGLState& lhs, const OpenGLState& rhs);
+    /*!
+     * Function to check whether two OpenGLStates are equal.
+     */
+    bool operator==(const OpenGLState& lhs, const OpenGLState& rhs); 
+
+    /*!
+     * Function to print this OpenGLState. Simply writes all member data.
+     */
     std::ostream& operator<<(std::ostream& os, const OpenGLState& state);
 
   } // namespace graphics

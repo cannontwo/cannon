@@ -9,7 +9,7 @@ RUN apt-get update && apt-get install -y build-essential \
         cmake \
         libeigen3-dev \
         clang-tidy \
-        libcgal-dev \ 
+        libcgal-dev \  
         libglfw3-dev \
         libfreetype6 \
         libfreetype6-dev \
@@ -76,6 +76,9 @@ WORKDIR /
 #WORKDIR /ompl-1.5.0/
 #RUN cmake -DCMAKE_INSTALL_PREFIX=/usr/local/
 #RUN make install
+
+# CGAL 
+# TODO Download CGAL 5.2, uninstall libcgal-dev, install CGAL 5.2
 
 COPY . /cannon
 RUN mkdir -p /cannon/build
