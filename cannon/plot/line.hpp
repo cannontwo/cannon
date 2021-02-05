@@ -28,7 +28,6 @@ namespace cannon {
 
         Line(Plotter& plotter, std::shared_ptr<ShaderProgram> program, MatrixX2f points, Vector4f color) : plotter_(plotter), points_(points), color_(color), vao_(new VertexArrayObject), buf_(vao_), program_(program)  {
           buf_.buffer(points_);
-          log_info(buf_);
         }
 
         Line(Line& s) = delete;

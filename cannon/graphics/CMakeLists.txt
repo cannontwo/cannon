@@ -29,6 +29,7 @@ list(APPEND GRAPHICS_SOURCES
   opengl_state.cpp
   render_pass.cpp
   opengl_writer.cpp
+  random_color.cpp
   )
 
 add_library(graphics OBJECT ${GRAPHICS_SOURCES})

@@ -3,6 +3,7 @@ list(APPEND PLOT_SOURCES
   plotter.cpp
   scatter.cpp
   axes.cpp
+  polygon.cpp
   )
 
 add_library(plot OBJECT ${PLOT_SOURCES})

@@ -12,6 +12,7 @@
 #include <cannon/plot/axes.hpp>
 #include <cannon/log/registry.hpp>
 #include <cannon/plot/line.hpp>
+#include <cannon/plot/polygon.hpp>
 
 using namespace cannon::graphics;
 using namespace cannon::log;
@@ -21,11 +22,12 @@ namespace cannon {
 
     class Scatter;
     class Line;
+    class Polygon;
 
     class Plotter {
       public:
         Plotter() : w_(), point_program_(new ShaderProgram), line_program_(new
-            ShaderProgram), axes_(2.0f / (float)w_.height) {
+            ShaderProgram), poly_program_(new ShaderProgram), axes_(2.0f / (float)w_.height) {
 
           //glEnable(GL_BLEND);
           //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -52,6 +54,10 @@ namespace cannon {
           line_program_->attach_shader(vl);
           line_program_->attach_shader(fl);
           line_program_->link();
+
+          poly_program_->attach_shader(vl);
+          poly_program_->attach_shader(fl);
+          poly_program_->link();
         }
 
         void render();
@@ -71,6 +77,7 @@ namespace cannon {
         std::shared_ptr<Scatter> plot_points(MatrixX2f points, Vector4f
             color={0.0, 0.0, 0.0, 1.0}, float size=15.0);
         std::shared_ptr<Line> plot_line(MatrixX2f points, Vector4f color={0.0, 0.0, 0.0, 1.0});
+        std::shared_ptr<Polygon> plot_polygon(const Polygon_2& poly, Vector4f color={0.0, 0.0, 0.0, 1.0});
 
         void display_fps();
 
@@ -80,9 +87,12 @@ namespace cannon {
         Window w_;
         std::shared_ptr<ShaderProgram> point_program_;
         std::shared_ptr<ShaderProgram> line_program_;
+        std::shared_ptr<ShaderProgram> poly_program_;
+
         Axes axes_;
         std::vector<std::shared_ptr<Scatter>> scatter_plots_;
         std::vector<std::shared_ptr<Line>> line_plots_;
+        std::vector<std::shared_ptr<Polygon>> polygon_plots_;
     };
 
   } // namespace plot

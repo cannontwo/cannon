@@ -41,6 +41,17 @@ std::shared_ptr<Line> Plotter::plot_line(MatrixX2f points, Vector4f color) {
   return l;
 }
 
+std::shared_ptr<Polygon> Plotter::plot_polygon(const Polygon_2& poly, Vector4f color) {
+  auto p = std::make_shared<Polygon>(*this, poly_program_, poly, color);
+  polygon_plots_.push_back(p);
+
+  RowVector2f maxes = p->points_.colwise().maxCoeff();
+  RowVector2f mins = p->points_.colwise().minCoeff();
+  axes_.update_limits(mins[0], maxes[0], mins[1], maxes[1], w_.width, w_.height);
+
+  return p;
+}
+
 void Plotter::set_xlim(float low, float high) {
   axes_.update_limits(low, high, 0.0, 0.0, w_.width, w_.height);
 }
@@ -61,6 +72,11 @@ void Plotter::draw_pass() {
   line_program_->set_uniform("matrix", axes_.make_scaling_matrix());
   for (auto& line : line_plots_) {
     line->draw();
+  }
+
+  poly_program_->set_uniform("matrix", axes_.make_scaling_matrix());
+  for (auto& poly : polygon_plots_) {
+    poly->draw();
   }
 
   // TODO
