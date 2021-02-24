@@ -86,6 +86,13 @@ namespace cannon {
          */
         void apply_gradient(const VectorXd& k_gradient, const MatrixXd& K_gradient);
 
+        /*!
+         * Set the control offset vector.
+         *
+         * \param k New control offset vector, which should be of the correct dimension.
+         */
+        void set_k(const VectorXd& k);
+
       private:
         // Parameters
         unsigned int state_dim_; //!< Dimensionality of state space

@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include <stdexcept>
 
 #include <cannon/graphics/window.hpp>
 #include <cannon/graphics/shader_program.hpp>
@@ -64,6 +65,7 @@ namespace cannon {
         void close() const;
 
         ImageData get_image() const;
+        void save_image(const std::string& path);
 
         // Variant for rendering an animated plot
         template <typename F>

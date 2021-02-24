@@ -11,6 +11,24 @@ ImageData Plotter::get_image() const {
   return w_.get_image();
 }
 
+void Plotter::save_image(const std::string& path) {
+
+  w_.render_loop([this, path] {
+      draw_pass();
+      static int i = 0;
+      i++;
+
+      if (i == 5) {
+        auto data = get_image();
+        stbi_flip_vertically_on_write(true);
+        if (stbi_write_png(path.c_str(), data.width, data.height,
+              data.num_channels, data.buffer->data(), data.stride) == 0) {
+          throw std::runtime_error("Could not write Plotter render to file"); 
+        }
+      }
+    });
+}
+
 void Plotter::render() {
   w_.render_loop([this] {
         draw_pass();

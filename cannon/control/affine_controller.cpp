@@ -31,3 +31,8 @@ void AffineController::apply_gradient(const VectorXd& k_gradient, const MatrixXd
   k_opt_.set_learning_rate(learning_rate_);
   overall_t_ += 1;
 }
+
+void AffineController::set_k(const VectorXd& k) {
+  assert(k.size() == action_dim_);
+  k_ = k;
+}

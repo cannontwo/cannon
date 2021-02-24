@@ -13,8 +13,6 @@ using namespace Eigen;
 namespace cannon {
   namespace ml {
 
-    // TODO Wrap around Gurobi functionality
-    
     class LPOptimizer {
       public:
         LPOptimizer() = delete;
