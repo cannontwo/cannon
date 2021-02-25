@@ -25,6 +25,8 @@ void Plotter::save_image(const std::string& path) {
               data.num_channels, data.buffer->data(), data.stride) == 0) {
           throw std::runtime_error("Could not write Plotter render to file"); 
         }
+
+        w_.close();
       }
     });
 }

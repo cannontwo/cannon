@@ -7,3 +7,6 @@
 [submodule "cannon/research"]
 	path = cannon/research
 	url = https://github.com/cannontwo/research.git
+[submodule "thirdparty/HighFive"]
+	path = thirdparty/HighFive
+	url = https://github.com/BlueBrain/HighFive.git

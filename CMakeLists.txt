@@ -146,6 +146,16 @@ include_directories(${GUROBI_INCLUDE_DIRS})
 # A hack, for some reason findGUROBI isn't working
 list(APPEND LIBRARIES ${GUROBI_LIBRARIES})
 
+# HDF5
+find_package(HDF5 REQUIRED)
+include_directories(${HDF5_INCLUDE_DIRS})
+list(APPEND LIBRARIES ${HDF5_LIBRARIES})
+
+# HighFive
+add_subdirectory("thirdparty/HighFive")
+add_definitions( -DHIGHFIVE_USE_EIGEN=1 )
+list(APPEND LIBRARIES HighFive)
+
 if (CANNON_BUILD_GRAPHICS)
   # OpenGL
   find_package(OpenGL 4.3 REQUIRED)
