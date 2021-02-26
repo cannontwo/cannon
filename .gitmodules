@@ -10,3 +10,6 @@
 [submodule "thirdparty/HighFive"]
 	path = thirdparty/HighFive
 	url = https://github.com/BlueBrain/HighFive.git
+[submodule "thirdparty/tinycolormap"]
+	path = thirdparty/tinycolormap
+	url = https://github.com/yuki-koyama/tinycolormap.git

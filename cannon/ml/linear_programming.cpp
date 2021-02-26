@@ -22,6 +22,18 @@ OptimizationResult LPOptimizer::optimize() {
   model_->optimize();
 
   if (model_->get(GRB_IntAttr_Status) == GRB_OPTIMAL) {
+    log_info("Gurobi found optimal solution");
+    VectorXd solution = VectorXd::Zero(num_vars_);
+
+    double objective = model_->get(GRB_DoubleAttr_ObjVal);
+    for (unsigned int i = 0; i < num_vars_; i++) {
+      solution[i] = vars_[i].get(GRB_DoubleAttr_X);
+    }
+
+    return OptimizationResult(objective, solution, 0, false);
+  } else if (model_->get(GRB_IntAttr_Status) == GRB_SUBOPTIMAL) {
+    log_info("Gurobi found suboptimal solution.");
+
     VectorXd solution = VectorXd::Zero(num_vars_);
 
     double objective = model_->get(GRB_DoubleAttr_ObjVal);
@@ -31,6 +43,6 @@ OptimizationResult LPOptimizer::optimize() {
 
     return OptimizationResult(objective, solution, 0, false);
   } else {
-    throw std::runtime_error("Gurobi could not find optimal solution to LP");
+    throw std::runtime_error("Gurobi could not find solution to LP");
   }
 }

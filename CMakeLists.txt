@@ -156,6 +156,9 @@ add_subdirectory("thirdparty/HighFive")
 add_definitions( -DHIGHFIVE_USE_EIGEN=1 )
 list(APPEND LIBRARIES HighFive)
 
+# TinyColorMap
+include_directories("thirdparty/tinycolormap/include")
+
 if (CANNON_BUILD_GRAPHICS)
   # OpenGL
   find_package(OpenGL 4.3 REQUIRED)
