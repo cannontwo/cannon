@@ -74,15 +74,16 @@ namespace cannon {
 
         Matrix4f make_scaling_matrix();
 
+        float x_min_;
+        float x_max_;
+        float y_min_;
+        float y_max_;
+
       private:
         Vector2f get_scaled_padding();
         Matrix2f get_padded_extent();
         std::string get_tick_string(float tick);
 
-        float x_min_;
-        float x_max_;
-        float y_min_;
-        float y_max_;
         float padding_;
         float text_scale_x_;
         float text_scale_y_;

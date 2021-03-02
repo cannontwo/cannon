@@ -29,8 +29,8 @@ namespace cannon {
           model_ = std::make_shared<GRBModel>(env_);
 
           // Improve numeric issues
-          //model_->set(GRB_IntParam_NumericFocus, 3);
-          model_->set(GRB_IntParam_Presolve, 0);
+          model_->set(GRB_IntParam_NumericFocus, 3);
+          //model_->set(GRB_IntParam_Presolve, 0);
 
           // Since this is just an LP, we don't need crossover (I think).
           // We can only disable this by explicitly using the barrier method. Note that we

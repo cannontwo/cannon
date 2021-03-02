@@ -27,8 +27,9 @@ namespace cannon {
 
     class Plotter {
       public:
-        Plotter() : w_(), point_program_(new ShaderProgram), line_program_(new
-            ShaderProgram), poly_program_(new ShaderProgram), axes_(2.0f / (float)w_.height) {
+        Plotter() : w_(), axes_(2.0f / (float)w_.height), point_program_(new
+            ShaderProgram), line_program_(new ShaderProgram), poly_program_(new
+              ShaderProgram)  {
 
           //glEnable(GL_BLEND);
           //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -83,15 +84,16 @@ namespace cannon {
 
         void display_fps();
 
+        Window w_;
+        Axes axes_;
+
       private:
         void draw_pass();
 
-        Window w_;
         std::shared_ptr<ShaderProgram> point_program_;
         std::shared_ptr<ShaderProgram> line_program_;
         std::shared_ptr<ShaderProgram> poly_program_;
 
-        Axes axes_;
         std::vector<std::shared_ptr<Scatter>> scatter_plots_;
         std::vector<std::shared_ptr<Line>> line_plots_;
         std::vector<std::shared_ptr<Polygon>> polygon_plots_;
