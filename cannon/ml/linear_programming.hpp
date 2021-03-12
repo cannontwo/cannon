@@ -29,7 +29,7 @@ namespace cannon {
           model_ = std::make_shared<GRBModel>(env_);
 
           // Improve numeric issues
-          model_->set(GRB_IntParam_NumericFocus, 3);
+          //model_->set(GRB_IntParam_NumericFocus, 3);
           //model_->set(GRB_IntParam_Presolve, 0);
 
           // Since this is just an LP, we don't need crossover (I think).
@@ -37,7 +37,7 @@ namespace cannon {
           // are fine with this because approximately optimal solutions
           // satisfying the constraints are usually all we need.
           //model_->set(GRB_IntParam_Method, 2);
-          model_->set(GRB_IntParam_BarHomogeneous, 1);
+          //model_->set(GRB_IntParam_BarHomogeneous, 1);
           //model_->set(GRB_DoubleParam_BarConvTol, 1e-1);
           //model_->set(GRB_IntParam_Crossover, 0);
 
