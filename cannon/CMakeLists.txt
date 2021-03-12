@@ -10,6 +10,7 @@ add_subdirectory(control)
 add_subdirectory(physics)
 add_subdirectory(geom)
 add_subdirectory(utils)
+add_subdirectory(ray)
 
 list(APPEND CANNON_OBJS
     $<TARGET_OBJECTS:math>
@@ -20,6 +21,7 @@ list(APPEND CANNON_OBJS
     $<TARGET_OBJECTS:physics>
     $<TARGET_OBJECTS:geom>
     $<TARGET_OBJECTS:utils>
+    $<TARGET_OBJECTS:ray>
   )
 
 if (CANNON_BUILD_GRAPHICS)
