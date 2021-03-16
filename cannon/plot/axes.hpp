@@ -72,6 +72,8 @@ namespace cannon {
         void set_xticks(std::vector<float> ticks);
         void set_yticks(std::vector<float> ticks);
 
+        void write_imgui();
+
         Matrix4f make_scaling_matrix();
 
         float x_min_;

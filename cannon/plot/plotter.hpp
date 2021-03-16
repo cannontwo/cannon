@@ -57,8 +57,12 @@ namespace cannon {
           line_program_->attach_shader(fl);
           line_program_->link();
 
-          poly_program_->attach_shader(vl);
-          poly_program_->attach_shader(fl);
+
+          // TODO Make Polygon vertex shader with per-vertex colors
+          VertexShader poly_vl = load_vertex_shader("shaders/2d_pass_pos_color.vert");
+          FragmentShader poly_fl = load_fragment_shader("shaders/pass_color.frag");
+          poly_program_->attach_shader(poly_vl);
+          poly_program_->attach_shader(poly_fl);
           poly_program_->link();
         }
 
@@ -80,9 +84,12 @@ namespace cannon {
         std::shared_ptr<Scatter> plot_points(MatrixX2f points, Vector4f
             color={0.0, 0.0, 0.0, 1.0}, float size=15.0);
         std::shared_ptr<Line> plot_line(MatrixX2f points, Vector4f color={0.0, 0.0, 0.0, 1.0});
-        std::shared_ptr<Polygon> plot_polygon(const Polygon_2& poly, Vector4f color={0.0, 0.0, 0.0, 1.0});
+        std::shared_ptr<Polygon> plot_polygon(const Polygon_2& poly, const MatrixX4f& color);
+        std::shared_ptr<Polygon> plot_polygon(const Polygon_2& poly, const Vector4f& color);
 
         void display_fps();
+
+        void write_imgui();
 
         Window w_;
         Axes axes_;

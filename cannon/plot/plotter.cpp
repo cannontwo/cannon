@@ -61,7 +61,18 @@ std::shared_ptr<Line> Plotter::plot_line(MatrixX2f points, Vector4f color) {
   return l;
 }
 
-std::shared_ptr<Polygon> Plotter::plot_polygon(const Polygon_2& poly, Vector4f color) {
+std::shared_ptr<Polygon> Plotter::plot_polygon(const Polygon_2& poly, const MatrixX4f& color) {
+  auto p = std::make_shared<Polygon>(*this, poly_program_, poly, color);
+  polygon_plots_.push_back(p);
+
+  RowVector2f maxes = p->points_.colwise().maxCoeff();
+  RowVector2f mins = p->points_.colwise().minCoeff();
+  axes_.update_limits(mins[0], maxes[0], mins[1], maxes[1], w_.width, w_.height);
+
+  return p;
+}
+
+std::shared_ptr<Polygon> Plotter::plot_polygon(const Polygon_2& poly, const Vector4f& color) {
   auto p = std::make_shared<Polygon>(*this, poly_program_, poly, color);
   polygon_plots_.push_back(p);
 
@@ -99,9 +110,33 @@ void Plotter::draw_pass() {
     poly->draw();
   }
 
+  write_imgui();
+
   // TODO
 }
 
 void Plotter::display_fps() {
   w_.display_fps(-25.0, -25.0, 1.0);
+}
+
+void Plotter::write_imgui() {
+  if (ImGui::BeginMainMenuBar()) {
+    if (ImGui::BeginMenu("Plotting")) {
+      bool changed = false;
+
+      changed = changed || ImGui::InputFloat("X Min", &axes_.x_min_);
+      changed = changed || ImGui::InputFloat("X Max", &axes_.x_max_);
+      changed = changed || ImGui::InputFloat("Y Min", &axes_.y_min_);
+      changed = changed || ImGui::InputFloat("Y Max", &axes_.y_max_);
+
+      if (changed) {
+        axes_.update_limits(axes_.x_min_, axes_.x_max_, axes_.y_min_,
+            axes_.y_max_, w_.width, w_.height);
+      }
+
+      ImGui::EndMenu();
+    }
+
+    ImGui::EndMainMenuBar();
+  }
 }

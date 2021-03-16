@@ -17,7 +17,9 @@ TEST_CASE("Polygon", "[plot]") {
   poly.push_back(CDT::Point(2, 2));
   poly.push_back(CDT::Point(0, 2));
 
-  p.plot_polygon(poly);
+  Vector4f color = Vector4f::Zero();
+
+  p.plot_polygon(poly, color);
 
   p.set_xlim(-5.0, 5.0);
   p.set_ylim(-5.0, 5.0);

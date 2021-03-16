@@ -3,10 +3,10 @@
 using namespace cannon::plot;
 
 void Polygon::draw() {
-  program_->set_uniform("uColor", color_);
   program_->activate();
 
   buf_.bind();
+  color_buf_.bind();
   glDrawArrays(GL_TRIANGLES, 0, points_.rows());
 }
 
