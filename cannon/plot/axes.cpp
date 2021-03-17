@@ -5,6 +5,7 @@ using namespace cannon::plot;
 void Axes::draw() {
   glEnable(GL_BLEND);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+  glLineWidth(axis_line_width_);
 
   program_.set_uniform("uColor", Vector4f(0.0, 0.0, 0.0, 1.0));
   program_.set_uniform("matrix", make_scaling_matrix());
@@ -13,6 +14,8 @@ void Axes::draw() {
   
   glDrawArrays(GL_LINES, 0, 4);
 
+  glLineWidth(1.0);
+
   text_program_.set_uniform("textColor", Vector4f(0.0, 0.0, 0.0, 1.0));
   text_program_.set_uniform("projection", make_scaling_matrix());
   text_program_.set_uniform("text", 0);
@@ -20,6 +23,9 @@ void Axes::draw() {
 
   for (auto& tick : x_ticks_) {
     float x = tick;
+    float y = outside_ ? y_min_ : 0.0;
+    y += text_offset_y_;
+
     std::string tick_s = get_tick_string(tick);
     std::string::const_iterator c;
 
@@ -27,7 +33,7 @@ void Axes::draw() {
       std::shared_ptr<Character> ch = font_.get_char(*c);
 
       float xpos = x + ch->bearing[0] * text_scale_x_;
-      float ypos = 0.0 - (ch->size[1] - ch->bearing[1]) * text_scale_y_;
+      float ypos = y - (ch->size[1] - ch->bearing[1]) * text_scale_y_;
       float w = ch->size[0] * text_scale_x_;
       float h = ch->size[1] * text_scale_y_;
 
@@ -55,7 +61,9 @@ void Axes::draw() {
 
   for (auto& tick : y_ticks_) {
     float y = tick;
-    float x = 0.0;
+    float x = outside_ ? x_min_ : 0.0;
+    x += text_offset_x_;
+
     std::string tick_s = get_tick_string(tick);
     std::string::const_iterator c;
 
@@ -100,10 +108,18 @@ void Axes::update_limits(float x_min, float x_max, float y_min, float y_max, int
   Vector2f scaled_padding = get_scaled_padding();
 
   MatrixX2f lines(4, 2);
-  lines << x_min_ - scaled_padding[0], 0.0,
-           x_max_ + scaled_padding[0], 0.0,
-           0.0, y_min_ - scaled_padding[1], 
-           0.0, y_max_ + scaled_padding[1]; 
+
+  if (outside_) {
+    lines << x_min_, y_min_,
+             x_max_, y_min_,
+             x_min_, y_min_, 
+             x_min_, y_max_; 
+  } else {
+    lines << x_min_ - scaled_padding[0], 0.0,
+             x_max_ + scaled_padding[0], 0.0,
+             0.0, y_min_ - scaled_padding[1], 
+             0.0, y_max_ + scaled_padding[1]; 
+  }
   buf_.buffer(lines);
 
   update_scale(window_width, window_height);
@@ -113,8 +129,8 @@ void Axes::update_limits(float x_min, float x_max, float y_min, float y_max, int
 }
 
 void Axes::update_scale(int width, int height) {
-  text_scale_x_ = 1.0 * (x_max_ - x_min_) / (float)width;
-  text_scale_y_ = 1.0 * (y_max_ - y_min_) / (float)height;
+  text_scale_x_ = text_scale_multiplier_ * (x_max_ - x_min_) / (float)width;
+  text_scale_y_ = text_scale_multiplier_ * (y_max_ - y_min_) / (float)height;
 }
 
 void Axes::update_ticks() {
@@ -125,42 +141,39 @@ void Axes::update_ticks() {
   x_ticks_.clear();
   y_ticks_.clear();
 
+  if (outside_) {
+    if (x_min_ < 0.0 && 0.0 < x_max_) {
+      x_ticks_.push_back(0.0);
+    }
+
+    if (y_min_ < 0.0 && 0.0 < y_max_) {
+      y_ticks_.push_back(0.0);
+    }
+  } 
+
   int i = 0;
   while (i * x_delta < x_max_) {
     i++;
-    if (x_delta > 1.0)
-      x_ticks_.push_back(std::ceil(i * x_delta));
-    else
-      x_ticks_.push_back(i * x_delta);
+    x_ticks_.push_back(i * x_delta);
   }
 
   i = 0;
   while (-i * x_delta > x_min_) {
     i++;
-    if (x_delta > 1.0)
-      x_ticks_.push_back(std::ceil(-i * x_delta));
-    else
-      x_ticks_.push_back(-i * x_delta);
+    x_ticks_.push_back(-i * x_delta);
   }
 
   i = 0;
   while (i * y_delta < y_max_) {
     i++;
-    if (y_delta > 1.0)
-      y_ticks_.push_back(std::ceil(i * y_delta));
-    else
-      y_ticks_.push_back(i * y_delta);
+    y_ticks_.push_back(i * y_delta);
   }
 
   i = 0;
   while (-i * y_delta > y_min_) {
     i++;
-    if (y_delta > 1.0)
-      y_ticks_.push_back(std::ceil(-i * y_delta));
-    else
-      y_ticks_.push_back(-i * y_delta);
+    y_ticks_.push_back(-i * y_delta);
   }
-
 }
 
 void Axes::set_xticks(std::vector<float> ticks) {

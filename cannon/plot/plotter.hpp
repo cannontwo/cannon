@@ -27,9 +27,9 @@ namespace cannon {
 
     class Plotter {
       public:
-        Plotter() : w_(), axes_(2.0f / (float)w_.height), point_program_(new
-            ShaderProgram), line_program_(new ShaderProgram), poly_program_(new
-              ShaderProgram)  {
+        Plotter(bool axes_outside=false) : w_(), axes_(1.0, axes_outside),
+            axes_outside_(axes_outside), point_program_(new ShaderProgram),
+            line_program_(new ShaderProgram), poly_program_(new ShaderProgram)  {
 
           //glEnable(GL_BLEND);
           //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -60,7 +60,7 @@ namespace cannon {
 
           // TODO Make Polygon vertex shader with per-vertex colors
           VertexShader poly_vl = load_vertex_shader("shaders/2d_pass_pos_color.vert");
-          FragmentShader poly_fl = load_fragment_shader("shaders/pass_color.frag");
+          FragmentShader poly_fl = load_fragment_shader("shaders/pass_color_viridis.frag");
           poly_program_->attach_shader(poly_vl);
           poly_program_->attach_shader(poly_fl);
           poly_program_->link();
@@ -84,6 +84,10 @@ namespace cannon {
         std::shared_ptr<Scatter> plot_points(MatrixX2f points, Vector4f
             color={0.0, 0.0, 0.0, 1.0}, float size=15.0);
         std::shared_ptr<Line> plot_line(MatrixX2f points, Vector4f color={0.0, 0.0, 0.0, 1.0});
+
+        // TODO We need two kinds of polygon plotting: contour plots that
+        // should use the viridis shader and polygons that support arbitrary
+        // colors
         std::shared_ptr<Polygon> plot_polygon(const Polygon_2& poly, const MatrixX4f& color);
         std::shared_ptr<Polygon> plot_polygon(const Polygon_2& poly, const Vector4f& color);
 
@@ -97,6 +101,8 @@ namespace cannon {
       private:
         void draw_pass();
 
+        bool axes_outside_;
+
         std::shared_ptr<ShaderProgram> point_program_;
         std::shared_ptr<ShaderProgram> line_program_;
         std::shared_ptr<ShaderProgram> poly_program_;
@@ -104,6 +110,13 @@ namespace cannon {
         std::vector<std::shared_ptr<Scatter>> scatter_plots_;
         std::vector<std::shared_ptr<Line>> line_plots_;
         std::vector<std::shared_ptr<Polygon>> polygon_plots_;
+
+        std::thread render_thread_;
+
+        // TODO Make optional parameter for Plotter, remove individual scatter
+        // point size setting. Alternatively, do differently-colored point
+        // scatter plotting better.
+        float scatter_point_size_ = 15.0;
     };
 
   } // namespace plot

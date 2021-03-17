@@ -17,7 +17,7 @@ using namespace cannon::log;
 using namespace cannon::ml;
 
 int main() {
-  Plotter plotter;
+  Plotter plotter(true);
 
   // Initial line
   MatrixX2f pts(2, 2);

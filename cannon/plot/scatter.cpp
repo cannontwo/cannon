@@ -22,3 +22,4 @@ void Scatter::draw() {
   buf_.bind();
   glDrawArrays(GL_POINTS, 0, points_.rows());
 }
+

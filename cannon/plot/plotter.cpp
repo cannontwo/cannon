@@ -111,8 +111,6 @@ void Plotter::draw_pass() {
   }
 
   write_imgui();
-
-  // TODO
 }
 
 void Plotter::display_fps() {
@@ -122,6 +120,14 @@ void Plotter::display_fps() {
 void Plotter::write_imgui() {
   if (ImGui::BeginMainMenuBar()) {
     if (ImGui::BeginMenu("Plotting")) {
+      ImGui::Checkbox("Axes Outside", &axes_.outside_);
+      ImGui::SliderFloat("Text Scale", &axes_.text_scale_multiplier_, 0.1, 5.0);
+      ImGui::SliderFloat("Padding", &axes_.padding_, 0.01, 1.0);
+
+      ImGui::SliderFloat("X Ticks Offset", &axes_.text_offset_y_, -1.0, 1.0);
+      ImGui::SliderFloat("Y Ticks Offset", &axes_.text_offset_x_, -1.0, 1.0);
+      ImGui::SliderFloat("Axis Width", &axes_.axis_line_width_, 0.1, 10.0);
+
       bool changed = false;
 
       changed = changed || ImGui::InputFloat("X Min", &axes_.x_min_);
@@ -132,6 +138,19 @@ void Plotter::write_imgui() {
       if (changed) {
         axes_.update_limits(axes_.x_min_, axes_.x_max_, axes_.y_min_,
             axes_.y_max_, w_.width, w_.height);
+      }
+
+      if (ImGui::BeginMenu("Plots")) {
+        bool point_changed = ImGui::SliderFloat("Scatter Plot Point Size",
+            &scatter_point_size_, 1.0, 100.0);
+
+        if (point_changed) {
+          for (auto& s : scatter_plots_) {
+            s->point_size_ = scatter_point_size_;
+          }
+
+        }
+        ImGui::EndMenu();
       }
 
       ImGui::EndMenu();

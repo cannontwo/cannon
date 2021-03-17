@@ -9,7 +9,6 @@ void KDTreeIndexed::insert(const MatrixXd& pts) {
   for (int i = 0; i < pts.cols(); i++) {
     auto col = pts.col(i);
     Point_d tmp(col.data(), col.data() + col.size());
-    log_info("Inserting point", tmp);
 
     Point_and_int tmp_pair = boost::make_tuple(tmp, furthest_idx_ + i);
     tree_.insert(tmp_pair);

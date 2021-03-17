@@ -25,16 +25,27 @@ namespace cannon {
 
     class Axes {
       public:
-        Axes(float text_scale=0.1) : x_min_(-0.01), x_max_(0.01), y_min_(-0.01), y_max_(0.01),
-            padding_(0.1), text_scale_x_(text_scale), text_scale_y_(text_scale), vao_(new VertexArrayObject), buf_(vao_),
-            font_(true, 12), text_vao_(new VertexArrayObject), text_quad_buf_(text_vao_)  {
-
+        Axes(float text_scale=1.0, bool outside=false) : x_min_(-0.01), x_max_(0.01),
+            y_min_(-0.01), y_max_(0.01), outside_(outside), padding_(0.1),
+            text_scale_multiplier_(text_scale), text_scale_x_(0.1),
+            text_scale_y_(0.1),  vao_(new VertexArrayObject), buf_(vao_),
+            font_(true, 12), text_vao_(new VertexArrayObject),
+            text_quad_buf_(text_vao_)  {
 
           MatrixX2f lines(4, 2);
-          lines << x_min_, 0.0,
-                   x_max_, 0.0,
-                   0.0, y_min_, 
-                   0.0, y_max_; 
+
+          if (outside_) {
+            lines << x_min_, y_min_,
+                     x_max_, y_min_,
+                     x_min_, y_min_, 
+                     x_min_, y_max_; 
+          } else {
+            lines << x_min_, 0.0,
+                     x_max_, 0.0,
+                     0.0, y_min_, 
+                     0.0, y_max_; 
+          }
+
           buf_.buffer(lines);
           log_info(buf_);
 
@@ -75,18 +86,27 @@ namespace cannon {
         void write_imgui();
 
         Matrix4f make_scaling_matrix();
+        // TODO Make separate scaling matrix for drawing actual axes, in order
+        // to prevent overlapped plotting
 
         float x_min_;
         float x_max_;
         float y_min_;
         float y_max_;
 
+        float text_offset_x_ = 0.0;
+        float text_offset_y_ = 0.0;
+        float axis_line_width_ = 1;
+
+        bool outside_;
+        float padding_;
+        float text_scale_multiplier_;
+
       private:
         Vector2f get_scaled_padding();
         Matrix2f get_padded_extent();
         std::string get_tick_string(float tick);
 
-        float padding_;
         float text_scale_x_;
         float text_scale_y_;
 
