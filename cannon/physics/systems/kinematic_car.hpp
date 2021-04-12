@@ -78,7 +78,7 @@ namespace cannon {
         public:
           KinematicCar() = delete;
 
-          KinematicCar(Vector3d s, Vector3d g) : e_(s_, 4, 0.01), start_(s), goal_(g) {
+          KinematicCar(Vector3d s, Vector3d g) : e_(s_, 4, time_step), start_(s), goal_(g) {
             std::random_device rd;
             gen_ = std::mt19937(rd());  
 
@@ -129,6 +129,9 @@ namespace cannon {
             return state_.head(3);
 
           }
+
+          // In seconds
+          const double time_step = 0.01;
 
           KinCarSystem s_;
           
