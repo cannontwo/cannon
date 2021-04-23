@@ -20,7 +20,8 @@ void Model::draw(std::shared_ptr<ShaderProgram> p, const Matrix4f& view, const
 
 void Model::load_model_(const std::string& path) {
   Assimp::Importer import;
-  const aiScene *scene = import.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs);
+  const aiScene *scene = import.ReadFile(path, aiProcess_Triangulate |
+      aiProcess_FlipUVs | aiProcess_GenNormals);
 
   if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
     throw std::runtime_error("Error loading model via Assimp");
