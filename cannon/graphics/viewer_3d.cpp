@@ -429,7 +429,7 @@ void Viewer3D::populate_initial_geometry_() {
   add_geom(plane);
 
   Vector3f pos;
-  pos << 0.0, -5.0, 0.0;
+  pos << 0.0, 0.0, 0.0;
 
   AngleAxisf rot(to_radians(-90), Vector3f::UnitX());
 
