@@ -78,19 +78,19 @@ if (CANNON_BUILD_DOC)
       VERBATIM )
 
   # Sphinx
-  find_package(Sphinx REQUIRED)
-  set(SPHINX_SOURCE ${CMAKE_CURRENT_SOURCE_DIR}/docs/source)
-  set(SPHINX_BUILD ${CMAKE_CURRENT_BINARY_DIR}/docs/sphinx)
+  #find_package(Sphinx REQUIRED)
+  #set(SPHINX_SOURCE ${CMAKE_CURRENT_SOURCE_DIR}/docs/source)
+  #set(SPHINX_BUILD ${CMAKE_CURRENT_BINARY_DIR}/docs/sphinx)
 
-  add_custom_target(doc_sphinx ALL
-                    COMMAND
-                    ${SPHINX_EXECUTABLE} -b html
-                    # Tell Breathe where to find Doxygen output
-                    -Dbreathe_projects.Cannon=${CMAKE_CURRENT_BINARY_DIR}/docs/doxygen/xml
-                    ${SPHINX_SOURCE} ${SPHINX_BUILD}
-                    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-                    COMMENT "Generating documentation with Sphinx")
-  add_dependencies(doc_sphinx doc_doxygen)
+  #add_custom_target(doc_sphinx ALL
+  #                  COMMAND
+  #                  ${SPHINX_EXECUTABLE} -b html
+  #                  # Tell Breathe where to find Doxygen output
+  #                  -Dbreathe_projects.Cannon=${CMAKE_CURRENT_BINARY_DIR}/docs/doxygen/xml
+  #                  ${SPHINX_SOURCE} ${SPHINX_BUILD}
+  #                  WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+  #                  COMMENT "Generating documentation with Sphinx")
+  #add_dependencies(doc_sphinx doc_doxygen)
 
 endif (CANNON_BUILD_DOC)
 
