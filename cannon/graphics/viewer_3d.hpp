@@ -1,3 +1,4 @@
+#pragma once
 #ifndef CANNON_GRAPHICS_VIEWER_3D
 #define CANNON_GRAPHICS_VIEWER_3D 
 

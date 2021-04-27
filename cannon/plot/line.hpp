@@ -4,7 +4,6 @@
 #include <glad/glad.h>
 #include <Eigen/Dense>
 
-#include <cannon/graphics/window.hpp>
 #include <cannon/graphics/shader_program.hpp>
 #include <cannon/graphics/vertex_array_object.hpp>
 #include <cannon/graphics/vertex_buffer.hpp>
@@ -26,7 +25,10 @@ namespace cannon {
       public:
         Line() = delete;
 
-        Line(Plotter& plotter, std::shared_ptr<ShaderProgram> program, MatrixX2f points, Vector4f color) : plotter_(plotter), points_(points), color_(color), vao_(new VertexArrayObject), buf_(vao_), program_(program)  {
+        Line(Plotter& plotter, std::shared_ptr<ShaderProgram> program,
+            MatrixX2f points, Vector4f color) : plotter_(plotter),
+        points_(points), color_(color), vao_(new VertexArrayObject),
+        buf_(vao_), program_(program)  {
           buf_.buffer(points_);
         }
 

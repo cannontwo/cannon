@@ -1,3 +1,4 @@
+#pragma once
 #ifndef CANNON_GRAPHICS_OPENGL_STATE_H
 #define CANNON_GRAPHICS_OPENGL_STATE_H 
 

@@ -1,3 +1,4 @@
+#pragma once
 #ifndef CANNON_GRAPHICS_CUBEMAP_H
 #define CANNON_GRAPHICS_CUBEMAP_H 
 

@@ -62,7 +62,7 @@ std::shared_ptr<Line> Plotter::plot_line(MatrixX2f points, Vector4f color) {
 }
 
 std::shared_ptr<Polygon> Plotter::plot_polygon(const Polygon_2& poly, const MatrixX4f& color) {
-  auto p = std::make_shared<Polygon>(*this, poly_program_, poly, color);
+  auto p = std::make_shared<Polygon>(poly_program_, poly, color);
   polygon_plots_.push_back(p);
 
   RowVector2f maxes = p->points_.colwise().maxCoeff();
@@ -73,7 +73,7 @@ std::shared_ptr<Polygon> Plotter::plot_polygon(const Polygon_2& poly, const Matr
 }
 
 std::shared_ptr<Polygon> Plotter::plot_polygon(const Polygon_2& poly, const Vector4f& color) {
-  auto p = std::make_shared<Polygon>(*this, poly_program_, poly, color);
+  auto p = std::make_shared<Polygon>(poly_program_, poly, color);
   polygon_plots_.push_back(p);
 
   RowVector2f maxes = p->points_.colwise().maxCoeff();

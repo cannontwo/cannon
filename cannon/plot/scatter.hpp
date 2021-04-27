@@ -4,7 +4,6 @@
 #include <glad/glad.h>
 #include <Eigen/Dense>
 
-#include <cannon/graphics/window.hpp>
 #include <cannon/graphics/shader_program.hpp>
 #include <cannon/graphics/vertex_array_object.hpp>
 #include <cannon/graphics/vertex_buffer.hpp>

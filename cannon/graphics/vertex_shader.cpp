@@ -12,7 +12,7 @@ VertexShader cannon::graphics::load_vertex_shader(const std::string& path) {
 
     const char *c_str = str.c_str();
     return VertexShader(&c_str);
-  } catch (std::ifstream::failure e) {
+  } catch (std::ifstream::failure& e) {
     throw std::runtime_error("Couldn't open file for vertex shader source");
   }
 }
@@ -28,7 +28,7 @@ VertexShader cannon::graphics::load_vertex_shader(const std::string& main_path,
     program_src = std::string((std::istreambuf_iterator<char>(fs)),
         std::istreambuf_iterator<char>());
 
-  } catch (std::ifstream::failure e) {
+  } catch (std::ifstream::failure& e) {
     throw std::runtime_error("Couldn't open file for vertex shader source");
   }
 
@@ -48,7 +48,7 @@ VertexShader cannon::graphics::load_vertex_shader(const std::string& main_path,
       lib_src = std::string((std::istreambuf_iterator<char>(fs)),
           std::istreambuf_iterator<char>());
 
-    } catch (std::ifstream::failure e) {
+    } catch (std::ifstream::failure& e) {
       throw std::runtime_error("Couldn't open file for vertex shader lib");
     }
 

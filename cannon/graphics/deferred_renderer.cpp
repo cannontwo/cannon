@@ -211,7 +211,7 @@ void DeferredRenderer::setup_render_passes() {
     float t2 = d(gen) * 2.0 - 1.0;
     float t3 = d(gen);
 
-    Vector4f tmp;
+    Vector4f tmp = Vector4f::Zero();
     tmp[0] = t1;
     tmp[1] = t2;
     tmp[2] = t3;

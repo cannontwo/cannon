@@ -13,29 +13,29 @@ using Polygon_2 = CGAL::Polygon_2<K>;
 using Itag = CGAL::Exact_predicates_tag;
 using CDT = CGAL::Constrained_Delaunay_triangulation_2<K, CGAL::Default, Itag>;
 
-#include <cannon/plot/plotter.hpp>
 #include <cannon/graphics/shader_program.hpp>
 #include <cannon/math/nearly_equal.hpp>
 #include <cannon/geom/kd_tree_indexed.hpp>
+#include <cannon/graphics/vertex_array_object.hpp>
+#include <cannon/graphics/shader_program.hpp>
+#include <cannon/graphics/vertex_buffer.hpp>
 
 using namespace Eigen;
 
 using namespace cannon::math;
 using namespace cannon::geom;
+using namespace cannon::graphics;
 
 namespace cannon {
   namespace plot {
-
-    class Plotter;
 
     class Polygon {
       public:
         Polygon() = delete;
 
-        Polygon(Plotter& plotter, std::shared_ptr<ShaderProgram> program, const
-            Polygon_2& cgal_poly, const MatrixX4f& colors) : plotter_(plotter),
-        vao_(new VertexArrayObject), buf_(vao_),
-        color_buf_(vao_), program_(program) {
+        Polygon(std::shared_ptr<ShaderProgram> program, const Polygon_2&
+            cgal_poly, const MatrixX4f& colors) : vao_(new VertexArrayObject),
+        buf_(vao_), color_buf_(vao_), program_(program) {
 
           KDTreeIndexed tree(2);
           for (auto it = cgal_poly.vertices_begin(); it < cgal_poly.vertices_end(); it++) {
@@ -88,10 +88,9 @@ namespace cannon {
           color_buf_.buffer(color_);
         }
 
-        Polygon(Plotter& plotter, std::shared_ptr<ShaderProgram> program, const
-            Polygon_2& cgal_poly, const Vector4f& color) : plotter_(plotter),
-        vao_(new VertexArrayObject), buf_(vao_),
-        color_buf_(vao_), program_(program) {
+        Polygon(std::shared_ptr<ShaderProgram> program, const Polygon_2&
+            cgal_poly, const Vector4f& color) : vao_(new VertexArrayObject),
+        buf_(vao_), color_buf_(vao_), program_(program) {
 
           auto triangles = extract_triangles_(cgal_poly);
           points_ = MatrixX2f::Zero(3 * triangles.size(), 2);
@@ -113,7 +112,7 @@ namespace cannon {
 
         Polygon(Polygon& o) = delete;
 
-        Polygon(Polygon&& o) : plotter_(o.plotter_), points_(o.points_), color_(o.color_),
+        Polygon(Polygon&& o) : points_(o.points_), color_(o.color_),
         vao_(o.vao_), buf_(std::move(o.buf_)), program_(std::move(o.program_)) {}
 
         friend class Plotter;
@@ -123,7 +122,6 @@ namespace cannon {
 
         std::vector<Polygon_2> extract_triangles_(const Polygon_2& cgal_poly);
 
-        Plotter& plotter_;
         MatrixX2f points_;
         MatrixX4f color_;
         std::shared_ptr<VertexArrayObject> vao_;

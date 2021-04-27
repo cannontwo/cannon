@@ -1,3 +1,4 @@
+#pragma once
 #ifndef CANNON_GRAPHICS_VERTEX_SHADER_H
 #define CANNON_GRAPHICS_VERTEX_SHADER_H
 
@@ -10,7 +11,6 @@
 #include <GLFW/glfw3.h>
 
 #include <cannon/log/registry.hpp>
-#include <cannon/graphics/shader_program.hpp>
 
 using namespace cannon::log;
 

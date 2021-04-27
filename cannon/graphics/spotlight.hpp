@@ -1,3 +1,4 @@
+#pragma once
 #ifndef CANNON_GRAPHICS_SPOTLIGHT_H
 #define CANNON_GRAPHICS_SPOTLIGHT_H
 
