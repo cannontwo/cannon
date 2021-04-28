@@ -24,6 +24,15 @@ namespace cannon {
      */
     void write_color(std::ostream& os, const Vector3d& pixel_color);
 
+    /*!
+     * Function to write a color in PPM format to the input stream.
+     *
+     * \param os The stream to write this color to.
+     * \param pixel_color The RGB color to write in PPM format.
+     * \param samples_per_pixel Number of samples contributing to pixel color.
+     */
+    void write_color(std::ostream& os, const Vector3d& pixel_color, unsigned int samples_per_pixel);
+
   }
 }
 
