@@ -3,25 +3,33 @@
 #define CANNON_RAY_HITTABLE_H 
 
 /*!
- * \file cannon/graphics/hittable.hpp
+ * \file cannon/ray/hittable.hpp
  * Class containing useful classes for geometry hittable by rays.
  */
+
+#include <memory>
 
 #include <cannon/ray/ray.hpp>
 
 namespace cannon {
   namespace ray {
 
+    // Forward declaration
+    class Material;
+
     /*!
      * \brief Structure recording ray intersection information.
      */
     struct hit_record {
-      Vector3d p;
-      Vector3d normal;
-      double t;
-      bool front_face;
+      Vector3d p; //!< Point where ray hit geometry
+      Vector3d normal; //!< Normal at hit point
+      std::shared_ptr<Material> mat_ptr; //!< Pointer to material for hit surface
+      double t; //!< Distance of hit along ray
+      bool front_face; //!< Whether the ray originated from outside the geometry
 
-      // Store normal with direction always opposite intersecting ray
+      /*!
+       * Method to store normal with direction always opposite intersecting ray.
+       */
       inline void set_face_normal(const Ray& r, const Vector3d& outward_normal) {
         front_face = r.dir_.dot(outward_normal) < 0;
         normal = front_face ? outward_normal : -outward_normal;

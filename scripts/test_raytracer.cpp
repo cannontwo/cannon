@@ -8,6 +8,8 @@
 #include <cannon/ray/hittable_list.hpp>
 #include <cannon/ray/sphere.hpp>
 #include <cannon/ray/camera.hpp>
+#include <cannon/ray/material.hpp>
+#include <cannon/graphics/random_color.hpp>
 
 using namespace Eigen;
 
@@ -16,21 +18,6 @@ using namespace cannon::math;
 
 inline double clamp(double x, double min, double max) {
   return std::min(max, std::max(min, x));
-}
-
-// Sphere intersection
-double hit_sphere(const Vector3d& center, double radius, const Ray& r) {
-  Vector3d oc = r.orig_ - center;
-  auto a = r.dir_.dot(r.dir_);
-  auto b = oc.dot(r.dir_);
-  auto c = oc.dot(oc) - radius * radius;
-  auto discriminant = b*b - a*c;
-
-  if (discriminant < 0) {
-    return -1.0;
-  } else {
-    return (-b - std::sqrt(discriminant)) / a;
-  }
 }
 
 // Background gradient
@@ -45,10 +32,15 @@ Vector3d ray_color(const Ray& r, const Hittable& world, int depth) {
     //Vector3d target = rec.p + rec.normal + random_unit_vec();
 
     //Lambertian diffuse texturing with hemispheric scattering
-    Vector3d target = rec.p + random_in_hemisphere(rec.normal);
-
-    // Diffuse material computation via child rays
-    return 0.5 * ray_color(Ray(rec.p, target - rec.p), world, depth - 1);
+    //Vector3d target = rec.p + random_in_hemisphere(rec.normal);
+    
+    Ray scattered;
+    Vector3d attenuation = Vector3d::Zero();
+    if (rec.mat_ptr->scatter(r, rec, attenuation, scattered)) {
+      return (attenuation.array() * ray_color(scattered, world, depth-1).array()).matrix();
+    } else {
+      return Vector3d::Zero();
+    }
   } else {
     Vector3d blue; 
     blue << 0.5,
@@ -62,30 +54,71 @@ Vector3d ray_color(const Ray& r, const Hittable& world, int depth) {
   }
 }
 
+HittableList random_scene() {
+  HittableList world;
+
+  auto ground_material = std::make_shared<Lambertian>(Vector3d(0.5, 0.5, 0.5));
+  world.add(std::make_shared<Sphere>(Vector3d(0, -1000, 0), 1000, ground_material));
+
+  for (int a = -11; a < 11; a++) {
+    for (int b = -11; b < 11; b++) {
+      auto choose_mat = random_double();
+
+      Vector3d center(a + 0.9*random_double(), 0.2, b + 0.9*random_double());
+
+      if ((center - Vector3d(4, 0.2, 0)).norm() > 0.9) {
+        auto albedo = (Vector3d::Random().array() * Vector3d::Random().array()).matrix();
+
+        if (choose_mat < 0.8) {
+          // Diffuse
+          auto sphere_material = std::make_shared<Lambertian>(albedo);
+          world.add(std::make_shared<Sphere>(center, 0.2, sphere_material));
+        } else if (choose_mat < 0.95) {
+          // Metal
+          auto fuzz = random_double(0, 0.5);
+          auto sphere_material = std::make_shared<Metal>(albedo, fuzz);
+          world.add(std::make_shared<Sphere>(center, 0.2, sphere_material));
+        } else {
+          // Glass
+          auto sphere_material = std::make_shared<Dielectric>(1.5);
+          world.add(std::make_shared<Sphere>(center, 0.2, sphere_material));
+        }
+      }
+
+    }
+  }
+
+  auto material1 = std::make_shared<Dielectric>(1.5);
+  world.add(std::make_shared<Sphere>(Vector3d(0, 1, 0), 1.0, material1));
+
+  auto material2 = std::make_shared<Lambertian>(Vector3d(0.4, 0.2, 0.1));
+  world.add(std::make_shared<Sphere>(Vector3d(-4, 1, 0), 1.0, material2));
+
+  auto material3 = std::make_shared<Metal>(Vector3d(0.7, 0.6, 0.5), 0.0);
+  world.add(std::make_shared<Sphere>(Vector3d(4, 1, 0), 1.0, material3));
+
+  return world;
+}
+
 int main() {
 
   // Image 
-  const auto aspect_ratio = 16.0 / 9.0;
-  const int image_width = 400; 
+  const auto aspect_ratio = 3.0 / 2.0;
+  const int image_width = 1200; 
   const int image_height = static_cast<int>(image_width / aspect_ratio);
-  const int samples_per_pixel = 100;
+  const int samples_per_pixel = 50;
   const int max_depth = 50;
   
   // World
-  HittableList world;
-  Vector3d sphere_center_1, sphere_center_2;
-  sphere_center_1 << 0.0,
-                     0.0,
-                     -1.0;
-  world.add(std::make_shared<Sphere>(sphere_center_1, 0.5));
-
-  sphere_center_2 << 0.0,
-                     -100.5,
-                     -1;
-  world.add(std::make_shared<Sphere>(sphere_center_2, 100));
+  HittableList world = random_scene();
 
   // Camera
-  Camera camera;
+  Vector3d look_from(13, 2, 3);
+  Vector3d look_at(0, 0, 0);
+  Vector3d vup(0, 1, 0);
+  auto dist_to_focus = 10.0;
+  auto aperture = 0.1;
+  Camera camera(look_from, look_at, vup, M_PI / 8, aspect_ratio, aperture, dist_to_focus);
 
   // Render
   std::cout << "P3\n" << image_width << ' ' << image_height << "\n255\n";

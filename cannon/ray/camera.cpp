@@ -2,6 +2,9 @@
 
 using namespace cannon::ray;
 
-Ray Camera::get_ray(double u, double v) const {
-  return Ray(origin_, lower_left_corner_ + u*horizontal_ + v*vertical_ - origin_);
+Ray Camera::get_ray(double s, double t) const {
+  Vector3d rd = lens_radius_ * random_in_disk();
+  Vector3d offset = u_ * rd.x() + v_ * rd.y();
+
+  return Ray(origin_ + offset, lower_left_corner_ + s*horizontal_ + t*vertical_ - origin_ - offset);
 }

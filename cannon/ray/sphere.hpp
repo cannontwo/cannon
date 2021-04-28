@@ -24,9 +24,10 @@ namespace cannon {
         Sphere() {}
 
         /*!
-         * Constructor taking a sphere center and radius.
+         * Constructor taking a sphere center, radius, and material.
          */
-        Sphere(const Vector3d& center, double r) : center_(center), radius_(r) {}
+        Sphere(const Vector3d& center, double r, std::shared_ptr<Material>
+            mat_ptr) : center_(center), radius_(r), mat_ptr_(mat_ptr) {}
 
         /*!
          * Destructor.
@@ -41,6 +42,7 @@ namespace cannon {
       public:
         Vector3d center_; //!< Sphere center
         double radius_; //!< Sphere radius
+        std::shared_ptr<Material> mat_ptr_; //!< Material for this sphere
 
     };
 

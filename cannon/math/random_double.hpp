@@ -26,6 +26,8 @@ namespace cannon {
 
     Vector3d random_in_hemisphere(const Vector3d& normal);
 
+    Vector3d random_in_disk();
+
   } // namespace math
 } // namespace cannon
 

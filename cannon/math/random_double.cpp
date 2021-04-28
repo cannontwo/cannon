@@ -54,3 +54,12 @@ Vector3d cannon::math::random_in_hemisphere(const Vector3d& normal) {
   else
     return -random_vec;
 }
+
+Vector3d cannon::math::random_in_disk() {
+  // Again, rejection sampling
+  while (true) {
+    auto p = Vector3d(random_double(-1, 1), random_double(-1, 1), 0);
+    if (p.dot(p) >= 1) continue;
+    return p;
+  }
+}

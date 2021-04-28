@@ -10,8 +10,11 @@
 #include <Eigen/Dense>
 
 #include <cannon/ray/ray.hpp>
+#include <cannon/math/random_double.hpp>
 
 using namespace Eigen;
+
+using namespace cannon::math;
 
 namespace cannon {
   namespace ray {
@@ -23,45 +26,45 @@ namespace cannon {
       public:
 
         /*!
-         * Default constructor.
+         * Constructor taking look point, lookat point, camera up vector, field
+         * of view (in radians) and aspect ratio.
          */
-        Camera() {
-          auto aspect_ratio = 16.0 / 9.0;
-          auto viewport_height = 2.0;
+        Camera(const Vector3d& look_from, const Vector3d& look_at, const
+            Vector3d& vup, double vfov, double aspect_ratio, double aperture,
+            double focus_dist) {
+          auto h = std::tan(vfov / 2);
+          auto viewport_height = 2.0 * h;
           auto viewport_width = aspect_ratio * viewport_height;
-          auto focal_length = 1.0;
 
-          origin_ = Vector3d::Zero();
-          horizontal_ << viewport_width,
-                        0.0,
-                        0.0;
-          vertical_ << 0.0,
-                      viewport_height,
-                      0.0;
+          w_ = (look_from - look_at).normalized();
+          u_ = vup.cross(w_).normalized();
+          v_ = w_.cross(u_);
 
-          Vector3d depth;
-          depth << 0.0,
-                   0.0,
-                   focal_length;
+          origin_ = look_from;
+          horizontal_ = focus_dist * viewport_width * u_;
+          vertical_ = focus_dist * viewport_height * v_;
+          lower_left_corner_ = origin_ - horizontal_/2 - vertical_/2 - focus_dist * w_; 
 
-          lower_left_corner_ = origin_ - horizontal_/2 - vertical_/2 - depth; 
+          lens_radius_ = aperture / 2;
         }
 
         /*!
          * Get a ray corresponding to a particular direction into the scene.
          *
-         * \param u Horizontal component of ray direction along view.
-         * \param v Vertical component of ray direction along view.
+         * \param s Horizontal component of ray direction along view.
+         * \param t Vertical component of ray direction along view.
          *
          * \returns The sampled ray.
          */
-        Ray get_ray(double u, double v) const;
+        Ray get_ray(double s, double t) const;
 
       private:
         Vector3d origin_; //!< Camera origin
         Vector3d lower_left_corner_; //!< Lower-left corner of camera view plane
         Vector3d horizontal_; //!< Horizontal extent of camera view plane
         Vector3d vertical_; //!< Vertical extent of camera view plane
+        Vector3d u_, v_, w_; //!< Basis vectors for camera
+        double lens_radius_;
 
     };
 
