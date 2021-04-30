@@ -33,6 +33,15 @@ namespace cannon {
      */
     void write_color(std::ostream& os, const Vector3d& pixel_color, unsigned int samples_per_pixel);
 
+    /*!
+     * Function to write a matrix of all colors in an image to the input stream.
+     * 
+     * \param os The stream to write this image to.
+     * \param pixel_colors Matrix of pixel colors. Should have three rows.
+     * \param samples_per_pixel Number of samples per pixel.
+     */
+    void write_colors(std::ostream& os, const MatrixXd& pixel_colors, unsigned int samples_per_pixel);
+
   }
 }
 

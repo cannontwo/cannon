@@ -25,3 +25,13 @@ void cannon::ray::write_color(std::ostream& os, const Vector3d& pixel_color,
      << static_cast<int>(256 * std::min(0.999, std::max(0.0, g))) << " "
      << static_cast<int>(256 * std::min(0.999, std::max(0.0, b))) << "\n";
 }
+
+void cannon::ray::write_colors(std::ostream& os, const MatrixXd& pixel_colors, unsigned int samples_per_pixel) {
+  if (pixel_colors.rows() != 3) {
+    throw std::runtime_error("Input color matrix had incorrect number of rows");
+  }
+
+  for (unsigned int i = 0; i < pixel_colors.cols(); i++) {
+    write_color(os, pixel_colors.col(i), samples_per_pixel);
+  }
+}

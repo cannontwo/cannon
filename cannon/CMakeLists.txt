@@ -79,3 +79,10 @@ if (CANNON_BUILD_RESEARCH)
     )
 endif()
 
+# Copy raytracing params
+ADD_CUSTOM_COMMAND(
+  TARGET cannon POST_BUILD
+  COMMAND ${CMAKE_COMMAND} -E create_symlink
+    ${CMAKE_CURRENT_SOURCE_DIR}/ray/params ${CMAKE_CURRENT_BINARY_DIR}/../params
+  COMMENT "Copying raytracer params" VERBATIM
+  )
