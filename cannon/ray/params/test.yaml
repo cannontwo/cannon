@@ -3,7 +3,7 @@ image_width: 1200
 samples_per_pixel: 50
 max_depth: 50
 dist_to_focus: 10.0
-aperture: 0.001
+aperture: 0.1
 vfov: 0.393
 
 look_from:

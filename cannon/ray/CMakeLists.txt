@@ -2,6 +2,7 @@ list(APPEND RAY_SOURCES
   write_ppm.cpp
   ray.cpp
   sphere.cpp
+  moving_sphere.cpp
   hittable_list.cpp
   camera.cpp
   material.cpp

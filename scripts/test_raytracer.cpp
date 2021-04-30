@@ -10,6 +10,7 @@
 #include <cannon/ray/write_ppm.hpp>
 #include <cannon/ray/hittable_list.hpp>
 #include <cannon/ray/sphere.hpp>
+#include <cannon/ray/moving_sphere.hpp>
 #include <cannon/ray/camera.hpp>
 #include <cannon/ray/material.hpp>
 #include <cannon/ray/raytracer.hpp>
@@ -41,7 +42,8 @@ std::shared_ptr<HittableList> random_scene() {
         if (choose_mat < 0.8) {
           // Diffuse
           auto sphere_material = std::make_shared<Lambertian>(albedo);
-          world->add(std::make_shared<Sphere>(center, 0.2, sphere_material));
+          Vector3d center2 = center + Vector3d(0, random_double(0, .5), 0);
+          world->add(std::make_shared<MovingSphere>(center, center2, 0.0, 1.0, 0.2, sphere_material));
         } else if (choose_mat < 0.95) {
           // Metal
           auto fuzz = random_double(0, 0.5);

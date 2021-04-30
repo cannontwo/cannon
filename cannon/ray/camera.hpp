@@ -31,7 +31,7 @@ namespace cannon {
          */
         Camera(const Vector3d& look_from, const Vector3d& look_at, const
             Vector3d& vup, double vfov, double aspect_ratio, double aperture,
-            double focus_dist) {
+            double focus_dist, double time_0 = 0.0, double time_1 = 1.0) {
           auto h = std::tan(vfov / 2);
           auto viewport_height = 2.0 * h;
           auto viewport_width = aspect_ratio * viewport_height;
@@ -46,6 +46,9 @@ namespace cannon {
           lower_left_corner_ = origin_ - horizontal_/2 - vertical_/2 - focus_dist * w_; 
 
           lens_radius_ = aperture / 2;
+
+          time_0_ = time_0;
+          time_1_ = time_1;
         }
 
         /*!
@@ -64,8 +67,8 @@ namespace cannon {
         Vector3d horizontal_; //!< Horizontal extent of camera view plane
         Vector3d vertical_; //!< Vertical extent of camera view plane
         Vector3d u_, v_, w_; //!< Basis vectors for camera
-        double lens_radius_;
-
+        double lens_radius_; //!< Simulated thin lens radius
+        double time_0_, time_1_; //!< Shutter open and close time
     };
 
   } // namespace ray

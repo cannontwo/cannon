@@ -25,9 +25,10 @@ namespace cannon {
         Ray() {}
 
         /*!
-         * Constructor taking an origin and direction for this ray.
+         * Constructor taking an origin, direction, and time for this ray.
          */
-        Ray(const Vector3d& origin, const Vector3d& direction) : orig_(origin), dir_(direction) {}
+        Ray(const Vector3d& origin, const Vector3d& direction, double time =
+            0.0) : orig_(origin), dir_(direction), time_(time) {}
 
         /*!
          * Method computing the location in 3D space that is the input distance
@@ -42,6 +43,7 @@ namespace cannon {
       public:
         Vector3d orig_; //!< Origin of this ray.
         Vector3d dir_; //!< Direction of this ray.
+        double time_;
 
     };
 
