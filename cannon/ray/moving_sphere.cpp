@@ -34,3 +34,14 @@ bool MovingSphere::hit(const Ray& r, double t_min, double t_max, hit_record& rec
 Vector3d MovingSphere::center(double time) const {
   return center_0_ + ((time - time_0_) / (time_1_ - time_0_)) * (center_1_ - center_0_);
 }
+
+bool MovingSphere::bounding_box(double time_0, double time_1, Aabb& output_box) const {
+  Aabb box_0(center(time_0) - Vector3d(radius_, radius_, radius_),
+      center(time_0) + Vector3d(radius_, radius_, radius_));
+
+  Aabb box_1(center(time_1) - Vector3d(radius_, radius_, radius_),
+      center(time_1) + Vector3d(radius_, radius_, radius_));
+
+  output_box = surrounding_box(box_0, box_1);
+  return true;
+}

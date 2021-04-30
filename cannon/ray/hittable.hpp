@@ -10,6 +10,7 @@
 #include <memory>
 
 #include <cannon/ray/ray.hpp>
+#include <cannon/ray/aabb.hpp>
 
 namespace cannon {
   namespace ray {
@@ -55,6 +56,17 @@ namespace cannon {
          * \returns Whether the ray intersects this geometry.
          */
         virtual bool hit(const Ray& r, double t_min, double t_max, hit_record& rec) const = 0;
+
+        /*!
+         * Method to generate a bounding box for this geometry between input times.
+         *
+         * \param time_0 Start time for bounding box.
+         * \param time_1 End time for bounding box.
+         * \param output_box Place to put created bounding box.
+         *
+         * \returns Whether bounding box exists for this geometry, allowing for infinite geometry.
+         */
+        virtual bool bounding_box(double time_0, double time_1, Aabb& output_box) const = 0;
     };
 
   } // namespace ray

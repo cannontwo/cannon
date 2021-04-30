@@ -42,6 +42,11 @@ namespace cannon {
         virtual bool hit(const Ray& r, double t_min, double t_max, hit_record& rec) const override;
 
         /*!
+         * Inherited from Hittable.
+         */
+        virtual bool bounding_box(double time_0, double time_1, Aabb& output_box) const override;
+
+        /*!
          * Method to compute sphere center location at input time.
          *
          * \param time Time at which to compute center

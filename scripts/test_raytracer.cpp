@@ -14,6 +14,7 @@
 #include <cannon/ray/camera.hpp>
 #include <cannon/ray/material.hpp>
 #include <cannon/ray/raytracer.hpp>
+#include <cannon/ray/bvh.hpp>
 #include <cannon/graphics/random_color.hpp>
 #include <cannon/log/registry.hpp>
 
@@ -23,7 +24,6 @@ using namespace cannon::ray;
 using namespace cannon::math;
 using namespace cannon::log;
 
-// TODO Allow loading of world from YAML file
 std::shared_ptr<HittableList> random_scene() {
   auto world = std::make_shared<HittableList>();
 
@@ -80,8 +80,12 @@ int main(int argc, char** argv) {
   // World
   auto world = random_scene();
 
+  log_info("Building bounding volume hierarchy");
+  auto bvh = std::make_shared<BvhNode>(world, 0.0, 1.0);
+
   // Raytracer
-  Raytracer raytracer(argv[1], world);
+  //Raytracer raytracer(argv[1], world);
+  Raytracer raytracer(argv[1], bvh);
   //raytracer.render(std::cout);
   raytracer.render("test.ppm");
 }

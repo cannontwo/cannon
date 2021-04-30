@@ -52,6 +52,11 @@ namespace cannon {
          */
         virtual bool hit(const Ray& r, double t_min, double t_max, hit_record& rec) const override;
 
+        /*!
+         * Inherited from Hittable.
+         */
+        virtual bool bounding_box(double time_0, double time_1, Aabb& output_box) const override;
+
       public:
         std::vector<std::shared_ptr<Hittable>> objects_; //!< Internal vector of Hittables.
 

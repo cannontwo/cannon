@@ -7,6 +7,8 @@ list(APPEND RAY_SOURCES
   camera.cpp
   material.cpp
   raytracer.cpp
+  aabb.cpp
+  bvh.cpp
   )
 
 add_library(ray OBJECT ${RAY_SOURCES})
