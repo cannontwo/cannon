@@ -11,7 +11,11 @@
 
 #include <Eigen/Dense>
 
+#include <cannon/math/perlin.hpp>
+
 using namespace Eigen;
+
+using namespace cannon::math;
 
 namespace cannon {
   namespace ray {
@@ -107,6 +111,33 @@ namespace cannon {
       public:
         std::shared_ptr<Texture> even_;
         std::shared_ptr<Texture> odd_;
+    };
+
+    /*!
+     * \brief Class representing a Perlin noise texture.
+     */
+    class NoiseTexture : public Texture {
+      public:
+
+        /*!
+         * Default constructor.
+         */
+        NoiseTexture() {}
+
+        /*!
+         * Destructor.
+         */
+        virtual ~NoiseTexture() {}
+
+        /*!
+         * Inherited from Texture.
+         */
+        virtual Vector3d value(double u, double v, const Vector3d& p) const override {
+          return Vector3d(1, 1, 1) * noise_.noise(p);
+        }
+
+      public:
+        Perlin noise_; //!< Perlin noise generator
     };
 
   } // namespace ray

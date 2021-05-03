@@ -4,6 +4,7 @@ list(APPEND MATH_SOURCES
   multivariate_normal.cpp
   func/rosenbrock.cpp
   random_double.cpp
+  perlin.cpp
   )
 
 add_library(math OBJECT ${MATH_SOURCES})
