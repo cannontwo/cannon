@@ -9,6 +9,7 @@ list(APPEND RAY_SOURCES
   raytracer.cpp
   aabb.cpp
   bvh.cpp
+  texture.cpp
   )
 
 add_library(ray OBJECT ${RAY_SOURCES})

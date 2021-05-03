@@ -14,7 +14,7 @@ bool Lambertian::scatter(const Ray& r_in, const hit_record& rec, Vector3d&
   }
 
   scattered = Ray(rec.p, scatter_direction, r_in.time_);
-  attenuation = albedo_;
+  attenuation = albedo_->value(rec.u, rec.v, rec.p);
   return true;
 }
 

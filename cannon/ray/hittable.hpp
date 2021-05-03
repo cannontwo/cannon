@@ -25,7 +25,11 @@ namespace cannon {
       Vector3d p; //!< Point where ray hit geometry
       Vector3d normal; //!< Normal at hit point
       std::shared_ptr<Material> mat_ptr; //!< Pointer to material for hit surface
+
       double t; //!< Distance of hit along ray
+      double u; //!< Horizontal surface texture coordinate at hit point
+      double v; //!< Vertical surface texture coordinate at hit point
+
       bool front_face; //!< Whether the ray originated from outside the geometry
 
       /*!

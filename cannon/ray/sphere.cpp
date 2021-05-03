@@ -26,6 +26,7 @@ bool Sphere::hit(const Ray& r, double t_min, double t_max, hit_record& rec) cons
   rec.p = r.at(rec.t);
   Vector3d outward_normal = (rec.p - center_) / radius_;
   rec.set_face_normal(r, outward_normal);
+  get_sphere_uv(outward_normal, rec.u, rec.v);
   rec.mat_ptr = mat_ptr_;
   
   return true;
@@ -35,4 +36,13 @@ bool Sphere::bounding_box(double time_0, double time_1, Aabb& output_box) const 
   output_box = Aabb(center_ - Vector3d(radius_, radius_, radius_), center_ +
       Vector3d(radius_, radius_, radius_));
   return true;
+}
+
+// Free Functions
+void cannon::ray::get_sphere_uv(const Vector3d& p, double& u, double& v) {
+  auto theta = std::acos(-p.y());
+  auto phi = std::atan2(-p.z(), p.x()) + M_PI;
+
+  u = phi / (2 * M_PI);
+  v = theta / M_PI;
 }

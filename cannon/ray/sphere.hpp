@@ -51,6 +51,17 @@ namespace cannon {
 
     };
 
+    // Free Functions
+    
+    /*!
+     * Compute surface texture U,V coordinates for a sphere.
+     *
+     * \param p Point on the unit sphere centered at the origin.
+     * \param u Returned value in [0, 1] of angle around the Y axis from X=-1
+     * \param v Returned value in [0, 1] of angle from Y=-1 to Y=+1
+     */
+    void get_sphere_uv(const Vector3d& p, double& u, double& v);
+
   } // namespace ray
 } // namespace cannon
 

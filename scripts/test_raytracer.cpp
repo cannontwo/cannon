@@ -27,8 +27,8 @@ using namespace cannon::log;
 std::shared_ptr<HittableList> random_scene() {
   auto world = std::make_shared<HittableList>();
 
-  auto ground_material = std::make_shared<Lambertian>(Vector3d(0.5, 0.5, 0.5));
-  world->add(std::make_shared<Sphere>(Vector3d(0, -1000, 0), 1000, ground_material));
+  auto checker = std::make_shared<CheckerTexture>(Vector3d(0.2, 0.3, 0.1), Vector3d(0.9, 0.9, 0.9));
+  world->add(std::make_shared<Sphere>(Vector3d(0, -1000, 0), 1000, std::make_shared<Lambertian>(checker)));
 
   for (int a = -11; a < 11; a++) {
     for (int b = -11; b < 11; b++) {
@@ -71,6 +71,17 @@ std::shared_ptr<HittableList> random_scene() {
   return world;
 }
 
+std::shared_ptr<HittableList> two_spheres_scene() {
+  auto objects = std::make_shared<HittableList>();
+
+  auto checker = std::make_shared<CheckerTexture>(Vector3d(0.2, 0.3, 0.1), Vector3d(0.9, 0.9, 0.9));
+
+  objects->add(std::make_shared<Sphere>(Vector3d(0, -10, 0), 10, std::make_shared<Lambertian>(checker)));
+  objects->add(std::make_shared<Sphere>(Vector3d(0, 10, 0), 10, std::make_shared<Lambertian>(checker)));
+
+  return objects;
+}
+
 int main(int argc, char** argv) {
   if (argc <= 1) {
     log_error("Provide raytracer config file as argument");
@@ -78,7 +89,8 @@ int main(int argc, char** argv) {
   }
   
   // World
-  auto world = random_scene();
+  //auto world = random_scene();
+  auto world = two_spheres_scene();
 
   log_info("Building bounding volume hierarchy");
   auto bvh = std::make_shared<BvhNode>(world, 0.0, 1.0);

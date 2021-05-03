@@ -11,6 +11,7 @@
 
 #include <cannon/ray/ray.hpp>
 #include <cannon/ray/hittable.hpp>
+#include <cannon/ray/texture.hpp>
 #include <cannon/math/random_double.hpp>
 
 using namespace Eigen;
@@ -53,7 +54,12 @@ namespace cannon {
         /*!
          * Constructor taking albedo color.
          */
-        Lambertian(const Vector3d& a) : albedo_(a) {}
+        Lambertian(const Vector3d& a) : albedo_(std::make_shared<SolidColor>(a)) {}
+
+        /*!
+         * Constructor taking albedo texture.
+         */
+        Lambertian(std::shared_ptr<Texture> a) : albedo_(a) {}
 
         /*!
          * Destructor.
@@ -67,7 +73,7 @@ namespace cannon {
             attenuation, Ray& scattered) const override;
 
       public:
-        Vector3d albedo_; //!< Albedo color for this material.
+        std::shared_ptr<Texture> albedo_; //!< Albedo color for this material.
 
     };
 
