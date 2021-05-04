@@ -73,7 +73,6 @@ std::shared_ptr<HittableList> random_scene() {
 
 std::shared_ptr<HittableList> two_spheres_scene() {
   auto objects = std::make_shared<HittableList>();
-
   auto checker = std::make_shared<CheckerTexture>(Vector3d(0.2, 0.3, 0.1), Vector3d(0.9, 0.9, 0.9));
 
   objects->add(std::make_shared<Sphere>(Vector3d(0, -10, 0), 10, std::make_shared<Lambertian>(checker)));
@@ -85,7 +84,7 @@ std::shared_ptr<HittableList> two_spheres_scene() {
 std::shared_ptr<HittableList> two_perlin_spheres_scene() {
   auto objects = std::make_shared<HittableList>();
 
-  auto pertext = std::make_shared<NoiseTexture>();
+  auto pertext = std::make_shared<NoiseTexture>(4);
 
   objects->add(std::make_shared<Sphere>(Vector3d(0, -1000, 0), 1000, std::make_shared<Lambertian>(pertext)));
   objects->add(std::make_shared<Sphere>(Vector3d(0, 2, 0), 2, std::make_shared<Lambertian>(pertext)));
@@ -98,7 +97,7 @@ int main(int argc, char** argv) {
     log_error("Provide raytracer config file as argument");
     return 1;
   }
-  
+
   // World
   //auto world = random_scene();
   //auto world = two_spheres_scene();

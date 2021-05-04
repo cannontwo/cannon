@@ -125,6 +125,11 @@ namespace cannon {
         NoiseTexture() {}
 
         /*!
+         * Constructor taking a noise scale.
+         */
+        NoiseTexture(double scale) : scale_(scale) {}
+
+        /*!
          * Destructor.
          */
         virtual ~NoiseTexture() {}
@@ -133,11 +138,13 @@ namespace cannon {
          * Inherited from Texture.
          */
         virtual Vector3d value(double u, double v, const Vector3d& p) const override {
-          return Vector3d(1, 1, 1) * noise_.noise(p);
+          return Vector3d(1, 1, 1) * 0.5 * (1.0 + 
+              std::sin(scale_ * p.z() + 10*noise_.turbulence(p)));
         }
 
       public:
         Perlin noise_; //!< Perlin noise generator
+        double scale_; //!< Noise scale
     };
 
   } // namespace ray
