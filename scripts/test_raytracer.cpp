@@ -92,6 +92,21 @@ std::shared_ptr<HittableList> two_perlin_spheres_scene() {
   return objects;
 }
 
+std::shared_ptr<HittableList> earth_scene() {
+  auto world = std::make_shared<HittableList>();
+
+  auto earth_texture = std::make_shared<ImageTexture>("assets/earthmap.jpg");
+  auto earth_surface = std::make_shared<Lambertian>(earth_texture);
+  auto globe = std::make_shared<Sphere>(Vector3d(0, 2, 0), 2, earth_surface);
+
+  world->add(globe);
+
+  auto pertext = std::make_shared<NoiseTexture>(4);
+  world->add(std::make_shared<Sphere>(Vector3d(0, -1000, 0), 1000, std::make_shared<Lambertian>(pertext)));
+
+  return world;
+}
+
 int main(int argc, char** argv) {
   if (argc <= 1) {
     log_error("Provide raytracer config file as argument");
@@ -101,7 +116,8 @@ int main(int argc, char** argv) {
   // World
   //auto world = random_scene();
   //auto world = two_spheres_scene();
-  auto world = two_perlin_spheres_scene();
+  //auto world = two_perlin_spheres_scene();
+  auto world = earth_scene();
 
   log_info("Building bounding volume hierarchy");
   auto bvh = std::make_shared<BvhNode>(world, 0.0, 1.0);
