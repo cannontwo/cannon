@@ -40,6 +40,14 @@ raytracer_params Raytracer::load_config(const std::string& filename) {
   params.vup[1] = safe_get_param_<double>(vup_params, "y");
   params.vup[2] = safe_get_param_<double>(vup_params, "z");
 
+  if (!config["background_color"])
+    throw new std::runtime_error("Could not find background_color map");
+
+  YAML::Node background_params = config["background_color"];
+  params.background_color[0] = safe_get_param_<double>(background_params, "x");
+  params.background_color[1] = safe_get_param_<double>(background_params, "y");
+  params.background_color[2] = safe_get_param_<double>(background_params, "z");
+
   return params;
 }
 
@@ -49,31 +57,17 @@ Vector3d Raytracer::ray_color(const Ray& r, int depth) {
   if (depth <= 0)
     return Vector3d::Zero();
 
-  if (world_->hit(r, 0.001, std::numeric_limits<double>::infinity(), rec)) {
-    // Lambertian diffuse texturing
-    //Vector3d target = rec.p + rec.normal + random_unit_vec();
+  if (!world_->hit(r, 0.001, std::numeric_limits<double>::infinity(), rec))
+    return params_.background_color;
 
-    //Lambertian diffuse texturing with hemispheric scattering
-    //Vector3d target = rec.p + random_in_hemisphere(rec.normal);
-    
-    Ray scattered;
-    Vector3d attenuation = Vector3d::Zero();
-    if (rec.mat_ptr->scatter(r, rec, attenuation, scattered)) {
-      return (attenuation.array() * ray_color(scattered, depth-1).array()).matrix();
-    } else {
-      return Vector3d::Zero();
-    }
-  } else {
-    Vector3d blue; 
-    blue << 0.5,
-            0.7,
-            1.0;
+  Ray scattered;
+  Vector3d attenuation = Vector3d::Zero();
+  Vector3d emitted = rec.mat_ptr->emitted(rec.u, rec.v, rec.p);
 
-    Vector3d unit_direction = r.dir_.normalized();
+  if (!rec.mat_ptr->scatter(r, rec, attenuation, scattered))
+    return emitted;
 
-    auto t = 0.5 * (unit_direction.y() + 1.0);
-    return (1.0 - t) * Vector3d::Ones() + t * blue;
-  }
+  return emitted + (attenuation.array() * ray_color(scattered, depth-1).array()).matrix();
 }
 
 void Raytracer::render(std::ostream& os) {
@@ -102,26 +96,43 @@ void Raytracer::render(std::ostream& os) {
 void Raytracer::render(const std::string& out_filename) {
   MatrixXd pixel_colors = MatrixXd::Zero(3, params_.image_width*params_.image_height);
   std::ofstream image_file(out_filename);
+  std::mutex write_mut;
+  int samples_so_far = 0;
+
+  ThreadPool<int> pool([&](std::shared_ptr<int> num) {
+      MatrixXd local_colors = MatrixXd::Zero(3, params_.image_width*params_.image_height);
+
+      for (int j = params_.image_height - 1; j >= 0; --j) {
+        for (int i = 0; i < params_.image_width; ++i) {
+          auto u = (i + random_double()) / (params_.image_width - 1);
+          auto v = (j + random_double()) / (params_.image_height - 1);
+
+          Ray r = camera_.get_ray(u, v);
+          Vector3d pixel_color = ray_color(r, params_.max_depth);
+
+          local_colors.col(((params_.image_height - 1)-j) * params_.image_width + i) = pixel_color;
+        }
+      }
+
+      // Lock mutex, update aggregate colors, write to file
+      {
+        std::lock_guard<std::mutex> lock(write_mut);
+
+        pixel_colors += local_colors;
+        image_file.seekp(0, std::ios::beg);
+        image_file << "P3\n" << params_.image_width << ' ' << params_.image_height << "\n255\n";
+        write_colors(image_file, pixel_colors, samples_so_far+1);
+        image_file.flush();
+
+        std::cerr << "\rSamples performed so far:" << samples_so_far << " " << std::flush;
+
+        samples_so_far += 1;
+      }
+
+      });
 
   for (int s = 0; s < params_.samples_per_pixel; s++) {
-    std::cerr << "\rSamples performed so far: " << s << " " << std::flush;
-
-    for (int j = params_.image_height - 1; j >= 0; --j) {
-      for (int i = 0; i < params_.image_width; ++i) {
-        auto u = (i + random_double()) / (params_.image_width - 1);
-        auto v = (j + random_double()) / (params_.image_height - 1);
-
-        Ray r = camera_.get_ray(u, v);
-        Vector3d pixel_color = ray_color(r, params_.max_depth);
-
-        pixel_colors.col(((params_.image_height - 1)-j) * params_.image_width + i) += pixel_color;
-      }
-    }
-
-    image_file.seekp(0, std::ios::beg);
-    image_file << "P3\n" << params_.image_width << ' ' << params_.image_height << "\n255\n";
-    write_colors(image_file, pixel_colors, s+1);
-    image_file.flush();
+    pool.enqueue(std::make_shared<int>(s));
   }
 
   std::cerr << "\nDone.\n";

@@ -4,6 +4,7 @@
 
 #include <random>
 #include <cassert>
+#include <thread>
 
 #include <Eigen/Dense>
 

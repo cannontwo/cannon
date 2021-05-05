@@ -3,10 +3,13 @@
 using namespace cannon::math;
 
 double cannon::math::random_double() {
+  // Making random number generator thread-safe
+  static thread_local std::mt19937* generator = nullptr;
+  static std::hash<std::thread::id> hasher;
+  if (!generator) generator = new std::mt19937(clock() + hasher(std::this_thread::get_id()));
   static std::uniform_real_distribution<double> distribution(0.0, 1.0);
-  static std::mt19937 generator;
 
-  return distribution(generator);
+  return distribution(*generator);
 }
 
 double cannon::math::random_double(double min, double max) {

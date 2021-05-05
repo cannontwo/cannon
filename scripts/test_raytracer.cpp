@@ -15,6 +15,7 @@
 #include <cannon/ray/material.hpp>
 #include <cannon/ray/raytracer.hpp>
 #include <cannon/ray/bvh.hpp>
+#include <cannon/ray/aa_rect.hpp>
 #include <cannon/graphics/random_color.hpp>
 #include <cannon/log/registry.hpp>
 
@@ -107,6 +108,39 @@ std::shared_ptr<HittableList> earth_scene() {
   return world;
 }
 
+std::shared_ptr<HittableList> simple_light_scene() {
+  auto world = std::make_shared<HittableList>();
+
+  auto pertext = std::make_shared<NoiseTexture>(4);
+  world->add(std::make_shared<Sphere>(Vector3d(0, -1000, 0), 1000, std::make_shared<Lambertian>(pertext)));
+  world->add(std::make_shared<Sphere>(Vector3d(0, 2, 0), 2, std::make_shared<Lambertian>(pertext)));
+
+  // Light brighter than (1, 1, 1) for lighting
+  auto difflight = std::make_shared<DiffuseLight>(Vector3d(4, 4, 4));
+  world->add(std::make_shared<XYRect>(3, 5, 1, 3, -2, difflight));
+  world->add(std::make_shared<Sphere>(Vector3d(0, 5, 0), 1, difflight));
+
+  return world;
+}
+
+std::shared_ptr<HittableList> cornell_box() {
+  auto world = std::make_shared<HittableList>();
+
+  auto red = std::make_shared<Lambertian>(Vector3d(0.65, 0.05, 0.05));
+  auto white = std::make_shared<Lambertian>(Vector3d(0.73, 0.73, 0.73));
+  auto green = std::make_shared<Lambertian>(Vector3d(0.12, 0.45, 0.15));
+  auto light = std::make_shared<DiffuseLight>(Vector3d(15, 15, 15));
+
+  world->add(std::make_shared<YZRect>(0, 555, 0, 555, 555, green));
+  world->add(std::make_shared<YZRect>(0, 555, 0, 555, 0, red));
+  world->add(std::make_shared<XZRect>(213, 343, 227, 332, 554, light));
+  world->add(std::make_shared<XZRect>(0, 555, 0, 555, 0, white));
+  world->add(std::make_shared<XZRect>(0, 555, 0, 555, 555, white));
+  world->add(std::make_shared<XYRect>(0, 555, 0, 555, 555, white));
+
+  return world;
+}
+
 int main(int argc, char** argv) {
   if (argc <= 1) {
     log_error("Provide raytracer config file as argument");
@@ -117,13 +151,14 @@ int main(int argc, char** argv) {
   //auto world = random_scene();
   //auto world = two_spheres_scene();
   //auto world = two_perlin_spheres_scene();
-  auto world = earth_scene();
+  //auto world = earth_scene();
+  //auto world = simple_light_scene();
+  auto world = cornell_box();
 
   log_info("Building bounding volume hierarchy");
   auto bvh = std::make_shared<BvhNode>(world, 0.0, 1.0);
 
   // Raytracer
-  //Raytracer raytracer(argv[1], world);
   Raytracer raytracer(argv[1], bvh);
   //raytracer.render(std::cout);
   raytracer.render("test.ppm");

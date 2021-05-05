@@ -20,10 +20,12 @@
 #include <cannon/ray/sphere.hpp>
 #include <cannon/ray/camera.hpp>
 #include <cannon/ray/material.hpp>
+#include <cannon/utils/thread_pool.hpp>
 
 using namespace Eigen;
 
 using namespace cannon::math;
+using namespace cannon::utils;
 
 namespace cannon {
   namespace ray { 
@@ -45,6 +47,8 @@ namespace cannon {
       Vector3d look_from = Vector3d::Zero();
       Vector3d look_at = Vector3d::Zero();
       Vector3d vup = Vector3d::Zero();
+
+      Vector3d background_color = Vector3d::Zero();
     };
 
     /*!
@@ -104,6 +108,7 @@ namespace cannon {
         raytracer_params params_; //!< Rendering parameters
         std::shared_ptr<Hittable> world_; //!< World geometry
         Camera camera_; //!< Rendering camera
+        Vector3d background_; //!< Background color for rendering
 
     };
 

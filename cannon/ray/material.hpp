@@ -43,6 +43,20 @@ namespace cannon {
          */
         virtual bool scatter(const Ray& r_in, const hit_record& rec, Vector3d&
             attenuation, Ray& scattered) const = 0;
+
+        /*!
+         * Method that returns the emitted color for this material at a
+         * specified point.
+         *
+         * \param u Horizontal surface coordinate.
+         * \param v Vertical surface coordinate.
+         * \param p Hit point from which light is being emitted.
+         *
+         * \returns Emitted color.
+         */
+        virtual Vector3d emitted(double u, double v, const Vector3d& p) const {
+          return Vector3d::Zero();
+        }
     };
 
     /*!
@@ -128,6 +142,43 @@ namespace cannon {
 
       public:
         double ir_; //!< Index of refraction
+    };
+
+    class DiffuseLight : public Material {
+      public:
+
+        /*!
+         * Constructor taking a texture for this material.
+         */
+        DiffuseLight(std::shared_ptr<Texture> a) : emit_(a) {}
+
+        /*!
+         * Constructor taking a color for this material.
+         */
+        DiffuseLight(const Vector3d& c) : emit_(std::make_shared<SolidColor>(c)) {}
+
+        /*!
+         * Destructor.
+         */
+        virtual ~DiffuseLight() {}
+
+        /*!
+         * Inherited from Material.
+         */
+        virtual bool scatter(const Ray& r_in, const hit_record& rec, Vector3d&
+            attenuation, Ray& scattered) const override {
+          return false;
+        }
+
+        /*!
+         * Inherited from Material.
+         */
+        virtual Vector3d emitted(double u, double v, const Vector3d& p) const override {
+          return emit_->value(u, v, p);
+        }
+
+      public:
+        std::shared_ptr<Texture> emit_; //!< Emissive texture
     };
 
     // Public Functions
