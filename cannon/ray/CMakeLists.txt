@@ -11,6 +11,7 @@ list(APPEND RAY_SOURCES
   bvh.cpp
   texture.cpp
   aa_rect.cpp
+  hittable.cpp
   )
 
 add_library(ray OBJECT ${RAY_SOURCES})

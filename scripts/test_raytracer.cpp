@@ -138,6 +138,16 @@ std::shared_ptr<HittableList> cornell_box() {
   world->add(std::make_shared<XZRect>(0, 555, 0, 555, 555, white));
   world->add(std::make_shared<XYRect>(0, 555, 0, 555, 555, white));
 
+  std::shared_ptr<Hittable> box1 = std::make_shared<Box>(Vector3d(0, 0, 0), Vector3d(165, 330, 165), white);
+  box1 = std::make_shared<Rotate>(box1, Vector3d::UnitY(), 0.2618);
+  box1 = std::make_shared<Translate>(box1, Vector3d(265, 0, 295));
+  world->add(box1);
+
+  std::shared_ptr<Hittable> box2 = std::make_shared<Box>(Vector3d(0, 0, 0), Vector3d(165, 165, 165), white);
+  box2 = std::make_shared<Rotate>(box2, Vector3d::UnitY(), -0.31415);
+  box2 = std::make_shared<Translate>(box2, Vector3d(130, 0, 65));
+  world->add(box2);
+
   return world;
 }
 

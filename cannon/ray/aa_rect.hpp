@@ -8,6 +8,7 @@
  */
 
 #include <cannon/ray/hittable.hpp>
+#include <cannon/ray/hittable_list.hpp>
 
 namespace cannon {
   namespace ray {
@@ -139,6 +140,61 @@ namespace cannon {
       public:
         double y0_, y1_, z0_, z1_, k_; //!< Rectangle extent parameters
         std::shared_ptr<Material> mat_ptr_; //!< Material
+    };
+
+    /*!
+     * \brief Class representing a box with axis-aligned sides.
+     */
+    class Box : public Hittable {
+      public:
+
+        /*!
+         * Default constructor.
+         */
+        Box() {}
+
+        /*!
+         * Constructor taking minimum and maximum corner of the box, as well as
+         * material for its sides.
+         */
+        Box(const Vector3d& p0, const Vector3d& p1, std::shared_ptr<Material>
+            mat_ptr) : box_min_(p0), box_max_(p1) {
+
+          sides_.add(std::make_shared<XYRect>(p0.x(), p1.x(), p0.y(), p1.y(), p1.z(), mat_ptr));
+          sides_.add(std::make_shared<XYRect>(p0.x(), p1.x(), p0.y(), p1.y(), p0.z(), mat_ptr));
+
+          sides_.add(std::make_shared<XZRect>(p0.x(), p1.x(), p0.z(), p1.z(), p1.y(), mat_ptr));
+          sides_.add(std::make_shared<XZRect>(p0.x(), p1.x(), p0.z(), p1.z(), p0.y(), mat_ptr));
+
+          sides_.add(std::make_shared<YZRect>(p0.y(), p1.y(), p0.z(), p1.z(), p1.x(), mat_ptr));
+          sides_.add(std::make_shared<YZRect>(p0.y(), p1.y(), p0.z(), p1.z(), p0.x(), mat_ptr));
+        }
+
+        /*!
+         * Destructor.
+         */
+        virtual ~Box() {}
+
+        /*!
+         * Inherited from Hittable.
+         */
+        virtual bool hit(const Ray& r, double t_min, double t_max, hit_record& rec) const override {
+          return sides_.hit(r, t_min, t_max, rec);
+        }
+
+        /*!
+         * Inherited from Hittable.
+         */
+        virtual bool bounding_box(double time_0, double time_1, Aabb& output_box) const override {
+          output_box = Aabb(box_min_, box_max_);
+          return true;
+        }
+
+      public:
+        Vector3d box_min_;
+        Vector3d box_max_;
+        HittableList sides_;
+
     };
 
 

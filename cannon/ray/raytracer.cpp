@@ -131,9 +131,9 @@ void Raytracer::render(const std::string& out_filename) {
 
       });
 
+  // Enqueue work, one item per sample. Could alternatively be done by chunking portions of image
   for (int s = 0; s < params_.samples_per_pixel; s++) {
     pool.enqueue(std::make_shared<int>(s));
   }
 
-  std::cerr << "\nDone.\n";
 }

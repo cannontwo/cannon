@@ -73,6 +73,112 @@ namespace cannon {
         virtual bool bounding_box(double time_0, double time_1, Aabb& output_box) const = 0;
     };
 
+    /*!
+     * \brief Class representing translation of a hittable.
+     */
+    class Translate : public Hittable {
+      public:
+      
+        /*!
+         * Constructor taking a hittable to translate and the offset vector to
+         * translate by.
+         */
+        Translate(std::shared_ptr<Hittable> p, const Vector3d& displacement) :
+          ptr_(p), offset_(displacement) {}
+
+        /*!
+         * Destructor.
+         */
+        virtual ~Translate() {}
+
+        /*!
+         * Inherited from Hittable.
+         */
+        virtual bool hit(const Ray& r, double t_min, double t_max, hit_record& rec) const override;
+
+        /*!
+         * Inherited from Hittable.
+         */
+        virtual bool bounding_box(double time_0, double time_1, Aabb& output_box) const override;
+
+      public:
+        std::shared_ptr<Hittable> ptr_;
+        Vector3d offset_;
+
+    };
+
+    /*!
+     * \brief Class representing a rotation of a hittable.
+     */
+    class Rotate : public Hittable {
+      public:
+
+        /*!
+         * Constructor taking a hittable to rotate, the axis around which to
+         * rotate it, and the angle of rotation. Note that the angle is in radians.
+         */
+        Rotate(std::shared_ptr<Hittable> p, const Vector3d& axis, double angle)
+          : ptr_(p) {
+
+            rotation_ = AngleAxis<double>(angle, axis);
+            has_box_ = ptr_->bounding_box(0, 1, bounding_box_);
+
+            Vector3d min(std::numeric_limits<double>::infinity(),
+                         std::numeric_limits<double>::infinity(),
+                         std::numeric_limits<double>::infinity());
+
+            Vector3d max(-std::numeric_limits<double>::infinity(),
+                         -std::numeric_limits<double>::infinity(),
+                         -std::numeric_limits<double>::infinity());
+
+            for (int i = 0; i < 2; i++) {
+              for (int j = 0; j < 2; j++) {
+                for (int k = 0; k < 2; k++) {
+
+                  Vector3d corner(i*bounding_box_.maximum_.x() + (1-i)*bounding_box_.minimum_.x(),
+                                  j*bounding_box_.maximum_.y() + (1-j)*bounding_box_.minimum_.y(),
+                                  k*bounding_box_.maximum_.z() + (1-k)*bounding_box_.minimum_.z());
+
+                  Vector3d rot_corner = rotation_ * corner;
+
+                  for (int c = 0; c < 3; c++) {
+                    min[c] = std::fmin(min[c], rot_corner[c]);
+                    max[c] = std::fmax(max[c], rot_corner[c]);
+                  }
+
+                }
+              }
+            }
+
+            bounding_box_ = Aabb(min, max);
+        }
+
+        /*!
+         * Destructor.
+         */
+        virtual ~Rotate() {}
+
+        /*!
+         * Inherited from Hittable.
+         */
+        virtual bool hit(const Ray& r, double t_min, double t_max, hit_record& rec) const override;
+
+        /*!
+         * Inherited from Hittable.
+         */
+        virtual bool bounding_box(double time_0, double time_1, Aabb& output_box) const override {
+          output_box = bounding_box_;
+          return has_box_;
+        }
+
+      public:
+        std::shared_ptr<Hittable> ptr_; //!< Hittable being rotated
+        bool has_box_; //!< Whether the rotated hittable has a bounding box
+        Aabb bounding_box_; //!< Rotated bounding box
+        Quaternion<double> rotation_; //!< Rotation transformation
+
+    };
+
   } // namespace ray
 } // namespace cannon
 
