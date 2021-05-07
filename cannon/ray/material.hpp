@@ -181,11 +181,62 @@ namespace cannon {
         std::shared_ptr<Texture> emit_; //!< Emissive texture
     };
 
+    class Isotropic : public Material {
+      public:
+
+        /*!
+         * Constructor taking a color for this material.
+         */
+        Isotropic(const Vector3d& c) : albedo_(std::make_shared<SolidColor>(c)) {}
+
+        /*!
+         * Constructor taking a texture for this material.
+         */
+        Isotropic(std::shared_ptr<Texture> a) : albedo_(a) {}
+
+        /*!
+         * Destructor.
+         */
+        virtual ~Isotropic() {}
+
+        /*!
+         * Inherited from Material.
+         */
+        virtual bool scatter(const Ray& r_in, const hit_record& rec, Vector3d&
+            attenuation, Ray& scattered) const override;
+
+
+      public:
+        std::shared_ptr<Texture> albedo_; //!< Albedo for this material
+
+    };
+
     // Public Functions
+    
+    /*!
+     * Function that computes reflected direction for an incoming ray.
+     *
+     * \param v The ray direction to reflect.
+     * \param n The normal to reflect around.
+     *
+     * \returns The reflected ray direction.
+     */
     Vector3d reflect(const Vector3d& v, const Vector3d& n);
 
+    /*!
+     * Function that computes the direction for refraction of a direction.
+     *
+     * \param uv Direction of ray to refract.
+     * \param n Normal direction of the refracting surface.
+     * \param etai_over_etat Index of refraction ratio.
+     *
+     * \returns Refracted direction.
+     */
     Vector3d refract(const Vector3d& uv, const Vector3d& n, double etai_over_etat);
 
+    /*!
+     * Computes approximate reflectance for a dielectric.
+     */
     double reflectance(double cosine, double ref_idx);
 
   } // namespace ray

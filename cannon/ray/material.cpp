@@ -49,6 +49,14 @@ bool Dielectric::scatter(const Ray& r_in, const hit_record& rec, Vector3d&
   return true;
 }
 
+bool Isotropic::scatter(const Ray& r_in, const hit_record& rec,
+    Vector3d& attenuation, Ray& scattered) const {
+  scattered = Ray(rec.p, random_in_unit_sphere(), r_in.time_);
+  attenuation = albedo_->value(rec.u, rec.v, rec.p);
+
+  return true;
+}
+
 // Public Functions
 Vector3d cannon::ray::reflect(const Vector3d& v, const Vector3d& n) {
   return v - 2*v.dot(n)*n;
@@ -69,3 +77,4 @@ double cannon::ray::reflectance(double cosine, double ref_idx) {
   r0 = r0*r0;
   return r0 + (1-r0) * std::pow((1 - cosine), 5);
 }
+
