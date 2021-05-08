@@ -60,16 +60,21 @@ namespace cannon {
         /*!
          * Constructor taking a HittableList and time interval.
          */
-        BvhNode(const std::shared_ptr<HittableList> list, double time_0, double time_1) :
-          BvhNode(list->objects_, 0, list->objects_.size(), time_0, time_1) {}
+        BvhNode(std::shared_ptr<Affine3d> object_to_world, const
+            std::shared_ptr<HittableList> list, double time_0, double time_1) :
+          BvhNode(object_to_world, list->objects_, 0, list->objects_.size(),
+              time_0, time_1) {}
 
         /*!
          * Constructor taking a vector of Hittables to include and a time
          * interval. Splits objects along a random axis in order to generate
          * child nodes.
          */
-        BvhNode(const std::vector<std::shared_ptr<Hittable>>& src_objects,
-            size_t start, size_t end, double time_0, double time_1) {
+        BvhNode(std::shared_ptr<Affine3d> object_to_world, const
+            std::vector<std::shared_ptr<Hittable>>& src_objects, size_t start,
+            size_t end, double time_0, double time_1) :
+          Hittable(object_to_world) {
+
           auto objects = src_objects; // Copy in order to modify locally
         
           int axis = static_cast<int>(random_double(0, 3));
@@ -93,8 +98,10 @@ namespace cannon {
             std::sort(objects.begin() + start, objects.begin() + end, comparator);
 
             auto mid = start + object_span / 2;
-            left_ = std::make_shared<BvhNode>(objects, start, mid, time_0, time_1);
-            right_ = std::make_shared<BvhNode>(objects, mid, end, time_0, time_1);
+
+            auto t = std::make_shared<Affine3d>(Affine3d::Identity());
+            left_ = std::make_shared<BvhNode>(t, objects, start, mid, time_0, time_1);
+            right_ = std::make_shared<BvhNode>(t, objects, mid, end, time_0, time_1);
           }
 
           Aabb box_left, box_right;
@@ -108,12 +115,12 @@ namespace cannon {
         /*!
          * Inherited from Hittable.
          */
-        virtual bool hit(const Ray& r, double t_min, double t_max, hit_record& rec) const override;
+        virtual bool object_space_hit(const Ray& r, double t_min, double t_max, hit_record& rec) const override;
 
         /*!
          * Inherited from Hittable.
          */
-        virtual bool bounding_box(double time_0, double time_1, Aabb& output_box) const override;
+        virtual bool object_space_bounding_box(double time_0, double time_1, Aabb& output_box) const override;
 
 
       public:

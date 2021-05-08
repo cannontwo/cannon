@@ -1,7 +1,6 @@
 #pragma once
 #ifndef CANNON_RAY_HITTABLE_H
 #define CANNON_RAY_HITTABLE_H 
-
 /*!
  * \file cannon/ray/hittable.hpp
  * Class containing useful classes for geometry hittable by rays.
@@ -49,8 +48,22 @@ namespace cannon {
       public:
 
         /*!
-         * Method to test whether this geometry is hit by the input ray between
-         * distance t_min and t_max.
+         * Default constructor
+         */
+        Hittable() :
+          object_to_world_(std::make_shared<Affine3d>(Affine3d::Identity())),
+          world_to_object_(std::make_shared<Affine3d>(Affine3d::Identity())) {}
+
+        /*!
+         * Constructor initializing transforms.
+         */
+        Hittable(std::shared_ptr<Affine3d> object_to_world) :
+          object_to_world_(object_to_world),
+          world_to_object_(std::make_shared<Affine3d>(object_to_world->inverse())) {}
+
+        /*!
+         * Method to test whether this geometry is hit by the input ray in
+         * world space between distance t_min and t_max.
          *
          * \param r The ray to check for intersection.
          * \param t_min Minimal distance along the ray to register an intersection.
@@ -59,10 +72,39 @@ namespace cannon {
          *
          * \returns Whether the ray intersects this geometry.
          */
-        virtual bool hit(const Ray& r, double t_min, double t_max, hit_record& rec) const = 0;
+        virtual bool hit(const Ray& r, double t_min, double t_max, hit_record& rec) const { 
+          Vector3d object_space_origin = (*world_to_object_) * r.orig_;
+          Vector3d object_space_dir = world_to_object_->linear() * r.dir_;
+
+          Ray object_space_ray(object_space_origin, object_space_dir, r.time_);
+
+          if (!object_space_hit(object_space_ray, t_min, t_max, rec))
+            return false;
+
+          Vector3d world_space_p = (*object_to_world_) * rec.p;
+          Vector3d world_space_normal = object_to_world_->linear() * rec.normal;
+
+          rec.p = world_space_p;
+          rec.set_face_normal(object_space_ray, world_space_normal);
+
+          return true;
+        }
 
         /*!
-         * Method to generate a bounding box for this geometry between input times.
+         * Method to test whether this geometry is hit by the input ray in
+         * object space between distance t_min and t_max.
+         *
+         * \param r The ray to check for intersection.
+         * \param t_min Minimal distance along the ray to register an intersection.
+         * \param t_max Maximum distance along the ray to register an intersection.
+         * \param rec Hit record in which to put details about the intersection.
+         *
+         * \returns Whether the ray intersects this geometry.
+         */
+        virtual bool object_space_hit(const Ray& r, double t_min, double t_max, hit_record& rec) const = 0;
+
+        /*!
+         * Method to generate world-space bounding box for this geometry between input times.
          *
          * \param time_0 Start time for bounding box.
          * \param time_1 End time for bounding box.
@@ -70,112 +112,59 @@ namespace cannon {
          *
          * \returns Whether bounding box exists for this geometry, allowing for infinite geometry.
          */
-        virtual bool bounding_box(double time_0, double time_1, Aabb& output_box) const = 0;
-    };
+        virtual bool bounding_box(double time_0, double time_1, Aabb& output_box) const {
+          Aabb object_space_box;
+          bool has_box = object_space_bounding_box(time_0, time_1, object_space_box);
 
-    /*!
-     * \brief Class representing translation of a hittable.
-     */
-    class Translate : public Hittable {
-      public:
-      
-        /*!
-         * Constructor taking a hittable to translate and the offset vector to
-         * translate by.
-         */
-        Translate(std::shared_ptr<Hittable> p, const Vector3d& displacement) :
-          ptr_(p), offset_(displacement) {}
+          if (!has_box)
+            return false;
 
-        /*!
-         * Destructor.
-         */
-        virtual ~Translate() {}
+          Vector3d min(std::numeric_limits<double>::infinity(),
+                       std::numeric_limits<double>::infinity(),
+                       std::numeric_limits<double>::infinity());
 
-        /*!
-         * Inherited from Hittable.
-         */
-        virtual bool hit(const Ray& r, double t_min, double t_max, hit_record& rec) const override;
+          Vector3d max(-std::numeric_limits<double>::infinity(),
+                       -std::numeric_limits<double>::infinity(),
+                       -std::numeric_limits<double>::infinity());
 
-        /*!
-         * Inherited from Hittable.
-         */
-        virtual bool bounding_box(double time_0, double time_1, Aabb& output_box) const override;
+          for (int i = 0; i < 2; i++) {
+            for (int j = 0; j < 2; j++) {
+              for (int k = 0; k < 2; k++) {
 
-      public:
-        std::shared_ptr<Hittable> ptr_;
-        Vector3d offset_;
+                Vector3d corner(i*object_space_box.maximum_.x() + (1-i)*object_space_box.minimum_.x(),
+                                j*object_space_box.maximum_.y() + (1-j)*object_space_box.minimum_.y(),
+                                k*object_space_box.maximum_.z() + (1-k)*object_space_box.minimum_.z());
 
-    };
+                Vector3d trans_corner = (*object_to_world_) * corner;
 
-    /*!
-     * \brief Class representing a rotation of a hittable.
-     */
-    class Rotate : public Hittable {
-      public:
-
-        /*!
-         * Constructor taking a hittable to rotate, the axis around which to
-         * rotate it, and the angle of rotation. Note that the angle is in radians.
-         */
-        Rotate(std::shared_ptr<Hittable> p, const Vector3d& axis, double angle)
-          : ptr_(p) {
-
-            rotation_ = AngleAxis<double>(angle, axis);
-            has_box_ = ptr_->bounding_box(0, 1, bounding_box_);
-
-            Vector3d min(std::numeric_limits<double>::infinity(),
-                         std::numeric_limits<double>::infinity(),
-                         std::numeric_limits<double>::infinity());
-
-            Vector3d max(-std::numeric_limits<double>::infinity(),
-                         -std::numeric_limits<double>::infinity(),
-                         -std::numeric_limits<double>::infinity());
-
-            for (int i = 0; i < 2; i++) {
-              for (int j = 0; j < 2; j++) {
-                for (int k = 0; k < 2; k++) {
-
-                  Vector3d corner(i*bounding_box_.maximum_.x() + (1-i)*bounding_box_.minimum_.x(),
-                                  j*bounding_box_.maximum_.y() + (1-j)*bounding_box_.minimum_.y(),
-                                  k*bounding_box_.maximum_.z() + (1-k)*bounding_box_.minimum_.z());
-
-                  Vector3d rot_corner = rotation_ * corner;
-
-                  for (int c = 0; c < 3; c++) {
-                    min[c] = std::fmin(min[c], rot_corner[c]);
-                    max[c] = std::fmax(max[c], rot_corner[c]);
-                  }
-
+                for (int c = 0; c < 3; c++) {
+                  min[c] = std::fmin(min[c], trans_corner[c]);
+                  max[c] = std::fmax(max[c], trans_corner[c]);
                 }
+
               }
             }
+          }
 
-            bounding_box_ = Aabb(min, max);
+          output_box = Aabb(min, max);
+
+          return true;
         }
 
         /*!
-         * Destructor.
+         * Method to generate object-space bounding box for this geometry between input times.
+         *
+         * \param time_0 Start time for bounding box.
+         * \param time_1 End time for bounding box.
+         * \param output_box Place to put created bounding box.
+         *
+         * \returns Whether bounding box exists for this geometry, allowing for infinite geometry.
          */
-        virtual ~Rotate() {}
-
-        /*!
-         * Inherited from Hittable.
-         */
-        virtual bool hit(const Ray& r, double t_min, double t_max, hit_record& rec) const override;
-
-        /*!
-         * Inherited from Hittable.
-         */
-        virtual bool bounding_box(double time_0, double time_1, Aabb& output_box) const override {
-          output_box = bounding_box_;
-          return has_box_;
-        }
+        virtual bool object_space_bounding_box(double time_0, double time_1, Aabb& output_box) const = 0;
 
       public:
-        std::shared_ptr<Hittable> ptr_; //!< Hittable being rotated
-        bool has_box_; //!< Whether the rotated hittable has a bounding box
-        Aabb bounding_box_; //!< Rotated bounding box
-        Quaternion<double> rotation_; //!< Rotation transformation
+        std::shared_ptr<Affine3d> object_to_world_;
+        std::shared_ptr<Affine3d> world_to_object_;
 
     };
 

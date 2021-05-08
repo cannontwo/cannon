@@ -32,12 +32,12 @@ namespace cannon {
         /*!
          * Inherited from Hittable.
          */
-        virtual bool hit(const Ray& r, double t_min, double t_max, hit_record& rec) const override;
+        virtual bool object_space_hit(const Ray& r, double t_min, double t_max, hit_record& rec) const override;
 
         /*!
          * Inherited from Hittable.
          */
-        virtual bool bounding_box(double time_0, double time_1, Aabb& output_box) const override {
+        virtual bool object_space_bounding_box(double time_0, double time_1, Aabb& output_box) const override {
           return boundary_->bounding_box(time_0, time_1, output_box);
         }
 

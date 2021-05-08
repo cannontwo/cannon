@@ -2,7 +2,7 @@
 
 using namespace cannon::ray;
 
-bool ConstantMedium::hit(const Ray& r, double t_min, double t_max, hit_record& rec) const {
+bool ConstantMedium::object_space_hit(const Ray& r, double t_min, double t_max, hit_record& rec) const {
   hit_record rec1, rec2;
 
   // Initial hit

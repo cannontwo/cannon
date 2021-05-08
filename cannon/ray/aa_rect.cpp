@@ -2,7 +2,7 @@
 
 using namespace cannon::ray;
 
-bool XYRect::hit(const Ray& r, double t_min, double t_max, hit_record& rec) const {
+bool XYRect::object_space_hit(const Ray& r, double t_min, double t_max, hit_record& rec) const {
   auto t = (k_ - r.orig_.z()) / r.dir_.z();
 
   if (t < t_min || t > t_max)
@@ -23,7 +23,7 @@ bool XYRect::hit(const Ray& r, double t_min, double t_max, hit_record& rec) cons
   return true;
 }
 
-bool XZRect::hit(const Ray& r, double t_min, double t_max, hit_record& rec) const {
+bool XZRect::object_space_hit(const Ray& r, double t_min, double t_max, hit_record& rec) const {
   auto t = (k_ - r.orig_.y()) / r.dir_.y();
 
   if (t < t_min || t > t_max)
@@ -44,7 +44,7 @@ bool XZRect::hit(const Ray& r, double t_min, double t_max, hit_record& rec) cons
   return true;
 }
 
-bool YZRect::hit(const Ray& r, double t_min, double t_max, hit_record& rec) const {
+bool YZRect::object_space_hit(const Ray& r, double t_min, double t_max, hit_record& rec) const {
   auto t = (k_ - r.orig_.x()) / r.dir_.x();
 
   if (t < t_min || t > t_max)

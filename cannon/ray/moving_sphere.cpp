@@ -2,7 +2,7 @@
 
 using namespace cannon::ray;
 
-bool MovingSphere::hit(const Ray& r, double t_min, double t_max, hit_record& rec) const {
+bool MovingSphere::object_space_hit(const Ray& r, double t_min, double t_max, hit_record& rec) const {
   Vector3d oc = r.orig_ - center(r.time_);
   auto a = r.dir_.dot(r.dir_);
   auto b = oc.dot(r.dir_);
@@ -35,7 +35,7 @@ Vector3d MovingSphere::center(double time) const {
   return center_0_ + ((time - time_0_) / (time_1_ - time_0_)) * (center_1_ - center_0_);
 }
 
-bool MovingSphere::bounding_box(double time_0, double time_1, Aabb& output_box) const {
+bool MovingSphere::object_space_bounding_box(double time_0, double time_1, Aabb& output_box) const {
   Aabb box_0(center(time_0) - Vector3d(radius_, radius_, radius_),
       center(time_0) + Vector3d(radius_, radius_, radius_));
 

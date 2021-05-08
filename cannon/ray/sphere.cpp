@@ -2,7 +2,7 @@
 
 using namespace cannon::ray;
 
-bool Sphere::hit(const Ray& r, double t_min, double t_max, hit_record& rec) const {
+bool Sphere::object_space_hit(const Ray& r, double t_min, double t_max, hit_record& rec) const {
   Vector3d oc = r.orig_ - center_;
   auto a = r.dir_.dot(r.dir_);
   auto b = oc.dot(r.dir_);
@@ -32,7 +32,7 @@ bool Sphere::hit(const Ray& r, double t_min, double t_max, hit_record& rec) cons
   return true;
 }
 
-bool Sphere::bounding_box(double time_0, double time_1, Aabb& output_box) const {
+bool Sphere::object_space_bounding_box(double time_0, double time_1, Aabb& output_box) const {
   output_box = Aabb(center_ - Vector3d(radius_, radius_, radius_), center_ +
       Vector3d(radius_, radius_, radius_));
   return true;

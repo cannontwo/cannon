@@ -10,7 +10,7 @@ void HittableList::add(std::shared_ptr<Hittable> obj) {
   objects_.push_back(obj);
 }
 
-bool HittableList::hit(const Ray& r, double t_min, double t_max, hit_record& rec) const {
+bool HittableList::object_space_hit(const Ray& r, double t_min, double t_max, hit_record& rec) const {
   hit_record temp_rec;
   bool hit_anything = false;
   auto closest = t_max;
@@ -26,7 +26,7 @@ bool HittableList::hit(const Ray& r, double t_min, double t_max, hit_record& rec
   return hit_anything;
 }
 
-bool HittableList::bounding_box(double time_0, double time_1, Aabb& output_box) const {
+bool HittableList::object_space_bounding_box(double time_0, double time_1, Aabb& output_box) const {
   if (objects_.empty())
     return false;
 
