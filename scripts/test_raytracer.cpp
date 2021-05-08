@@ -16,6 +16,7 @@
 #include <cannon/ray/raytracer.hpp>
 #include <cannon/ray/bvh.hpp>
 #include <cannon/ray/aa_rect.hpp>
+#include <cannon/ray/constant_medium.hpp>
 #include <cannon/graphics/random_color.hpp>
 #include <cannon/log/registry.hpp>
 
@@ -153,6 +154,68 @@ std::shared_ptr<HittableList> cornell_box() {
   return world;
 }
 
+std::shared_ptr<HittableList> final_scene() {
+  auto world = std::make_shared<HittableList>();
+  auto ground = std::make_shared<Lambertian>(Vector3d(0.48, 0.83, 0.53));
+
+  const int boxes_per_side = 20;
+  for (int i = 0; i < boxes_per_side; i++) {
+    for (int j = 0; j < boxes_per_side; j++) {
+      auto w = 100.0;
+      auto x0 = -1000.0 + i*w;
+      auto z0 = -1000.0 + j*w;
+      auto y0 = 0.0;
+      auto x1 = x0 + w;
+      auto y1 = random_double(1, 101);
+      auto z1 = z0 + w;
+
+      world->add(std::make_shared<Box>(Vector3d(x0, y0, z0), Vector3d(x1, y1, z1), ground));
+    }
+  } 
+
+  auto light = std::make_shared<DiffuseLight>(Vector3d(7, 7, 7));
+  world->add(std::make_shared<XZRect>(123, 423, 147, 412, 554, light));
+
+  Vector3d center1(400, 400, 200);
+  Vector3d center2 = center1 + Vector3d(30, 0, 0);
+  auto moving_sphere_material = std::make_shared<Lambertian>(Vector3d(0.7, 0.3, 0.1));
+  world->add(std::make_shared<MovingSphere>(center1, center2, 0, 1, 50, moving_sphere_material));
+
+  world->add(std::make_shared<Sphere>(Vector3d(260, 150, 45), 50, std::make_shared<Dielectric>(1.5)));
+  world->add(std::make_shared<Sphere>(Vector3d(0, 150, 145), 50,
+        std::make_shared<Metal>(Vector3d(0.8, 0.8, 0.9), 1.0)));
+
+  auto boundary = std::make_shared<Sphere>(Vector3d(360, 150, 145), 70, std::make_shared<Dielectric>(1.5));
+  world->add(boundary);
+  world->add(std::make_shared<ConstantMedium>(boundary, 0.2, Vector3d(0.2, 0.4, 0.9)));
+  boundary = std::make_shared<Sphere>(Vector3d(0, 0, 0), 5000, std::make_shared<Dielectric>(1.5));
+  world->add(std::make_shared<ConstantMedium>(boundary, .0001, Vector3d(1, 1, 1)));
+
+  auto emat = std::make_shared<Lambertian>(std::make_shared<ImageTexture>("assets/earthmap.jpg"));
+  world->add(std::make_shared<Sphere>(Vector3d(400, 200, 400), 100, emat));
+  auto pertext = std::make_shared<NoiseTexture>(0.1);
+  world->add(std::make_shared<Sphere>(Vector3d(220, 280, 300), 80, std::make_shared<Lambertian>(pertext)));
+
+  auto boxes = std::make_shared<HittableList>();
+  auto white = std::make_shared<Lambertian>(Vector3d(0.73, 0.73, 0.73));
+  int ns = 1000;
+  for (int j = 0; j < ns; j++) {
+    boxes->add(std::make_shared<Sphere>(random_vec(0, 165), 10, white));
+  }
+
+  world->add(std::make_shared<Translate>(
+        std::make_shared<Rotate>(
+            std::make_shared<BvhNode>(boxes, 0.0, 1.0), 
+            Vector3d::UnitY(),
+            0.2618 
+          ),
+          Vector3d(-100, 270, 395)
+        )
+      );
+
+  return world;
+}
+
 int main(int argc, char** argv) {
   if (argc <= 1) {
     log_error("Provide raytracer config file as argument");
@@ -165,12 +228,14 @@ int main(int argc, char** argv) {
   //auto world = two_perlin_spheres_scene();
   //auto world = earth_scene();
   //auto world = simple_light_scene();
-  auto world = cornell_box();
+  //auto world = cornell_box();
+  auto world = final_scene();
 
   log_info("Building bounding volume hierarchy");
   auto bvh = std::make_shared<BvhNode>(world, 0.0, 1.0);
 
   // Raytracer
+  log_info("Rendering");
   Raytracer raytracer(argv[1], bvh);
   //raytracer.render(std::cout);
   raytracer.render("test.ppm");

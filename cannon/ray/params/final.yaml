@@ -1,0 +1,27 @@
+aspect_ratio: 1.0
+image_width: 800
+samples_per_pixel: 10000
+max_depth: 50
+dist_to_focus: 10.0
+aperture: 0.0
+vfov: 0.6981
+
+look_from:
+  x: 478
+  y: 278
+  z: -600
+
+look_at:
+  x: 278
+  y: 278
+  z: 0
+
+vup:
+  x: 0
+  y: 1
+  z: 0
+
+background_color:
+  x: 0
+  y: 0
+  z: 0
