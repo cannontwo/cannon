@@ -139,16 +139,18 @@ std::shared_ptr<HittableList> cornell_box() {
   world->add(std::make_shared<XZRect>(0, 555, 0, 555, 555, white));
   world->add(std::make_shared<XYRect>(0, 555, 0, 555, 555, white));
 
-  std::shared_ptr<Hittable> box1 = std::make_shared<Box>(Vector3d(0, 0, 0),
+  auto t = std::make_shared<Affine3d>(Affine3d::Identity());
+  t->translate(Vector3d(265, 0, 295));
+  t->rotate(AngleAxisd(0.2618, Vector3d::UnitY()));
+  std::shared_ptr<Hittable> box1 = std::make_shared<Box>(t, Vector3d(0, 0, 0),
       Vector3d(165, 330, 165), white);
-  box1 = std::make_shared<Rotate>(box1, Vector3d::UnitY(), 0.2618);
-  box1 = std::make_shared<Translate>(box1, Vector3d(265, 0, 295));
   world->add(box1);
 
-  std::shared_ptr<Hittable> box2 = std::make_shared<Box>(Vector3d(0, 0, 0),
+  auto t2 = std::make_shared<Affine3d>(Affine3d::Identity());
+  t2->translate(Vector3d(130, 0, 65));
+  t2->rotate(AngleAxisd(-0.31415, Vector3d::UnitY()));
+  std::shared_ptr<Hittable> box2 = std::make_shared<Box>(t2, Vector3d(0, 0, 0),
       Vector3d(165, 165, 165), white);
-  box2 = std::make_shared<Rotate>(box2, Vector3d::UnitY(), -0.31415);
-  box2 = std::make_shared<Translate>(box2, Vector3d(130, 0, 65));
   world->add(box2);
 
   return world;
@@ -157,6 +159,8 @@ std::shared_ptr<HittableList> cornell_box() {
 std::shared_ptr<HittableList> final_scene() {
   auto world = std::make_shared<HittableList>();
   auto ground = std::make_shared<Lambertian>(Vector3d(0.48, 0.83, 0.53));
+
+  auto trans = std::make_shared<Affine3d>(Affine3d::Identity());
 
   const int boxes_per_side = 20;
   for (int i = 0; i < boxes_per_side; i++) {
@@ -169,7 +173,7 @@ std::shared_ptr<HittableList> final_scene() {
       auto y1 = random_double(1, 101);
       auto z1 = z0 + w;
 
-      world->add(std::make_shared<Box>(Vector3d(x0, y0, z0), Vector3d(x1, y1, z1), ground));
+      world->add(std::make_shared<Box>(trans, Vector3d(x0, y0, z0), Vector3d(x1, y1, z1), ground));
     }
   } 
 
@@ -203,15 +207,11 @@ std::shared_ptr<HittableList> final_scene() {
     boxes->add(std::make_shared<Sphere>(random_vec(0, 165), 10, white));
   }
 
-  world->add(std::make_shared<Translate>(
-        std::make_shared<Rotate>(
-            std::make_shared<BvhNode>(boxes, 0.0, 1.0), 
-            Vector3d::UnitY(),
-            0.2618 
-          ),
-          Vector3d(-100, 270, 395)
-        )
-      );
+  auto t = std::make_shared<Affine3d>(Affine3d::Identity());
+  t->translate(Vector3d(-100, 270, 395));
+  t->rotate(AngleAxisd(0.2618, Vector3d::UnitY()));
+
+  world->add(std::make_shared<BvhNode>(t, boxes, 0.0, 1.0));
 
   return world;
 }
@@ -231,12 +231,13 @@ int main(int argc, char** argv) {
   //auto world = cornell_box();
   auto world = final_scene();
 
-  log_info("Building bounding volume hierarchy");
-  auto bvh = std::make_shared<BvhNode>(world, 0.0, 1.0);
+  auto t = std::make_shared<Affine3d>(Affine3d::Identity());
+  //log_info("Building bounding volume hierarchy");
+  auto bvh = std::make_shared<BvhNode>(t, world, 0.0, 1.0);
 
   // Raytracer
-  log_info("Rendering");
+  //log_info("Rendering");
   Raytracer raytracer(argv[1], bvh);
-  //raytracer.render(std::cout);
-  raytracer.render("test.ppm");
+  raytracer.render(std::cout);
+  //raytracer.render("test.ppm");
 }
