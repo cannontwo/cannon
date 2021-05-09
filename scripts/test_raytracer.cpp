@@ -228,8 +228,8 @@ int main(int argc, char** argv) {
   //auto world = two_perlin_spheres_scene();
   //auto world = earth_scene();
   //auto world = simple_light_scene();
-  //auto world = cornell_box();
-  auto world = final_scene();
+  auto world = cornell_box();
+  //auto world = final_scene();
 
   auto t = std::make_shared<Affine3d>(Affine3d::Identity());
   //log_info("Building bounding volume hierarchy");
@@ -238,6 +238,6 @@ int main(int argc, char** argv) {
   // Raytracer
   //log_info("Rendering");
   Raytracer raytracer(argv[1], bvh);
-  raytracer.render(std::cout);
-  //raytracer.render("test.ppm");
+  //raytracer.render(std::cout);
+  raytracer.render("test.ppm");
 }

@@ -13,6 +13,7 @@ list(APPEND RAY_SOURCES
   aa_rect.cpp
   hittable.cpp
   constant_medium.cpp
+  film.cpp
   )
 
 add_library(ray OBJECT ${RAY_SOURCES})

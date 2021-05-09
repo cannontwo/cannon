@@ -93,47 +93,37 @@ void Raytracer::render(std::ostream& os) {
   std::cerr << "\nDone.\n";
 }
 
-void Raytracer::render(const std::string& out_filename) {
-  MatrixXd pixel_colors = MatrixXd::Zero(3, params_.image_width*params_.image_height);
-  std::ofstream image_file(out_filename);
-  std::mutex write_mut;
-  int samples_so_far = 0;
+void Raytracer::render(const std::string& out_filename, int tile_size) {
+  Film film(params_.image_width, params_.image_height, tile_size);
 
-  ThreadPool<int> pool([&](std::shared_ptr<int> num) {
-      MatrixXd local_colors = MatrixXd::Zero(3, params_.image_width*params_.image_height);
+  ThreadPool<std::pair<int, int>> pool([&](std::shared_ptr<std::pair<int, int>> tile_coord) {
+      auto tile = film.get_film_tile(tile_coord->first, tile_coord->second);
 
-      for (int j = params_.image_height - 1; j >= 0; --j) {
-        for (int i = 0; i < params_.image_width; ++i) {
-          auto u = (i + random_double()) / (params_.image_width - 1);
-          auto v = (j + random_double()) / (params_.image_height - 1);
+      for (unsigned int i = 0; i < tile->extent_x_; i++) {
+        for (unsigned int j = 0; j < tile->extent_y_; j++) {
+          for (int s = 0; s < params_.samples_per_pixel; s++) {
+            auto u = (i + tile->origin_x_ + random_double()) / (params_.image_width - 1);
+            auto v = (j + tile->origin_y_ + random_double()) / (params_.image_height - 1);
 
-          Ray r = camera_.get_ray(u, v);
-          Vector3d pixel_color = ray_color(r, params_.max_depth);
+            Ray r = camera_.get_ray(u, v);
+            Vector3d pixel_color = ray_color(r, params_.max_depth);
 
-          local_colors.col(((params_.image_height - 1)-j) * params_.image_width + i) = pixel_color;
+            tile->data_.col(j * tile_size + i) += pixel_color;
+          }
         }
       }
 
-      // Lock mutex, update aggregate colors, write to file
-      {
-        std::lock_guard<std::mutex> lock(write_mut);
+      std::cerr << "\rFinished tile (" << tile_coord->first << ", " << tile_coord->second << ")" << std::flush;
 
-        pixel_colors += local_colors;
-        image_file.seekp(0, std::ios::beg);
-        image_file << "P3\n" << params_.image_width << ' ' << params_.image_height << "\n255\n";
-        write_colors(image_file, pixel_colors, samples_so_far+1);
-        image_file.flush();
-
-        std::cerr << "\rSamples performed so far:" << samples_so_far << " " << std::flush;
-
-        samples_so_far += 1;
-      }
-
+      film.merge_film_tile(std::move(tile));
+      film.write_image(out_filename, params_.samples_per_pixel);
       });
 
   // Enqueue work, one item per sample. Could alternatively be done by chunking portions of image
-  for (int s = 0; s < params_.samples_per_pixel; s++) {
-    pool.enqueue(std::make_shared<int>(s));
+  for (int i = 0; i < std::floor(params_.image_width / tile_size); i++) {
+    for (int j = 0; j < std::floor(params_.image_height / tile_size); j++) {
+      pool.enqueue(std::make_shared<std::pair<int, int>>(std::make_pair(i, j)));
+    }
   }
 
 }

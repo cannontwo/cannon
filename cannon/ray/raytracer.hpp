@@ -20,6 +20,7 @@
 #include <cannon/ray/sphere.hpp>
 #include <cannon/ray/camera.hpp>
 #include <cannon/ray/material.hpp>
+#include <cannon/ray/film.hpp>
 #include <cannon/utils/thread_pool.hpp>
 
 using namespace Eigen;
@@ -84,8 +85,9 @@ namespace cannon {
          * Render scene progressively, sample by sample, to the input file.
          *
          * \param out_filename File to write rendered image to.
+         * \param tile_size Side length of parallel rendered tiles
          */
-        void render(const std::string& out_filename);
+        void render(const std::string& out_filename, int tile_size=50);
 
       private:
         template <typename T>
