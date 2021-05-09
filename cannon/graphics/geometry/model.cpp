@@ -60,9 +60,6 @@ std::shared_ptr<Mesh> Model::process_mesh_(aiMesh *mesh, const aiScene *scene) {
     32.0
   };
 
-
-
-
   for (unsigned int i = 0; i < mesh->mNumVertices; i++) {
     vertices.row(i)[0] = mesh->mVertices[i].x;
     vertices.row(i)[1] = mesh->mVertices[i].y;

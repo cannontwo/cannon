@@ -30,9 +30,12 @@ namespace cannon {
         Aabb() {}
 
         /*!
-         * Constructor taking minimal and maximal corner of this AABB.
+         * Constructor taking two points defining this Aabb component-wise.
          */
-        Aabb(const Vector3d& a, const Vector3d& b) : minimum_(a), maximum_(b) {}
+        Aabb(const Vector3d& a, const Vector3d& b) : minimum_(std::fmin(a.x(),
+              b.x()), std::fmin(a.y(), b.y()), std::fmin(a.z(), b.z())),
+        maximum_(std::fmax(a.x(), b.x()), std::fmax(a.y(), b.y()),
+            std::fmax(a.z(), b.z())) {}
 
         /*!
          * Test whether a Ray hits this AABB.
@@ -44,8 +47,6 @@ namespace cannon {
          * \returns Whether the ray intersects this AABB between t_min and t_max.
          */
         bool hit(const Ray& r, double t_min, double t_max) const;
-
-
 
       public:
         Vector3d minimum_; //!< Minimal corner of this AABB.
@@ -59,6 +60,11 @@ namespace cannon {
      * Function to compute bounding box surrounding both input boxes.
      */
     Aabb surrounding_box(const Aabb& box_0, const Aabb& box_1);
+
+    /*!
+     * Function to compute bounding box surrounding input box and an additional point.
+     */
+    Aabb surrounding_box(const Aabb& box_0, const Vector3d& p);
 
   } // namespace ray
 } // namespace cannon

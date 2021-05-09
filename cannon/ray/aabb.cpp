@@ -33,3 +33,15 @@ Aabb cannon::ray::surrounding_box(const Aabb& box_0, const Aabb& box_1) {
 
   return Aabb(small, big);
 }
+
+Aabb cannon::ray::surrounding_box(const Aabb& box_0, const Vector3d& p) {
+  Vector3d small(std::fmin(box_0.minimum_.x(), p.x()),
+      std::fmin(box_0.minimum_.y(), p.y()), 
+      std::fmin(box_0.minimum_.z(), p.z()));
+
+  Vector3d big(std::fmax(box_0.maximum_.x(), p.x()),
+      std::fmax(box_0.maximum_.y(), p.y()), 
+      std::fmax(box_0.maximum_.z(), p.z()));
+
+  return Aabb(small, big);
+}

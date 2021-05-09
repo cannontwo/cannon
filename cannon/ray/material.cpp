@@ -2,6 +2,25 @@
 
 using namespace cannon::ray;
 
+bool NormalDebug::scatter(const Ray& r_in, const hit_record& rec, Vector3d& attenuation,
+    Ray& scattered) const {
+  attenuation = 0.5 * Vector3d(rec.normal.x() + 1, rec.normal.y() + 1, rec.normal.z() + 1);
+
+  // Just Lambertian for now
+  Vector3d scatter_direction = rec.normal + random_unit_vec();
+
+  // Catch degenerate scatter direction
+  if ((std::fabs(scatter_direction[0]) < 1e-8) &&
+      (std::fabs(scatter_direction[1]) < 1e-8) &&
+      (std::fabs(scatter_direction[2]) < 1e-8)) {
+    scatter_direction = rec.normal;
+  }
+
+  scattered = Ray(rec.p, scatter_direction, r_in.time_);
+  return true;
+}
+
+
 bool Lambertian::scatter(const Ray& r_in, const hit_record& rec, Vector3d&
     attenuation, Ray& scattered) const {
   Vector3d scatter_direction = rec.normal + random_unit_vec();

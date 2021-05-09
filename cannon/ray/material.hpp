@@ -60,6 +60,25 @@ namespace cannon {
     };
 
     /*!
+     * \brief Class representing a debugging material displaying normal direction.
+     */
+    class NormalDebug : public Material {
+      public:
+
+        /*!
+         * Destructor.
+         */
+        virtual ~NormalDebug() {}
+
+        /*!
+         * Inherited from Material.
+         */
+        virtual bool scatter(const Ray& r_in, const hit_record& rec, Vector3d&
+            attenuation, Ray& scattered) const override;
+
+    };
+
+    /*!
      * \brief Class representing a Lambertian diffuse material.
      */
     class Lambertian : public Material {

@@ -17,6 +17,7 @@
 #include <cannon/ray/bvh.hpp>
 #include <cannon/ray/aa_rect.hpp>
 #include <cannon/ray/constant_medium.hpp>
+#include <cannon/ray/mesh.hpp>
 #include <cannon/graphics/random_color.hpp>
 #include <cannon/log/registry.hpp>
 
@@ -216,6 +217,24 @@ std::shared_ptr<HittableList> final_scene() {
   return world;
 }
 
+std::shared_ptr<HittableList> model_test() {
+  auto world = std::make_shared<HittableList>();
+
+  auto c = std::make_shared<NormalDebug>();
+
+  auto t = std::make_shared<Affine3d>(Affine3d::Identity());
+  std::vector<std::shared_ptr<TriangleMesh>> model = load_model(t, c, "assets/backpack/backpack.obj");
+  //std::vector<std::shared_ptr<TriangleMesh>> model = load_model(t, c, "assets/sphere/sphere.obj");
+  for (auto& mesh : model) {
+    world->add(std::make_shared<BvhNode>(std::make_shared<Affine3d>(Affine3d::Identity()), make_mesh_triangle_list(mesh), 0.0, 1.0));
+  }
+
+  auto pertext = std::make_shared<NoiseTexture>(4);
+  world->add(std::make_shared<Sphere>(Vector3d(0, -1002, 0), 1000, std::make_shared<Lambertian>(pertext)));
+
+  return world;
+}
+
 int main(int argc, char** argv) {
   if (argc <= 1) {
     log_error("Provide raytracer config file as argument");
@@ -228,8 +247,9 @@ int main(int argc, char** argv) {
   //auto world = two_perlin_spheres_scene();
   //auto world = earth_scene();
   //auto world = simple_light_scene();
-  auto world = cornell_box();
+  //auto world = cornell_box();
   //auto world = final_scene();
+  auto world = model_test();
 
   auto t = std::make_shared<Affine3d>(Affine3d::Identity());
   //log_info("Building bounding volume hierarchy");
