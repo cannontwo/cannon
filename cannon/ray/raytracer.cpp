@@ -96,6 +96,7 @@ void Raytracer::render(std::ostream& os) {
 void Raytracer::render(const std::string& out_filename, int tile_size) {
   Film film(params_.image_width, params_.image_height, tile_size);
 
+  // TODO This is fantastically slower than the single-threaded version somehow, and I have no idea why. Memory allocation?
   ThreadPool<std::pair<int, int>> pool([&](std::shared_ptr<std::pair<int, int>> tile_coord) {
       auto tile = film.get_film_tile(tile_coord->first, tile_coord->second);
 
@@ -116,7 +117,9 @@ void Raytracer::render(const std::string& out_filename, int tile_size) {
       std::cerr << "\rFinished tile (" << tile_coord->first << ", " << tile_coord->second << ")" << std::flush;
 
       film.merge_film_tile(std::move(tile));
-      film.write_image(out_filename, params_.samples_per_pixel);
+      
+      if (tile_coord->second == 0)
+        film.write_image(out_filename, params_.samples_per_pixel);
       });
 
   // Enqueue work, one item per sample. Could alternatively be done by chunking portions of image

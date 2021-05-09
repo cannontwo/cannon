@@ -238,6 +238,6 @@ int main(int argc, char** argv) {
   // Raytracer
   //log_info("Rendering");
   Raytracer raytracer(argv[1], bvh);
-  //raytracer.render(std::cout);
-  raytracer.render("test.ppm");
+  raytracer.render(std::cout);
+  //raytracer.render("test.ppm");
 }
