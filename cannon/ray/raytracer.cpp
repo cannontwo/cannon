@@ -120,6 +120,8 @@ void Raytracer::render(const std::string& out_filename, int tile_size) {
       
       if (tile_coord->second == 0)
         film.write_image(out_filename, params_.samples_per_pixel);
+      
+      report_thread_stats();
       });
 
   // Enqueue work, one item per sample. Could alternatively be done by chunking portions of image

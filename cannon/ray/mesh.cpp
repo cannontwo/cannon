@@ -25,8 +25,13 @@ bool Triangle::object_space_bounding_box(double time_0, double time_1, Aabb& out
   return true;
 }
 
+STAT_COUNTER("Integrator/Triangle hit tests", nTriangleHitTests);
+STAT_COUNTER("Integrator/Triangle intersections", nTriangleHits);
+
 bool Triangle::hit(const Ray& r, double t_min, double t_max, hit_record& rec) const {
   // This implementation from Chapter 3 of PBRT
+  
+  ++nTriangleHitTests;
 
   // Transform into ray-local coordinate space.
   // Note this transformation calculation could be cached in Ray, since it's
@@ -142,6 +147,7 @@ bool Triangle::hit(const Ray& r, double t_min, double t_max, hit_record& rec) co
   ns.normalize();
   rec.set_face_normal(r, ns);
 
+  nTriangleHits++;
   return true;
 }
 
@@ -195,7 +201,7 @@ cannon::ray::process_model_mesh(std::shared_ptr<Affine3d> t, std::shared_ptr<Mat
   MatrixX2d tex_coords = MatrixX2d::Zero(mesh->mNumVertices, 2);
   MatrixX3u indices = MatrixX3u::Zero(mesh->mNumFaces, 3);
 
-  // TODO Load textures, see graphics/model.cpp
+  // TODO Load diffuse color or image texture (specular as well?), see graphics/model.cpp
   
   for (unsigned int i = 0; i < mesh->mNumVertices; i++) {
     vertices.row(i)[0] = mesh->mVertices[i].x;

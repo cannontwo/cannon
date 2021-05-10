@@ -2,7 +2,11 @@
 
 using namespace cannon::ray;
 
+STAT_COUNTER("Integrator/Accelerator hit tests", nBvhHitTests);
+
 bool BvhNode::object_space_hit(const Ray& r, double t_min, double t_max, hit_record& rec) const {
+  ++nBvhHitTests;
+
   if (!box_.hit(r, t_min, t_max))
     return false;
 

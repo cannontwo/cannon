@@ -22,6 +22,7 @@
 #include <cannon/ray/material.hpp>
 #include <cannon/ray/film.hpp>
 #include <cannon/utils/thread_pool.hpp>
+#include <cannon/utils/statistics.hpp>
 
 using namespace Eigen;
 

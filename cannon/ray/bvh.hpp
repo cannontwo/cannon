@@ -13,9 +13,11 @@
 #include <cannon/ray/hittable_list.hpp>
 #include <cannon/math/random_double.hpp>
 #include <cannon/log/registry.hpp>
+#include <cannon/utils/statistics.hpp>
 
 using namespace cannon::math;
 using namespace cannon::log;
+using namespace cannon::utils;
 
 // Free Functions
 

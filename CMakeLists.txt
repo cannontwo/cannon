@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 3.10)
 project(Cannon C CXX)
+enable_language(CXX)
 
 # Options
 option(CANNON_BUILD_GRAPHICS "Whether to build graphics portions of the project" ON)
@@ -18,6 +19,8 @@ ADD_DEFINITIONS(
   -g
   -O2
 )
+
+set(CMAKE_FIND_LIBRARY_SUFFIXES ".so" ".a")
 
 ENABLE_TESTING()
 
@@ -143,8 +146,11 @@ include(Catch)
 # Gurobi
 find_package(GUROBI REQUIRED)
 include_directories(${GUROBI_INCLUDE_DIRS})
+message("GUROBI")
+message(${GUROBI_LIBRARY})
+message(${GUROBI_CXX_LIBRARY})
 # A hack, for some reason findGUROBI isn't working
-list(APPEND LIBRARIES ${GUROBI_LIBRARIES})
+list(APPEND LIBRARIES ${GUROBI_LIBRARY} ${GUROBI_CXX_LIBRARY})
 
 # HDF5
 find_package(HDF5 REQUIRED)

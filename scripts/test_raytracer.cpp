@@ -20,12 +20,14 @@
 #include <cannon/ray/mesh.hpp>
 #include <cannon/graphics/random_color.hpp>
 #include <cannon/log/registry.hpp>
+#include <cannon/utils/statistics.hpp>
 
 using namespace Eigen;
 
 using namespace cannon::ray;
 using namespace cannon::math;
 using namespace cannon::log;
+using namespace cannon::utils;
 
 std::shared_ptr<HittableList> random_scene() {
   auto world = std::make_shared<HittableList>();
@@ -220,7 +222,8 @@ std::shared_ptr<HittableList> final_scene() {
 std::shared_ptr<HittableList> model_test() {
   auto world = std::make_shared<HittableList>();
 
-  auto c = std::make_shared<NormalDebug>();
+  //auto c = std::make_shared<NormalDebug>();
+  auto c = std::make_shared<Lambertian>(Vector3d(0.48, 0.83, 0.53));
 
   auto t = std::make_shared<Affine3d>(Affine3d::Identity());
   std::vector<std::shared_ptr<TriangleMesh>> model = load_model(t, c, "assets/backpack/backpack.obj");
@@ -260,4 +263,8 @@ int main(int argc, char** argv) {
   Raytracer raytracer(argv[1], bvh);
   raytracer.render(std::cout);
   //raytracer.render("test.ppm");
+  
+  // Report and write stats out
+  report_thread_stats();
+  print_stats("raytracer_stats.txt");
 }

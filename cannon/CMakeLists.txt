@@ -2,6 +2,7 @@ list(APPEND CANNON_SOURCES
   null.cpp
   )
 
+add_subdirectory(utils)
 add_subdirectory(math)
 add_subdirectory(log)
 add_subdirectory(logic)
@@ -9,10 +10,10 @@ add_subdirectory(ml)
 add_subdirectory(control)
 add_subdirectory(physics)
 add_subdirectory(geom)
-add_subdirectory(utils)
 add_subdirectory(ray)
 
 list(APPEND CANNON_OBJS
+    $<TARGET_OBJECTS:utils>
     $<TARGET_OBJECTS:math>
     $<TARGET_OBJECTS:log>
     $<TARGET_OBJECTS:logic>
@@ -20,7 +21,6 @@ list(APPEND CANNON_OBJS
     $<TARGET_OBJECTS:control>
     $<TARGET_OBJECTS:physics>
     $<TARGET_OBJECTS:geom>
-    $<TARGET_OBJECTS:utils>
     $<TARGET_OBJECTS:ray>
   )
 

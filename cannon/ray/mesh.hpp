@@ -20,10 +20,12 @@
 #include <cannon/ray/hittable.hpp>
 #include <cannon/ray/hittable_list.hpp>
 #include <cannon/log/registry.hpp>
+#include <cannon/utils/statistics.hpp>
 
 using namespace Eigen;
 
 using namespace cannon::log;
+using namespace cannon::utils;
 
 namespace cannon {
   namespace ray {

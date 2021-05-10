@@ -2,7 +2,6 @@
 
 using namespace cannon::ray;
 
-
 std::unique_ptr<FilmTile> Film::get_film_tile(int i, int j) const {
   auto tile = std::make_unique<FilmTile>();
 
