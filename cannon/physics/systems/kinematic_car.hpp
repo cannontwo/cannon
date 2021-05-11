@@ -63,6 +63,19 @@ namespace cannon {
           }
         }
 
+        virtual std::tuple<MatrixXd, MatrixXd, VectorXd> get_linearization(const VectorXd& x) override {
+          MatrixXd A = MatrixXd::Zero(3, 3); // Stays 0, as linearization around uv = 0 leads to A = 0
+          VectorXd c = VectorXd::Zero(3); // Stays 0, as linearization around uv = 0 leads to f(x) = 0
+
+          double theta = x[2];
+          MatrixXd B(3, 2);
+          B << std::cos(theta), 0,
+               std::sin(theta), 0,
+               0, 0;
+          
+          return std::make_tuple(A, B, c);
+        }
+
         static void ompl_post_integration(const ob::State* /*state*/, const
             oc::Control* /*control*/, const double /*duration*/, ob::State *result) {
 

@@ -64,6 +64,16 @@ namespace cannon {
           }
         }
 
+        virtual std::tuple<MatrixXd, MatrixXd, VectorXd> get_linearization(const VectorXd& x) override {
+          MatrixXd A = MatrixXd::Zero(2, 2);
+          MatrixXd B = MatrixXd::Zero(2, 1);
+          VectorXd c = VectorXd::Zero(2);
+
+          // TODO 
+          
+          return std::make_tuple(A, B, c);
+        }
+
         static void ompl_post_integration(const ob::State* /*state*/, const
             oc::Control* /*control*/, const double /*duration*/, ob::State *result) {
           // Nothing needed
