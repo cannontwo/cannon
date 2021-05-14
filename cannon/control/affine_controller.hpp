@@ -3,12 +3,12 @@
 
 /*!
  * \file cannon/control/affine_controller.hpp
- * File containing AffineController class definition.
+ * \brief File containing AffineController class definition.
  */
 
 /*!
  * \namespace cannon::control
- * Namespace containing control-relevant classes and functions.
+ * \brief Namespace containing control-relevant classes and functions.
  */
 
 #include <cassert>

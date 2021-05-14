@@ -24,17 +24,20 @@ namespace cannon {
         }
 
         VectorXd sample() const {
-          static std::random_device rd;
-          static std::mt19937 gen(rd());
-          static std::normal_distribution<double> dist;
-
           return mean_ + (transform_ * VectorXd::NullaryExpr(mean_.size(),
                 [&](){return dist(gen);}));
         }
 
+        static void set_seed(int seed);
+
+        static std::random_device rd;
+        static std::mt19937 gen;
+        static std::normal_distribution<double> dist;
+
       private:
         VectorXd mean_;
         MatrixXd transform_;
+
 
     };
 
