@@ -4,7 +4,7 @@
 
 /*!
  * \file cannon/ray/ray.hpp
- * File containing Ray class definition.
+ * \brief File containing Ray class definition.
  */
 
 #include <Eigen/Dense>
@@ -43,7 +43,7 @@ namespace cannon {
       public:
         Vector3d orig_; //!< Origin of this ray.
         Vector3d dir_; //!< Direction of this ray.
-        double time_;
+        double time_; //!< Time that this ray was sent
 
     };
 

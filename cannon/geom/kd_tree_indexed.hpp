@@ -19,8 +19,7 @@ using namespace cannon::log;
 
 /*!
  * \file cannon/geom/kd_tree_indexed.hpp
- * File containing KDTreeIndexed class definition.
- *
+ * \brief File containing KDTreeIndexed class definition.
  */
 
 namespace cannon {

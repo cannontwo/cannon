@@ -4,7 +4,7 @@
 
 /*!
  * \file cannon/ray/aa_rect.hpp
- * File containing axis-aligned rectangle class definitions.
+ * \brief File containing axis-aligned rectangle class definitions.
  */
 
 #include <cannon/ray/hittable.hpp>

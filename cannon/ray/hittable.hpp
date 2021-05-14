@@ -3,7 +3,7 @@
 #define CANNON_RAY_HITTABLE_H 
 /*!
  * \file cannon/ray/hittable.hpp
- * Class containing useful classes for geometry hittable by rays.
+ * \brief File containing useful classes for geometry hittable by rays.
  */
 
 #include <memory>

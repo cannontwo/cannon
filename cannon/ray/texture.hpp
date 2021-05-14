@@ -4,7 +4,7 @@
 
 /*!
  * \file cannon/ray/texture.hpp
- * File containing Texture and subclasses class definitions.
+ * \brief File containing Texture and subclasses class definitions.
  */
 
 #include <memory>

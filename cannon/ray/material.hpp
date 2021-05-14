@@ -4,7 +4,7 @@
 
 /*!
  * \file cannon/ray/material.hpp
- * File containing class definitions for Material and derived materials.
+ * \brief File containing class definitions for Material and derived materials.
  */
 
 #include <Eigen/Dense>

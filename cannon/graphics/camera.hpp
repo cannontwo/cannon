@@ -4,12 +4,12 @@
 
 /*!
  * \file cannon/graphics/camera.hpp
- * File containing Camera class definition.
+ * \brief File containing Camera class definition.
  */
 
 /*!
  * \namespace cannon::graphics
- * Namespace containing graphics classes and functions. Many of these are
+ * \brief Namespace containing graphics classes and functions. Many of these are
  * wrappers around OpenGL functionality.
  */
 

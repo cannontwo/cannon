@@ -4,7 +4,7 @@
 
 /*!
  * \file cannon/graphics/character.hpp
- * File containing Character class definition.
+ * \brief File containing Character class definition.
  */
 
 #include <Eigen/Dense>

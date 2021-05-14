@@ -4,7 +4,7 @@
 
 /*!
  * \file cannon/ray/write_ppm.hpp
- * File containing utility functions for working with PPM files.
+ * \brief File containing utility functions for working with PPM files.
  */
 
 #include <iostream>

@@ -4,7 +4,7 @@
 
 /*!
  * \file cannon/ray/moving_sphere.hpp
- * File containing MovingSphere class definition
+ * \brief File containing MovingSphere class definition
  */
 
 #include <cannon/ray/hittable.hpp>

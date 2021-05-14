@@ -4,7 +4,7 @@
 
 /*!
  * \file cannon/ray/hittable_list.hpp
- * File containing HittableList class definition.
+ * \brief File containing HittableList class definition.
  */
 
 #include <memory>

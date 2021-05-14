@@ -3,14 +3,14 @@
 
 /*!
  * \file cannon/geom/kd_tree.hpp
- * File containing KDTree class definition.
+ * \brief File containing KDTree class definition.
  *
  */
 
 /*!
  * \namespace cannon::geom
- * Namespace containing computational geometry classes and functions, largely
- * wrapping CGAL.
+ * \brief Namespace containing computational geometry classes and functions,
+ * largely wrapping CGAL.
  */
 
 #include <stdexcept>

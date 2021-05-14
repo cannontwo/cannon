@@ -4,7 +4,7 @@
 
 /*!
  * \file cannon/ray/sphere.hpp
- * File containing Sphere class definition.
+ * \brief File containing Sphere class definition.
  */
 
 #include <cannon/ray/hittable.hpp>

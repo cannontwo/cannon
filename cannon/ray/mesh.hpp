@@ -4,7 +4,7 @@
 
 /*!
  * \file cannon/ray/mesh.hpp
- * File containing TriangleMesh and Triangle class definitions.
+ * \brief File containing TriangleMesh and Triangle class definitions.
  */
 
 #include <vector>

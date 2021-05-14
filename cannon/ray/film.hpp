@@ -4,7 +4,7 @@
 
 /*!
  * \file cannon/ray/film.hpp
- * File containing Film and FilmTile class definitions.
+ * \brief File containing Film and FilmTile class definitions.
  */
 
 #include <memory>

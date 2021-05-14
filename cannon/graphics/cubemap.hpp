@@ -4,7 +4,7 @@
 
 /*!
  * \file cannon/graphics/cubemap.hpp
- * File containing Cubemap class definition.
+ * \brief File containing Cubemap class definition.
  */
 
 #include <string>

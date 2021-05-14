@@ -4,7 +4,7 @@
 
 /*!
  * \file cannon/ray/raytracer.hpp
- * File containing raytracer_params definition and Raytracer class definition.
+ * \brief File containing raytracer_params definition and Raytracer class definition.
  */
 
 #include <iostream>

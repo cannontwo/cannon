@@ -4,7 +4,7 @@
 
 /*!
  * \file cannon/ray/camera.hpp
- * File containing Camera class definition.
+ * \brief File containing Camera class definition.
  */
 
 #include <Eigen/Dense>

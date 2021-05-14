@@ -4,7 +4,7 @@
 
 /*!
  * \file cannon/ray/constant_medium.hpp
- * File containing ConstantMedium class definition.
+ * \brief File containing ConstantMedium class definition.
  */
 
 #include <cannon/ray/hittable.hpp>

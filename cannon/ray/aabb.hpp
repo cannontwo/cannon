@@ -4,7 +4,7 @@
 
 /*!
  * \file cannon/ray/aabb.hpp
- * File containing Aabb class definition.
+ * \brief File containing Aabb class definition.
  */
 
 #include <cmath>

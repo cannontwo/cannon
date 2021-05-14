@@ -4,7 +4,7 @@
 
 /*!
  * \file cannon/ray/bvh.hpp
- * File containing BvhNode class definition.
+ * \brief File containing BvhNode class definition.
  */ 
 
 #include <algorithm>
