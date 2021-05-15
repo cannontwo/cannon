@@ -1,6 +1,11 @@
+#include <cassert>
+#include <utility>
+
+#include <cannon/log/registry.hpp>
 #include <cannon/control/affine_controller.hpp>
 
 using namespace cannon::control;
+using namespace cannon::log;
 
 VectorXd AffineController::get_action(const VectorXd& state) const {
   assert(state.size() == state_dim_);

@@ -1,4 +1,6 @@
 #include <cannon/plot/axes.hpp>
+#include <cannon/graphics/texture.hpp>
+#include <cannon/graphics/character.hpp>
 
 using namespace cannon::plot;
 

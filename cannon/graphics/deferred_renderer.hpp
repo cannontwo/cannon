@@ -13,8 +13,13 @@
 #include <cannon/graphics/viewer_3d.hpp>
 #include <cannon/graphics/geometry/axes_hint.hpp>
 
+#include <cannon/utils/class_forward.hpp>
+
 namespace cannon {
   namespace graphics {
+
+    CANNON_CLASS_FORWARD(Framebuffer);
+    CANNON_CLASS_FORWARD(ShaderProgram);
     
     /*!
      * \brief Class representing a deferred renderer for OpenGL.
@@ -68,30 +73,30 @@ namespace cannon {
         Viewer3D viewer; //!< Internal viewer. DeferredRenderer is really a wrapper around this.
 
       private:
-        std::shared_ptr<ShaderProgram> gbuf_program_; //!< Shader used to draw to the gbuffer
-        std::shared_ptr<ShaderProgram> sdf_geom_program_; //!< Shader used to draw SDF geometry
-        std::shared_ptr<ShaderProgram> shadow_depth_program_; //!< Shader used to draw regular geometry shadow depth
-        std::shared_ptr<ShaderProgram> sdf_shadow_depth_program_; //!< Shader used to draw SDF geometry shadow depth
-        std::shared_ptr<ShaderProgram> shadow_program_; //!< Shader used to populate shadow buffer
-        std::shared_ptr<ShaderProgram> shadow_blur_program_; //!< Shader used to blur shadow information
-        std::shared_ptr<ShaderProgram> ssao_program_; //!< Shader that implements SSAO. See https://learnopengl.com/Advanced-Lighting/SSAO
-        std::shared_ptr<ShaderProgram> ssao_blur_program_; //!< Shader that blurs SSAO information
-        std::shared_ptr<ShaderProgram> lighting_program_; //!< Shader that does deferred lighting
-        std::shared_ptr<ShaderProgram> light_geom_program_; //!< Shader that renderers point light geometry
-        std::shared_ptr<ShaderProgram> hdr_program_; //!< Shader that does HDR tone mapping
-        std::shared_ptr<ShaderProgram> axes_program_; //!< Shader that displays a small axis hint for 3D navigation
+        ShaderProgramPtr gbuf_program_; //!< Shader used to draw to the gbuffer
+        ShaderProgramPtr sdf_geom_program_; //!< Shader used to draw SDF geometry
+        ShaderProgramPtr shadow_depth_program_; //!< Shader used to draw regular geometry shadow depth
+        ShaderProgramPtr sdf_shadow_depth_program_; //!< Shader used to draw SDF geometry shadow depth
+        ShaderProgramPtr shadow_program_; //!< Shader used to populate shadow buffer
+        ShaderProgramPtr shadow_blur_program_; //!< Shader used to blur shadow information
+        ShaderProgramPtr ssao_program_; //!< Shader that implements SSAO. See https://learnopengl.com/Advanced-Lighting/SSAO
+        ShaderProgramPtr ssao_blur_program_; //!< Shader that blurs SSAO information
+        ShaderProgramPtr lighting_program_; //!< Shader that does deferred lighting
+        ShaderProgramPtr light_geom_program_; //!< Shader that renderers point light geometry
+        ShaderProgramPtr hdr_program_; //!< Shader that does HDR tone mapping
+        ShaderProgramPtr axes_program_; //!< Shader that displays a small axis hint for 3D navigation
 
-        std::shared_ptr<Framebuffer> gbuffer_fb_; //!< GBuffer framebuffer
-        std::shared_ptr<Framebuffer> shadow_depth_fb_; //!< Shadow depth information framebuffer
-        std::shared_ptr<Framebuffer> shadow_fb_; //!< Shadow information framebuffer
-        std::shared_ptr<Framebuffer> shadow_blur_1_fb_; //!< Horizontal shadow blur framebuffer
-        std::shared_ptr<Framebuffer> shadow_blur_2_fb_; //!< Vertical shadow blur framebuffer
-        std::shared_ptr<Framebuffer> ssao_fb_; //!< SSAO framebuffer
-        std::shared_ptr<Framebuffer> ssao_blur_fb_; //!< SSAO blur framebuffer
-        std::shared_ptr<Framebuffer> lighting_fb_; //!< Deferred lighting framebuffer
-        std::shared_ptr<Framebuffer> light_geom_fb_; //!< Point light geometry framebuffer
-        std::shared_ptr<Framebuffer> hdr_fb_; //!< HDR tone mapping framebuffer
-        std::shared_ptr<Framebuffer> axes_fb_; //!< Axis hint drawing framebuffer
+        FramebufferPtr gbuffer_fb_; //!< GBuffer framebuffer
+        FramebufferPtr shadow_depth_fb_; //!< Shadow depth information framebuffer
+        FramebufferPtr shadow_fb_; //!< Shadow information framebuffer
+        FramebufferPtr shadow_blur_1_fb_; //!< Horizontal shadow blur framebuffer
+        FramebufferPtr shadow_blur_2_fb_; //!< Vertical shadow blur framebuffer
+        FramebufferPtr ssao_fb_; //!< SSAO framebuffer
+        FramebufferPtr ssao_blur_fb_; //!< SSAO blur framebuffer
+        FramebufferPtr lighting_fb_; //!< Deferred lighting framebuffer
+        FramebufferPtr light_geom_fb_; //!< Point light geometry framebuffer
+        FramebufferPtr hdr_fb_; //!< HDR tone mapping framebuffer
+        FramebufferPtr axes_fb_; //!< Axis hint drawing framebuffer
 
         Matrix4f light_space_mat_; //!< Light perspective matrix used for shadow mapping
         std::vector<Vector4f> ssao_kernel_; //!< Kernel used to blur SSAO information

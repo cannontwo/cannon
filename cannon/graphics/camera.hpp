@@ -15,11 +15,7 @@
 
 #include <Eigen/Dense>
 
-#include <cannon/log/registry.hpp>
-
 using namespace Eigen;
-
-using namespace cannon::log;
 
 namespace cannon {
   namespace graphics {

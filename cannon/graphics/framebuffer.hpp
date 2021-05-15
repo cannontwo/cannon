@@ -14,14 +14,19 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
-#include <cannon/graphics/texture.hpp>
 #include <cannon/graphics/shader_program.hpp>
 #include <cannon/graphics/vertex_array_object.hpp>
 #include <cannon/graphics/vertex_buffer.hpp>
-#include <cannon/graphics/geometry/screen_quad.hpp>
+#include <cannon/utils/class_forward.hpp>
 
 namespace cannon {
   namespace graphics {
+
+    CANNON_CLASS_FORWARD(Texture);
+
+    namespace geometry {
+      CANNON_CLASS_FORWARD(ScreenQuad);
+    }
 
     /*!
      * \brief Class representing an OpenGL framebuffer.
@@ -44,20 +49,7 @@ namespace cannon {
          * \param height The height for the constructed framebuffer.
          * \param name The name for the constructed framebuffer. Primarily for ImGui display.
          */
-        Framebuffer(int width=800, int height=600, const std::string& name="") :
-          width(width), height(height), name(name) {
-
-          glGenFramebuffers(1, &gl_framebuffer_);
-          glBindFramebuffer(GL_FRAMEBUFFER, gl_framebuffer_);
-
-          auto color_buf = std::make_shared<Texture>(width, height, GL_RGBA16F, GL_FLOAT);
-          attach_tex(color_buf);
-          
-          quad = std::make_shared<geometry::ScreenQuad>(color_buf, width, height);
-          generate_depth_stencil_buffer_();
-
-          unbind();
-        }
+        Framebuffer(int width=800, int height=600, const std::string& name="");
 
         /*!
          * Constructor taking a vector of attachments, width, height, and name
@@ -69,21 +61,8 @@ namespace cannon {
          * \param height The height of the constructed framebuffer.
          * \param name The name for the constructed framebuffer. Primarily for ImGui display.
          */
-        Framebuffer(std::vector<std::shared_ptr<Texture>> attachments, int
-            width=800, int height=600, const std::string& name="") :
-          width(width), height(height), name(name) {
-
-          glGenFramebuffers(1, &gl_framebuffer_);
-          glBindFramebuffer(GL_FRAMEBUFFER, gl_framebuffer_);
-
-          for (auto& tex : attachments)
-            attach_tex(tex);
-          
-          quad = std::make_shared<geometry::ScreenQuad>(color_attachments[0], width, height);
-          generate_depth_stencil_buffer_();
-
-          unbind();
-        }
+        Framebuffer(std::vector<TexturePtr> attachments, int width=800, int
+            height=600, const std::string& name="");
 
         /*!
          * Destructor, which also cleans up OpenGL resources.
@@ -167,7 +146,7 @@ namespace cannon {
          *
          * Does not affect OpenGL state.
          */
-        void attach_tex(std::shared_ptr<Texture> tex);
+        void attach_tex(TexturePtr tex);
 
         /*!
          * Method to resize this framebuffer. Also resizes all of this
@@ -187,9 +166,9 @@ namespace cannon {
         int width; //!< The width of this framebuffer.
         int height; //!< The height of this framebuffer.
 
-        std::shared_ptr<geometry::ScreenQuad> quad; //!< The quad used to draw this framebuffer.
+        geometry::ScreenQuadPtr quad; //!< The quad used to draw this framebuffer.
         std::string name; //!< The name of this framebuffer.
-        std::deque<std::shared_ptr<Texture>> color_attachments; //!< Color attachments storing the actual information of this framebuffer.
+        std::deque<TexturePtr> color_attachments; //!< Color attachments storing the actual information of this framebuffer.
 
       private:
         

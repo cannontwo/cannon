@@ -11,18 +11,14 @@
  * \brief Namespace containing control-relevant classes and functions.
  */
 
-#include <cassert>
-#include <utility>
 
 #include <Eigen/Dense>
 
 #include <cannon/ml/adam.hpp>
-#include <cannon/log/registry.hpp>
 
 using namespace Eigen;
 
 using namespace cannon::ml;
-using namespace cannon::log;
 
 namespace cannon {
   namespace control {

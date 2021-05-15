@@ -7,7 +7,6 @@
  * \brief File containing Font class definition.
  */
 
-#include <stdexcept>
 #include <string>
 #include <map>
 #include <memory>
@@ -16,13 +15,16 @@
 #include <ft2build.h>
 #include FT_FREETYPE_H
 
-#include <cannon/graphics/character.hpp>
 #include <cannon/log/registry.hpp>
+
+#include <cannon/utils/class_forward.hpp>
 
 using namespace cannon::log;
 
 namespace cannon {
   namespace graphics {
+
+    CANNON_CLASS_FORWARD(Character);
 
     /*!
      * \brief Class representing a font face.
@@ -81,7 +83,7 @@ namespace cannon {
          *
          * \returns Character object that can be used for drawing.
          */
-        std::shared_ptr<Character> get_char(char c);
+         CharacterPtr get_char(char c);
 
       private:
 
@@ -96,7 +98,7 @@ namespace cannon {
 
         FT_Library ft_; //!< FreeType library object
         FT_Face face_; //!< FreeType font object
-        std::map<char, std::shared_ptr<Character>> chars_; //!< Map storing glyphs for ASCII characters
+        std::map<char, CharacterPtr> chars_; //!< Map storing glyphs for ASCII characters
 
     };
 

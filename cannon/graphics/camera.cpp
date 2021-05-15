@@ -1,6 +1,8 @@
 #include <cannon/graphics/camera.hpp>
+#include <cannon/log/registry.hpp>
 
 using namespace cannon::graphics;
+using namespace cannon::log;
 
 Matrix4f Camera::get_view_mat() const {
   // The "LookAt" matrix

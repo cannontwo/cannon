@@ -1,4 +1,8 @@
 #include <cannon/graphics/deferred_renderer.hpp>
+#include <cannon/graphics/framebuffer.hpp>
+#include <cannon/graphics/shader_program.hpp>
+#include <cannon/graphics/texture.hpp>
+#include <cannon/graphics/geometry/screen_quad.hpp>
 
 using namespace cannon::graphics;
 

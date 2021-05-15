@@ -1,4 +1,6 @@
 #include <cannon/graphics/window.hpp>
+#include <cannon/graphics/character.hpp>
+#include <cannon/graphics/texture.hpp>
 
 using namespace cannon::graphics;
 using namespace cannon::log;

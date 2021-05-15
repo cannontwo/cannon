@@ -1,4 +1,8 @@
+#include <stdexcept>
+
 #include <cannon/graphics/font.hpp>
+#include <cannon/graphics/texture.hpp>
+#include <cannon/graphics/character.hpp>
 
 using namespace cannon::graphics;
 

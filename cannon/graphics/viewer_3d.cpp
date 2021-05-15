@@ -1,4 +1,18 @@
 #include <cannon/graphics/viewer_3d.hpp>
+#include <cannon/graphics/geometry/drawable_geom.hpp>
+#include <cannon/graphics/shader_program.hpp>
+#include <cannon/graphics/projection.hpp>
+#include <cannon/graphics/light.hpp>
+#include <cannon/graphics/geometry/cube.hpp>
+#include <cannon/graphics/geometry/plane.hpp>
+#include <cannon/graphics/geometry/model.hpp>
+#include <cannon/graphics/point_light.hpp>
+#include <cannon/graphics/spotlight.hpp>
+#include <cannon/graphics/geometry/skybox.hpp>
+#include <cannon/graphics/render_pass.hpp>
+#include <cannon/graphics/geometry/sdf_volume.hpp>
+#include <cannon/graphics/texture.hpp>
+#include <cannon/graphics/geometry/screen_quad.hpp>
 
 using namespace cannon::graphics;
 

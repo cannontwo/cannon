@@ -9,12 +9,14 @@
 
 #include <Eigen/Dense>
 
-#include <cannon/graphics/texture.hpp>
+#include <cannon/utils/class_forward.hpp>
 
 using namespace Eigen;
 
 namespace cannon {
   namespace graphics {
+
+    CANNON_CLASS_FORWARD(Texture);
 
     /*!
      * \brief Class representing a character in a font.
@@ -41,7 +43,7 @@ namespace cannon {
          * \param b Bearing (offset) of the character glyph.
          * \param a Advance from this character to the next.
          */
-        Character(char c, std::shared_ptr<Texture> t, Vector2f s, Vector2f b, 
+        Character(char c, TexturePtr t, Vector2f s, Vector2f b, 
             unsigned int a) : char_(c), texture(t), size(s),
             bearing(b), advance(a) {}
 
@@ -62,7 +64,7 @@ namespace cannon {
           size(c.size), bearing(c.bearing), advance(c.advance){}
 
         char char_; //!< The character that this object represents.
-        std::shared_ptr<Texture> texture; //!< The texture used to draw this character.
+        TexturePtr texture; //!< The texture used to draw this character.
         Vector2f size; //!< The size of this character's glyph.
         Vector2f bearing; //!< The bearing of this character's glyph.
         unsigned int advance; //!< The advance amount for this character.

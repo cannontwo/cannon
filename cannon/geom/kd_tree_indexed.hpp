@@ -1,9 +1,6 @@
 #ifndef CANNON_GEOM_KD_TREE_INDEXED_H
 #define CANNON_GEOM_KD_TREE_INDEXED_H 
 
-#include <utility>
-#include <stdexcept>
-
 #include <Eigen/Core>
 #include <CGAL/Epick_d.h>
 #include <CGAL/Search_traits_d.h>
@@ -12,10 +9,7 @@
 #include <CGAL/property_map.h>
 #include <boost/tuple/tuple.hpp>
 
-#include <cannon/log/registry.hpp>
-
 using namespace Eigen;
-using namespace cannon::log;
 
 /*!
  * \file cannon/geom/kd_tree_indexed.hpp

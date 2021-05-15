@@ -1,6 +1,38 @@
 #include <cannon/graphics/framebuffer.hpp>
+#include <cannon/graphics/texture.hpp>
+#include <cannon/graphics/geometry/screen_quad.hpp>
 
 using namespace cannon::graphics;
+
+Framebuffer::Framebuffer(int width, int height, const std::string& name) :
+  width(width), height(height), name(name) {
+
+  glGenFramebuffers(1, &gl_framebuffer_);
+  glBindFramebuffer(GL_FRAMEBUFFER, gl_framebuffer_);
+
+  auto color_buf = std::make_shared<Texture>(width, height, GL_RGBA16F, GL_FLOAT);
+  attach_tex(color_buf);
+  
+  quad = std::make_shared<geometry::ScreenQuad>(color_buf, width, height);
+  generate_depth_stencil_buffer_();
+
+  unbind();
+}
+
+Framebuffer::Framebuffer(std::vector<TexturePtr> attachments, int width, int
+    height, const std::string& name) : width(width), height(height), name(name)
+{
+  glGenFramebuffers(1, &gl_framebuffer_);
+  glBindFramebuffer(GL_FRAMEBUFFER, gl_framebuffer_);
+
+  for (auto& tex : attachments)
+    attach_tex(tex);
+  
+  quad = std::make_shared<geometry::ScreenQuad>(color_attachments[0], width, height);
+  generate_depth_stencil_buffer_();
+
+  unbind();
+}
 
 void Framebuffer::bind() {
   glBindFramebuffer(GL_FRAMEBUFFER, gl_framebuffer_);

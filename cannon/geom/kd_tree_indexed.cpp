@@ -1,6 +1,11 @@
+#include <utility>
+#include <stdexcept>
+
 #include <cannon/geom/kd_tree_indexed.hpp>
+#include <cannon/log/registry.hpp>
 
 using namespace cannon::geom;
+using namespace cannon::log;
 
 void KDTreeIndexed::insert(const MatrixXd& pts) {
   if (pts.rows() != dim_)

@@ -13,17 +13,12 @@
  * largely wrapping CGAL.
  */
 
-#include <stdexcept>
-
 #include <Eigen/Core>
 #include <CGAL/Epick_d.h>
 #include <CGAL/Search_traits_d.h>
 #include <CGAL/Orthogonal_k_neighbor_search.h>
 
-#include <cannon/log/registry.hpp>
-
 using namespace Eigen;
-using namespace cannon::log;
 
 namespace cannon {
   namespace geom {

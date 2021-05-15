@@ -10,22 +10,24 @@
 
 #include <cannon/graphics/camera.hpp>
 #include <cannon/graphics/window.hpp>
-#include <cannon/graphics/geometry/drawable_geom.hpp>
-#include <cannon/graphics/projection.hpp>
-#include <cannon/graphics/light.hpp>
 #include <cannon/graphics/light_collection.hpp>
-#include <cannon/graphics/geometry/cube.hpp>
-#include <cannon/graphics/geometry/plane.hpp>
-#include <cannon/graphics/geometry/textured_cube.hpp>
-#include <cannon/graphics/geometry/model.hpp>
-#include <cannon/graphics/point_light.hpp>
-#include <cannon/graphics/spotlight.hpp>
-#include <cannon/graphics/geometry/skybox.hpp>
-#include <cannon/graphics/render_pass.hpp>
-#include <cannon/graphics/geometry/sdf_volume.hpp>
+
+#include <cannon/utils/class_forward.hpp>
 
 namespace cannon {
   namespace graphics {
+
+    namespace geometry {
+      CANNON_CLASS_FORWARD(DrawableGeom);
+      CANNON_CLASS_FORWARD(Cube);
+      CANNON_CLASS_FORWARD(Plane);
+      CANNON_CLASS_FORWARD(Model);
+      CANNON_CLASS_FORWARD(Skybox);
+    }
+
+    CANNON_CLASS_FORWARD(ShaderProgram);
+    CANNON_CLASS_FORWARD(Light);
+    CANNON_CLASS_FORWARD(RenderPass);
 
     class Viewer3D {
       public:
@@ -90,38 +92,38 @@ namespace cannon {
         void draw();
 
         void add_geom(std::shared_ptr<geometry::DrawableGeom> g);
-        void add_shader(std::shared_ptr<ShaderProgram> s);
-        void apply_light(std::shared_ptr<Light> l);
+        void add_shader(ShaderProgramPtr s);
+        void apply_light(LightPtr l);
         void apply_light_collection(const LightCollection& l);
-        void apply_light_collection(std::shared_ptr<ShaderProgram> p);
+        void apply_light_collection(ShaderProgramPtr p);
 
         void set_skybox(std::vector<std::string> face_paths);
         void enable_skybox();
         void disable_skybox();
 
         void draw_scene_geom(bool draw_lights = true, bool ortho = false);
-        void draw_scene_geom(std::shared_ptr<ShaderProgram> p, bool draw_lights = true, 
+        void draw_scene_geom(ShaderProgramPtr p, bool draw_lights = true, 
             bool ortho = false);
 
         void draw_light_geom();
-        void draw_light_geom(std::shared_ptr<ShaderProgram> p);
+        void draw_light_geom(ShaderProgramPtr p);
 
         void draw_sdf_geom(bool ortho = false);
-        void draw_sdf_geom(std::shared_ptr<ShaderProgram> p, bool ortho = false);
+        void draw_sdf_geom(ShaderProgramPtr p, bool ortho = false);
 
         Vector3f get_directional_light_pos();
         Vector3f get_directional_light_dir();
 
-        void add_render_pass(std::shared_ptr<RenderPass> rp);
+        void add_render_pass(RenderPassPtr rp);
         std::shared_ptr<Framebuffer> add_render_pass(const std::string& name,
-            std::shared_ptr<ShaderProgram> p, std::function<void()> f);
+            ShaderProgramPtr p, std::function<void()> f);
         std::shared_ptr<Framebuffer> add_render_pass(const std::string& name,
             std::vector<std::shared_ptr<Texture>> attachments,
-            std::vector<std::shared_ptr<ShaderProgram>> programs, std::function<void()> f);
+            std::vector<ShaderProgramPtr> programs, std::function<void()> f);
 
-        std::shared_ptr<geometry::Cube> spawn_cube();
-        std::shared_ptr<geometry::Plane> spawn_plane();
-        std::shared_ptr<geometry::Model> spawn_model(const std::string& path);
+        geometry::CubePtr spawn_cube();
+        geometry::PlanePtr spawn_plane();
+        geometry::ModelPtr spawn_model(const std::string& path);
         void spawn_point_light();
         void spawn_spotlight();
         void spawn_sdf_volume();
@@ -155,19 +157,19 @@ namespace cannon {
         float yaw_ = M_PI/2.0;
         float pitch_ = 0.0;
 
-        std::vector<std::shared_ptr<geometry::DrawableGeom>> scene_geom_;
-        std::vector<std::shared_ptr<geometry::DrawableGeom>> light_geom_;
-        std::vector<std::shared_ptr<geometry::DrawableGeom>> sdf_geom_;
-        std::vector<std::shared_ptr<ShaderProgram>> shaders_;
-        std::deque<std::shared_ptr<RenderPass>> render_passes_;
+        std::vector<geometry::DrawableGeomPtr> scene_geom_;
+        std::vector<geometry::DrawableGeomPtr> light_geom_;
+        std::vector<geometry::DrawableGeomPtr> sdf_geom_;
+        std::vector<ShaderProgramPtr> shaders_;
+        std::deque<RenderPassPtr> render_passes_;
 
         LightCollection lc_;
 
-        std::shared_ptr<ShaderProgram> geom_program_;
-        std::shared_ptr<ShaderProgram> sdf_program_;
+        ShaderProgramPtr geom_program_;
+        ShaderProgramPtr sdf_program_;
 
         bool draw_skybox_ = false;
-        std::shared_ptr<geometry::Skybox> skybox_;
+        geometry::SkyboxPtr skybox_;
     };
 
     void drop_callback(GLFWwindow *window, int path_count, const char* paths[]);
