@@ -4,7 +4,7 @@
 
 /*!
  * \file cannon/graphics/random_color.hpp
- * File containing utility functions relating to generating random colors.
+ * \brief File containing utility functions relating to generating random colors.
  */
 
 #include <cmath>

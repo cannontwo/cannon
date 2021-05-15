@@ -4,7 +4,7 @@
 
 /*!
  * \file cannon/graphics/opengl_state.hpp
- * File containing OpenGLState class definition.
+ * \brief File containing OpenGLState class definition.
  */
 
 #include <iostream>

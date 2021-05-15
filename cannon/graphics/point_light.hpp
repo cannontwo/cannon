@@ -4,7 +4,7 @@
 
 /*!
  * \file cannon/graphics/point_light.hpp
- * File containing PointLight class definition.
+ * \brief File containing PointLight class definition.
  */
 
 #include <memory>

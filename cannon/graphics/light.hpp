@@ -4,7 +4,7 @@
 
 /*!
  * \file cannon/graphics/light.hpp
- * File containing Light interface definition.
+ * \brief File containing Light interface definition.
  */
 
 #include <Eigen/Dense>

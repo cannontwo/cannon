@@ -4,7 +4,7 @@
 
 /*!
  * \file cannon/graphics/shader_program.hpp
- * File containing ShaderProgram class definition.
+ * \brief File containing ShaderProgram class definition.
  */
 
 #include <glad/glad.h>

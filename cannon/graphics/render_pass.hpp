@@ -4,7 +4,7 @@
 
 /*!
  * \file cannon/graphics/render_pass.hpp
- * File containing RenderPass class definition.
+ * \brief File containing RenderPass class definition.
  */
 
 #include <memory>

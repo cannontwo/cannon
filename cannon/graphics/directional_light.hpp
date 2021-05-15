@@ -4,7 +4,7 @@
 
 /*!
  * \file cannon/graphics/directional_light.hpp
- * File containing DirectionalLight class definition
+ * \brief File containing DirectionalLight class definition
  */
 
 #include <imgui.h>

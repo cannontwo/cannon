@@ -4,7 +4,7 @@
 
 /*!
  * \file cannon/graphics/deferred_renderer.hpp
- * File containing DeferredRenderer class definition and cannon::graphics::lerp
+ * \brief File containing DeferredRenderer class definition and cannon::graphics::lerp
  * function definition.
  */
 

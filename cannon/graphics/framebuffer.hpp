@@ -4,7 +4,7 @@
 
 /*!
  * \file cannon/graphics/framebuffer.hpp
- * File containing Framebuffer class definition.
+ * \brief File containing Framebuffer class definition.
  */
 
 #include <stdexcept>

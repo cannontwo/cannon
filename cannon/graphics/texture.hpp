@@ -2,6 +2,11 @@
 #ifndef CANNON_GRAPHICS_TEXTURE_H
 #define CANNON_GRAPHICS_TEXTURE_H 
 
+/*!
+ * \file cannon/graphics/texture.hpp
+ * \brief File containing Texture class definition.
+ */
+
 #include <string>
 #include <stdexcept>
 
@@ -20,9 +25,20 @@ using namespace cannon::log;
 namespace cannon {
   namespace graphics {
 
+    /*!
+     * \brief Class representing an OpenGL texture, which may or may not be
+     * loaded from a file on disk.
+     */
     class Texture {
       public:
-        // This constructor is primarily for use with Framebuffer
+
+        /*!
+         * \brief Constructor taking optional width, height, internal format, data
+         * type, format, data, and texture unit arguments with sensible
+         * defaults.
+         *
+         * This constructor is primarily for use with Framebuffer.
+         */
         Texture(int width=800, int height=600, GLint internal_format=GL_RGBA,
             GLenum data_type=GL_UNSIGNED_BYTE, GLenum format=GL_RGBA, const
             void *data=NULL, GLenum texture_unit=GL_TEXTURE0)
@@ -40,6 +56,12 @@ namespace cannon {
           unbind();
         }
 
+        /*!
+         * \brief Constructor taking the path of an image to load and store in this
+         * texture, as well as optional arguments specifying whether to load
+         * alpha channels, the texture unit to use, and whether to flip the
+         * loaded image's Y-Axis. 
+         */
         Texture(const std::string& path, bool use_alpha=false, GLenum
             texture_unit=GL_TEXTURE0, bool flip=true) : path(path), gl_texture_unit_(texture_unit) {
           stbi_set_flip_vertically_on_load(flip);
@@ -82,6 +104,10 @@ namespace cannon {
           unbind();
         }
 
+        /*!
+         * \brief Constructor taking a FreeType font face to load and optional texture
+         * unit to use. This is primarily for use with cannon::graphics::Font.
+         */
         Texture(FT_Face &face, GLenum texture_unit=0) :
             width_(face->glyph->bitmap.width), height_(face->glyph->bitmap.rows),
             data_(face->glyph->bitmap.buffer), gl_texture_unit_(texture_unit) {
@@ -97,17 +123,33 @@ namespace cannon {
           unbind();
         }
 
+        /*!
+         * \brief Destructor. Frees allocated OpenGL texture.
+         */
         ~Texture() {
           if (glfwGetCurrentContext() != NULL) {
             glDeleteTextures(1, &gl_texture_);
           }
         }
 
+        /*!
+         * \brief Static function to get vector of all loaded textures. Can be used to
+         * prevent unnecessary reloading.
+         *
+         * \returns Vector of pointers to loaded textures.
+         */
         static std::vector<std::shared_ptr<Texture>>& get_loaded_textures() {
           static std::vector<std::shared_ptr<Texture>> loaded_textures;
           return loaded_textures;
         }
 
+        /*!
+         * \brief Static function to load a texture from a path.
+         *
+         * \param path The path of an image to load into a texture.
+         *
+         * \returns A pointer to the loaded Texture object.
+         */
         static std::shared_ptr<Texture> load_texture(const std::string& path) {
           for (auto& tex : get_loaded_textures()) {
             if (path.compare(tex->path) == 0) {
@@ -121,58 +163,114 @@ namespace cannon {
           return ret_tex;
         }
 
-        // Sets GL_TEXTURE_BINDING_2D to gl_texture_ and GL_ACTIVE_TEXTURE to GL_TEXTURE0
+        /*!
+         * \brief Method to bind this texture to texture unit 0.
+         *
+         * Sets GL_TEXTURE_BINDING_2D to gl_texture_ and GL_ACTIVE_TEXTURE to GL_TEXTURE0.
+         */
         void bind() const;
 
-        // Sets GL_TEXTURE_BINDING_2D to gl_texture_ and GL_ACTIVE_TEXTURE to texture_unit
+        /*!
+         * \brief Method to bind this texture to the input texture unit.
+         *
+         * Sets GL_TEXTURE_BINDING_2D to gl_texture_ and GL_ACTIVE_TEXTURE to texture_unit.
+         *
+         * \param texture_unit The texture unit to bind to.
+         */
         void bind(GLenum texture_unit) const;
 
-        // Sets GL_TEXTURE_BINDING_2D to 0 and GL_ACTIVE_TEXTURE to GL_TEXTURE0
+        /*!
+         * \brief Method to unbind this texture from texture unit 0.
+         *
+         * Sets GL_TEXTURE_BINDING_2D to 0 and GL_ACTIVE_TEXTURE to GL_TEXTURE0.
+         */
         void unbind() const;
 
-        // Sets GL_TEXTURE_BINDING_2D to 0 and GL_ACTIVE_TEXTURE to texture_unit
+        /*!
+         * \brief Method to unbind this texture from the input texture unit.
+         *
+         * Sets GL_TEXTURE_BINDING_2D to 0 and GL_ACTIVE_TEXTURE to texture_unit.
+         *
+         * \param texture_unit The texture unit to unbind.
+         */
         void unbind(GLenum texture_unit) const;
 
-        // Does not affect OpenGL state
+        /*!
+         * \brief Method to bind this texture to the current framebuffer at the input
+         * color attachment.
+         *
+         * Does not affect OpenGL state.
+         *
+         * \param attachment The color attachment to attach this texture to.
+         */
         void framebuffer_bind(GLenum attachment = GL_COLOR_ATTACHMENT0) const;
 
-        // Does not affect OpenGL state
+        /*!
+         * \brief Set the edge sampling behavior on this texture to wrap repeat.
+         *
+         * Does not affect OpenGL state.
+         */
         void set_wrap_repeat();
 
-        // Does not affect OpenGL state
+        /*!
+         * \brief Set the edge sampling behavior on this texture to wrap mirrored.
+         *
+         * Does not affect OpenGL state.
+         */
         void set_wrap_mirrored_repeat();
 
-        // Does not affect OpenGL state
+        /*!
+         * \brief Set the edge sampling behavior on this texture to clamp to the edge
+         * color.
+         *
+         * Does not affect OpenGL state.
+         */
         void set_wrap_clamp_edge();
 
-        // Does not affect OpenGL state
+        /*!
+         * \brief Set the edge sampling behavior on this texture to clamp to the border color.
+         *
+         * Does not affect OpenGL state.
+         */
         void set_wrap_clamp_border();
 
-        // Does not affect OpenGL state
+        /*!
+         * \brief Set the filtering behavior on this texture to linear.
+         *
+         * Does not affect OpenGL state.
+         */
         void set_filter_linear();
 
-        // Does not affect OpenGL state
+        /*!
+         * \brief Set the filtering behavior on this texture to nearest.
+         *
+         * Does not affect OpenGL state.
+         */
         void set_filter_nearest();
 
-        // Does not affect OpenGL state
+        /*!
+         * \brief Write ImGui controls for this texture.
+         *
+         * Does not affect OpenGL state.
+         */
         void write_imgui();
 
-        std::string path;
+        std::string path; //!< Path that this texture was loaded from.
 
         friend class Framebuffer;
 
-        GLint internal_format;
-        GLenum format_;
-        GLenum data_type;
+        GLint internal_format; //!< Internal format used by OpenGL to store texture.
+        GLenum format_; //!< Format of the source image to be converted.
+        GLenum data_type; //!< Color information data type for this texture.
 
       private:
-        int width_;
-        int height_;
-        int num_channels_;
-        unsigned char *data_;
+        int width_; //!< Texture width
+        int height_; //!< Texture height
+        int num_channels_; //!< Number of color channels for this texture
+        unsigned char *data_; //!< Texture image data
 
-        GLuint gl_texture_;
-        GLenum gl_texture_unit_;
+        GLuint gl_texture_; //!< OpenGL texture object
+        GLenum gl_texture_unit_; //!< OpenGL texture unit to bind this texture to
     };
 
   } // namespace graphics

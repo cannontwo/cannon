@@ -4,7 +4,7 @@
 
 /*! 
  * \file cannon/graphics/font.hpp
- * File containing Font class definition.
+ * \brief File containing Font class definition.
  */
 
 #include <stdexcept>

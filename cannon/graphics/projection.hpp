@@ -4,7 +4,7 @@
 
 /*!
  * \file cannon/graphics/projection.hpp
- * File containing utility free functions for computing projections.
+ * \brief File containing utility free functions for computing projections.
  */
 
 #include <Eigen/Dense>

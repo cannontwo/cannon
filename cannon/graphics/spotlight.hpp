@@ -2,21 +2,39 @@
 #ifndef CANNON_GRAPHICS_SPOTLIGHT_H
 #define CANNON_GRAPHICS_SPOTLIGHT_H
 
+/*!
+ * \file cannon/graphics/spotlight.hpp
+ * \brief File containing Spotlight class definition.
+ */
+
 #include <cannon/graphics/light.hpp>
 #include <cannon/graphics/projection.hpp>
 
 namespace cannon {
   namespace graphics {
 
+    /*!
+     * \brief Class representing a spotlight which casts light in only a
+     * prescribed cone.
+     */
     class Spotlight : public Light {
       public:
         Spotlight() = delete;
 
+        /*!  
+         * Constructor taking ambient, diffuse, and specular color, as well
+         * as direction of spotlight.
+         */
         Spotlight(Vector4f ambient, Vector4f diffuse, Vector4f specular, Vector4f direction) :
           Light(ambient, diffuse, specular), direction_(direction) {
             direction_.head(3).normalize(); 
           }
 
+        /*!
+         * Constructor taking ambient, diffuse, and specular color, as well as
+         * spotlight direction, cutoff and outer cutoff for soft edges, and
+         * light falloff parameters.
+         */
         Spotlight(Vector4f ambient, Vector4f diffuse, Vector4f specular, Vector4f direction,
             float cutoff, float outer_cutoff, float constant, float linear, float quadratic) :
           Light(ambient, diffuse, specular), cutoff_(cutoff),
@@ -25,6 +43,9 @@ namespace cannon {
             direction_.head(3).normalize(); 
           }
 
+        /*!
+         * Inherited from Light.
+         */
         virtual void apply(const std::shared_ptr<geometry::DrawableGeom> geom) const override {
           geom->program->set_uniform("light.ambient", (Vector4f)(ambient_ * std::pow(2.0, intensity_)));
           geom->program->set_uniform("light.diffuse", (Vector4f)(diffuse_ * std::pow(2.0, intensity_)));
@@ -39,11 +60,23 @@ namespace cannon {
           geom->program->set_uniform("light.linear", linear_);
           geom->program->set_uniform("light.quadratic", quadratic_);
         }
-
+        
+        /*!
+         * Apply this light to a geometry with a given light index.
+         *
+         * \param geom Geometry to apply light to.
+         * \param idx Index of this light in light collection.
+         */
         void apply(const std::shared_ptr<geometry::DrawableGeom> geom, int idx) const {
           apply(geom->program, idx);
         }
 
+        /*!
+         * Apply this light to a shader with a given light index.
+         *
+         * \param s The shader to apply this light to.
+         * \param idx Index of this light in light collection.
+         */
         void apply(const std::shared_ptr<ShaderProgram> s, int idx) const {
           std::string preamble("spotlights[");
           preamble += std::to_string(idx);
@@ -63,14 +96,29 @@ namespace cannon {
           s->set_uniform(preamble + ".quadratic", quadratic_);
         }
 
+        /*!
+         * Set inner cutoff for this light.
+         *
+         * \param cutoff New inner cutoff.
+         */
         void set_cutoff(float cutoff) {
           cutoff_ = cutoff;
         }
 
+        /*!
+         * Set out cutoff for this light.
+         *
+         * \param cutoff New outer cutoff.
+         */
         void set_outer_cutoff(float cutoff) {
           outer_cutoff_ = cutoff;
         }
 
+        /*!
+         * Write this light's parameters to ImGui controls.
+         *
+         * \param idx Index of this light to disambiguate controls.
+         */
         virtual void write_imgui(int idx) {
           if (ImGui::TreeNode((name_ + " " + std::to_string(idx)).c_str())) {
             ImGui::ColorEdit3("color", specular_.data());
@@ -96,16 +144,16 @@ namespace cannon {
         }
 
       private:
-        float cutoff_ = 12.5;
-        float outer_cutoff_ = 17.5;
+        float cutoff_ = 12.5; //!< Inner cutoff for soft edges of spotlight
+        float outer_cutoff_ = 17.5; //!< Outer cutoff for soft edges of spotlight
 
-        float constant_ = 1.0;
-        float linear_ = 0.14;
-        float quadratic_ = 0.07;
+        float constant_ = 1.0; //!< Constant term in light falloff computation
+        float linear_ = 0.14; //!< Linear term in light falloff computation
+        float quadratic_ = 0.07; //!< Quadratic term in light falloff computation
 
-        Vector4f direction_;
+        Vector4f direction_; //!< Direction for this spotlight
 
-        std::string name_ = std::string("Spotlight");
+        std::string name_ = std::string("Spotlight"); //!< Name of this light for ImGui purposes
 
     };
 

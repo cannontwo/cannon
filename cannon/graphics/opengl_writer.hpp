@@ -4,7 +4,7 @@
 
 /*!
  * \file cannon/graphics/opengl_writer.hpp
- * File containing OpenGLWriter class definition.
+ * \brief File containing OpenGLWriter class definition.
  */
 
 #include <functional>

@@ -4,7 +4,7 @@
 
 /*!
  * \file cannon/graphics/element_buffer.hpp
- * File containing ElementBuffer class definition.
+ * \brief File containing ElementBuffer class definition.
  */
 
 #include <glad/glad.h>

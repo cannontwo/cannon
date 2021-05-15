@@ -4,7 +4,7 @@
 
 /*!
  * \file cannon/graphics/fragment_shader.hpp
- * File containing FragmentShader class definition and free functions relating
+ * \brief File containing FragmentShader class definition and free functions relating
  * to fragment shaders for convenience.
  */
 

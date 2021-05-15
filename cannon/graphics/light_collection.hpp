@@ -4,7 +4,7 @@
 
 /*!
  * \file cannon/graphics/light_collection.hpp
- * File containing LightCollection class definition.
+ * \brief File containing LightCollection class definition.
  */
 
 #include <queue>
