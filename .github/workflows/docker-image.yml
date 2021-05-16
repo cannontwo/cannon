@@ -23,4 +23,4 @@ jobs:
       run: docker build . --file Dockerfile --tag cannon/cannon:$(date +%s)
       
     - name: Run container
-      run: ./run_docker.sh
+      run: docker run cannon/cannon
