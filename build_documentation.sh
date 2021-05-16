@@ -1,5 +1,5 @@
 mkdir build
 cd build
 mkdir docs
-cmake -DCANNON_BUILD_DOC=ON ..
-make doc_doxygen
+cmake -DCANNON_BUILD_DOC=ON -DCANNON_BUILD_LIBRARY=OFF ..
+make
