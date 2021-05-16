@@ -20,7 +20,7 @@ jobs:
         token: '${{ secrets.MY_GITHUB_PAT }}'
       
     - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag cannon/cannon:$(date +%s)
+      run: docker build . --file Dockerfile --tag cannon/cannon
       
     - name: Run container
       run: docker run cannon/cannon
