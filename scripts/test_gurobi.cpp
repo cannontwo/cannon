@@ -1,4 +1,7 @@
-#include <gurobi_c++.h>
+#ifdef CANNON_HAVE_GUROBI
+  #include <gurobi_c++.h>
+#endif
+
 
 #include <cannon/log/registry.hpp>
 
@@ -6,6 +9,7 @@ using namespace cannon::log;
 
 int main() {
 
+#ifdef CANNON_HAVE_GUROBI
   try {
     GRBEnv env = GRBEnv(true);
     env.set("LogFile", "mip1.log");
@@ -39,5 +43,7 @@ int main() {
   } catch (...) {
     log_error("Exception during optimization.");
   }
+#endif
 
 }
+

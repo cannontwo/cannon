@@ -34,7 +34,8 @@ RUN apt-get update && apt-get install -y build-essential \
         libegl1-mesa-dev \
         pkg-config \
         fonts-open-sans \
-        doxygen
+        doxygen \
+        libhdf5-dev
 
 RUN update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 90 --slave /usr/bin/g++ g++ /usr/bin/g++-9
 
@@ -60,7 +61,7 @@ RUN make && make install
 WORKDIR /
 
 # Boost
-RUN wget https://dl.bintray.com/boostorg/release/1.74.0/source/boost_1_74_0.tar.gz
+RUN wget https://boostorg.jfrog.io/artifactory/main/release/1.74.0/source/boost_1_74_0.tar.gz
 RUN tar xzvf boost_1_74_0.tar.gz
 WORKDIR /boost_1_74_0/
 RUN ./bootstrap.sh --prefix=/usr/
@@ -84,7 +85,7 @@ COPY . /cannon
 RUN mkdir -p /cannon/build
 WORKDIR /cannon/build
 RUN cmake .. -DCANNON_BUILD_GRAPHICS=OFF -DCANNON_BUILD_DOC=OFF
-RUN make -j4
+RUN make
 
 
 # Building with graphics capability

@@ -1,6 +1,7 @@
 #ifndef CANNON_ML_LINEAR_PROGRAMMING_H
 #define CANNON_ML_LINEAR_PROGRAMMING_H 
 
+#ifdef CANNON_HAVE_GUROBI
 #include <memory>
 
 #include <gurobi_c++.h>
@@ -76,5 +77,7 @@ namespace cannon {
 
   } // namespace ml
 } // namespace cannon
+
+#endif  // CANNON_HAVE_GUROBI
 
 #endif /* ifndef CANNON_ML_LINEAR_PROGRAMMING_H */

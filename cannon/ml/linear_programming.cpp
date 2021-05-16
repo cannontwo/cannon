@@ -1,7 +1,8 @@
+#ifdef CANNON_HAVE_GUROBI
+
 #include <cannon/ml/linear_programming.hpp>
 
 using namespace cannon::ml;
-
 
 void LPOptimizer::add_constraint(const MatrixXd& lhs_mat, const VectorXd& rhs) {
   assert(lhs_mat.cols() == num_vars_);
@@ -46,3 +47,4 @@ OptimizationResult LPOptimizer::optimize() {
     throw std::runtime_error("Gurobi could not find solution to LP");
   }
 }
+#endif

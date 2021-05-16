@@ -144,13 +144,16 @@ find_package(Catch2 REQUIRED)
 include(Catch)
 
 # Gurobi
-find_package(GUROBI REQUIRED)
-include_directories(${GUROBI_INCLUDE_DIRS})
-message("GUROBI")
-message(${GUROBI_LIBRARY})
-message(${GUROBI_CXX_LIBRARY})
-# A hack, for some reason findGUROBI isn't working
-list(APPEND LIBRARIES ${GUROBI_LIBRARY} ${GUROBI_CXX_LIBRARY})
+find_package(GUROBI)
+if (GUROBI_FOUND)
+  add_definitions( -DCANNON_HAVE_GUROBI=1 )
+  include_directories(${GUROBI_INCLUDE_DIRS})
+  message("GUROBI")
+  message(${GUROBI_LIBRARY})
+  message(${GUROBI_CXX_LIBRARY})
+  # A hack, for some reason findGUROBI isn't working
+  list(APPEND LIBRARIES ${GUROBI_LIBRARY} ${GUROBI_CXX_LIBRARY})
+endif()
 
 # HDF5
 find_package(HDF5 REQUIRED)
@@ -165,6 +168,16 @@ list(APPEND LIBRARIES HighFive)
 # TinyColorMap
 include_directories("thirdparty/tinycolormap/include")
 
+# STB_IMAGE
+add_library(STB_IMAGE "thirdparty/stb_image/stb_image.cpp")
+include_directories("thirdparty/stb_image/include")
+list(APPEND LIBRARIES STB_IMAGE)
+
+# Assimp
+find_package(assimp REQUIRED)
+include_directories(${ASSIMP_INCLUDE_DIRS})
+list(APPEND LIBRARIES ${ASSIMP_LIBRARIES})
+
 if (CANNON_BUILD_GRAPHICS)
   # OpenGL
   find_package(OpenGL 4.3 REQUIRED)
@@ -177,11 +190,6 @@ if (CANNON_BUILD_GRAPHICS)
   include_directories("thirdparty/glad/include")
   list(APPEND LIBRARIES GLAD)
 
-  # STB_IMAGE
-  add_library(STB_IMAGE "thirdparty/stb_image/stb_image.cpp")
-  include_directories("thirdparty/stb_image/include")
-  list(APPEND LIBRARIES STB_IMAGE)
-
   # GLFW
   find_package(GLFW3 REQUIRED)
   include_directories(${GLFW3_INCLUDE_DIR})
@@ -191,11 +199,6 @@ if (CANNON_BUILD_GRAPHICS)
   find_package(Freetype REQUIRED)
   include_directories(${FREETYPE_INCLUDE_DIRS})
   list(APPEND LIBRARIES ${FREETYPE_LIBRARIES})
-
-  # Assimp
-  find_package(assimp REQUIRED)
-  include_directories(${ASSIMP_INCLUDE_DIRS})
-  list(APPEND LIBRARIES ${ASSIMP_LIBRARIES})
 
   # ImGui
   add_definitions(-DIMGUI_IMPL_OPENGL_LOADER_GLAD)

@@ -1,3 +1,5 @@
+#ifdef CANNON_HAVE_GUROBI
+
 #include <catch2/catch.hpp>
 
 #include <cstdlib>
@@ -47,3 +49,5 @@ TEST_CASE("LinearProgramming", "[ml]") {
     log_error("Exception during optimization.");
   }
 }
+
+#endif
