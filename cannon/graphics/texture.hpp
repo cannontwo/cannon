@@ -8,6 +8,8 @@
  */
 
 #include <string>
+#include <vector>
+#include <memory>
 #include <stdexcept>
 
 #include <glad/glad.h>
@@ -16,10 +18,6 @@
 
 #include <ft2build.h>
 #include FT_FREETYPE_H
-
-#include <cannon/log/registry.hpp>
-
-using namespace cannon::log;
 
 namespace cannon {
   namespace graphics {
@@ -69,7 +67,6 @@ namespace cannon {
             throw std::runtime_error("Could not load image for texture");
 
           glGenTextures(1, &gl_texture_);
-          log_info("Created texture", gl_texture_);
           bind(texture_unit);
 
           GLenum format;
@@ -87,8 +84,6 @@ namespace cannon {
             pix_format = GL_RGBA;
           } else
             throw std::runtime_error("Unrecognized texture format");
-
-          log_info("Loading texture in", path);
 
           glTexImage2D(GL_TEXTURE_2D, 0, format, width_, height_, 0, pix_format, GL_UNSIGNED_BYTE, data_);
 

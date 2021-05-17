@@ -18,8 +18,10 @@
 #include <cannon/graphics/texture.hpp>
 #include <cannon/graphics/geometry/screen_quad.hpp>
 #include <cannon/graphics/framebuffer.hpp>
+#include <cannon/log/registry.hpp>
 
 using namespace cannon::graphics;
+using namespace cannon::log;
 
 ImageData Viewer3D::get_image(const std::string &path) const {
   return w.get_image(path);

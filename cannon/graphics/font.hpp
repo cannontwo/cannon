@@ -15,11 +15,7 @@
 #include <ft2build.h>
 #include FT_FREETYPE_H
 
-#include <cannon/log/registry.hpp>
-
 #include <cannon/utils/class_forward.hpp>
-
-using namespace cannon::log;
 
 namespace cannon {
   namespace graphics {

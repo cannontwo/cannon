@@ -8,6 +8,7 @@
  * to fragment shaders for convenience.
  */
 
+#include <vector>
 #include <string>
 #include <stdexcept>
 #include <iostream>
@@ -15,10 +16,6 @@
 #include <streambuf>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
-
-#include <cannon/log/registry.hpp>
-
-using namespace cannon::log;
 
 namespace cannon {
   namespace graphics {
@@ -58,7 +55,6 @@ namespace cannon {
           glGetShaderiv(gl_shader_, GL_COMPILE_STATUS, &success);
           if (!success) {
             glGetShaderInfoLog(gl_shader_, 512, NULL, info);
-            log_error(info);
             throw std::runtime_error("Could not compile fragment shader source.");
           }
         }

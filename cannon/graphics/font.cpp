@@ -3,8 +3,10 @@
 #include <cannon/graphics/font.hpp>
 #include <cannon/graphics/texture.hpp>
 #include <cannon/graphics/character.hpp>
+#include <cannon/log/registry.hpp>
 
 using namespace cannon::graphics;
+using namespace cannon::log;
 
 void Font::load_chars() {
   for (unsigned char c = 0; c < 128; c++) {

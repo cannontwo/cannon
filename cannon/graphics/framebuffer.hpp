@@ -14,8 +14,6 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
-#include <cannon/graphics/shader_program.hpp>
-#include <cannon/graphics/vertex_array_object.hpp>
 #include <cannon/graphics/vertex_buffer.hpp>
 #include <cannon/utils/class_forward.hpp>
 

@@ -14,9 +14,6 @@
 #include <cannon/graphics/spotlight.hpp>
 #include <cannon/graphics/directional_light.hpp>
 #include <cannon/graphics/geometry/drawable_geom.hpp>
-#include <cannon/log/registry.hpp>
-
-using namespace cannon::log;
 
 namespace cannon {
   namespace graphics {

@@ -237,7 +237,7 @@ if (CANNON_BUILD_LIBRARY)
   # Find unit tests
   file( GLOB_RECURSE TEST_SOURCES cannon/*.test.cpp )
   add_executable(unit_tests ${TEST_SOURCES})
-  target_link_libraries(unit_tests Catch2::Catch2 cannon ${LIBRARIES})
+  target_link_libraries(unit_tests Catch2::Catch2 cannon)
   catch_discover_tests(unit_tests)
 
   # Find scripts
@@ -245,7 +245,7 @@ if (CANNON_BUILD_LIBRARY)
   foreach (script_source ${SCRIPT_SOURCES})
     get_filename_component( scriptname ${script_source} NAME_WE)
     add_executable( ${scriptname} ${script_source} )
-    target_link_libraries( ${scriptname} cannon ${LIBRARIES})
+    target_link_libraries( ${scriptname} cannon)
     target_include_directories( ${scriptname} PUBLIC "${PROJECT_SOURCE_DIR}")
     set_target_properties(${scriptname} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/scripts")
   endforeach (script_source ${SCRIPT_SOURCES})
