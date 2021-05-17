@@ -64,7 +64,7 @@ WORKDIR /
 RUN wget https://boostorg.jfrog.io/artifactory/main/release/1.74.0/source/boost_1_74_0.tar.gz
 RUN tar xzvf boost_1_74_0.tar.gz
 WORKDIR /boost_1_74_0/
-RUN ./bootstrap.sh --prefix=/usr/
+RUN ./bootstrap.sh --prefix=/usr/ --with-libraries=test
 RUN ./b2
 RUN ./b2 install
 WORKDIR /
