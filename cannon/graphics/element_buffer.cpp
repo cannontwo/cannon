@@ -1,6 +1,14 @@
 #include <cannon/graphics/element_buffer.hpp>
 
+#include <cannon/graphics/vertex_array_object.hpp>
+
 using namespace cannon::graphics;
+
+ElementBuffer::ElementBuffer(VertexArrayObjectPtr vao) : vao_(vao) {
+  vao_->bind();
+  glGenBuffers(1, &gl_element_buffer_object_);
+  vao_->unbind();
+}
 
 void ElementBuffer::bind() const {
   vao_->bind();

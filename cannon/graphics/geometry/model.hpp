@@ -3,30 +3,29 @@
 
 #include <vector>
 #include <string>
-#include <memory>
-#include <stdexcept>
 
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 
 #include <cannon/graphics/geometry/drawable_geom.hpp>
-#include <cannon/graphics/geometry/mesh.hpp>
-#include <cannon/graphics/texture.hpp>
-#include <cannon/graphics/shader_program.hpp>
-#include <cannon/log/registry.hpp>
-
-using namespace cannon::log;
+#include <cannon/utils/class_forward.hpp>
 
 namespace cannon {
   namespace graphics {
+
+    CANNON_CLASS_FORWARD(ShaderProgram);
+    CANNON_CLASS_FORWARD(Texture);
+
     namespace geometry {
+
+      CANNON_CLASS_FORWARD(Mesh);
       
       class Model : public DrawableGeom {
         public:
           Model() = delete;
 
-          Model(std::shared_ptr<ShaderProgram> p, const std::string& path) {
+          Model(ShaderProgramPtr p, const std::string& path) {
             program = p;
             load_model_(path);
 
@@ -37,8 +36,8 @@ namespace cannon {
           virtual void draw(const Matrix4f& view, const Matrix4f& perspective) const override;
 
           // Does not affect OpenGL state
-          virtual void draw(std::shared_ptr<ShaderProgram> p, const Matrix4f&
-              view, const Matrix4f& perspective) const override;
+          virtual void draw(ShaderProgramPtr p, const Matrix4f& view, const
+              Matrix4f& perspective) const override;
 
           // Does not affect OpenGL state
           virtual void write_imgui(int idx) override;
@@ -46,11 +45,11 @@ namespace cannon {
         private:
           void load_model_(const std::string& path);
           void process_node_(aiNode *node, const aiScene *scene);
-          std::shared_ptr<Mesh> process_mesh_(aiMesh *mesh, const aiScene *scene);
-          std::vector<std::shared_ptr<Texture>> load_material_textures_(aiMaterial *mat, 
+          MeshPtr process_mesh_(aiMesh *mesh, const aiScene *scene);
+          std::vector<TexturePtr> load_material_textures_(aiMaterial *mat, 
               aiTextureType type);
 
-          std::vector<std::shared_ptr<Mesh>> meshes_;
+          std::vector<MeshPtr> meshes_;
           std::string directory_;
 
       };

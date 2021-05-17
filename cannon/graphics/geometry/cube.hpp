@@ -5,15 +5,15 @@
 #include <string>
 
 #include <cannon/graphics/geometry/drawable_geom.hpp>
-#include <cannon/graphics/vertex_array_object.hpp>
 #include <cannon/graphics/vertex_buffer.hpp>
-#include <cannon/graphics/element_buffer.hpp>
-#include <cannon/graphics/vertex_shader.hpp>
-#include <cannon/graphics/fragment_shader.hpp>
-#include <cannon/graphics/shader_program.hpp>
+#include <cannon/utils/class_forward.hpp>
 
 namespace cannon {
   namespace graphics {
+
+    CANNON_CLASS_FORWARD(VertexArrayObject);
+    CANNON_CLASS_FORWARD(ShaderProgram);
+
     namespace geometry {
 
       class Cube : public DrawableGeom {
@@ -21,54 +21,12 @@ namespace cannon {
 
           // Does not affect OpenGL state
           Cube(const std::string& v_src="shaders/mvp_uniform_color.vert", const
-              std::string& f_src="shaders/pass_color.frag") : 
-            vao_(new VertexArrayObject), buf_(vao_), normal_buf_(vao_), 
-            vertices_(36, 3), normals_(36, 3) {
-
-            program = std::make_shared<ShaderProgram>();
-
-            auto v = load_vertex_shader(v_src);
-            auto f = load_fragment_shader(f_src);
-            program->attach_shader(v);
-            program->attach_shader(f);
-            program->link();
-            
-            populate_bufs_();
-
-            name_ = std::string("Cube");
-
-            material_.ambient = {1.0, 1.0, 1.0, 1.0};
-            material_.diffuse = {1.0, 1.0, 1.0, 1.0};
-            material_.specular = {1.0, 1.0, 1.0, 1.0};
-          }
+              std::string& f_src="shaders/pass_color.frag");
 
           // Does not affect OpenGL state
-          Cube (std::shared_ptr<ShaderProgram> p) : vao_(new
-              VertexArrayObject), buf_(vao_), normal_buf_(vao_),
-          vertices_(36, 3), normals_(36, 3) {
+          Cube (std::shared_ptr<ShaderProgram> p);
 
-            program = p;
-
-            populate_bufs_(); 
-
-            name_ = std::string("Cube");
-            
-            material_.ambient = {1.0, 1.0, 1.0, 1.0};
-            material_.diffuse = {1.0, 1.0, 1.0, 1.0};
-            material_.specular = {0.0, 0.0, 0.0, 1.0};
-
-          }
-
-          Cube(Cube& c) : vao_(new VertexArrayObject), buf_(vao_), normal_buf_(vao_),
-          vertices_(c.vertices_), normals_(c.normals_) {
-            program = c.program;
-            buf_.buffer(vertices_);
-            normal_buf_.buffer(normals_);
-
-            name_ = c.name_;
-
-            material_ = c.material_;
-          }
+          Cube(Cube& c);
 
           Cube(Cube&& c) : vao_(c.vao_), buf_(std::move(c.buf_)),
           normal_buf_(std::move(c.normal_buf_)),
@@ -86,13 +44,13 @@ namespace cannon {
           virtual void draw(const Matrix4f& view, const Matrix4f& perspective) const override;
 
           // Does not affect OpenGL state
-          virtual void draw(std::shared_ptr<ShaderProgram> p, const Matrix4f&
+          virtual void draw(ShaderProgramPtr p, const Matrix4f&
               view, const Matrix4f& perspective) const override;
 
         private:
           void populate_bufs_();
 
-          std::shared_ptr<VertexArrayObject> vao_;
+          VertexArrayObjectPtr vao_;
           VertexBuffer buf_;
           VertexBuffer normal_buf_;
 

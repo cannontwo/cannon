@@ -8,17 +8,9 @@
  */
 
 #include <glad/glad.h>
-#include <stdexcept>
 #include <Eigen/Dense>
-#include <imgui.h>
-#include <imgui_stdlib.h>
 #include <GLFW/glfw3.h>
 
-#include <cannon/log/registry.hpp>
-#include <cannon/graphics/vertex_shader.hpp>
-#include <cannon/graphics/fragment_shader.hpp>
-
-using namespace cannon::log;
 using namespace Eigen;
 
 namespace cannon {

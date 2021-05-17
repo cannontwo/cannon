@@ -1,7 +1,18 @@
 #include <cannon/graphics/geometry/model.hpp>
 
+#include <stdexcept>
+
+#include <imgui.h>
+
+#include <cannon/graphics/shader_program.hpp>
+#include <cannon/graphics/geometry/mesh.hpp>
+#include <cannon/graphics/texture.hpp>
+
+#include <cannon/log/registry.hpp>
+
 using namespace cannon::graphics;
 using namespace cannon::graphics::geometry;
+using namespace cannon::log;
 
 void Model::draw(const Matrix4f& view, const Matrix4f& perspective) const {
   for (auto& mesh : meshes_) {

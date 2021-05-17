@@ -2,14 +2,9 @@
 #ifndef CANNON_GRAPHICS_VERTEX_ARRAY_OBJECT_H
 #define CANNON_GRAPHICS_VERTEX_ARRAY_OBJECT_H 
 
-
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <iostream>
-
-#include <cannon/log/registry.hpp>
-
-using namespace cannon::log;
 
 namespace cannon {
   namespace graphics {

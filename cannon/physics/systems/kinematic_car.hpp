@@ -12,6 +12,7 @@
 
 #include <cannon/physics/rk4_integrator.hpp>
 #include <cannon/physics/systems/system.hpp>
+#include <cannon/graphics/geometry/plane.hpp>
 #include <cannon/log/registry.hpp>
 
 using namespace Eigen;

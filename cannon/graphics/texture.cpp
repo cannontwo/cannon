@@ -1,5 +1,7 @@
 #include <cannon/graphics/texture.hpp>
 
+#include <imgui.h>
+
 using namespace cannon::graphics;
 
 void Texture::bind() const {

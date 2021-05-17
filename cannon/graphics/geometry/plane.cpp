@@ -1,6 +1,35 @@
 #include <cannon/graphics/geometry/plane.hpp>
 
+#include <cannon/graphics/shader_program.hpp>
+#include <cannon/graphics/vertex_array_object.hpp>
+
 using namespace cannon::graphics::geometry;
+
+Plane::Plane(std::shared_ptr<ShaderProgram> p) : vao_(new VertexArrayObject),
+  buf_(vao_), normal_buf_(vao_), vertices_(6, 3), normals_(6, 3) {
+
+  program = p;
+
+  populate_bufs_(); 
+
+  name_ = std::string("Plane");
+
+  material_.ambient = {1.0, 1.0, 1.0, 1.0};
+  material_.diffuse = {1.0, 1.0, 1.0, 1.0};
+  material_.specular = {0.0, 0.0, 0.0, 1.0};
+}
+
+Plane::Plane(Plane& o) : vao_(new VertexArrayObject), buf_(vao_), normal_buf_(vao_),
+vertices_(o.vertices_), normals_(o.normals_) {
+  program = o.program;
+  buf_.buffer(vertices_);
+  normal_buf_.buffer(normals_);
+
+  name_ = o.name_;
+
+  material_ = o.material_;
+}
+
 
 void Plane::draw(const Matrix4f& view, const Matrix4f& perspective) const {
   program->set_uniform("model", get_model_mat());

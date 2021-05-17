@@ -7,26 +7,20 @@
 #include <Eigen/Dense>
 #include <iostream>
 
-#include <cannon/graphics/vertex_array_object.hpp>
-#include <cannon/log/registry.hpp>
+#include <cannon/utils/class_forward.hpp>
 
 using namespace Eigen;
-using namespace cannon::log;
 
 namespace cannon {
   namespace graphics {
+
+    CANNON_CLASS_FORWARD(VertexArrayObject);
 
     class VertexBuffer {
       public:
         VertexBuffer() : vao_(nullptr) {}
 
-        VertexBuffer(std::shared_ptr<VertexArrayObject> vao) : vao_(vao) {
-          vao_->bind();
-          glGenBuffers(1, &gl_vertex_buffer_object_);
-
-          gl_vertex_attribute_num_ = vao_->get_next_vertex_attribute_num();
-          vao_->unbind();
-        }
+        VertexBuffer(VertexArrayObjectPtr vao);
 
         VertexBuffer(VertexBuffer& buf) = delete;
 
@@ -49,7 +43,7 @@ namespace cannon {
         }
 
         // Does not affect OpenGL State
-        void init(std::shared_ptr<VertexArrayObject> vao);
+        void init(VertexArrayObjectPtr vao);
 
         // Sets GL_VERTEX_ARRAY_BINDING to vao_->gl_vertex_array_object_ and
         // GL_ARRAY_BUFFER_BINDING to gl_vertex_buffer_object
@@ -83,7 +77,7 @@ namespace cannon {
 
         unsigned int gl_vertex_buffer_object_;
         int gl_vertex_attribute_num_;
-        std::shared_ptr<VertexArrayObject> vao_;
+        VertexArrayObjectPtr vao_;
     };
 
     std::ostream& operator<<(std::ostream&, const VertexBuffer&);

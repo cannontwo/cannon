@@ -28,6 +28,7 @@ namespace cannon {
     CANNON_CLASS_FORWARD(ShaderProgram);
     CANNON_CLASS_FORWARD(Light);
     CANNON_CLASS_FORWARD(RenderPass);
+    CANNON_CLASS_FORWARD(Texture);
 
     class Viewer3D {
       public:
@@ -118,7 +119,7 @@ namespace cannon {
         std::shared_ptr<Framebuffer> add_render_pass(const std::string& name,
             ShaderProgramPtr p, std::function<void()> f);
         std::shared_ptr<Framebuffer> add_render_pass(const std::string& name,
-            std::vector<std::shared_ptr<Texture>> attachments,
+            std::vector<TexturePtr> attachments,
             std::vector<ShaderProgramPtr> programs, std::function<void()> f);
 
         geometry::CubePtr spawn_cube();

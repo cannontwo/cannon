@@ -8,6 +8,9 @@
 
 #include <cannon/graphics/viewer_3d.hpp>
 #include <cannon/graphics/framebuffer.hpp>
+#include <cannon/graphics/shader_program.hpp>
+#include <cannon/graphics/render_pass.hpp>
+#include <cannon/graphics/geometry/screen_quad.hpp>
 #include <cannon/log/registry.hpp>
 
 using namespace cannon::graphics;

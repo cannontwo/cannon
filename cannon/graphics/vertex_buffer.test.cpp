@@ -1,6 +1,7 @@
 #ifdef CANNON_BUILD_GRAPHICS
 #include <catch2/catch.hpp>
 
+#include <cannon/graphics/vertex_array_object.hpp>
 #include <cannon/graphics/vertex_buffer.hpp>
 #include <cannon/graphics/opengl_state.hpp>
 #include <cannon/graphics/window.hpp>

@@ -1,4 +1,7 @@
 #include <cannon/graphics/framebuffer.hpp>
+
+#include <imgui.h>
+
 #include <cannon/graphics/texture.hpp>
 #include <cannon/graphics/geometry/screen_quad.hpp>
 

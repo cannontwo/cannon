@@ -1,6 +1,22 @@
 #include <cannon/graphics/geometry/skybox.hpp>
 
+#include <cannon/graphics/vertex_array_object.hpp>
+#include <cannon/graphics/shader_program.hpp>
+
 using namespace cannon::graphics::geometry;
+
+Skybox::Skybox(std::vector<std::string> face_paths, const std::string& v_src,
+    const std::string& f_src) : cubemap_(face_paths), vao_(new
+      VertexArrayObject), buf_(vao_), vertices_(36, 3) {
+
+  program = std::make_shared<ShaderProgram>("skybox_shader");
+  program->attach_vertex_shader(v_src);
+  program->attach_fragment_shader(f_src);
+  program->link();
+
+  populate_bufs_();
+
+}
 
 void Skybox::draw(const Matrix4f& view, const Matrix4f& perspective) {
   glDepthFunc(GL_LEQUAL);

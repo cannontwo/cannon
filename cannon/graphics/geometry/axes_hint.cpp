@@ -1,6 +1,24 @@
 #include <cannon/graphics/geometry/axes_hint.hpp>
 
+#include <cannon/graphics/shader_program.hpp>
+#include <cannon/graphics/vertex_array_object.hpp>
+
 using namespace cannon::graphics::geometry;
+
+AxesHint::AxesHint() : vao_x_(new VertexArrayObject), vao_y_(new
+    VertexArrayObject), vao_z_(new VertexArrayObject),
+buf_x_(vao_x_), buf_y_(vao_y_), buf_z_(vao_z_), vertices_x_(2, 3),
+vertices_y_(2, 3), vertices_z_(2, 3) {
+
+  populate_bufs_x_();
+  populate_bufs_y_();
+  populate_bufs_z_();
+
+  program = std::make_shared<ShaderProgram>();
+  program->attach_vertex_shader("shaders/pass_pos.vert");
+  program->attach_fragment_shader("shaders/axes_hint.frag");
+  program->link();
+}
 
 void AxesHint::draw(const Matrix4f& view, const Matrix4f& perspective) const {
   program->set_uniform("model", get_model_mat());

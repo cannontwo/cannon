@@ -2,15 +2,18 @@
 #define CANNON_GRAPHICS_GEOMETRY_MESH_H 
 
 #include <vector>
-#include <memory>
 
 #include <cannon/graphics/geometry/drawable_geom.hpp>
 #include <cannon/graphics/vertex_buffer.hpp>
 #include <cannon/graphics/element_buffer.hpp>
-#include <cannon/graphics/texture.hpp>
+
+#include <cannon/utils/class_forward.hpp>
 
 namespace cannon {
   namespace graphics {
+
+    CANNON_CLASS_FORWARD(Texture);
+
     namespace geometry {
 
       class Mesh : public DrawableGeom {
@@ -18,26 +21,10 @@ namespace cannon {
           Mesh() = delete;
 
           Mesh(std::shared_ptr<ShaderProgram> p, const MatrixX3f& vertices,
-              const MatrixX3f& normals, const MatrixX2f& tex_coords,
-              const MatrixX3u& indices,
-              Material material,
-              std::vector<std::shared_ptr<Texture>> diffuse_textures,
-              std::vector<std::shared_ptr<Texture>> specular_textures) :
-          vao_(new VertexArrayObject), buf_(vao_), normal_buf_(vao_),
-          tex_coord_buf_(vao_), ebuf_(vao_), vertices_(vertices), normals_(normals),
-          tex_coords_(tex_coords), indices_(indices), diffuse_textures_(diffuse_textures),
-          specular_textures_(specular_textures) {
-
-            assert(diffuse_textures_.size() <= max_diffuse_tex);
-            assert(specular_textures_.size() <= max_specular_tex);
-
-            material_ = material;
-
-            program = p;
-            populate_bufs_();
-
-            name_ = "Mesh";
-          }
+              const MatrixX3f& normals, const MatrixX2f& tex_coords, const
+              MatrixX3u& indices, Material material,
+              std::vector<TexturePtr> diffuse_textures,
+              std::vector<TexturePtr> specular_textures);
 
           virtual ~Mesh() override {};
 
@@ -66,8 +53,8 @@ namespace cannon {
           // Parent transform
           MatrixX4f parent_model_mat_;
 
-          std::vector<std::shared_ptr<Texture>> diffuse_textures_;
-          std::vector<std::shared_ptr<Texture>> specular_textures_;
+          std::vector<TexturePtr> diffuse_textures_;
+          std::vector<TexturePtr> specular_textures_;
 
           static const unsigned int max_diffuse_tex = 8;
           static const unsigned int max_specular_tex = 8;

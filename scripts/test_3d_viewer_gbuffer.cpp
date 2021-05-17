@@ -8,9 +8,11 @@
 
 #include <cannon/graphics/viewer_3d.hpp>
 #include <cannon/graphics/framebuffer.hpp>
+#include <cannon/graphics/texture.hpp>
 #include <cannon/log/registry.hpp>
 #include <cannon/math/multivariate_normal.hpp>
 #include <cannon/graphics/geometry/axes_hint.hpp>
+#include <cannon/graphics/geometry/screen_quad.hpp>
 
 using namespace cannon::graphics;
 using namespace cannon::log;

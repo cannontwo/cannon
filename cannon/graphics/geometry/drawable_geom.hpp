@@ -4,13 +4,15 @@
 #include <Eigen/Dense>
 
 #include <cannon/graphics/projection.hpp>
-#include <cannon/graphics/shader_program.hpp>
+#include <cannon/utils/class_forward.hpp>
 #include <imgui.h>
 
 using namespace Eigen;
 
 namespace cannon {
   namespace graphics {
+    CANNON_CLASS_FORWARD(ShaderProgram);
+
     namespace geometry {
 
       struct Material {
@@ -26,8 +28,8 @@ namespace cannon {
       class DrawableGeom {
         public:
           virtual void draw(const Matrix4f& view, const Matrix4f& perspective) const = 0;
-          virtual void draw(std::shared_ptr<ShaderProgram> p, const Matrix4f&
-              view, const Matrix4f& perspective) const = 0;
+          virtual void draw(ShaderProgramPtr p, const Matrix4f& view, const
+              Matrix4f& perspective) const = 0;
 
           void set_material(const Material& material) {
             material_ = material;
@@ -83,7 +85,7 @@ namespace cannon {
             }
           }
 
-          std::shared_ptr<ShaderProgram> program;
+          ShaderProgramPtr program;
 
         protected:
           virtual ~DrawableGeom() {};

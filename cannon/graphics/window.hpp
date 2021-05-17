@@ -3,35 +3,22 @@
 #define CANNON_GRAPHICS_WINDOW_H 
 
 #include <vector>
-#include <queue>
-#include <stdexcept>
 #include <functional>
-#include <filesystem>
-#include <thread>
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
-#include <stb_image/stb_image_write.h>
 #include <Eigen/Dense>
 
 #include <imgui.h>
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
 
-#include <cannon/log/registry.hpp>
 #include <cannon/graphics/font.hpp>
 #include <cannon/graphics/shader_program.hpp>
-#include <cannon/graphics/vertex_shader.hpp>
-#include <cannon/graphics/fragment_shader.hpp>
 #include <cannon/graphics/projection.hpp>
 #include <cannon/graphics/vertex_buffer.hpp>
-#include <cannon/graphics/vertex_array_object.hpp>
-#include <cannon/graphics/framebuffer.hpp>
 #include <cannon/utils/thread_pool.hpp>
-#include <cannon/graphics/opengl_state.hpp>
-
-// TODO
-//#include <cannon/graphics/input_handlers.hpp>
+#include <cannon/utils/class_forward.hpp>
 
 using namespace Eigen;
 
@@ -39,6 +26,9 @@ using namespace cannon::utils;
 
 namespace cannon {
   namespace graphics {
+
+    CANNON_CLASS_FORWARD(VertexArrayObject);
+    CANNON_CLASS_FORWARD(Framebuffer);
 
     struct OverlayText {
       float x;
@@ -82,61 +72,10 @@ namespace cannon {
 
     class Window {
       public:
-        Window(int w = 800, int h = 600, const std::string& name = "Test"):
-          width(w), height(h), font_(false), text_program_("text_program",
-              false), vao_(nullptr), buf_(), save_pool_(save_image_func) {
-          init_glfw();
-          window = glfwCreateWindow(width, height, name.c_str(), NULL, NULL); 
 
-          if (window == NULL) {
-            glfwTerminate();
-            throw std::runtime_error("Could not create GLFW window");
-          }
+        Window(int w = 800, int h = 600, const std::string& name = "Test");
 
-          make_current();
-          init_glad();
-
-          glEnable(GL_MULTISAMPLE);
-          // V-Sync
-          glfwSwapInterval(1);
-          set_viewport(0, 0, width, height);
-
-          register_callbacks();
-          set_clear_color(Vector4f(0.02f, 0.07f, 0.09f, 1.0f));
-          set_text_color(Vector4f(1.0, 0.0, 0.0, 1.0));
-          font_.init();
-          text_program_.init();
-          vao_ = std::make_shared<VertexArrayObject>();
-          buf_.init(vao_);
-          init_text_shader();
-
-          // Setting up ImGui
-          IMGUI_CHECKVERSION();
-          ImGui::CreateContext();
-          //ImPlot::CreateContext();
-          ImGui::GetIO();
-
-          ImGui::StyleColorsDark();
-          ImGui::SetColorEditOptions(ImGuiColorEditFlags_Float |
-              ImGuiColorEditFlags_DisplayHSV |
-              ImGuiColorEditFlags_PickerHueWheel);
-          ImGui_ImplGlfw_InitForOpenGL(window, true);
-          const char *glsl_version = "#version 330 core";
-          ImGui_ImplOpenGL3_Init(glsl_version);
-
-          glGenQueries(1, &gl_time_query_);
-        }
-
-        ~Window() {
-          log_info("Destructing window");
-
-          ImGui_ImplOpenGL3_Shutdown();
-          ImGui_ImplGlfw_Shutdown();
-          //ImPlot::DestroyContext();
-          ImGui::DestroyContext();
-
-          //glfwMakeContextCurrent(NULL);
-        }
+        ~Window();
 
         void make_current();
         void set_viewport(unsigned x, unsigned y, unsigned width, unsigned height);
@@ -161,8 +100,8 @@ namespace cannon {
         void enable_face_culling();
         void disable_face_culling();
 
-        void render_to_framebuffer(std::shared_ptr<Framebuffer> fb);
-        void draw_from_framebuffer(std::shared_ptr<Framebuffer> fb);
+        void render_to_framebuffer(FramebufferPtr fb);
+        void draw_from_framebuffer(FramebufferPtr fb);
         void save_image(const std::string &path);
         ImageData get_image(const std::string &path = "") const;
 
@@ -235,14 +174,14 @@ namespace cannon {
         Vector4f text_color_;
         ShaderProgram text_program_;
         Vector4f clear_color_;
-        std::shared_ptr<VertexArrayObject> vao_;
+        VertexArrayObjectPtr vao_;
         VertexBuffer buf_;
         std::vector<OverlayText> overlays_;
 
         bool render_to_framebuffer_ = false;
-        std::shared_ptr<Framebuffer> render_fb_;
+        FramebufferPtr render_fb_;
         bool draw_from_framebuffer_ = false;
-        std::shared_ptr<Framebuffer> draw_fb_;
+        FramebufferPtr draw_fb_;
 
         float delta_time_ = 0.0;
         float last_frame_time_ = 0.0;

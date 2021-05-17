@@ -1,9 +1,79 @@
 #include <cannon/graphics/window.hpp>
+
+#include <filesystem>
+#include <thread>
+#include <stdexcept>
+
+#include <stb_image/stb_image_write.h>
+
 #include <cannon/graphics/character.hpp>
 #include <cannon/graphics/texture.hpp>
+#include <cannon/graphics/vertex_shader.hpp>
+#include <cannon/graphics/fragment_shader.hpp>
+#include <cannon/graphics/vertex_array_object.hpp>
+#include <cannon/graphics/framebuffer.hpp>
+#include <cannon/graphics/opengl_state.hpp>
+#include <cannon/log/registry.hpp>
 
 using namespace cannon::graphics;
 using namespace cannon::log;
+
+Window::Window(int w, int h, const std::string& name): width(w), height(h),
+  font_(false), text_program_("text_program", false), vao_(nullptr), buf_(),
+  save_pool_(save_image_func) {
+
+  init_glfw();
+  window = glfwCreateWindow(width, height, name.c_str(), NULL, NULL); 
+
+  if (window == NULL) {
+    glfwTerminate();
+    throw std::runtime_error("Could not create GLFW window");
+  }
+
+  make_current();
+  init_glad();
+
+  glEnable(GL_MULTISAMPLE);
+  // V-Sync
+  glfwSwapInterval(1);
+  set_viewport(0, 0, width, height);
+
+  register_callbacks();
+  set_clear_color(Vector4f(0.02f, 0.07f, 0.09f, 1.0f));
+  set_text_color(Vector4f(1.0, 0.0, 0.0, 1.0));
+  font_.init();
+  text_program_.init();
+  vao_ = std::make_shared<VertexArrayObject>();
+  buf_.init(vao_);
+  init_text_shader();
+
+  // Setting up ImGui
+  IMGUI_CHECKVERSION();
+  ImGui::CreateContext();
+  //ImPlot::CreateContext();
+  ImGui::GetIO();
+
+  ImGui::StyleColorsDark();
+  ImGui::SetColorEditOptions(ImGuiColorEditFlags_Float |
+      ImGuiColorEditFlags_DisplayHSV |
+      ImGuiColorEditFlags_PickerHueWheel);
+  ImGui_ImplGlfw_InitForOpenGL(window, true);
+  const char *glsl_version = "#version 330 core";
+  ImGui_ImplOpenGL3_Init(glsl_version);
+
+  glGenQueries(1, &gl_time_query_);
+}
+
+Window::~Window() {
+  log_info("Destructing window");
+
+  ImGui_ImplOpenGL3_Shutdown();
+  ImGui_ImplGlfw_Shutdown();
+  //ImPlot::DestroyContext();
+  ImGui::DestroyContext();
+
+  //glfwMakeContextCurrent(NULL);
+}
 
 void Window::close() const {
   glfwSetWindowShouldClose(window, true);

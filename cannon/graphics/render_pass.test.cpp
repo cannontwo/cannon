@@ -4,6 +4,8 @@
 #include <cannon/graphics/window.hpp>
 #include <cannon/graphics/render_pass.hpp>
 #include <cannon/graphics/opengl_state.hpp>
+#include <cannon/graphics/framebuffer.hpp>
+#include <cannon/graphics/shader_program.hpp>
 
 using namespace cannon::graphics;
 

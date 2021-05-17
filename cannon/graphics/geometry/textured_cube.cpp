@@ -1,6 +1,38 @@
 #include <cannon/graphics/geometry/textured_cube.hpp>
 
+#include <cannon/graphics/vertex_array_object.hpp>
+#include <cannon/graphics/shader_program.hpp>
+
 using namespace cannon::graphics::geometry;
+
+TexturedCube::TexturedCube (ShaderProgramPtr p, const std::string& d_tex, const
+    std::string& s_tex) : vao_(new VertexArrayObject), buf_(vao_),
+  normal_buf_(vao_), texture_coord_buf_(vao_), diffuse_tex_(d_tex, false,
+      GL_TEXTURE0), specular_tex_(s_tex, false, GL_TEXTURE1), vertices_(36, 3),
+  normals_(36, 3), texture_coords_(36, 2) {
+
+  program = p;
+
+  populate_bufs_(); 
+
+  name_ = std::string("Textured Cube");
+}
+
+TexturedCube::TexturedCube(TexturedCube& c) : vao_(new VertexArrayObject),
+  buf_(vao_), normal_buf_(vao_), texture_coord_buf_(vao_),
+  diffuse_tex_(c.diffuse_tex_), specular_tex_(c.specular_tex_),
+  vertices_(c.vertices_), normals_(c.normals_),
+  texture_coords_(c.texture_coords_) {
+
+  program = c.program;
+
+  buf_.buffer(vertices_);
+  normal_buf_.buffer(normals_);
+  texture_coord_buf_.buffer(texture_coords_);
+
+  name_ = c.name_;
+
+}
 
 void TexturedCube::draw(const Matrix4f& view, const Matrix4f& perspective) const {
   program->set_uniform("model", get_model_mat());

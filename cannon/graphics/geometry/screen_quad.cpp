@@ -1,6 +1,22 @@
 #include <cannon/graphics/geometry/screen_quad.hpp>
 
+#include <cannon/graphics/texture.hpp>
+#include <cannon/graphics/vertex_array_object.hpp>
+#include <cannon/graphics/shader_program.hpp>
+
 using namespace cannon::graphics::geometry;
+
+ScreenQuad::ScreenQuad(std::shared_ptr<Texture> tex, int width, int height) :
+  width(width), height(height), tex_(tex) , vao_(new VertexArrayObject),
+  buf_(vao_), texture_coord_buf_(vao_), vertices_(6, 2), texture_coords_(6, 2)
+{
+  program = std::make_shared<ShaderProgram>("screen_quad_shader");
+  program->attach_vertex_shader("shaders/pass_pos_tex.vert");
+  program->attach_fragment_shader("shaders/tex_quad.frag");
+  program->link();
+
+  populate_quad_buf_();
+}
 
 void ScreenQuad::resize(int w, int h) {
   width = w;

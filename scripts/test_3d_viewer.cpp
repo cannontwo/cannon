@@ -12,7 +12,6 @@
 
 #include <cannon/graphics/window.hpp>
 #include <cannon/graphics/vertex_buffer.hpp>
-#include <cannon/graphics/vertex_color_tex_buffer.hpp>
 #include <cannon/graphics/element_buffer.hpp>
 #include <cannon/graphics/vertex_shader.hpp>
 #include <cannon/graphics/fragment_shader.hpp>

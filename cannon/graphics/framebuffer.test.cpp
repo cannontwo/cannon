@@ -4,6 +4,7 @@
 #include <cannon/graphics/framebuffer.hpp>
 #include <cannon/graphics/window.hpp>
 #include <cannon/graphics/opengl_state.hpp>
+#include <cannon/graphics/texture.hpp>
 
 using namespace cannon::graphics;
 

@@ -3,15 +3,17 @@
 
 #include <vector>
 #include <string>
-#include <memory>
 
 #include <cannon/graphics/cubemap.hpp>
-#include <cannon/graphics/shader_program.hpp>
-#include <cannon/graphics/vertex_array_object.hpp>
 #include <cannon/graphics/vertex_buffer.hpp>
+#include <cannon/utils/class_forward.hpp>
 
 namespace cannon {
   namespace graphics {
+
+    CANNON_CLASS_FORWARD(ShaderProgram);
+    CANNON_CLASS_FORWARD(VertexArrayObject);
+
     namespace geometry {
 
       class Skybox {
@@ -21,29 +23,19 @@ namespace cannon {
           // Does not affect OpenGL state
           Skybox(std::vector<std::string> face_paths, const std::string&
               v_src="shaders/skybox.vert", const std::string&
-              f_src="shaders/skybox.frag") : cubemap_(face_paths), 
-            vao_(new VertexArrayObject), buf_(vao_), vertices_(36, 3) {
-
-            program = std::make_shared<ShaderProgram>("skybox_shader");
-            program->attach_vertex_shader(v_src);
-            program->attach_fragment_shader(f_src);
-            program->link();
-
-            populate_bufs_();
-
-          }
+              f_src="shaders/skybox.frag");
 
           // Does not affect OpenGL state
           void draw(const Matrix4f& view, const Matrix4f& perspective);
 
-          std::shared_ptr<ShaderProgram> program;
+          ShaderProgramPtr program;
 
         private:
           void populate_bufs_();
 
           Cubemap cubemap_;
 
-          std::shared_ptr<VertexArrayObject> vao_;
+          VertexArrayObjectPtr vao_;
           VertexBuffer buf_;
 
           MatrixX3f vertices_;

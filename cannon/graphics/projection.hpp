@@ -39,7 +39,6 @@ namespace cannon {
     Matrix4f make_perspective_frustum(float left, float right, float bottom,
         float top, float near, float far);
 
-    
     /*!
      * Compute perspective matrix corresponding to a view frustum with a given
      * field of view and aspect ratio.

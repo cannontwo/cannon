@@ -1,6 +1,16 @@
 #include <cannon/graphics/shader_program.hpp>
 
+#include <stdexcept>
+
+#include <imgui.h>
+#include <imgui_stdlib.h>
+
+#include <cannon/graphics/vertex_shader.hpp>
+#include <cannon/graphics/fragment_shader.hpp>
+#include <cannon/log/registry.hpp>
+
 using namespace cannon::graphics;
+using namespace cannon::log;
 
 void ShaderProgram::link() {
   glLinkProgram(gl_shader_program_);

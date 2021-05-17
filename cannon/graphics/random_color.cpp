@@ -1,3 +1,6 @@
+#include <cmath>
+#include <random>
+
 #include <cannon/graphics/random_color.hpp>
 
 using namespace cannon::graphics;

@@ -1,6 +1,16 @@
 #include <cannon/graphics/vertex_buffer.hpp>
 
+#include <cannon/graphics/vertex_array_object.hpp>
+
 using namespace cannon::graphics;
+
+VertexBuffer::VertexBuffer(VertexArrayObjectPtr vao) : vao_(vao) {
+  vao_->bind();
+  glGenBuffers(1, &gl_vertex_buffer_object_);
+
+  gl_vertex_attribute_num_ = vao_->get_next_vertex_attribute_num();
+  vao_->unbind();
+}
 
 void VertexBuffer::init(std::shared_ptr<VertexArrayObject> vao) {
   assert(vao_ == nullptr);

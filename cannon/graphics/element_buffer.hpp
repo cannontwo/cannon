@@ -11,12 +11,14 @@
 #include <GLFW/glfw3.h>
 #include <Eigen/Dense>
 
-#include <cannon/graphics/vertex_array_object.hpp>
+#include <cannon/utils/class_forward.hpp>
 
 using namespace Eigen;
 
 namespace cannon {
   namespace graphics {
+
+    CANNON_CLASS_FORWARD(VertexArrayObject);
     
     using MatrixX3u = Matrix<unsigned int, Dynamic, 3>;
     using Matrix3Xu = Matrix<unsigned int, 3, Dynamic>;
@@ -42,11 +44,7 @@ namespace cannon {
          *
          * \param vao The vertex array object for this object
          */
-        ElementBuffer(std::shared_ptr<VertexArrayObject> vao) : vao_(vao) {
-          vao_->bind();
-          glGenBuffers(1, &gl_element_buffer_object_);
-          vao_->unbind();
-        }
+        ElementBuffer(VertexArrayObjectPtr vao);
 
         /*!
          * Destructor. If an OpenGL context is active, this method also frees
@@ -88,7 +86,7 @@ namespace cannon {
 
       private:
         unsigned int gl_element_buffer_object_; //!< OpenGL ID representing this element buffer
-        std::shared_ptr<VertexArrayObject> vao_; //!< The vertex array object for this element buffer
+        VertexArrayObjectPtr vao_; //!< The vertex array object for this element buffer
     };
 
   } // namespace graphics

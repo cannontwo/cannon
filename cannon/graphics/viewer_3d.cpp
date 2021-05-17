@@ -1,4 +1,8 @@
 #include <cannon/graphics/viewer_3d.hpp>
+
+#include <imgui.h>
+#include <imgui_stdlib.h>
+
 #include <cannon/graphics/geometry/drawable_geom.hpp>
 #include <cannon/graphics/shader_program.hpp>
 #include <cannon/graphics/projection.hpp>
@@ -13,6 +17,7 @@
 #include <cannon/graphics/geometry/sdf_volume.hpp>
 #include <cannon/graphics/texture.hpp>
 #include <cannon/graphics/geometry/screen_quad.hpp>
+#include <cannon/graphics/framebuffer.hpp>
 
 using namespace cannon::graphics;
 

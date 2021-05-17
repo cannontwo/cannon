@@ -15,11 +15,13 @@
 #include <GLFW/glfw3.h>
 
 #include <cannon/graphics/window.hpp>
-#include <cannon/graphics/framebuffer.hpp>
-#include <cannon/graphics/shader_program.hpp>
+#include <cannon/utils/class_forward.hpp>
 
 namespace cannon {
   namespace graphics {
+
+    CANNON_CLASS_FORWARD(Framebuffer);
+    CANNON_CLASS_FORWARD(ShaderProgram);
 
     /*!
      * \brief Class representing a render pass in the deferred rendering pipeline.
@@ -39,8 +41,8 @@ namespace cannon {
          *
          * Does not affect OpenGL state.
          */
-        RenderPass(const std::string &name, std::shared_ptr<Framebuffer> fb,
-            std::shared_ptr<ShaderProgram> p, std::function<void()> f) :
+        RenderPass(const std::string &name, FramebufferPtr fb,
+            ShaderProgramPtr p, std::function<void()> f) :
           name(name), framebuffer(fb), draw_func(f) {
 
             programs.push_back(p);
@@ -58,8 +60,8 @@ namespace cannon {
          *
          * Does not affect OpenGL state.
          */
-        RenderPass(const std::string &name, std::shared_ptr<Framebuffer> fb,
-            std::vector<std::shared_ptr<ShaderProgram>> programs, std::function<void()> f) :
+        RenderPass(const std::string &name, FramebufferPtr fb,
+            std::vector<ShaderProgramPtr> programs, std::function<void()> f) :
           name(name), framebuffer(fb), programs(programs), draw_func(f) {
             glGenQueries(1, &gl_front_query_);
             glGenQueries(1, &gl_back_query_);
@@ -123,8 +125,8 @@ namespace cannon {
 
         std::string name; //!< The name of this render pass
 
-        std::shared_ptr<Framebuffer> framebuffer; //!< The framebuffer for this render pass 
-        std::vector<std::shared_ptr<ShaderProgram>> programs; //!< Shaders for this render pass
+        FramebufferPtr framebuffer; //!< The framebuffer for this render pass 
+        std::vector<ShaderProgramPtr> programs; //!< Shaders for this render pass
         std::function<void()> draw_func; //!< Rendering function for this render pass
 
       private:

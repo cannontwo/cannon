@@ -7,9 +7,6 @@
  * \brief File containing utility functions relating to generating random colors.
  */
 
-#include <cmath>
-#include <random>
-
 #include <Eigen/Dense>
 
 using namespace Eigen;

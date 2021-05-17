@@ -1,6 +1,32 @@
 #include <cannon/graphics/geometry/sdf_volume.hpp>
 
+#include <cannon/graphics/shader_program.hpp>
+#include <cannon/graphics/vertex_array_object.hpp>
+
 using namespace cannon::graphics::geometry;
+
+SDFVolume::SDFVolume(std::shared_ptr<ShaderProgram> p) : vao_(new VertexArrayObject), buf_(vao_),
+vertices_(36, 3) {
+
+  program = p;
+  populate_bufs_();
+  name_ = std::string("SDF Volume");
+
+  material_.ambient = {1.0, 1.0, 1.0, 1.0};
+  material_.diffuse = {1.0, 1.0, 1.0, 1.0};
+  material_.specular = {0.0, 0.0, 0.0, 1.0};
+}
+
+SDFVolume::SDFVolume(SDFVolume& o) : vao_(new VertexArrayObject), buf_(vao_),
+vertices_(o.vertices_) {
+
+  program = o.program;
+  buf_.buffer(vertices_);
+
+  name_ = o.name_;
+
+  material_ = o.material_;
+}
 
 void SDFVolume::draw(const Matrix4f& view, const Matrix4f& perspective) const {
   program->set_uniform("model", get_model_mat());

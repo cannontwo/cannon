@@ -2,40 +2,24 @@
 #define CANNON_GRAPHICS_GEOMETRY_SDF_VOLUME_H 
 
 #include <cannon/graphics/geometry/drawable_geom.hpp>
-#include <cannon/graphics/vertex_array_object.hpp>
 #include <cannon/graphics/vertex_buffer.hpp>
+#include <cannon/utils/class_forward.hpp>
 
 namespace cannon {
   namespace graphics {
+
+    CANNON_CLASS_FORWARD(VertexArrayObject);
+    CANNON_CLASS_FORWARD(ShaderProgram);
+
     namespace geometry {
 
       class SDFVolume : public DrawableGeom {
         public:
 
           // Does not affect OpenGL state
-          SDFVolume(std::shared_ptr<ShaderProgram> p) : vao_(new VertexArrayObject), buf_(vao_),
-          vertices_(36, 3) {
+          SDFVolume(ShaderProgramPtr p);
 
-            program = p;
-            populate_bufs_();
-            name_ = std::string("SDF Volume");
-
-            material_.ambient = {1.0, 1.0, 1.0, 1.0};
-            material_.diffuse = {1.0, 1.0, 1.0, 1.0};
-            material_.specular = {0.0, 0.0, 0.0, 1.0};
-          }
-
-          SDFVolume(SDFVolume& o) : vao_(new VertexArrayObject), buf_(vao_),
-          vertices_(o.vertices_) {
-
-            program = o.program;
-            buf_.buffer(vertices_);
-
-            name_ = o.name_;
-
-            material_ = o.material_;
-
-          }
+          SDFVolume(SDFVolume& o);
 
           SDFVolume(SDFVolume&& o) : vao_(o.vao_), buf_(std::move(o.buf_)),
           vertices_(o.vertices_) {
@@ -53,13 +37,13 @@ namespace cannon {
           virtual void draw(const Matrix4f& view, const Matrix4f& perspective) const override;
 
           // Does not affect OpenGL state
-          virtual void draw(std::shared_ptr<ShaderProgram> p, const Matrix4f&
-              view, const Matrix4f& perspective) const override;
+          virtual void draw(ShaderProgramPtr p, const Matrix4f& view, const
+              Matrix4f& perspective) const override;
 
         private:
           void populate_bufs_();
 
-          std::shared_ptr<VertexArrayObject> vao_;
+          VertexArrayObjectPtr vao_;
           VertexBuffer buf_;
 
           MatrixX3f vertices_;
