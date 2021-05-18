@@ -5,17 +5,16 @@
 
 #include <Eigen/Dense>
 
-#include <cannon/ml/optimization_result.hpp>
-#include <cannon/log/registry.hpp>
+#include <cannon/utils/class_forward.hpp>
 
 using namespace Eigen;
-
-using namespace cannon::log;
 
 using RealFunc = std::function<double(const VectorXd&)>;
 
 namespace cannon {
   namespace ml {
+
+    CANNON_CLASS_FORWARD(OptimizationResult);
 
     class PatternSearchOptimizer {
       public:

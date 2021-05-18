@@ -1,6 +1,12 @@
 #include <cannon/ml/adam.hpp>
 
+#include <cassert>
+#include <cmath>
+
+#include <cannon/log/registry.hpp>
+
 using namespace cannon::ml;
+using namespace cannon::log;
 
 MatrixXd AdamOptimizer::apply_update(const MatrixXd& params, const MatrixXd& gradient) {
   assert(params.rows() == rows_ && params.cols() == cols_);  

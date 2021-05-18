@@ -2,9 +2,11 @@
 
 #include <cannon/ml/wolfe_conditions.hpp>
 #include <cannon/math/func/rosenbrock.hpp>
+#include <cannon/log/registry.hpp>
 
 using namespace cannon::ml;
 using namespace cannon::math;
+using namespace cannon::log;
 
 double f(const Vector2d& x) {
   return x.dot(x);

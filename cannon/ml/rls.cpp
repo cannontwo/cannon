@@ -1,6 +1,13 @@
 #include <cannon/ml/rls.hpp>
 
+#include <cassert>
+#include <stdexcept>
+#include <cmath>
+
+#include <cannon/log/registry.hpp>
+
 using namespace cannon::ml;
+using namespace cannon::log;
 
 // Public methods
 void RLSFilter::process_datum(const VectorXd& in_vec, const VectorXd& output) {

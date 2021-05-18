@@ -3,10 +3,13 @@
 #include <thirdparty/approval_tests/ApprovalTests.hpp>
 
 #include <cannon/plot/plotter.hpp>
+#include <cannon/plot/scatter.hpp>
 #include <cannon/graphics/opengl_writer.hpp>
+#include <cannon/log/registry.hpp>
 
 using namespace cannon::graphics;
 using namespace cannon::plot;
+using namespace cannon::log;
 using namespace ApprovalTests;
 
 TEST_CASE("Scatter", "[plot]") {

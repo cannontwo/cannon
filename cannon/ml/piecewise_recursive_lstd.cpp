@@ -1,6 +1,11 @@
 #include <cannon/ml/piecewise_recursive_lstd.hpp>
 
+#include <cassert>
+
+#include <cannon/log/registry.hpp>
+
 using namespace cannon::ml;
+using namespace cannon::log;
 
 // Public
 void PiecewiseRecursiveLSTDFilter::process_datum(const VectorXd& in_vec, const VectorXd& next_in_vec,

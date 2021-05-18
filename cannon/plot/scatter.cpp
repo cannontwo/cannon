@@ -1,7 +1,24 @@
 #include <cannon/plot/scatter.hpp>
 
+#include <cannon/log/registry.hpp>
+#include <cannon/graphics/shader_program.hpp>
+#include <cannon/graphics/vertex_shader.hpp>
+#include <cannon/graphics/fragment_shader.hpp>
+#include <cannon/plot/plotter.hpp>
+#include <cannon/graphics/vertex_array_object.hpp>
+
 using namespace cannon::plot;
 using namespace cannon::log;
+
+Scatter::Scatter(Plotter& plotter, ShaderProgramPtr program,
+    MatrixX2f points, Vector4f color, float point_size) :
+    plotter_(plotter), points_(points), color_(color),
+    point_size_(point_size), vao_(new VertexArrayObject), buf_(vao_),
+    program_(program)  {
+  glEnable(GL_PROGRAM_POINT_SIZE);
+  buf_.buffer(points_);
+  log_info(buf_);
+}
 
 void Scatter::add_points(MatrixX2f point) {
   points_.conservativeResize(points_.rows() + 1, NoChange);

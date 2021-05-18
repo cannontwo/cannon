@@ -1,9 +1,56 @@
 #include <cannon/plot/plotter.hpp>
 
+#include <stdexcept>
+
 #include <stb_image/stb_image_write.h>
 
+#include <cannon/graphics/shader_program.hpp>
+#include <cannon/graphics/vertex_shader.hpp>
+#include <cannon/graphics/fragment_shader.hpp>
+#include <cannon/plot/scatter.hpp>
+#include <cannon/plot/polygon.hpp>
+#include <cannon/plot/line.hpp>
+
 using namespace cannon::plot;
-using namespace cannon::log;
+
+Plotter::Plotter(bool axes_outside) : w_(), axes_(1.0, axes_outside),
+  axes_outside_(axes_outside), point_program_(new ShaderProgram),
+  line_program_(new ShaderProgram), poly_program_(new ShaderProgram)  {
+
+  //glEnable(GL_BLEND);
+  //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+  //glDisable(GL_DEPTH_TEST);
+
+  w_.set_clear_color(Vector4f(1.0f, 1.0f, 1.0f, 1.0f));
+  w_.disable_depth_test();
+  w_.disable_face_culling();
+  w_.disable_stencil_test();
+
+  // Set up point shader
+  VertexShader v = load_vertex_shader("shaders/basic_2d_pass_pos.vert");
+  FragmentShader f = load_fragment_shader("shaders/uniform_color_circle.frag");
+
+  point_program_->attach_shader(v);
+  point_program_->attach_shader(f);
+  point_program_->link();
+
+  // Set up line shader
+  const char *fl_src = BASIC_FRAGMENT_SHADER.c_str();
+  VertexShader vl = load_vertex_shader("shaders/basic_2d_pass_pos.vert");
+  FragmentShader fl = FragmentShader(&fl_src);
+
+  line_program_->attach_shader(vl);
+  line_program_->attach_shader(fl);
+  line_program_->link();
+
+
+  // TODO Make Polygon vertex shader with per-vertex colors
+  VertexShader poly_vl = load_vertex_shader("shaders/2d_pass_pos_color.vert");
+  FragmentShader poly_fl = load_fragment_shader("shaders/pass_color_viridis.frag");
+  poly_program_->attach_shader(poly_vl);
+  poly_program_->attach_shader(poly_fl);
+  poly_program_->link();
+}
 
 void Plotter::close() const {
   w_.close();

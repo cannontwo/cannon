@@ -1,6 +1,9 @@
 #include <cannon/ml/wolfe_conditions.hpp>
 
+#include <cannon/log/registry.hpp>
+
 using namespace cannon::ml;
+using namespace cannon::log;
 
 bool cannon::ml::sufficient_decrease_condition(RealFunc f, MultiFunc f_grad, const
     VectorXd& x, double step, const VectorXd& direction, double c_1) {

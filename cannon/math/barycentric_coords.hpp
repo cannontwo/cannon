@@ -1,11 +1,7 @@
 #ifndef CANNON_MATH_BARYCENTRIC_COORDS_H
 #define CANNON_MATH_BARYCENTRIC_COORDS_H 
 
-#include <stdexcept>
-
 #include <Eigen/Dense>
-
-#include <cannon/math/nearly_equal.hpp>
 
 using namespace Eigen;
 

@@ -1,8 +1,66 @@
 #include <cannon/plot/axes.hpp>
+
+#include <cmath>
+#include <sstream>
+
 #include <cannon/graphics/texture.hpp>
 #include <cannon/graphics/character.hpp>
+#include <cannon/graphics/vertex_array_object.hpp>
+#include <cannon/graphics/vertex_shader.hpp>
+#include <cannon/graphics/fragment_shader.hpp>
+#include <cannon/log/registry.hpp>
 
 using namespace cannon::plot;
+using namespace cannon::log;
+
+Axes::Axes(float text_scale, bool outside) : x_min_(-0.01), x_max_(0.01),
+    y_min_(-0.01), y_max_(0.01), outside_(outside), padding_(0.1),
+    text_scale_multiplier_(text_scale), text_scale_x_(0.1),
+    text_scale_y_(0.1),  vao_(new VertexArrayObject), buf_(vao_),
+    font_(true, 12), text_vao_(new VertexArrayObject),
+    text_quad_buf_(text_vao_)  {
+
+  MatrixX2f lines(4, 2);
+
+  if (outside_) {
+    lines << x_min_, y_min_,
+             x_max_, y_min_,
+             x_min_, y_min_, 
+             x_min_, y_max_; 
+  } else {
+    lines << x_min_, 0.0,
+             x_max_, 0.0,
+             0.0, y_min_, 
+             0.0, y_max_; 
+  }
+
+  buf_.buffer(lines);
+  log_info(buf_);
+
+  x_ticks_.push_back(-1.0);
+  x_ticks_.push_back(1.0);
+  y_ticks_.push_back(-1.0);
+  y_ticks_.push_back(1.0);
+
+  const char *v_src = BASIC_VERTEX_SHADER_2D.c_str();
+  const char *f_src = BASIC_FRAGMENT_SHADER.c_str();
+  VertexShader v(&v_src);
+  FragmentShader f(&f_src);
+
+  program_.attach_shader(v);
+  program_.attach_shader(f);
+  program_.link();
+
+  VertexShader tv = load_vertex_shader("shaders/char_shader.vert");
+  FragmentShader tf = load_fragment_shader("shaders/char_shader.frag");
+
+  text_program_.attach_shader(tv);
+  text_program_.attach_shader(tf);
+  text_program_.link();
+  
+  MatrixX4f vertices(MatrixX4f::Zero(6, 4));
+  text_quad_buf_.buffer(vertices);
+}
 
 void Axes::draw() {
   glEnable(GL_BLEND);

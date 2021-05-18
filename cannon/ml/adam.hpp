@@ -1,16 +1,9 @@
 #ifndef CANNON_ML_ADAM_H
 #define CANNON_ML_ADAM_H 
 
-#include <cassert>
-#include <cmath>
-
 #include <Eigen/Dense>
 
-#include <cannon/log/registry.hpp>
-
 using namespace Eigen;
-
-using namespace cannon::log;
 
 namespace cannon {
   namespace ml {

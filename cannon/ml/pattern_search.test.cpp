@@ -2,6 +2,7 @@
 
 #include <cannon/ml/pattern_search.hpp>
 #include <cannon/math/func/rosenbrock.hpp>
+#include <cannon/ml/optimization_result.hpp>
 
 #include <cannon/log/registry.hpp>
 

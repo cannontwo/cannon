@@ -2,10 +2,6 @@
 #ifndef CANNON_MATH_RANDOM_DOUBLE_H
 #define CANNON_MATH_RANDOM_DOUBLE_H 
 
-#include <random>
-#include <cassert>
-#include <thread>
-
 #include <Eigen/Dense>
 
 using namespace Eigen;

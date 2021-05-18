@@ -1,15 +1,9 @@
 #ifndef CANNON_ML_PIECEWISE_LSTD_H
 #define CANNON_ML_PIECEWISE_LSTD_H 
 
-#include <cassert>
-
 #include <Eigen/Core>
 
-#include <cannon/log/registry.hpp>
-
 using namespace Eigen;
-
-using namespace cannon::log;
 
 namespace cannon {
   namespace ml {

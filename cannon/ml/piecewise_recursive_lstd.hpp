@@ -5,11 +5,7 @@
 
 #include <Eigen/Core>
 
-#include <cannon/log/registry.hpp>
-
 using namespace Eigen;
-
-using namespace cannon::log;
 
 namespace cannon {
   namespace ml {

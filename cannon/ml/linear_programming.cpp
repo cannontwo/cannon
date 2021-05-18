@@ -2,7 +2,11 @@
 
 #include <cannon/ml/linear_programming.hpp>
 
+#include <cannon/ml/optimization_result.hpp>
+#include <cannon/log/registry.hpp>
+
 using namespace cannon::ml;
+using namespace cannon::log;
 
 void LPOptimizer::add_constraint(const MatrixXd& lhs_mat, const VectorXd& rhs) {
   assert(lhs_mat.cols() == num_vars_);

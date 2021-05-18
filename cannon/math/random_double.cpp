@@ -1,5 +1,9 @@
 #include <cannon/math/random_double.hpp>
 
+#include <thread>
+#include <random>
+#include <cassert>
+
 using namespace cannon::math;
 
 double cannon::math::random_double() {

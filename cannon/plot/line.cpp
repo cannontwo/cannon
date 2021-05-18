@@ -1,7 +1,20 @@
 #include <cannon/plot/line.hpp>
 
+#include <cannon/graphics/shader_program.hpp>
+#include <cannon/graphics/vertex_array_object.hpp>
+#include <cannon/graphics/vertex_shader.hpp>
+#include <cannon/graphics/fragment_shader.hpp>
+#include <cannon/plot/plotter.hpp>
+
 using namespace cannon::plot;
-using namespace cannon::log;
+
+Line::Line(Plotter &plotter, ShaderProgramPtr program, MatrixX2f points,
+    Vector4f color) : plotter_(plotter), points_(points), color_(color),
+  vao_(new VertexArrayObject), buf_(vao_), program_(program) {
+
+  buf_.buffer(points_);
+
+}
 
 void Line::add_points(MatrixX2f point) {
   points_.conservativeResize(points_.rows() + 1, NoChange);

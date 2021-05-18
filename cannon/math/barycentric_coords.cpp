@@ -1,5 +1,9 @@
 #include <cannon/math/barycentric_coords.hpp>
 
+#include <stdexcept>
+
+#include <cannon/math/nearly_equal.hpp>
+
 using namespace cannon::math;
 
 Vector3d cannon::math::compute_barycentric_coords(const Vector3d& v0, const Vector3d& v1,

@@ -4,33 +4,28 @@
 #include <glad/glad.h>
 #include <Eigen/Dense>
 
-#include <cannon/graphics/shader_program.hpp>
-#include <cannon/graphics/vertex_array_object.hpp>
 #include <cannon/graphics/vertex_buffer.hpp>
-#include <cannon/graphics/vertex_shader.hpp>
-#include <cannon/graphics/fragment_shader.hpp>
-#include <cannon/plot/plotter.hpp>
-#include <cannon/log/registry.hpp>
+#include <cannon/utils/class_forward.hpp>
 
 using namespace Eigen;
 using namespace cannon::graphics;
-using namespace cannon::log;
 
 namespace cannon {
+
+  namespace graphics {
+    CANNON_CLASS_FORWARD(ShaderProgram);
+  }
+
   namespace plot {
 
-    class Plotter;
+    CANNON_CLASS_FORWARD(Plotter);
 
     class Line {
       public:
         Line() = delete;
 
-        Line(Plotter& plotter, std::shared_ptr<ShaderProgram> program,
-            MatrixX2f points, Vector4f color) : plotter_(plotter),
-        points_(points), color_(color), vao_(new VertexArrayObject),
-        buf_(vao_), program_(program)  {
-          buf_.buffer(points_);
-        }
+        Line(Plotter &plotter, ShaderProgramPtr program, MatrixX2f points,
+            Vector4f color);
 
         Line(Line& s) = delete;
 
@@ -50,9 +45,9 @@ namespace cannon {
         Plotter& plotter_;
         MatrixX2f points_;
         Vector4f color_;
-        std::shared_ptr<VertexArrayObject> vao_;
+        VertexArrayObjectPtr vao_;
         VertexBuffer buf_;
-        std::shared_ptr<ShaderProgram> program_;
+        ShaderProgramPtr program_;
     };
 
   } // namespace plot

@@ -8,9 +8,6 @@
  */
 
 #include <cannon/math/random_double.hpp>
-#include <cannon/log/registry.hpp>
-
-using namespace cannon::log;
 
 namespace cannon {
   namespace math {

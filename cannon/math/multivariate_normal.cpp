@@ -2,6 +2,7 @@
 
 using namespace cannon::math;
 
+// Statics
 std::random_device MultivariateNormal::rd;
 std::mt19937 MultivariateNormal::gen(MultivariateNormal::rd());
 std::normal_distribution<double> MultivariateNormal::dist;

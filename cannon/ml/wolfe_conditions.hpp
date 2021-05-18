@@ -5,11 +5,7 @@
 
 #include <Eigen/Dense>
 
-#include <cannon/log/registry.hpp>
-
 using namespace Eigen;
-
-using namespace cannon::log;
 
 using RealFunc = std::function<double(const VectorXd&)>;
 using MultiFunc = std::function<VectorXd(const VectorXd&)>;

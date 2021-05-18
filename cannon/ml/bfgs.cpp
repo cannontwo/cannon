@@ -1,5 +1,8 @@
 #include <cannon/ml/bfgs.hpp>
 
+#include <cannon/ml/optimization_result.hpp>
+#include <cannon/ml/wolfe_conditions.hpp>
+
 using namespace cannon::ml;
 
 OptimizationResult BFGSOptimizer::optimize(const VectorXd& start, double eps,

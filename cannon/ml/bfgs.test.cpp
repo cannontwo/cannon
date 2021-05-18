@@ -2,9 +2,12 @@
 
 #include <cannon/ml/bfgs.hpp>
 #include <cannon/math/func/rosenbrock.hpp>
+#include <cannon/ml/optimization_result.hpp>
+#include <cannon/log/registry.hpp>
 
 using namespace cannon::ml;
 using namespace cannon::math;
+using namespace cannon::log;
 
 TEST_CASE("BFGS", "[ml]") {
   BFGSOptimizer opt(rosenbrock, rosenbrock_grad);

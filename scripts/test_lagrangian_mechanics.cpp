@@ -3,6 +3,7 @@
 #include <cannon/physics/lagrangian_mechanics.hpp>
 #include <cannon/log/registry.hpp>
 #include <cannon/ml/pattern_search.hpp>
+#include <cannon/ml/optimization_result.hpp>
 
 using namespace cannon::physics;
 using namespace cannon::log;

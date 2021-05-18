@@ -7,6 +7,7 @@
 #include <cannon/ml/linear_programming.hpp>
 #include <cannon/log/registry.hpp>
 #include <cannon/math/nearly_equal.hpp>
+#include <cannon/ml/optimization_result.hpp>
 
 using namespace cannon::ml;
 using namespace cannon::log;

@@ -5,8 +5,7 @@
 
 #include <Eigen/Dense>
 
-#include <cannon/ml/optimization_result.hpp>
-#include <cannon/ml/wolfe_conditions.hpp>
+#include <cannon/utils/class_forward.hpp>
 
 using namespace Eigen;
 
@@ -15,6 +14,8 @@ using MultiFunc = std::function<VectorXd(const VectorXd&)>;
 
 namespace cannon {
   namespace ml {
+
+    CANNON_CLASS_FORWARD(OptimizationResult);
 
     class BFGSOptimizer {
       public:

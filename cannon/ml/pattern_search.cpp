@@ -1,6 +1,10 @@
 #include <cannon/ml/pattern_search.hpp>
 
+#include <cannon/ml/optimization_result.hpp>
+#include <cannon/log/registry.hpp>
+
 using namespace cannon::ml;
+using namespace cannon::log;
 
 //Public Methods
 OptimizationResult PatternSearchOptimizer::optimize(const VectorXd& start,

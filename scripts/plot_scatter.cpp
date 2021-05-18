@@ -3,6 +3,7 @@
 #include <cannon/log/registry.hpp>
 
 #include <cannon/plot/plotter.hpp>
+#include <cannon/plot/scatter.hpp>
 
 using namespace cannon::plot;
 using namespace cannon::log;
