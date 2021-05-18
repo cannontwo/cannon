@@ -26,14 +26,14 @@ namespace cannon {
         ExperimentWriter() = delete;
 
         /*!
-         * Constructor taking parent directory for writing logs.
+         * \brief Constructor taking parent directory for writing logs.
          */
         ExperimentWriter(const std::string& parent_dir) : parent_dir_(parent_dir) {
           std::filesystem::create_directories(parent_dir_);
         }
 
         /*!
-         * Start a log by creating the first corresponding file. Note that log
+         * \brief Start a log by creating the first corresponding file. Note that log
          * name should not contain file extensions. If the log has already been
          * started, the current log file will be closed and a new one with an
          * incremented number will be opened.
@@ -63,7 +63,7 @@ namespace cannon {
         }
 
         /*!
-         * Write a line to a log. Throws an exception if the log is not already open.
+         * \brief Write a line to a log. Throws an exception if the log is not already open.
          *
          * \param log_name The log to write to.
          * \param entry The string to write.
@@ -76,7 +76,7 @@ namespace cannon {
         }
 
         /*!
-         * Create and return a file stream in the directory managed by this
+         * \brief Create and return a file stream in the directory managed by this
          * object. This is convenient for storing single-use information about
          * an experiment for which a formal log is not needed.
          *
@@ -90,13 +90,22 @@ namespace cannon {
         }
 
         /*!
-         * Create subdirectory with the given name in experiment log directory
+         * \brief Create subdirectory with the given name in experiment log directory
          * managed by this object.
          * 
          * \param subdir_name Name of subdirectory to create.
          */
         void create_subdir(const std::string& subdir_name) {
           std::filesystem::create_directories(parent_dir_ + "/" + subdir_name);
+        }
+
+        /*!
+         * \brief Get the log directory managed by this writer.
+         *
+         * \returns The directory name.
+         */
+        std::string get_dir() {
+          return parent_dir_;
         }
 
       private:

@@ -26,7 +26,7 @@ TEST_CASE("LatticePoints", "[math]") {
 
   VectorXu two_d_sizes(2);
   two_d_sizes << 5,
-                 5;
+                 6;
 
   points = make_lattice_points(two_d_sizes);
 
@@ -34,9 +34,9 @@ TEST_CASE("LatticePoints", "[math]") {
     log_info(p);
   }
 
-  REQUIRE(points.size() == 25);
+  REQUIRE(points.size() == 30);
   for (int i = 0; i < 5; i++) {
-    for (int j = 0; j < 5; j++) {
+    for (int j = 0; j < 6; j++) {
       VectorXu tmp = VectorXu::Zero(2);
       tmp[0] = i;
       tmp[1] = j;

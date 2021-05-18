@@ -27,7 +27,7 @@ namespace cannon {
     namespace systems {
 
       struct KinCarSystem : System {
-        KinCarSystem(double l = 1.0) : l(l) {}
+        KinCarSystem(double l = 1.0) : l_(l) {}
 
         virtual void operator()(const VectorXd& s, VectorXd& dsdt, const double /*t*/) override {
           double th = s[2];
@@ -37,7 +37,7 @@ namespace cannon {
           dsdt.resize(5);
           dsdt[0] = uv * std::cos(th);
           dsdt[1] = uv * std::sin(th);
-          dsdt[2] = (uv / l) * std::tan(uth);
+          dsdt[2] = (uv / l_) * std::tan(uth);
           dsdt[3] = 0.0;
           dsdt[4] = 0.0;
         }
@@ -65,13 +65,14 @@ namespace cannon {
         }
 
         virtual std::tuple<MatrixXd, MatrixXd, VectorXd> get_linearization(const VectorXd& x) override {
-          MatrixXd A = MatrixXd::Zero(3, 3); // Stays 0, as linearization around uv = 0 leads to A = 0
-          VectorXd c = VectorXd::Zero(3); // Stays 0, as linearization around uv = 0 leads to f(x) = 0
+          MatrixXd A = MatrixXd::Identity(3, 3);
+          VectorXd c = x; 
 
+          // TODO Don't hardcode timestep at some point
           double theta = x[2];
           MatrixXd B(3, 2);
-          B << std::cos(theta), 0,
-               std::sin(theta), 0,
+          B << std::cos(theta) * 0.01, 0,
+               std::sin(theta) * 0.01, 0,
                0, 0;
           
           return std::make_tuple(A, B, c);
@@ -85,7 +86,7 @@ namespace cannon {
         }
 
         // Parameters
-        double l;
+        double l_;
       };
 
       class KinematicCar {
