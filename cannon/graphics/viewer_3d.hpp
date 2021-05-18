@@ -2,6 +2,11 @@
 #ifndef CANNON_GRAPHICS_VIEWER_3D
 #define CANNON_GRAPHICS_VIEWER_3D 
 
+/*!
+ * \file cannon/graphics/viewer_3d.hpp
+ * \brief File containing Viewer3D class definition and callback functions.
+ */
+
 #include <cmath>
 #include <memory>
 #include <random>
@@ -30,8 +35,17 @@ namespace cannon {
     CANNON_CLASS_FORWARD(RenderPass);
     CANNON_CLASS_FORWARD(Texture);
 
+    /*!
+     * \brief Class representing an OpenGL context in which objects will be
+     * displayed in 3D. Allows for spawning objects and interactive
+     * manipulation of the camera.
+     */
     class Viewer3D {
       public:
+
+        /*!
+         * \brief Default constructor.
+         */
         Viewer3D() : c({0.0, 0.0, 3.0}, {0.0, 0.0, -1.0}, {0.0, 1.0, 0.0}) {
           w.enable_depth_test();
           w.enable_face_culling();
@@ -47,8 +61,19 @@ namespace cannon {
           populate_initial_geometry_();
         }
 
+        /*!
+         * \brief Destructor.
+         */
         ~Viewer3D() {}
 
+        /*!
+         * \brief Method that runs the rendering loop for this window. On each
+         * loop, the input function is run in addition to this class's
+         * rendering behavior.
+         *
+         * \param f Function to run on each frame. 
+         * \param clear Whether to clear the screen after each frame.
+         */
         template <typename F>
         void render_loop(F f, bool clear = true) {
           w.render_loop([&](){
@@ -75,6 +100,14 @@ namespace cannon {
           }, clear);
         }
 
+        /*!
+         * \brief Method that runs the rendering loop for this window in a
+         * multipass configuration. On each loop, the input function is run
+         * after all rendering passes for this object.
+         *
+         * \param f Function to run on each frame.
+         * \param clear Whether to clear the screen after each frame.
+         */
         template <typename F>
         void render_loop_multipass(F f, bool clear = true) {
           w.render_loop([&](){
@@ -90,16 +123,63 @@ namespace cannon {
 
         }
 
+        /*!
+         * \brief Method to draw all render passes managed by this viewer.
+         */
         void draw();
 
+        /*!
+         * \brief Method to add the input geometry to the scene visualized by this object.
+         *
+         * \param g The geometry to add.
+         */
         void add_geom(std::shared_ptr<geometry::DrawableGeom> g);
+
+        /*!
+         * \brief Method to add a shader to the collection managed by this
+         * object. This allows for, for example, applying the scene's lights to
+         * all geometry shaders.
+         *
+         * \param s The shader to add.
+         */
         void add_shader(ShaderProgramPtr s);
+        
+        /*!
+         * \brief Method to apply a light to all geometry in this scene.
+         *
+         * \param l The light to apply.
+         */
         void apply_light(LightPtr l);
+
+        /*!
+         * \brief Method to apply a light collection to all geometry in this scene.
+         *
+         * \param l The light collection to apply.
+         */
         void apply_light_collection(const LightCollection& l);
+
+        /*!
+         * \brief Method to apply the light collection managed by this object to the input shader.
+         *
+         * \param p The shader to apply the light collection to.
+         */
         void apply_light_collection(ShaderProgramPtr p);
 
+        /*!
+         * \brief Set the skybox for this viewer.
+         *
+         * \param face_paths Paths for six faces to load as a skybox.
+         */
         void set_skybox(std::vector<std::string> face_paths);
+
+        /*!
+         * \brief Enable skybox drawing.
+         */
         void enable_skybox();
+
+        /*!
+         * \brief Disable skybox drawing.
+         */
         void disable_skybox();
 
         void draw_scene_geom(bool draw_lights = true, bool ortho = false);
