@@ -2,14 +2,14 @@
 #define CANNON_LOGIC_CIRCUIT_H 
 
 #include <vector>
+#include <functional>
 
-#include <cannon/logic/cnf.hpp>
-#include <cannon/log/registry.hpp>
-
-using namespace cannon::log;
+#include <cannon/utils/class_forward.hpp>
 
 namespace cannon {
   namespace logic {
+
+    CANNON_CLASS_FORWARD(CNFFormula);
 
     struct Circuit {
 

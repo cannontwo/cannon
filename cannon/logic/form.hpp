@@ -1,15 +1,16 @@
 #ifndef CANNON_LOGIC_FORM_H
 #define CANNON_LOGIC_FORM_H 
 
-#include <iostream>
 #include <vector>
 #include <memory>
 #include <stack>
 
-#include <cannon/logic/cnf.hpp>
+#include <cannon/utils/class_forward.hpp>
 
 namespace cannon {
   namespace logic {
+
+    CANNON_CLASS_FORWARD(CNFFormula);
 
     // Note below we use not short-circuiting 'or' and 'and' so that we throw
     // correctly if not enough truth values are provided to eval().

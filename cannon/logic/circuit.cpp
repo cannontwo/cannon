@@ -1,6 +1,10 @@
 #include <cannon/logic/circuit.hpp>
 
+#include <cannon/logic/cnf.hpp>
+#include <cannon/log/registry.hpp>
+
 using namespace cannon::logic;
+using namespace cannon::log;
 
 CNFFormula NandGate::to_cnf() const {
   CNFFormula f;

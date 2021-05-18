@@ -1,5 +1,9 @@
 #include <cannon/logic/cnf.hpp>
 
+#include <stdexcept>
+#include <cmath>
+#include <random>
+
 using namespace cannon::logic;
 
 // Literal

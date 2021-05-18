@@ -2,12 +2,13 @@
 #define CANNON_LOGIC_WRITE_DIMACS_CNF_H_ 
 
 #include <string>
-#include <sstream>
 
-#include <cannon/logic/cnf.hpp>
+#include <cannon/utils/class_forward.hpp>
 
 namespace cannon {
   namespace logic {
+
+    CANNON_CLASS_FORWARD(CNFFormula);
 
     std::string write_cnf(const CNFFormula& f);
 

@@ -3,16 +3,15 @@
 
 #include <stack>
 #include <utility>
-#include <cassert>
 #include <algorithm>
 #include <tuple>
 #include <chrono>
 #include <map>
-#include <queue>
 #include <functional>
 #include <iostream>
 #include <fstream>
 #include <memory>
+#include <random>
 
 #include <cannon/logic/cnf.hpp>
 #include <cannon/log/registry.hpp>

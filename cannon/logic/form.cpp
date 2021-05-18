@@ -1,5 +1,9 @@
 #include <cannon/logic/form.hpp>
 
+#include <iostream>
+
+#include <cannon/logic/cnf.hpp>
+
 using namespace cannon::logic;
 
 bool Atomic::eval(const std::vector<bool>& assignment) const {

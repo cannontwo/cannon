@@ -4,11 +4,8 @@
 #include <set>
 #include <vector>
 #include <iostream>
-#include <stdexcept>
 #include <valarray>
-#include <cmath>
 #include <algorithm>
-#include <random>
 #include <iostream>
 
 #include <Eigen/Dense>

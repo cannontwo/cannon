@@ -1,5 +1,10 @@
 #include <cannon/logic/dpll.hpp>
 
+#include <cassert>
+
+#include <cannon/log/registry.hpp>
+
+using namespace cannon::log;
 using namespace cannon::logic;
 
 std::ostream& cannon::logic::operator<<(std::ostream& os, const DPLLResult& r) {

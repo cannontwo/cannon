@@ -1,5 +1,9 @@
 #include <cannon/logic/write_dimacs_cnf.hpp>
 
+#include <sstream>
+
+#include <cannon/logic/cnf.hpp>
+
 using namespace cannon::logic;
 
 std::string cannon::logic::write_cnf(const CNFFormula& f) {

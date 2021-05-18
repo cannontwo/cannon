@@ -2,14 +2,14 @@
 #define CANNON_LOGIC_READ_DIMACS_CNF_H 
 
 #include <string>
-#include <sstream>
-#include <iostream>
-#include <fstream>
 
-#include <cannon/logic/cnf.hpp>
+#include <cannon/utils/class_forward.hpp>
 
 namespace cannon {
   namespace logic {
+
+    CANNON_CLASS_FORWARD(CNFFormula);
+    CANNON_CLASS_FORWARD(Clause);
 
     // Parses a DIMACS specification for a CNF formula
     CNFFormula parse_cnf(const std::string& s);

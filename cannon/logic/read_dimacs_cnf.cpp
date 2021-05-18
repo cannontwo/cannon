@@ -1,5 +1,11 @@
 #include <cannon/logic/read_dimacs_cnf.hpp>
 
+#include <iostream>
+#include <fstream>
+#include <sstream>
+
+#include <cannon/logic/cnf.hpp>
+
 using namespace cannon::logic;
 
 CNFFormula cannon::logic::parse_cnf(const std::string& s) {
