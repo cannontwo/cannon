@@ -2,8 +2,10 @@
 
 #include <cannon/logic/circuit.hpp>
 #include <cannon/logic/dpll.hpp>
+#include <cannon/log/registry.hpp>
 
 using namespace cannon::logic;
+using namespace cannon::log;
 
 TEST_CASE("Circuit", "[logic]") {
   DPLLResult r;

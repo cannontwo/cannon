@@ -1,8 +1,6 @@
 #ifndef CANNON_ML_RECURSIVE_PIECEWISE_LSTD_H
 #define CANNON_ML_RECURSIVE_PIECEWISE_LSTD_H 
 
-#include <cassert>
-
 #include <Eigen/Core>
 
 using namespace Eigen;

@@ -14,9 +14,6 @@
 #include <random>
 
 #include <cannon/logic/cnf.hpp>
-#include <cannon/log/registry.hpp>
-
-using namespace cannon::log;
 
 namespace cannon {
   namespace logic {

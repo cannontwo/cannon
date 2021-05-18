@@ -2,9 +2,6 @@
 #define CANNON_ML_RLS_H 
 
 #include <utility>
-#include <stdexcept>
-#include <cmath>
-#include <cassert>
 
 #include <Eigen/Dense>
 

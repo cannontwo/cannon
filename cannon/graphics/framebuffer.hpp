@@ -14,7 +14,6 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
-#include <cannon/graphics/vertex_buffer.hpp>
 #include <cannon/utils/class_forward.hpp>
 
 namespace cannon {
