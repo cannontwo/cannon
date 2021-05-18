@@ -2,6 +2,12 @@
 #ifndef CANNON_GRAPHICS_VERTEX_SHADER_H
 #define CANNON_GRAPHICS_VERTEX_SHADER_H
 
+/*!
+ * \file cannon/graphics/vertex_shader.hpp
+ * \brief File containing VertexShader class definition and utility functions
+ * for loading shaders.
+ */
+
 #include <string>
 #include <streambuf>
 #include <iostream>
@@ -17,8 +23,15 @@ using namespace cannon::log;
 namespace cannon {
   namespace graphics {
 
+    /*!
+     * \brief Class representing an OpenGL vertex shader.
+     */
     class VertexShader {
       public:
+
+        /*!
+         * \brief Constructor taking a source string to compile into a vertex shader.
+         */
         // Does not affect OpenGL state
         VertexShader(const char** source) {
           gl_shader_ = glCreateShader(GL_VERTEX_SHADER);
@@ -39,6 +52,9 @@ namespace cannon {
           }
         }
 
+        /*!
+         * \brief Destructor. Cleans up OpenGL shader object if possible.
+         */
         ~VertexShader() {
           if (glfwGetCurrentContext() != NULL) {
             glDeleteShader(gl_shader_);
@@ -46,17 +62,36 @@ namespace cannon {
         }
 
       private:
-        unsigned int gl_shader_;
+        unsigned int gl_shader_; //!< OpenGL shader object
 
         friend class ShaderProgram;
     };
 
     // Free Functions
+    
+    /*!
+     * \brief Load a vertex shader from an input filename.
+     *
+     * \param path Path of the shader to load.
+     *
+     * \returns The loaded shader.
+     */
     VertexShader load_vertex_shader(const std::string& path);
+
+    /*!
+     * \brief Load a vertex shader from an input filename and a vector of
+     * shader library files.
+     *
+     * \param main_path Path of shader file containing main function.
+     * \param lib_paths Paths of shader files that should be compiled with the main file.
+     *
+     * \returns The loaded combined shader.
+     */
     VertexShader load_vertex_shader(const std::string& main_path, const
         std::vector<std::string>& lib_paths);
 
     // Static shader sources
+    
     static const std::string BASIC_VERTEX_SHADER = std::string("\
       #version 330 core\n\
       layout (location = 0) in vec3 aPos;\n\
