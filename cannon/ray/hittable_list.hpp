@@ -8,6 +8,7 @@
  */
 
 #include <memory>
+#include <vector>
 
 #include <cannon/ray/hittable.hpp>
 

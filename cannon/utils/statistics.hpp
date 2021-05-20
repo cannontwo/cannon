@@ -26,6 +26,7 @@ static StatRegisterer STATS_REG##var(STATS_FUNC##var)
 #include <fstream>
 #include <sstream>
 #include <iomanip>
+#include <vector>
 
 namespace cannon {
   namespace utils {

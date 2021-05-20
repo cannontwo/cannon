@@ -114,6 +114,11 @@ namespace cannon {
           box_ = surrounding_box(box_left, box_right);
         }
 
+        /*
+         * Destructor.
+         */
+        virtual ~BvhNode() {}
+
         /*!
          * Inherited from Hittable.
          */

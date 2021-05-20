@@ -8,17 +8,18 @@ using namespace Eigen;
 namespace cannon {
   namespace ml {
 
-    struct OptimizationResult {
-      OptimizationResult() = delete;
+    class OptimizationResult {
+      public:
+        OptimizationResult() = delete;
 
-      OptimizationResult(double objective, const VectorXd& solution, 
-          unsigned int iterations, bool max_iterations) : objective(objective),
-      solution(solution), iterations(iterations), max_iterations(max_iterations) {}
+        OptimizationResult(double objective, const VectorXd& solution, 
+            unsigned int iterations, bool max_iterations) : objective(objective),
+        solution(solution), iterations(iterations), max_iterations(max_iterations) {}
 
-      double objective;
-      VectorXd solution;
-      unsigned int iterations;
-      bool max_iterations;
+        double objective;
+        VectorXd solution;
+        unsigned int iterations;
+        bool max_iterations;
     };
 
     std::ostream& operator<<(std::ostream& os, OptimizationResult result);

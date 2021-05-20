@@ -1,0 +1,3 @@
+# Logging Package {#log}
+
+**TODO**

@@ -3,3 +3,4 @@ build/**
 **compile_commands.json
 **__pycache__
 docs/source/api/**
+**.DS_Store
