@@ -98,4 +98,4 @@ RUN ninja
 #RUN cmake ..
 #RUN make -j4
 
-ENTRYPOINT ["make", "test"]
+ENTRYPOINT ["ninja", "test"]
