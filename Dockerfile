@@ -35,7 +35,8 @@ RUN apt-get update && apt-get install -y build-essential \
         pkg-config \
         fonts-open-sans \
         doxygen \
-        libhdf5-dev
+        libhdf5-dev \
+        ninja-build
 
 RUN update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 90 --slave /usr/bin/g++ g++ /usr/bin/g++-9
 
@@ -46,7 +47,7 @@ RUN tar xzvf yaml-cpp-0.6.0.tar.gz
 WORKDIR yaml-cpp-yaml-cpp-0.6.0/
 RUN mkdir build
 WORKDIR build
-RUN cmake -DBUILD_SHARED_LIBS=ON ..
+RUN cmake -DBUILD_SHARED_LIBS=ON -DYAML_CPP_BUILD_TESTS=OFF ..
 RUN make && make install
 WORKDIR /
 
@@ -56,7 +57,7 @@ WORKDIR /Catch2/
 RUN git checkout v2.x
 RUN mkdir build
 WORKDIR build
-RUN cmake ..
+RUN cmake -DCATCH_BUILD_TESTING=OFF ..
 RUN make && make install
 WORKDIR /
 
@@ -84,8 +85,8 @@ WORKDIR /
 COPY . /cannon
 RUN mkdir -p /cannon/build
 WORKDIR /cannon/build
-RUN cmake .. -DCANNON_BUILD_GRAPHICS=OFF -DCANNON_BUILD_DOC=OFF
-RUN make
+RUN cmake .. -DCANNON_BUILD_GRAPHICS=OFF -DCANNON_BUILD_DOC=OFF -DCMAKE_BUILD_TYPE=Release -G "Ninja" -DCMAKE_UNITY_BUILD=yes -DCMAKE_CXX_FLAGS_INIT=-DAPPROVAL_TESTS_DISABLE_FILE_MACRO_CHECK
+RUN ninja
 
 
 # Building with graphics capability

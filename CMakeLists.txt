@@ -19,11 +19,14 @@ option(CANNON_BUILD_LIBRARY "Whether to build anything at all" ON)
 option(CANNON_BUILD_DOC "Build documentation" OFF)
 
 # Compilation configuration
-ADD_DEFINITIONS(
-  -Wall
-  -g
-  -O2
-)
+#ADD_DEFINITIONS(
+#  -Wall
+#  -g
+#  -O0
+#)
+
+set(CMAKE_CXX_FLAGS_DEBUG "-Wall -g -O0 -ftime-trace")
+set(CMAKE_CXX_FLAGS_RELEASE "-Wall -O0")
 
 set(CMAKE_FIND_LIBRARY_SUFFIXES ".so" ".a")
 
@@ -34,19 +37,19 @@ set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/CMakeModules)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 # Produce code coverage target
-if (CANNON_BUILD_LIBRARY)
-  if(CMAKE_COMPILER_IS_GNUCXX)
-    include(CodeCoverage)
-    append_coverage_compiler_flags()
-    setup_target_for_coverage_gcovr_html(NAME ${PROJECT_NAME}_coverage ${PROJECT_TEST_NAME} coverage 
-      EXCLUDE ${PROJECT_SOURCE_DIR}/tests 
-      EXCLUDE ${PROJECT_SOURCE_DIR}/cannon/graphics 
-      EXCLUDE ${PROJECT_SOURCE_DIR}/cannon/plot 
-      EXCLUDE ${PROJECT_SOURCE_DIR}/cannon/physics/systems
-      EXCLUDE ${PROJECT_SOURCE_DIR}/scripts
-      EXCLUDE ${PROJECT_SOURCE_DIR}/thirdparty)
-  endif()
-endif()
+#if (CANNON_BUILD_LIBRARY)
+#  if(CMAKE_COMPILER_IS_GNUCXX)
+#    include(CodeCoverage)
+#    append_coverage_compiler_flags()
+#    setup_target_for_coverage_gcovr_html(NAME ${PROJECT_NAME}_coverage ${PROJECT_TEST_NAME} coverage 
+#      EXCLUDE ${PROJECT_SOURCE_DIR}/tests 
+#      EXCLUDE ${PROJECT_SOURCE_DIR}/cannon/graphics 
+#      EXCLUDE ${PROJECT_SOURCE_DIR}/cannon/plot 
+#      EXCLUDE ${PROJECT_SOURCE_DIR}/cannon/physics/systems
+#      EXCLUDE ${PROJECT_SOURCE_DIR}/scripts
+#      EXCLUDE ${PROJECT_SOURCE_DIR}/thirdparty)
+#  endif()
+#endif()
 
 IF( EXISTS "${CMAKE_CURRENT_BINARY_DIR}/compile_commands.json" )
   EXECUTE_PROCESS( COMMAND ${CMAKE_COMMAND} -E copy_if_different
@@ -60,10 +63,9 @@ set(CGAL_EIGEN3_ENABLED ON)
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17")
 
 # Profiling
-SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pg")
-SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -pg")
-SET(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -pg")
-
+SET(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS} -pg")
+SET(CMAKE_EXE_LINKER_FLAGS_DEBUG "${CMAKE_EXE_LINKER_FLAGS} -pg")
+SET(CMAKE_SHARED_LINKER_FLAGS_DEBUG "${CMAKE_SHARED_LINKER_FLAGS} -pg")
 
 # check if Doxygen is installed
 if (CANNON_BUILD_DOC)
@@ -152,9 +154,14 @@ if (CANNON_BUILD_LIBRARY)
   list(APPEND LIBRARIES ${HDF5_LIBRARIES})
 
   # HighFive
+  set(HIGHFIVE_UNIT_TESTS OFF CACHE BOOL "" FORCE)
+  set(HIGHFIVE_EXAMPLES OFF CACHE BOOL "" FORCE)
+  set(HIGHFIVE_BUILD_DOCS OFF)
+  set(HIGHFIVE_USE_EIGEN ON)
   add_subdirectory("thirdparty/HighFive")
-  add_definitions( -DHIGHFIVE_USE_EIGEN=1 )
   list(APPEND LIBRARIES HighFive)
+
+  message(${HIGHFIVE_EXAMPLES})
 
   # TinyColorMap
   include_directories("thirdparty/tinycolormap/include")
