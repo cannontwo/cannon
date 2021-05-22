@@ -3,6 +3,7 @@
 #include <thirdparty/approval_tests/ApprovalTests.hpp>
 
 #include <cannon/graphics/viewer_3d.hpp>
+#include <cannon/graphics/window.hpp>
 #include <cannon/graphics/opengl_writer.hpp>
 
 using namespace cannon::graphics;
@@ -12,7 +13,7 @@ TEST_CASE("Viewer3D", "[graphics]") {
   GLFWwindow *gl_window;
   {
   Viewer3D v;
-  gl_window = v.w.get_gl_window();
+  gl_window = v.w->get_gl_window();
   
   // Set up test render scene
   v.spawn_model("assets/test/test.obj");

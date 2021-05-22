@@ -28,6 +28,11 @@ list(APPEND GRAPHICS_SOURCES
   render_pass.cpp
   opengl_writer.cpp
   random_color.cpp
+  spotlight.cpp
+  point_light.cpp
+  directional_light.cpp
+  light.cpp
+  light_collection.cpp
   )
 
 add_library(graphics OBJECT ${GRAPHICS_SOURCES})

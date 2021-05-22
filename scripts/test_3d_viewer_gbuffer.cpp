@@ -13,6 +13,7 @@
 #include <cannon/math/multivariate_normal.hpp>
 #include <cannon/graphics/geometry/axes_hint.hpp>
 #include <cannon/graphics/geometry/screen_quad.hpp>
+#include <cannon/graphics/window.hpp>
 
 using namespace cannon::graphics;
 using namespace cannon::log;
@@ -34,17 +35,17 @@ void test() {
   faces.push_back("assets/skybox/back.jpg");
 
   Viewer3D viewer;
-  gl_window = viewer.w.get_gl_window();
+  gl_window = viewer.w->get_gl_window();
   viewer.set_skybox(faces);
-  viewer.w.set_clear_color({0.0, 0.0, 0.0, 1.0});
+  viewer.w->set_clear_color({0.0, 0.0, 0.0, 1.0});
 
   std::vector<std::shared_ptr<Texture>> attachments;
-  attachments.push_back(std::make_shared<Texture>(viewer.w.width,
-        viewer.w.height, GL_RGBA32F, GL_FLOAT));
-  attachments.push_back(std::make_shared<Texture>(viewer.w.width,
-        viewer.w.height, GL_RGBA32F, GL_FLOAT));
-  attachments.push_back(std::make_shared<Texture>(viewer.w.width,
-        viewer.w.height, GL_RGBA32F, GL_FLOAT));
+  attachments.push_back(std::make_shared<Texture>(viewer.w->width,
+        viewer.w->height, GL_RGBA32F, GL_FLOAT));
+  attachments.push_back(std::make_shared<Texture>(viewer.w->width,
+        viewer.w->height, GL_RGBA32F, GL_FLOAT));
+  attachments.push_back(std::make_shared<Texture>(viewer.w->width,
+        viewer.w->height, GL_RGBA32F, GL_FLOAT));
 
   auto gbuf_program = std::make_shared<ShaderProgram>("gbuffer_shader");
   gbuf_program->attach_vertex_shader("shaders/mvp_normals_gbuffer.vert");
@@ -207,8 +208,8 @@ void test() {
         ssao_program->set_uniform("gNormal", 1);
         ssao_program->set_uniform("texNoise", 2);
 
-        ssao_program->set_uniform("screen_width", (float)viewer.w.width);
-        ssao_program->set_uniform("screen_height", (float)viewer.w.height);
+        ssao_program->set_uniform("screen_width", (float)viewer.w->width);
+        ssao_program->set_uniform("screen_height", (float)viewer.w->height);
 
         static float radius = 0.5;
         static float bias = 0.025;
@@ -228,7 +229,7 @@ void test() {
           ssao_program->set_uniform("samples[" + std::to_string(i) + "]", (Vector4f)ssao_kernel[i]);
 
         Matrix4f perspective = make_perspective_fov(to_radians(45.0f),
-            (float)(viewer.w.width) / (float)(viewer.w.height), 0.1f, 50.0f);
+            (float)(viewer.w->width) / (float)(viewer.w->height), 0.1f, 50.0f);
 
         ssao_program->set_uniform("projection", perspective);
         ssao_program->set_uniform("view", viewer.c.get_view_mat());
@@ -390,8 +391,8 @@ void test() {
       Matrix4f view = rot_mat * trans_mat;
 
       glDisable(GL_DEPTH_TEST);
-      int start_x = viewer.w.width - 150;
-      int start_y = viewer.w.height - 150;
+      int start_x = viewer.w->width - 150;
+      int start_y = viewer.w->height - 150;
       int small_width = 100;
       int small_height = 100;
       glViewport(start_x, start_y, small_width, small_height);
@@ -399,7 +400,7 @@ void test() {
       ah.draw(axes_program, view, perspective);
       glEnable(GL_DEPTH_TEST);
 
-      glViewport(0, 0, viewer.w.width, viewer.w.height);
+      glViewport(0, 0, viewer.w->width, viewer.w->height);
       });
 
   viewer.spawn_cube();

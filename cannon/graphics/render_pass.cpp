@@ -1,9 +1,9 @@
 #include <cannon/graphics/render_pass.hpp>
+
 #include <cannon/graphics/framebuffer.hpp>
 #include <cannon/graphics/shader_program.hpp>
 
 using namespace cannon::graphics;
-
 
 void RenderPass::run() {
   glBeginQuery(GL_TIME_ELAPSED, gl_back_query_);

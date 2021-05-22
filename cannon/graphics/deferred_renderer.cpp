@@ -3,11 +3,17 @@
 #include <cannon/graphics/shader_program.hpp>
 #include <cannon/graphics/texture.hpp>
 #include <cannon/graphics/geometry/screen_quad.hpp>
+#include <cannon/graphics/window.hpp>
+#include <cannon/graphics/viewer_3d.hpp>
 
 using namespace cannon::graphics;
 
+DeferredRenderer::DeferredRenderer() : viewer(new Viewer3D) {
+  setup_render_passes(); 
+}
+
 void DeferredRenderer::render_loop(std::function<void()> f) {
-  viewer.render_loop_multipass([&] {
+  viewer->render_loop_multipass([&] {
       f();
       }, true);
 }
@@ -21,16 +27,16 @@ void DeferredRenderer::setup_render_passes() {
   faces.push_back("assets/skybox/front.jpg");
   faces.push_back("assets/skybox/back.jpg");
 
-  viewer.set_skybox(faces);
-  viewer.w.set_clear_color({0.0, 0.0, 0.0, 1.0});
+  viewer->set_skybox(faces);
+  viewer->w->set_clear_color({0.0, 0.0, 0.0, 1.0});
 
   std::vector<std::shared_ptr<Texture>> attachments;
-  attachments.push_back(std::make_shared<Texture>(viewer.w.width,
-        viewer.w.height, GL_RGBA32F, GL_FLOAT));
-  attachments.push_back(std::make_shared<Texture>(viewer.w.width,
-        viewer.w.height, GL_RGBA32F, GL_FLOAT));
-  attachments.push_back(std::make_shared<Texture>(viewer.w.width,
-        viewer.w.height, GL_RGBA32F, GL_FLOAT));
+  attachments.push_back(std::make_shared<Texture>(viewer->w->width,
+        viewer->w->height, GL_RGBA32F, GL_FLOAT));
+  attachments.push_back(std::make_shared<Texture>(viewer->w->width,
+        viewer->w->height, GL_RGBA32F, GL_FLOAT));
+  attachments.push_back(std::make_shared<Texture>(viewer->w->width,
+        viewer->w->height, GL_RGBA32F, GL_FLOAT));
 
   gbuf_program_ = std::make_shared<ShaderProgram>("gbuffer_shader");
   gbuf_program_->attach_vertex_shader("shaders/mvp_normals_gbuffer.vert");
@@ -43,13 +49,13 @@ void DeferredRenderer::setup_render_passes() {
   sdf_geom_program_->attach_fragment_shader("shaders/sdf.frag", libs);
   sdf_geom_program_->link();
 
-  gbuffer_fb_ = viewer.add_render_pass("gbuffer",
+  gbuffer_fb_ = viewer->add_render_pass("gbuffer",
       attachments, {gbuf_program_, sdf_geom_program_}, [this](){
             glClearColor(0.0, 0.0, 0.0, 1.0);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
             glDisable(GL_FRAMEBUFFER_SRGB); 
-            viewer.disable_skybox();
-            Vector3f c_pos = viewer.c.get_pos();
+            viewer->disable_skybox();
+            Vector3f c_pos = viewer->c.get_pos();
             Vector4f tmp_pos;
             tmp_pos << c_pos[0],
                        c_pos[1],
@@ -57,11 +63,11 @@ void DeferredRenderer::setup_render_passes() {
                        1.0;
             gbuf_program_->set_uniform("viewPos", tmp_pos);
             sdf_geom_program_->set_uniform("viewPos", tmp_pos);
-            viewer.apply_light_collection(gbuf_program_);
+            viewer->apply_light_collection(gbuf_program_);
             
             gbuffer_fb_->color_attachments[0]->unbind();
 
-            viewer.draw_scene_geom(gbuf_program_, false);
+            viewer->draw_scene_geom(gbuf_program_, false);
 
             sdf_geom_program_->activate();
             sdf_geom_program_->set_uniform("time", (float)glfwGetTime());
@@ -74,7 +80,7 @@ void DeferredRenderer::setup_render_passes() {
               ImGui::EndMainMenuBar();
             }
             sdf_geom_program_->set_uniform("max_march_steps", max_march_steps);
-            viewer.draw_sdf_geom(sdf_geom_program_);
+            viewer->draw_sdf_geom(sdf_geom_program_);
       });
 
     shadow_depth_program_ = std::make_shared<ShaderProgram>("shadow_depth_shader");
@@ -88,19 +94,19 @@ void DeferredRenderer::setup_render_passes() {
     sdf_shadow_depth_program_->attach_fragment_shader("shaders/sdf_shadow.frag", shadow_libs);
     sdf_shadow_depth_program_->link();
 
-    shadow_depth_fb_ = viewer.add_render_pass("shadow depth", shadow_depth_program_, [this](){
+    shadow_depth_fb_ = viewer->add_render_pass("shadow depth", shadow_depth_program_, [this](){
         glClearColor(0.0, 0.0, 0.0, 1.0);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
         // Set uniforms for light transform
-        Camera c_backup = viewer.c;
-        viewer.c = Camera({viewer.get_directional_light_pos()},
+        Camera c_backup = viewer->c;
+        viewer->c = Camera({viewer->get_directional_light_pos()},
             {0.0, 0.0, 0.0}, {0.0, 1.0, 0.0});
 
         light_space_mat_ = make_orthographic(-20.0f, 20.0f, -20.0f, 20.0f, 1.0f,
-            50.0f) * viewer.c.get_view_mat();
+            50.0f) * viewer->c.get_view_mat();
 
-        Vector3f c_pos = viewer.c.get_pos();
+        Vector3f c_pos = viewer->c.get_pos();
         Vector4f tmp_pos;
         tmp_pos << c_pos[0],
                    c_pos[1],
@@ -114,7 +120,7 @@ void DeferredRenderer::setup_render_passes() {
         shadow_depth_fb_->color_attachments[0]->bind();
         glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
 
-        viewer.draw_scene_geom(shadow_depth_program_, false, true);
+        viewer->draw_scene_geom(shadow_depth_program_, false, true);
 
         sdf_shadow_depth_program_->activate();
         sdf_shadow_depth_program_->set_uniform("time", (float)glfwGetTime());
@@ -127,9 +133,9 @@ void DeferredRenderer::setup_render_passes() {
           ImGui::EndMainMenuBar();
         }
         sdf_shadow_depth_program_->set_uniform("max_march_steps", max_march_steps);
-        viewer.draw_sdf_geom(sdf_shadow_depth_program_, true);
+        viewer->draw_sdf_geom(sdf_shadow_depth_program_, true);
         
-        viewer.c = c_backup;
+        viewer->c = c_backup;
       });
 
   shadow_program_ = std::make_shared<ShaderProgram>("shadow_shader");
@@ -137,7 +143,7 @@ void DeferredRenderer::setup_render_passes() {
   shadow_program_->attach_fragment_shader("shaders/shadow.frag");
   shadow_program_->link();
 
-  shadow_fb_ = viewer.add_render_pass("shadow", shadow_program_, [this]() {
+  shadow_fb_ = viewer->add_render_pass("shadow", shadow_program_, [this]() {
         glClearColor(0.0, 0.0, 0.0, 1.0);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
@@ -155,7 +161,7 @@ void DeferredRenderer::setup_render_passes() {
         shadow_program_->set_uniform("gNormal", 1);
         shadow_program_->set_uniform("shadowMap", 2);
 
-        viewer.apply_light_collection(shadow_program_);
+        viewer->apply_light_collection(shadow_program_);
 
         std::vector<std::shared_ptr<Texture>> shadow_attachments;
         shadow_attachments.push_back(gbuffer_fb_->color_attachments[0]);
@@ -172,7 +178,7 @@ void DeferredRenderer::setup_render_passes() {
   shadow_blur_program_->attach_fragment_shader("shaders/shadow_blur.frag");
   shadow_blur_program_->link();
 
-  shadow_blur_1_fb_ = viewer.add_render_pass("shadow hblur", shadow_blur_program_, [this](){
+  shadow_blur_1_fb_ = viewer->add_render_pass("shadow hblur", shadow_blur_program_, [this](){
         glClearColor(0.0, 0.0, 0.0, 1.0);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
@@ -190,7 +196,7 @@ void DeferredRenderer::setup_render_passes() {
         shadow_fb_->quad->draw(shadow_blur_program_);
       });
 
-  shadow_blur_2_fb_ = viewer.add_render_pass("shadow vblur", shadow_blur_program_, [this](){
+  shadow_blur_2_fb_ = viewer->add_render_pass("shadow vblur", shadow_blur_program_, [this](){
         glClearColor(0.0, 0.0, 0.0, 1.0);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
@@ -251,10 +257,10 @@ void DeferredRenderer::setup_render_passes() {
   ssao_program_->attach_fragment_shader("shaders/ssao.frag");
   ssao_program_->link();
 
-  ssao_fb_ = viewer.add_render_pass("ssao", ssao_program_, [this, noise_tex](){
+  ssao_fb_ = viewer->add_render_pass("ssao", ssao_program_, [this, noise_tex](){
         glClearColor(0.0, 0.0, 0.0, 1.0);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-        Vector3f c_pos = viewer.c.get_pos();
+        Vector3f c_pos = viewer->c.get_pos();
         Vector4f tmp_pos;
         tmp_pos << c_pos[0],
                    c_pos[1],
@@ -266,8 +272,8 @@ void DeferredRenderer::setup_render_passes() {
         ssao_program_->set_uniform("gNormal", 1);
         ssao_program_->set_uniform("texNoise", 2);
 
-        ssao_program_->set_uniform("screen_width", (float)viewer.w.width);
-        ssao_program_->set_uniform("screen_height", (float)viewer.w.height);
+        ssao_program_->set_uniform("screen_width", (float)viewer->w->width);
+        ssao_program_->set_uniform("screen_height", (float)viewer->w->height);
 
         static float radius = 0.5;
         static float bias = 0.025;
@@ -287,10 +293,10 @@ void DeferredRenderer::setup_render_passes() {
           ssao_program_->set_uniform("samples[" + std::to_string(i) + "]", (Vector4f)ssao_kernel_[i]);
 
         Matrix4f perspective = make_perspective_fov(to_radians(45.0f),
-            (float)(viewer.w.width) / (float)(viewer.w.height), 0.1f, 50.0f);
+            (float)(viewer->w->width) / (float)(viewer->w->height), 0.1f, 50.0f);
 
         ssao_program_->set_uniform("projection", perspective);
-        ssao_program_->set_uniform("view", viewer.c.get_view_mat());
+        ssao_program_->set_uniform("view", viewer->c.get_view_mat());
 
         std::vector<std::shared_ptr<Texture>> ssao_attachments;
         ssao_attachments.push_back(gbuffer_fb_->color_attachments[0]);
@@ -305,7 +311,7 @@ void DeferredRenderer::setup_render_passes() {
   ssao_blur_program_->attach_fragment_shader("shaders/ssao_blur.frag");
   ssao_blur_program_->link();
 
-  ssao_blur_fb_ = viewer.add_render_pass("ssao blur",
+  ssao_blur_fb_ = viewer->add_render_pass("ssao blur",
       ssao_blur_program_, [this](){
         glClearColor(0.0, 0.0, 0.0, 1.0);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
@@ -319,10 +325,10 @@ void DeferredRenderer::setup_render_passes() {
   lighting_program_->attach_fragment_shader("shaders/deferred_lighting.frag");
   lighting_program_->link();
 
-  lighting_fb_ = viewer.add_render_pass("lighting", lighting_program_, [this](){
+  lighting_fb_ = viewer->add_render_pass("lighting", lighting_program_, [this](){
         glClearColor(0.0, 0.0, 0.0, 1.0);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-        Vector3f c_pos = viewer.c.get_pos();
+        Vector3f c_pos = viewer->c.get_pos();
         Vector4f tmp_pos;
         tmp_pos << c_pos[0],
                    c_pos[1],
@@ -330,7 +336,7 @@ void DeferredRenderer::setup_render_passes() {
                    1.0;
         lighting_program_->set_uniform("viewPos", tmp_pos);
         lighting_program_->set_uniform("shininess", (float)32.0);
-        viewer.apply_light_collection(lighting_program_);
+        viewer->apply_light_collection(lighting_program_);
 
         lighting_program_->set_uniform("gPosition", 0);
         lighting_program_->set_uniform("gNormal", 1);
@@ -367,17 +373,17 @@ void DeferredRenderer::setup_render_passes() {
   light_geom_program_->attach_fragment_shader("shaders/pass_color.frag");
   light_geom_program_->link();
 
-  light_geom_fb_ = viewer.add_render_pass("light geom", light_geom_program_, [this]() {
+  light_geom_fb_ = viewer->add_render_pass("light geom", light_geom_program_, [this]() {
         glClearColor(0.0, 0.0, 0.0, 1.0);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-        Vector3f c_pos = viewer.c.get_pos();
+        Vector3f c_pos = viewer->c.get_pos();
         Vector4f tmp_pos;
         tmp_pos << c_pos[0],
                    c_pos[1],
                    c_pos[2],
                    1.0;
         light_geom_program_->set_uniform("uColor", Vector4f{1.0, 1.0, 1.0, 1.0});
-        viewer.apply_light_collection(light_geom_program_);
+        viewer->apply_light_collection(light_geom_program_);
 
         lighting_fb_->bind_read();
         light_geom_fb_->bind_draw();
@@ -392,8 +398,8 @@ void DeferredRenderer::setup_render_passes() {
             light_geom_fb_->height, GL_DEPTH_BUFFER_BIT, GL_NEAREST);
         light_geom_fb_->bind();
 
-        viewer.enable_skybox();
-        viewer.draw_light_geom(light_geom_program_);
+        viewer->enable_skybox();
+        viewer->draw_light_geom(light_geom_program_);
       });
 
   hdr_program_ = std::make_shared<ShaderProgram>("hdr_shader");
@@ -402,7 +408,7 @@ void DeferredRenderer::setup_render_passes() {
   hdr_program_->attach_fragment_shader("shaders/hdr_tone_mapping.frag");
   hdr_program_->link();
 
-  hdr_fb_ = viewer.add_render_pass("hdr tone mapping", hdr_program_, [this]() {
+  hdr_fb_ = viewer->add_render_pass("hdr tone mapping", hdr_program_, [this]() {
         glClearColor(0.0, 0.0, 0.0, 1.0);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
         static float exposure = 0.0;
@@ -426,7 +432,7 @@ void DeferredRenderer::setup_render_passes() {
   axes_program_->link();
 
 
-  axes_fb_ = viewer.add_render_pass("axes hint", axes_program_, [this]() {
+  axes_fb_ = viewer->add_render_pass("axes hint", axes_program_, [this]() {
       glClearColor(0.0, 0.0, 0.0, 1.0);
       glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
       hdr_fb_->bind_read();
@@ -438,10 +444,10 @@ void DeferredRenderer::setup_render_passes() {
           2.0);
 
       // Rotation-only lookAt matrix
-      Vector3f tmp_pos = -viewer.c.get_direction().normalized();
-      Vector3f tmp_dir = viewer.c.get_direction().normalized();
-      Vector3f tmp_up = tmp_dir.cross(viewer.c.get_right());
-      Vector3f right = viewer.c.get_right();
+      Vector3f tmp_pos = -viewer->c.get_direction().normalized();
+      Vector3f tmp_dir = viewer->c.get_direction().normalized();
+      Vector3f tmp_up = tmp_dir.cross(viewer->c.get_right());
+      Vector3f right = viewer->c.get_right();
 
       Matrix4f rot_mat;
       Matrix4f trans_mat;
@@ -459,8 +465,8 @@ void DeferredRenderer::setup_render_passes() {
       Matrix4f view = rot_mat * trans_mat;
 
       glDisable(GL_DEPTH_TEST);
-      int start_x = viewer.w.width - 150;
-      int start_y = viewer.w.height - 150;
+      int start_x = viewer->w->width - 150;
+      int start_y = viewer->w->height - 150;
       int small_width = 100;
       int small_height = 100;
       glViewport(start_x, start_y, small_width, small_height);
@@ -468,7 +474,7 @@ void DeferredRenderer::setup_render_passes() {
       ah_.draw(axes_program_, view, perspective);
       glEnable(GL_DEPTH_TEST);
 
-      glViewport(0, 0, viewer.w.width, viewer.w.height);
+      glViewport(0, 0, viewer->w->width, viewer->w->height);
       });
 }
 

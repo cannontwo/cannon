@@ -18,22 +18,79 @@
 #include <cannon/graphics/texture.hpp>
 #include <cannon/graphics/geometry/screen_quad.hpp>
 #include <cannon/graphics/framebuffer.hpp>
+#include <cannon/graphics/window.hpp>
+#include <cannon/graphics/light_collection.hpp>
 #include <cannon/log/registry.hpp>
 
 using namespace cannon::graphics;
 using namespace cannon::log;
 
+Viewer3D::Viewer3D() : w(new Window), c({0.0, 0.0, 3.0}, {0.0, 0.0, -1.0},
+    {0.0, 1.0, 0.0}), lc_(new LightCollection) {
+  w->enable_depth_test();
+  w->enable_face_culling();
+
+  glEnable(GL_FRAMEBUFFER_SRGB); 
+
+  last_x_ = w->width / 2;
+  last_y_ = w->height / 2;
+
+  make_shaders_();
+  initialize_lc_();
+  set_callbacks_();
+  populate_initial_geometry_();
+}
+
+void Viewer3D::render_loop(std::function<void()> f, bool clear) {
+  w->render_loop([&](){
+    // Adjust camera movement speed based on render rate
+    //c.set_speed(1e5 * w.delta_time_);
+    c.update_pos();
+
+    write_imgui();
+    lc_->write_imgui();
+
+    Vector3f c_pos = c.get_pos();
+    Vector4f tmp_pos;
+    tmp_pos << c_pos[0],
+               c_pos[1],
+               c_pos[2],
+               1.0;
+    geom_program_->set_uniform("viewPos", tmp_pos);
+    //apply_light_collection(lc_);
+    lc_->apply(geom_program_);
+    draw_scene_geom(geom_program_);
+
+    f();
+
+  }, clear);
+}
+
+void Viewer3D::render_loop_multipass(std::function<void()> f, bool clear) {
+  w->render_loop([&](){
+    // Adjust camera movement speed based on render rate
+    //c.set_speed(1e5 * w.delta_time_);
+    c.update_pos();
+
+    draw();
+
+    f();
+
+  }, clear);
+
+}
+
 ImageData Viewer3D::get_image(const std::string &path) const {
-  return w.get_image(path);
+  return w->get_image(path);
 }
 
 void Viewer3D::close() const {
-  glfwSetWindowShouldClose(w.window, true);
+  glfwSetWindowShouldClose(w->window, true);
 }
 
 void Viewer3D::draw() {
   write_imgui(true);
-  lc_.write_imgui();
+  lc_->write_imgui();
 
   for (auto &pass : render_passes_) {
     pass->run();
@@ -47,7 +104,7 @@ void Viewer3D::draw_scene_geom(bool draw_lights, bool ortho) {
     perspective = make_orthographic(-20.0f, 20.0f, -20.0f, 20.0f, 1.0f, 50.0f);
   } else {
     perspective = make_perspective_fov(to_radians(45.0f),
-        (float)(w.width) / (float)(w.height), 0.1f, 50.0f);
+        (float)(w->width) / (float)(w->height), 0.1f, 50.0f);
   }
 
   for (unsigned int i = 0; i < scene_geom_.size(); i++) {
@@ -71,7 +128,7 @@ void Viewer3D::draw_scene_geom(std::shared_ptr<ShaderProgram> p, bool draw_light
     perspective = make_orthographic(-20.0f, 20.0f, -20.0f, 20.0f, 1.0f, 50.0f);
   } else {
   perspective = make_perspective_fov(to_radians(45.0f),
-      (float)(w.width) / (float)(w.height), 0.1f, 50.0f);
+      (float)(w->width) / (float)(w->height), 0.1f, 50.0f);
   }
 
   for (unsigned int i = 0; i < scene_geom_.size(); i++) {
@@ -91,7 +148,7 @@ void Viewer3D::draw_scene_geom(std::shared_ptr<ShaderProgram> p, bool draw_light
 
 void Viewer3D::draw_light_geom() {
   Matrix4f perspective = make_perspective_fov(to_radians(45.0f),
-      (float)(w.width) / (float)(w.height), 0.1f, 50.0f);
+      (float)(w->width) / (float)(w->height), 0.1f, 50.0f);
 
   for (unsigned int i = 0; i < light_geom_.size(); i++) {
     light_geom_[i]->draw(c.get_view_mat(), perspective);
@@ -104,7 +161,7 @@ void Viewer3D::draw_light_geom() {
 
 void Viewer3D::draw_light_geom(std::shared_ptr<ShaderProgram> p) {
   Matrix4f perspective = make_perspective_fov(to_radians(45.0f),
-      (float)(w.width) / (float)(w.height), 0.1f, 50.0f);
+      (float)(w->width) / (float)(w->height), 0.1f, 50.0f);
 
   for (unsigned int i = 0; i < light_geom_.size(); i++) {
     light_geom_[i]->draw(p, c.get_view_mat(), perspective);
@@ -121,7 +178,7 @@ void Viewer3D::draw_sdf_geom(bool ortho) {
     perspective = make_orthographic(-20.0f, 20.0f, -20.0f, 20.0f, 1.0f, 50.0f);
   } else {
   perspective = make_perspective_fov(to_radians(45.0f),
-      (float)(w.width) / (float)(w.height), 0.1f, 50.0f);
+      (float)(w->width) / (float)(w->height), 0.1f, 50.0f);
   }
 
   for (unsigned int i = 0; i < sdf_geom_.size(); i++) {
@@ -135,7 +192,7 @@ void Viewer3D::draw_sdf_geom(std::shared_ptr<ShaderProgram> p, bool ortho) {
     perspective = make_orthographic(-20.0f, 20.0f, -20.0f, 20.0f, 1.0f, 50.0f);
   } else {
   perspective = make_perspective_fov(to_radians(45.0f),
-      (float)(w.width) / (float)(w.height), 0.1f, 50.0f);
+      (float)(w->width) / (float)(w->height), 0.1f, 50.0f);
   }
 
   for (unsigned int i = 0; i < sdf_geom_.size(); i++) {
@@ -168,7 +225,7 @@ void Viewer3D::apply_light_collection(const LightCollection& l) {
 }
 
 void Viewer3D::apply_light_collection(std::shared_ptr<ShaderProgram> p) {
-  lc_.apply(p);
+  lc_->apply(p);
 }
 
 void Viewer3D::set_skybox(std::vector<std::string> face_paths) {
@@ -186,11 +243,11 @@ void Viewer3D::disable_skybox() {
 }
 
 Vector3f Viewer3D::get_directional_light_pos() {
-  return -30.0 * lc_.get_directional_light()->get_dir();
+  return -30.0 * lc_->get_directional_light()->get_dir();
 }
 
 Vector3f Viewer3D::get_directional_light_dir() {
-  return lc_.get_directional_light()->get_dir();
+  return lc_->get_directional_light()->get_dir();
 }
 
 std::shared_ptr<geometry::Cube> Viewer3D::spawn_cube() {
@@ -261,7 +318,7 @@ void Viewer3D::spawn_point_light() {
   light->apply(light_cube);
   light->set_ambient(light_color * 0.2);
 
-  lc_.add_light(light);
+  lc_->add_light(light);
 }
 
 void Viewer3D::spawn_spotlight() {
@@ -286,7 +343,7 @@ void Viewer3D::spawn_spotlight() {
   light_pos[3] = 1.0;
   light->set_pos(light_pos);
 
-  lc_.add_light(light);
+  lc_->add_light(light);
 }
 
 void Viewer3D::spawn_sdf_volume() {
@@ -382,18 +439,18 @@ void Viewer3D::add_render_pass(std::shared_ptr<RenderPass> rp) {
 
   // By convention, initial geometry rendering happens on the first render
   // pass, and drawing to screen happens on the last
-  w.render_to_framebuffer(render_passes_.front()->framebuffer);
-  w.draw_from_framebuffer(render_passes_.back()->framebuffer);
+  w->render_to_framebuffer(render_passes_.front()->framebuffer);
+  w->draw_from_framebuffer(render_passes_.back()->framebuffer);
 }
 
 std::shared_ptr<Framebuffer> Viewer3D::add_render_pass(const std::string& name,
     std::shared_ptr<ShaderProgram> p, std::function<void()> f) {
-  auto fb = std::make_shared<Framebuffer>(w.width, w.height, name + " framebuffer");
+  auto fb = std::make_shared<Framebuffer>(w->width, w->height, name + " framebuffer");
   auto rp = std::make_shared<RenderPass>(name + " pass", fb, p, f);
 
   render_passes_.push_back(rp);  
-  w.render_to_framebuffer(render_passes_.front()->framebuffer);
-  w.draw_from_framebuffer(render_passes_.back()->framebuffer);
+  w->render_to_framebuffer(render_passes_.front()->framebuffer);
+  w->draw_from_framebuffer(render_passes_.back()->framebuffer);
 
   return fb;
 }
@@ -401,12 +458,12 @@ std::shared_ptr<Framebuffer> Viewer3D::add_render_pass(const std::string& name,
 std::shared_ptr<Framebuffer> Viewer3D::add_render_pass(const std::string& name,
     std::vector<std::shared_ptr<Texture>> attachments,
     std::vector<std::shared_ptr<ShaderProgram>> programs, std::function<void()> f) {
-  auto fb = std::make_shared<Framebuffer>(attachments, w.width, w.height, name + " framebuffer");
+  auto fb = std::make_shared<Framebuffer>(attachments, w->width, w->height, name + " framebuffer");
   auto rp = std::make_shared<RenderPass>(name + " pass", fb, programs, f);
 
   render_passes_.push_back(rp);  
-  w.render_to_framebuffer(render_passes_.front()->framebuffer);
-  w.draw_from_framebuffer(render_passes_.back()->framebuffer);
+  w->render_to_framebuffer(render_passes_.front()->framebuffer);
+  w->draw_from_framebuffer(render_passes_.back()->framebuffer);
 
   return fb;
 }
@@ -419,7 +476,7 @@ void Viewer3D::initialize_lc_() {
                  1.0;
   auto dl = std::make_shared<DirectionalLight>(light_color*0.2, light_color*0.5, light_color);
   dl->set_direction({-0.2, -1.0, -0.3, -1.0});
-  lc_.add_light(dl);
+  lc_->add_light(dl);
 }
 
 void Viewer3D::make_shaders_() {
@@ -436,12 +493,12 @@ void Viewer3D::make_shaders_() {
 }
 
 void Viewer3D::set_callbacks_() {
-  glfwSetWindowUserPointer(w.window, this);
-  glfwSetDropCallback(w.window, drop_callback);
-  glfwSetKeyCallback(w.window, viewer_key_callback);
-  glfwSetFramebufferSizeCallback(w.window, viewer3d_framebuffer_size_callback);
-  glfwSetMouseButtonCallback(w.window, mouse_button_callback);
-  glfwSetCursorPosCallback(w.window, cursor_pos_callback);
+  glfwSetWindowUserPointer(w->window, this);
+  glfwSetDropCallback(w->window, drop_callback);
+  glfwSetKeyCallback(w->window, viewer_key_callback);
+  glfwSetFramebufferSizeCallback(w->window, viewer3d_framebuffer_size_callback);
+  glfwSetMouseButtonCallback(w->window, mouse_button_callback);
+  glfwSetCursorPosCallback(w->window, cursor_pos_callback);
 }
 
 void Viewer3D::populate_initial_geometry_() {
@@ -528,16 +585,16 @@ void cannon::graphics::viewer3d_framebuffer_size_callback(GLFWwindow* window, in
   glViewport(0, 0, width, height);
 
   Viewer3D *viewer = (Viewer3D*)glfwGetWindowUserPointer(window);
-  viewer->w.width = width;
-  viewer->w.height = height;
-  viewer->w.set_viewport(0, 0, width, height);
+  viewer->w->width = width;
+  viewer->w->height = height;
+  viewer->w->set_viewport(0, 0, width, height);
 
   for (auto& pass : viewer->render_passes_) {
     pass->framebuffer->resize(width, height);
   }
 
   // For smooth resizing
-  viewer->w.draw([&]() {viewer->draw();});
+  viewer->w->draw([&]() {viewer->draw();});
 }
 
 void cannon::graphics::viewer_key_callback(GLFWwindow* window, int key, int
@@ -581,14 +638,14 @@ void cannon::graphics::mouse_button_callback(GLFWwindow* window, int button,
     if (!viewer->mouse_captured_) {
       viewer->mouse_captured_ = true;
       viewer->first_mouse_ = true;
-      glfwSetInputMode(viewer->w.window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+      glfwSetInputMode(viewer->w->window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     } 
   }
 
   if (button == GLFW_MOUSE_BUTTON_MIDDLE && action == GLFW_RELEASE) {
     if (viewer->mouse_captured_) {
       viewer->mouse_captured_ = false;
-      glfwSetInputMode(viewer->w.window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+      glfwSetInputMode(viewer->w->window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
     } 
   }
 }

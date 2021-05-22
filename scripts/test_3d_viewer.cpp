@@ -36,7 +36,7 @@ void test() {
   GLFWwindow *gl_window; 
   {
   Viewer3D viewer;
-  gl_window = viewer.w.get_gl_window();
+  gl_window = viewer.w->get_gl_window();
 
   auto textured_program = std::make_shared<ShaderProgram>("textured_cube_shader");
   textured_program->attach_vertex_shader("shaders/mvp_normals_tex.vert");

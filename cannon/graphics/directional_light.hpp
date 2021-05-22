@@ -55,12 +55,7 @@ namespace cannon {
          *
          * \param s The shader to apply this light on.
          */
-        void apply(const std::shared_ptr<ShaderProgram> s) const {
-          s->set_uniform("directional_light.ambient", (Vector4f)(ambient_ * std::pow(2.0, intensity_)));
-          s->set_uniform("directional_light.diffuse", (Vector4f)(diffuse_ * std::pow(2.0, intensity_)));
-          s->set_uniform("directional_light.specular", (Vector4f)(specular_ * std::pow(2.0, intensity_)));
-          s->set_uniform("directional_light.direction", direction_);
-        }
+        void apply(const std::shared_ptr<ShaderProgram> s) const;
 
         /*!
          * Method to set the direction for this directional light.

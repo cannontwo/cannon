@@ -13,9 +13,9 @@ TEST_CASE("DeferredRenderer", "[graphics]") {
   DeferredRenderer d;
   OpenGLState s;
 
-  d.viewer.spawn_model("assets/test/test.obj");
-  d.viewer.c.set_pos({5.0, 5.0, 10.0});
-  d.viewer.c.set_direction({0.5, 0.75, 1.0});
+  d.viewer->spawn_model("assets/test/test.obj");
+  d.viewer->c.set_pos({5.0, 5.0, 10.0});
+  d.viewer->c.set_direction({0.5, 0.75, 1.0});
 
   // TODO Set up test render scene
 

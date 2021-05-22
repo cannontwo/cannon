@@ -11,6 +11,7 @@
 #include <cannon/graphics/shader_program.hpp>
 #include <cannon/graphics/render_pass.hpp>
 #include <cannon/graphics/geometry/screen_quad.hpp>
+#include <cannon/graphics/window.hpp>
 #include <cannon/log/registry.hpp>
 
 using namespace cannon::graphics;
@@ -28,7 +29,7 @@ void test() {
   faces.push_back("assets/skybox/back.jpg");
 
   Viewer3D viewer;
-  gl_window = viewer.w.get_gl_window();
+  gl_window = viewer.w->get_gl_window();
   viewer.set_skybox(faces);
 
   auto geom_program = std::make_shared<ShaderProgram>("geom_shader");
@@ -36,7 +37,7 @@ void test() {
   geom_program->attach_fragment_shader("shaders/material_lights_tex.frag");
   geom_program->link();
 
-  auto fb = std::make_shared<Framebuffer>(viewer.w.width, viewer.w.height, "geom framebuffer");
+  auto fb = std::make_shared<Framebuffer>(viewer.w->width, viewer.w->height, "geom framebuffer");
   auto rp = std::make_shared<RenderPass>("geom pass", fb, geom_program, [&](){
             Vector3f c_pos = viewer.c.get_pos();
             Vector4f tmp_pos;
@@ -50,7 +51,7 @@ void test() {
       });
 
 
-  auto fb2 = std::make_shared<Framebuffer>(viewer.w.width, viewer.w.height, "screen framebuffer");
+  auto fb2 = std::make_shared<Framebuffer>(viewer.w->width, viewer.w->height, "screen framebuffer");
   auto rp2 = std::make_shared<RenderPass>("screen pass", fb2, fb2->quad->program, [&](){
       fb->bind_read();
       fb2->bind_draw();

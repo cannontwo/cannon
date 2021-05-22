@@ -29,26 +29,17 @@ namespace cannon {
       public:
 
         /*!
+         * \brief Destructor.
+         */
+        virtual ~LightCollection() {}
+
+        /*!
          * Method to apply this light collection on geometry. Essentially just
          * sets uniforms on the geometry's shader.
          *
          * \param g The geometry to apply this light to.
          */
-        void apply(std::shared_ptr<geometry::DrawableGeom> g) const {
-          g->program->set_uniform("num_point_lights", (int)point_lights_.size());
-          g->program->set_uniform("num_spotlights", (int)spotlights_.size());
-
-          for (unsigned int i = 0; i < point_lights_.size(); i++) {
-            point_lights_[i]->apply(g, i);
-          }
-
-          for (unsigned int i = 0; i < spotlights_.size(); i++) {
-            spotlights_[i]->apply(g, i);
-          }
-
-          if (directional_light_)
-            directional_light_->apply(g);
-        }
+        void apply(std::shared_ptr<geometry::DrawableGeom> g) const;
 
         /*!
          * Method to apply this light collection to a shader. Essentially just
@@ -56,21 +47,7 @@ namespace cannon {
          *
          * \param s The shader to apply this collection to.
          */
-        void apply(std::shared_ptr<ShaderProgram> s) const {
-          s->set_uniform("num_point_lights", (int)point_lights_.size());
-          s->set_uniform("num_spotlights", (int)spotlights_.size());
-
-          for (unsigned int i = 0; i < point_lights_.size(); i++) {
-            point_lights_[i]->apply(s, i);
-          }
-
-          for (unsigned int i = 0; i < spotlights_.size(); i++) {
-            spotlights_[i]->apply(s, i);
-          }
-
-          if (directional_light_)
-            directional_light_->apply(s);
-        }
+        void apply(std::shared_ptr<ShaderProgram> s) const;
 
         /*!
          * Method to add a point light to this collection.

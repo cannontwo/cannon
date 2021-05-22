@@ -3,6 +3,8 @@
 #include <thread>
 
 #include <cannon/graphics/deferred_renderer.hpp>
+#include <cannon/graphics/viewer_3d.hpp>
+#include <cannon/graphics/window.hpp>
 
 using namespace cannon::graphics;
 
@@ -10,7 +12,7 @@ void test() {
   GLFWwindow *gl_window;
   {
   DeferredRenderer r;
-  gl_window = r.viewer.w.get_gl_window();
+  gl_window = r.viewer->w->get_gl_window();
   r.render_loop([](){});
   }
   terminate_opengl_context(gl_window);

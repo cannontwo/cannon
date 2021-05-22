@@ -50,6 +50,15 @@ namespace cannon {
         }
 
         /*!
+         * Constructor taking a shared pointer to a Viewer3D, which is
+         * essentially a decorated window.
+         */
+        OpenGLWriter(const std::shared_ptr<Viewer3D> v) {
+          data_ = v->get_image();
+          close_func_ = [&](){v->close();};
+        }
+
+        /*!
          * Constructor taking a Plotter, which is essentially a decorated window.
          */
         OpenGLWriter(const Plotter& p) {

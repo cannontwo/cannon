@@ -10,7 +10,6 @@
 
 #include <functional>
 
-#include <cannon/graphics/viewer_3d.hpp>
 #include <cannon/graphics/geometry/axes_hint.hpp>
 
 #include <cannon/utils/class_forward.hpp>
@@ -20,6 +19,7 @@ namespace cannon {
 
     CANNON_CLASS_FORWARD(Framebuffer);
     CANNON_CLASS_FORWARD(ShaderProgram);
+    CANNON_CLASS_FORWARD(Viewer3D);
     
     /*!
      * \brief Class representing a deferred renderer for OpenGL.
@@ -39,9 +39,7 @@ namespace cannon {
         /*!
          * Default constructor, which sets up render passes.
          */
-        DeferredRenderer() {
-          setup_render_passes(); 
-        }
+        DeferredRenderer();
 
         /*!
          * Destructor. No cleanup is necessary because all graphics objects
@@ -70,7 +68,7 @@ namespace cannon {
          */
         void setup_render_passes();
 
-        Viewer3D viewer; //!< Internal viewer. DeferredRenderer is really a wrapper around this.
+        Viewer3DPtr viewer; //!< Internal viewer. DeferredRenderer is really a wrapper around this.
 
       private:
         ShaderProgramPtr gbuf_program_; //!< Shader used to draw to the gbuffer

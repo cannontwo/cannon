@@ -13,9 +13,10 @@
 #include <queue>
 #include <functional>
 
+#include <glad/glad.h>
+#include <GLFW/glfw3.h>
+
 #include <cannon/graphics/camera.hpp>
-#include <cannon/graphics/window.hpp>
-#include <cannon/graphics/light_collection.hpp>
 
 #include <cannon/utils/class_forward.hpp>
 
@@ -34,6 +35,10 @@ namespace cannon {
     CANNON_CLASS_FORWARD(Light);
     CANNON_CLASS_FORWARD(RenderPass);
     CANNON_CLASS_FORWARD(Texture);
+    CANNON_CLASS_FORWARD(Window);
+    CANNON_CLASS_FORWARD(ImageData);
+    CANNON_CLASS_FORWARD(Framebuffer);
+    CANNON_CLASS_FORWARD(LightCollection);
 
     /*!
      * \brief Class representing an OpenGL context in which objects will be
@@ -46,20 +51,7 @@ namespace cannon {
         /*!
          * \brief Default constructor.
          */
-        Viewer3D() : c({0.0, 0.0, 3.0}, {0.0, 0.0, -1.0}, {0.0, 1.0, 0.0}) {
-          w.enable_depth_test();
-          w.enable_face_culling();
-
-          glEnable(GL_FRAMEBUFFER_SRGB); 
-
-          last_x_ = w.width / 2;
-          last_y_ = w.height / 2;
-
-          make_shaders_();
-          initialize_lc_();
-          set_callbacks_();
-          populate_initial_geometry_();
-        }
+        Viewer3D();
 
         /*!
          * \brief Destructor.
@@ -74,31 +66,7 @@ namespace cannon {
          * \param f Function to run on each frame. 
          * \param clear Whether to clear the screen after each frame.
          */
-        template <typename F>
-        void render_loop(F f, bool clear = true) {
-          w.render_loop([&](){
-            // Adjust camera movement speed based on render rate
-            //c.set_speed(1e5 * w.delta_time_);
-            c.update_pos();
-
-            write_imgui();
-            lc_.write_imgui();
-
-            Vector3f c_pos = c.get_pos();
-            Vector4f tmp_pos;
-            tmp_pos << c_pos[0],
-                       c_pos[1],
-                       c_pos[2],
-                       1.0;
-            geom_program_->set_uniform("viewPos", tmp_pos);
-            //apply_light_collection(lc_);
-            lc_.apply(geom_program_);
-            draw_scene_geom(geom_program_);
-
-            f();
-
-          }, clear);
-        }
+        void render_loop(std::function<void()> f, bool clear = true);
 
         /*!
          * \brief Method that runs the rendering loop for this window in a
@@ -108,20 +76,7 @@ namespace cannon {
          * \param f Function to run on each frame.
          * \param clear Whether to clear the screen after each frame.
          */
-        template <typename F>
-        void render_loop_multipass(F f, bool clear = true) {
-          w.render_loop([&](){
-            // Adjust camera movement speed based on render rate
-            //c.set_speed(1e5 * w.delta_time_);
-            c.update_pos();
-
-            draw();
-
-            f();
-
-          }, clear);
-
-        }
+        void render_loop_multipass(std::function<void()> f, bool clear = true);
 
         /*!
          * \brief Method to draw all render passes managed by this viewer.
@@ -258,7 +213,7 @@ namespace cannon {
          *
          * \returns A pointer to the framebuffer for the constructed renderpass.
          */
-        std::shared_ptr<Framebuffer> add_render_pass(const std::string& name,
+        FramebufferPtr add_render_pass(const std::string& name,
             ShaderProgramPtr p, std::function<void()> f);
 
         /*!
@@ -272,7 +227,7 @@ namespace cannon {
          *
          * \returns A pointer to the framebuffer for the constructed renderpass.
          */
-        std::shared_ptr<Framebuffer> add_render_pass(const std::string& name,
+        FramebufferPtr add_render_pass(const std::string& name,
             std::vector<TexturePtr> attachments,
             std::vector<ShaderProgramPtr> programs, std::function<void()> f);
 
@@ -343,7 +298,7 @@ namespace cannon {
          */
         void close() const;
         
-        Window w; //!< Internal window object encapsulating OpenGL state.
+        WindowPtr w; //!< Internal window object encapsulating OpenGL state.
         Camera c; //!< The camera for this viewer.
 
         friend void viewer3d_framebuffer_size_callback(GLFWwindow* window, int width, int height);
@@ -389,7 +344,7 @@ namespace cannon {
         std::vector<ShaderProgramPtr> shaders_; //!< Shaders for this viewer
         std::deque<RenderPassPtr> render_passes_; //!< Render passes for this viewer
 
-        LightCollection lc_; //!< Light collection for this viewer
+        LightCollectionPtr lc_; //!< Light collection for this viewer
 
         ShaderProgramPtr geom_program_; //!< Default geometry shader
         ShaderProgramPtr sdf_program_; //!< Default SDF shader
