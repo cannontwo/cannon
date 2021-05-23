@@ -1,5 +1,9 @@
 #include <cannon/ray/material.hpp>
 
+#include <cannon/ray/texture.hpp>
+#include <cannon/ray/ray.hpp>
+#include <cannon/ray/hittable.hpp>
+
 using namespace cannon::ray;
 
 bool NormalDebug::scatter(const Ray& r_in, const hit_record& rec, Vector3d& attenuation,
@@ -20,6 +24,7 @@ bool NormalDebug::scatter(const Ray& r_in, const hit_record& rec, Vector3d& atte
   return true;
 }
 
+Lambertian::Lambertian(const Vector3d& a) : albedo_(std::make_shared<SolidColor>(a)) {}
 
 bool Lambertian::scatter(const Ray& r_in, const hit_record& rec, Vector3d&
     attenuation, Ray& scattered) const {
@@ -76,6 +81,14 @@ bool Isotropic::scatter(const Ray& r_in, const hit_record& rec,
   return true;
 }
 
+DiffuseLight::DiffuseLight(const Vector3d& c) : emit_(std::make_shared<SolidColor>(c)) {}
+
+Vector3d DiffuseLight::emitted(double u, double v, const Vector3d& p) const {
+  return emit_->value(u, v, p);
+}
+
+Isotropic::Isotropic(const Vector3d& c) : albedo_(std::make_shared<SolidColor>(c)) {}
+
 // Public Functions
 Vector3d cannon::ray::reflect(const Vector3d& v, const Vector3d& n) {
   return v - 2*v.dot(n)*n;
@@ -96,4 +109,5 @@ double cannon::ray::reflectance(double cosine, double ref_idx) {
   r0 = r0*r0;
   return r0 + (1-r0) * std::pow((1 - cosine), 5);
 }
+
 

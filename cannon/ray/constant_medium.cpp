@@ -1,6 +1,17 @@
 #include <cannon/ray/constant_medium.hpp>
 
+#include <cannon/ray/material.hpp>
+#include <cannon/ray/ray.hpp>
+
 using namespace cannon::ray;
+
+ConstantMedium::ConstantMedium(std::shared_ptr<Hittable> b, double d,
+    TexturePtr a) : boundary_(b), neg_inv_density_(-1/d),
+  phase_function_(std::make_shared<Isotropic>(a)) {}
+
+ConstantMedium::ConstantMedium(std::shared_ptr<Hittable> b, double d, const
+    Vector3d& c) : boundary_(b), neg_inv_density_(-1/d),
+  phase_function_(std::make_shared<Isotropic>(c)) {}
 
 bool ConstantMedium::object_space_hit(const Ray& r, double t_min, double t_max, hit_record& rec) const {
   hit_record rec1, rec2;

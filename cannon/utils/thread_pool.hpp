@@ -42,9 +42,19 @@ namespace cannon {
         ThreadPool(ThreadPool&& o) = delete;
 
         ~ThreadPool() {
+          if (!joined_) {
+            queue_.push(nullptr);
+            for (auto& thread : threads_)
+              thread.join();
+          }
+        }
+
+        void join() {
           queue_.push(nullptr);
           for (auto& thread : threads_)
             thread.join();
+
+          joined_ = true;
         }
 
         void enqueue(std::shared_ptr<T> t) {
@@ -58,6 +68,7 @@ namespace cannon {
       private:
         std::vector<std::thread> threads_;
         BlockingQueue<std::shared_ptr<T>> queue_;
+        bool joined_ = false;
 
     };
 

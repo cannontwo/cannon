@@ -18,6 +18,7 @@
 #include <cannon/ray/aa_rect.hpp>
 #include <cannon/ray/constant_medium.hpp>
 #include <cannon/ray/mesh.hpp>
+#include <cannon/ray/texture.hpp>
 #include <cannon/graphics/random_color.hpp>
 #include <cannon/log/registry.hpp>
 #include <cannon/utils/statistics.hpp>
@@ -261,8 +262,8 @@ int main(int argc, char** argv) {
   // Raytracer
   //log_info("Rendering");
   Raytracer raytracer(argv[1], bvh);
-  raytracer.render(std::cout);
-  //raytracer.render("test.ppm");
+  //raytracer.render(std::cout);
+  raytracer.render("test.ppm");
   
   // Report and write stats out
   report_thread_stats();

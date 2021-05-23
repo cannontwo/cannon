@@ -118,9 +118,6 @@ void Raytracer::render(const std::string& out_filename, int tile_size) {
 
       film.merge_film_tile(std::move(tile));
       
-      if (tile_coord->second == 0)
-        film.write_image(out_filename, params_.samples_per_pixel);
-      
       report_thread_stats();
       });
 
@@ -130,5 +127,9 @@ void Raytracer::render(const std::string& out_filename, int tile_size) {
       pool.enqueue(std::make_shared<std::pair<int, int>>(std::make_pair(i, j)));
     }
   }
+
+  pool.join();
+
+  film.write_image(out_filename, params_.samples_per_pixel);
 
 }

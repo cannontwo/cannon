@@ -11,12 +11,14 @@
 
 #include <Eigen/Dense>
 
-#include <cannon/ray/ray.hpp>
+#include <cannon/utils/class_forward.hpp>
 
 using namespace Eigen;
 
 namespace cannon {
   namespace ray {
+
+    CANNON_CLASS_FORWARD(Ray);
 
     /*!
      * \brief Class representing an axis-aligned bounding box.

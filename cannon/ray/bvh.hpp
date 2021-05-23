@@ -10,19 +10,20 @@
 #include <algorithm>
 
 #include <cannon/ray/hittable.hpp>
-#include <cannon/ray/hittable_list.hpp>
+#include <cannon/ray/aabb.hpp>
 #include <cannon/math/random_double.hpp>
 #include <cannon/log/registry.hpp>
-#include <cannon/utils/statistics.hpp>
+#include <cannon/utils/class_forward.hpp>
 
 using namespace cannon::math;
 using namespace cannon::log;
-using namespace cannon::utils;
 
 // Free Functions
 
 namespace cannon {
   namespace ray {
+
+    CANNON_CLASS_FORWARD(HittableList);
 
     /*!
      * Generic comparator around input axis for two Hittables.
@@ -63,9 +64,7 @@ namespace cannon {
          * Constructor taking a HittableList and time interval.
          */
         BvhNode(std::shared_ptr<Affine3d> object_to_world, const
-            std::shared_ptr<HittableList> list, double time_0, double time_1) :
-          BvhNode(object_to_world, list->objects_, 0, list->objects_.size(),
-              time_0, time_1) {}
+            HittableListPtr list, double time_0, double time_1);
 
         /*!
          * Constructor taking a vector of Hittables to include and a time

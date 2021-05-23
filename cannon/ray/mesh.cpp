@@ -1,5 +1,8 @@
 #include <cannon/ray/mesh.hpp>
 
+#include <cannon/ray/aabb.hpp>
+#include <cannon/ray/ray.hpp>
+
 using namespace cannon::ray;
 
 bool Triangle::bounding_box(double time_0, double time_1, Aabb& output_box) const {

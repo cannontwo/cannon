@@ -1,5 +1,8 @@
 #include <cannon/ray/aa_rect.hpp>
 
+#include <cannon/ray/aabb.hpp>
+#include <cannon/ray/ray.hpp>
+
 using namespace cannon::ray;
 
 bool XYRect::object_space_hit(const Ray& r, double t_min, double t_max, hit_record& rec) const {
@@ -20,6 +23,12 @@ bool XYRect::object_space_hit(const Ray& r, double t_min, double t_max, hit_reco
   rec.set_face_normal(r, Vector3d(0, 0, 1));
   rec.mat_ptr = mat_ptr_;
   rec.p = r.at(t);
+  return true;
+}
+
+bool XYRect::object_space_bounding_box(double time_0, double time_1, Aabb& output_box) const {
+  // Bounding box must be nonzero in each dimension
+  output_box = Aabb(Vector3d(x0_, y0_, k_ - 1e-3), Vector3d(x1_, y1_, k_ + 1e-3));
   return true;
 }
 
@@ -44,6 +53,12 @@ bool XZRect::object_space_hit(const Ray& r, double t_min, double t_max, hit_reco
   return true;
 }
 
+bool XZRect::object_space_bounding_box(double time_0, double time_1, Aabb& output_box) const {
+  // Bounding box must be nonzero in each dimension
+  output_box = Aabb(Vector3d(x0_, k_ - 1e-3, z0_), Vector3d(x1_, k_ + 1e-3, z1_));
+  return true;
+}
+
 bool YZRect::object_space_hit(const Ray& r, double t_min, double t_max, hit_record& rec) const {
   auto t = (k_ - r.orig_.x()) / r.dir_.x();
 
@@ -62,5 +77,16 @@ bool YZRect::object_space_hit(const Ray& r, double t_min, double t_max, hit_reco
   rec.set_face_normal(r, Vector3d(1, 0, 0));
   rec.mat_ptr = mat_ptr_;
   rec.p = r.at(t);
+  return true;
+}
+
+bool YZRect::object_space_bounding_box(double time_0, double time_1, Aabb& output_box) const {
+  // Bounding box must be nonzero in each dimension
+  output_box = Aabb(Vector3d(k_ - 1e-3, y0_, z0_), Vector3d(k_ + 1e-3, y1_, z1_));
+  return true;
+}
+
+bool Box::object_space_bounding_box(double time_0, double time_1, Aabb& output_box) const {
+  output_box = Aabb(box_min_, box_max_);
   return true;
 }

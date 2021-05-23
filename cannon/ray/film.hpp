@@ -9,8 +9,6 @@
 
 #include <memory>
 #include <mutex>
-#include <iostream>
-#include <fstream>
 
 #include <Eigen/Dense>
 

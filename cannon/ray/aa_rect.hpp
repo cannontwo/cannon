@@ -40,16 +40,14 @@ namespace cannon {
         /*!
          * Inherited from Hittable.
          */
-        virtual bool object_space_hit(const Ray& r, double t_min, double t_max, hit_record& rec) const override;
+        virtual bool object_space_hit(const Ray& r, double t_min, double t_max,
+            hit_record& rec) const override;
 
         /*!
          * Inherited from Hittable.
          */
-        virtual bool object_space_bounding_box(double time_0, double time_1, Aabb& output_box) const override {
-          // Bounding box must be nonzero in each dimension
-          output_box = Aabb(Vector3d(x0_, y0_, k_ - 1e-3), Vector3d(x1_, y1_, k_ + 1e-3));
-          return true;
-        }
+        virtual bool object_space_bounding_box(double time_0, double time_1,
+            Aabb& output_box) const override;
 
       public:
         double x0_, x1_, y0_, y1_, k_; //!< Rectangle extent parameters
@@ -83,16 +81,14 @@ namespace cannon {
         /*!
          * Inherited from Hittable.
          */
-        virtual bool object_space_hit(const Ray& r, double t_min, double t_max, hit_record& rec) const override;
+        virtual bool object_space_hit(const Ray& r, double t_min, double t_max,
+            hit_record& rec) const override;
 
         /*!
          * Inherited from Hittable.
          */
-        virtual bool object_space_bounding_box(double time_0, double time_1, Aabb& output_box) const override {
-          // Bounding box must be nonzero in each dimension
-          output_box = Aabb(Vector3d(x0_, k_ - 1e-3, z0_), Vector3d(x1_, k_ + 1e-3, z1_));
-          return true;
-        }
+        virtual bool object_space_bounding_box(double time_0, double time_1,
+            Aabb& output_box) const override;
 
       public:
         double x0_, x1_, z0_, z1_, k_; //!< Rectangle extent parameters
@@ -126,16 +122,14 @@ namespace cannon {
         /*!
          * Inherited from Hittable.
          */
-        virtual bool object_space_hit(const Ray& r, double t_min, double t_max, hit_record& rec) const override;
+        virtual bool object_space_hit(const Ray& r, double t_min, double t_max,
+            hit_record& rec) const override;
 
         /*!
          * Inherited from Hittable.
          */
-        virtual bool object_space_bounding_box(double time_0, double time_1, Aabb& output_box) const override {
-          // Bounding box must be nonzero in each dimension
-          output_box = Aabb(Vector3d(k_ - 1e-3, y0_, z0_), Vector3d(k_ + 1e-3, y1_, z1_));
-          return true;
-        }
+        virtual bool object_space_bounding_box(double time_0, double time_1,
+            Aabb& output_box) const override;
 
       public:
         double y0_, y1_, z0_, z1_, k_; //!< Rectangle extent parameters
@@ -186,10 +180,8 @@ namespace cannon {
         /*!
          * Inherited from Hittable.
          */
-        virtual bool object_space_bounding_box(double time_0, double time_1, Aabb& output_box) const override {
-          output_box = Aabb(box_min_, box_max_);
-          return true;
-        }
+        virtual bool object_space_bounding_box(double time_0, double time_1,
+            Aabb& output_box) const override;
 
       public:
         Vector3d box_min_;

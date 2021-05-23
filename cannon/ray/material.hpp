@@ -9,10 +9,8 @@
 
 #include <Eigen/Dense>
 
-#include <cannon/ray/ray.hpp>
-#include <cannon/ray/hittable.hpp>
-#include <cannon/ray/texture.hpp>
 #include <cannon/math/random_double.hpp>
+#include <cannon/utils/class_forward.hpp>
 
 using namespace Eigen;
 
@@ -21,8 +19,9 @@ using namespace cannon::math;
 namespace cannon {
   namespace ray {
 
-    // Forward declaration
-    struct hit_record;
+    CANNON_CLASS_FORWARD(Ray);
+    CANNON_CLASS_FORWARD(Texture);
+    CANNON_CLASS_FORWARD(hit_record);
 
     /*!
      * \brief Abstract class representing a hittable geometry's material.
@@ -87,12 +86,12 @@ namespace cannon {
         /*!
          * Constructor taking albedo color.
          */
-        Lambertian(const Vector3d& a) : albedo_(std::make_shared<SolidColor>(a)) {}
+        Lambertian(const Vector3d& a);
 
         /*!
          * Constructor taking albedo texture.
          */
-        Lambertian(std::shared_ptr<Texture> a) : albedo_(a) {}
+        Lambertian(TexturePtr a) : albedo_(a) {}
 
         /*!
          * Destructor.
@@ -106,7 +105,7 @@ namespace cannon {
             attenuation, Ray& scattered) const override;
 
       public:
-        std::shared_ptr<Texture> albedo_; //!< Albedo color for this material.
+        TexturePtr albedo_; //!< Albedo color for this material.
 
     };
 
@@ -169,12 +168,12 @@ namespace cannon {
         /*!
          * Constructor taking a texture for this material.
          */
-        DiffuseLight(std::shared_ptr<Texture> a) : emit_(a) {}
+        DiffuseLight(TexturePtr a) : emit_(a) {}
 
         /*!
          * Constructor taking a color for this material.
          */
-        DiffuseLight(const Vector3d& c) : emit_(std::make_shared<SolidColor>(c)) {}
+        DiffuseLight(const Vector3d& c);
 
         /*!
          * Destructor.
@@ -192,12 +191,10 @@ namespace cannon {
         /*!
          * Inherited from Material.
          */
-        virtual Vector3d emitted(double u, double v, const Vector3d& p) const override {
-          return emit_->value(u, v, p);
-        }
+        virtual Vector3d emitted(double u, double v, const Vector3d& p) const override;
 
       public:
-        std::shared_ptr<Texture> emit_; //!< Emissive texture
+        TexturePtr emit_; //!< Emissive texture
     };
 
     class Isotropic : public Material {
@@ -206,12 +203,12 @@ namespace cannon {
         /*!
          * Constructor taking a color for this material.
          */
-        Isotropic(const Vector3d& c) : albedo_(std::make_shared<SolidColor>(c)) {}
+        Isotropic(const Vector3d& c);
 
         /*!
          * Constructor taking a texture for this material.
          */
-        Isotropic(std::shared_ptr<Texture> a) : albedo_(a) {}
+        Isotropic(TexturePtr a) : albedo_(a) {}
 
         /*!
          * Destructor.
@@ -226,7 +223,7 @@ namespace cannon {
 
 
       public:
-        std::shared_ptr<Texture> albedo_; //!< Albedo for this material
+        TexturePtr albedo_; //!< Albedo for this material
 
     };
 

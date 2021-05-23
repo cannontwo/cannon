@@ -1,5 +1,8 @@
 #include <cannon/ray/film.hpp>
 
+#include <iostream>
+#include <fstream>
+
 using namespace cannon::ray;
 
 std::unique_ptr<FilmTile> Film::get_film_tile(int i, int j) const {

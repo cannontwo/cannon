@@ -1,5 +1,7 @@
 #include <cannon/ray/aabb.hpp>
 
+#include <cannon/ray/ray.hpp>
+
 using namespace cannon::ray;
 
 bool Aabb::hit(const Ray& r, double t_min, double t_max) const {

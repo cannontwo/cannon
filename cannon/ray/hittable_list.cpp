@@ -1,5 +1,7 @@
 #include <cannon/ray/hittable_list.hpp>
 
+#include <cannon/ray/aabb.hpp>
+
 using namespace cannon::ray;
 
 void HittableList::clear() {

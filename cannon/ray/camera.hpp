@@ -9,8 +9,8 @@
 
 #include <Eigen/Dense>
 
-#include <cannon/ray/ray.hpp>
 #include <cannon/math/random_double.hpp>
+#include <cannon/utils/class_forward.hpp>
 
 using namespace Eigen;
 
@@ -18,6 +18,8 @@ using namespace cannon::math;
 
 namespace cannon {
   namespace ray {
+
+    CANNON_CLASS_FORWARD(Ray);
 
     /*!
      * \brief Class representing a camera generating rays into a scene.

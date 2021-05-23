@@ -1,5 +1,8 @@
 #include <cannon/ray/moving_sphere.hpp>
 
+#include <cannon/ray/ray.hpp>
+#include <cannon/ray/aabb.hpp>
+
 using namespace cannon::ray;
 
 bool MovingSphere::object_space_hit(const Ray& r, double t_min, double t_max, hit_record& rec) const {

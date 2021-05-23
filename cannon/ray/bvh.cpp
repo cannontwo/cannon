@@ -1,8 +1,18 @@
 #include <cannon/ray/bvh.hpp>
 
+#include <cannon/ray/hittable_list.hpp>
+#include <cannon/ray/aabb.hpp>
+#include <cannon/utils/statistics.hpp>
+
 using namespace cannon::ray;
+using namespace cannon::utils;
 
 STAT_COUNTER("Integrator/Accelerator hit tests", nBvhHitTests);
+
+BvhNode::BvhNode(std::shared_ptr<Affine3d> object_to_world, const
+    HittableListPtr list, double time_0, double time_1) :
+  BvhNode(object_to_world, list->objects_, 0, list->objects_.size(),
+      time_0, time_1) {}
 
 bool BvhNode::object_space_hit(const Ray& r, double t_min, double t_max, hit_record& rec) const {
   ++nBvhHitTests;

@@ -8,21 +8,21 @@
  */
 
 #include <cannon/ray/hittable.hpp>
-#include <cannon/ray/texture.hpp>
-#include <cannon/ray/material.hpp>
+#include <cannon/utils/class_forward.hpp>
 
 namespace cannon {
   namespace ray {
 
+    CANNON_CLASS_FORWARD(Texture);
+    CANNON_CLASS_FORWARD(Material);
+
     class ConstantMedium : public Hittable {
       public:
-        ConstantMedium(std::shared_ptr<Hittable> b, double d,
-            std::shared_ptr<Texture> a) : boundary_(b), neg_inv_density_(-1/d),
-        phase_function_(std::make_shared<Isotropic>(a)) {}
+
+        ConstantMedium(std::shared_ptr<Hittable> b, double d, TexturePtr a);
 
         ConstantMedium(std::shared_ptr<Hittable> b, double d, const Vector3d&
-            c) : boundary_(b), neg_inv_density_(-1/d),
-        phase_function_(std::make_shared<Isotropic>(c)) {}
+            c);
 
         /*!
          * Destructor.
@@ -44,7 +44,7 @@ namespace cannon {
       public:
         std::shared_ptr<Hittable> boundary_; //!< Scattering medium geometry
         double neg_inv_density_; //!< 1 / Optical density of medium
-        std::shared_ptr<Material> phase_function_; //!< Material determining color
+        MaterialPtr phase_function_; //!< Material determining color
     };
 
   } // namespace ray

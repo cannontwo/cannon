@@ -1,5 +1,7 @@
 #include <cannon/ray/camera.hpp>
 
+#include <cannon/ray/ray.hpp>
+
 using namespace cannon::ray;
 
 Ray Camera::get_ray(double s, double t) const {
