@@ -1,7 +1,6 @@
 #include <cannon/ray/bvh.hpp>
 
 #include <cannon/ray/hittable_list.hpp>
-#include <cannon/ray/aabb.hpp>
 #include <cannon/utils/statistics.hpp>
 
 using namespace cannon::ray;
