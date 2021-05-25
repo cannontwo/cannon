@@ -30,6 +30,6 @@ TEST_CASE("Viewer3D", "[graphics]") {
         }
       });
   }
-  terminate_opengl_context(gl_window);
+  //terminate_opengl_context(gl_window);
 }
 #endif

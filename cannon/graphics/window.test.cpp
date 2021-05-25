@@ -26,6 +26,6 @@ TEST_CASE("Window", "[graphics]") {
         }
       });
   }
-  terminate_opengl_context(gl_window);
+  //terminate_opengl_context(gl_window);
 }
 #endif
