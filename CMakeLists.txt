@@ -161,8 +161,6 @@ if (CANNON_BUILD_LIBRARY)
   add_subdirectory("thirdparty/HighFive")
   list(APPEND LIBRARIES HighFive)
 
-  message(${HIGHFIVE_EXAMPLES})
-
   # TinyColorMap
   include_directories("thirdparty/tinycolormap/include")
 
