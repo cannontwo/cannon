@@ -1,5 +1,6 @@
 #include <cannon/ray/mesh.hpp>
 
+#include <cannon/ray/hittable_list.hpp>
 #include <cannon/ray/aabb.hpp>
 #include <cannon/ray/ray.hpp>
 

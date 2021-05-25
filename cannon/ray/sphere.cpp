@@ -1,5 +1,6 @@
 #include <cannon/ray/sphere.hpp>
 
+#include <cannon/ray/ray.hpp>
 #include <cannon/ray/aabb.hpp>
 
 using namespace cannon::ray;

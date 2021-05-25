@@ -8,10 +8,12 @@
  */
 
 #include <cannon/ray/hittable.hpp>
-#include <cannon/ray/ray.hpp>
+#include <cannon/utils/class_forward.hpp>
 
 namespace cannon {
   namespace ray {
+
+    CANNON_CLASS_FORWARD(Ray);
 
     /*!
      * \brief Class representing a raytraceable sphere.

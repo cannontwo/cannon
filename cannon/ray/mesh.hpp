@@ -18,9 +18,9 @@
 #include <Eigen/Dense>
 
 #include <cannon/ray/hittable.hpp>
-#include <cannon/ray/hittable_list.hpp>
 #include <cannon/log/registry.hpp>
 #include <cannon/utils/statistics.hpp>
+#include <cannon/utils/class_forward.hpp>
 
 using namespace Eigen;
 
@@ -32,6 +32,8 @@ namespace cannon {
 
     using MatrixX3u = Matrix<unsigned int, Dynamic, 3>;
     using Vector3u = Matrix<unsigned int, 3, 1>;
+
+    CANNON_CLASS_FORWARD(HittableList);
 
     /*!
      * \brief Class representing a mesh composed of a collection of triangles.
@@ -169,7 +171,7 @@ namespace cannon {
      *
      * \returns The list of hittables.
      */
-    std::shared_ptr<HittableList> make_mesh_triangle_list(std::shared_ptr<TriangleMesh> mesh);
+    HittableListPtr make_mesh_triangle_list(std::shared_ptr<TriangleMesh> mesh);
 
     /*!
      * Permute the coordinates of an input vector.

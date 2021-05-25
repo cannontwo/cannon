@@ -1,6 +1,18 @@
 #include <cannon/ray/raytracer.hpp>
 
+#include <cannon/ray/hittable.hpp>
+#include <cannon/ray/ray.hpp>
+#include <cannon/ray/sphere.hpp>
+#include <cannon/ray/write_ppm.hpp>
+#include <cannon/ray/film.hpp>
+#include <cannon/ray/material.hpp>
+#include <cannon/utils/thread_pool.hpp>
+#include <cannon/utils/statistics.hpp>
+#include <cannon/math/random_double.hpp>
+
 using namespace cannon::ray;
+using namespace cannon::math;
+using namespace cannon::utils;
 
 raytracer_params Raytracer::load_config(const std::string& filename) {
   raytracer_params params;

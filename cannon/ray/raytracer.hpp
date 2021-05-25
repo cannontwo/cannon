@@ -13,24 +13,16 @@
 #include <Eigen/Dense>
 #include <yaml-cpp/yaml.h>
 
-#include <cannon/math/random_double.hpp>
-#include <cannon/ray/ray.hpp>
-#include <cannon/ray/write_ppm.hpp>
-#include <cannon/ray/hittable.hpp>
-#include <cannon/ray/sphere.hpp>
 #include <cannon/ray/camera.hpp>
-#include <cannon/ray/material.hpp>
-#include <cannon/ray/film.hpp>
-#include <cannon/utils/thread_pool.hpp>
-#include <cannon/utils/statistics.hpp>
+#include <cannon/utils/class_forward.hpp>
 
 using namespace Eigen;
 
-using namespace cannon::math;
-using namespace cannon::utils;
-
 namespace cannon {
   namespace ray { 
+
+    CANNON_CLASS_FORWARD(Hittable);
+    CANNON_CLASS_FORWARD(Ray);
 
     /*!
      * \brief Struct containing Raytracer params that can be read from YAML config.
@@ -63,10 +55,11 @@ namespace cannon {
         /*!
          * Constructor taking raytracer config filename and world geometry.
          */
-        Raytracer(const std::string& config_filename, std::shared_ptr<Hittable>
-            world) : params_(load_config(config_filename)), world_(world),
-        camera_(params_.look_from, params_.look_at, params_.vup, params_.vfov,
-            params_.aspect_ratio, params_.aperture, params_.dist_to_focus) {}
+        Raytracer(const std::string& config_filename, HittablePtr world) :
+          params_(load_config(config_filename)), world_(world),
+          camera_(params_.look_from, params_.look_at, params_.vup,
+              params_.vfov, params_.aspect_ratio, params_.aperture,
+              params_.dist_to_focus) {}
 
         /*!
          * Load raytracer params from YAML file.
@@ -109,7 +102,7 @@ namespace cannon {
         Vector3d ray_color(const Ray& r, int depth);
 
         raytracer_params params_; //!< Rendering parameters
-        std::shared_ptr<Hittable> world_; //!< World geometry
+        HittablePtr world_; //!< World geometry
         Camera camera_; //!< Rendering camera
         Vector3d background_; //!< Background color for rendering
 
