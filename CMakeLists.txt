@@ -80,6 +80,8 @@ if (CANNON_BUILD_DOC)
   configure_file(${DOXYGEN_IN} ${DOXYGEN_OUT} @ONLY)
   message("Doxygen build started")
 
+  file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/docs/doxygen")
+
   # note the option ALL which allows to build the docs together with the application
   add_custom_target( doc_doxygen ALL
       COMMAND ${DOXYGEN_EXECUTABLE} ${DOXYGEN_OUT}
