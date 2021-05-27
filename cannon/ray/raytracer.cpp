@@ -6,6 +6,7 @@
 #include <cannon/ray/write_ppm.hpp>
 #include <cannon/ray/film.hpp>
 #include <cannon/ray/material.hpp>
+#include <cannon/ray/filter.hpp>
 #include <cannon/utils/thread_pool.hpp>
 #include <cannon/utils/statistics.hpp>
 #include <cannon/math/random_double.hpp>
@@ -105,8 +106,8 @@ void Raytracer::render(std::ostream& os) {
   std::cerr << "\nDone.\n";
 }
 
-void Raytracer::render(const std::string& out_filename, int tile_size) {
-  Film film(params_.image_width, params_.image_height, tile_size);
+void Raytracer::render(const std::string& out_filename, std::unique_ptr<Filter> filter, int tile_size) {
+  Film film(params_.image_width, params_.image_height, tile_size, std::move(filter));
 
   ThreadPool<std::pair<int, int>> pool([&](std::shared_ptr<std::pair<int, int>> tile_coord) {
       auto tile = film.get_film_tile(tile_coord->first, tile_coord->second);
@@ -120,8 +121,7 @@ void Raytracer::render(const std::string& out_filename, int tile_size) {
             Ray r = camera_.get_ray(u, v);
             Vector3d pixel_color = ray_color(r, params_.max_depth);
 
-            tile->pixels_[j * tile->extent_x_ + i].color_sum_ += pixel_color;
-            tile->pixels_[j * tile->extent_x_ + i].filter_weight_sum_ += 1.0;
+            tile->add_sample(Vector2d(u * (params_.image_width - 1), v * (params_.image_height - 1)), pixel_color);
           }
         }
       }

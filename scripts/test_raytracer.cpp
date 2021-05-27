@@ -19,6 +19,7 @@
 #include <cannon/ray/constant_medium.hpp>
 #include <cannon/ray/mesh.hpp>
 #include <cannon/ray/texture.hpp>
+#include <cannon/ray/filter.hpp>
 #include <cannon/graphics/random_color.hpp>
 #include <cannon/log/registry.hpp>
 #include <cannon/utils/statistics.hpp>
@@ -251,9 +252,9 @@ int main(int argc, char** argv) {
   //auto world = two_perlin_spheres_scene();
   //auto world = earth_scene();
   //auto world = simple_light_scene();
-  //auto world = cornell_box();
+  auto world = cornell_box();
   //auto world = final_scene();
-  auto world = model_test();
+  //auto world = model_test();
 
   auto t = std::make_shared<Affine3d>(Affine3d::Identity());
   //log_info("Building bounding volume hierarchy");
@@ -263,7 +264,7 @@ int main(int argc, char** argv) {
   //log_info("Rendering");
   Raytracer raytracer(argv[1], bvh);
   //raytracer.render(std::cout);
-  raytracer.render("test.ppm");
+  raytracer.render("test.ppm", std::make_unique<BoxFilter>(Vector2d::Ones()));
   
   // Report and write stats out
   report_thread_stats();

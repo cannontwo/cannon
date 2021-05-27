@@ -3,8 +3,10 @@
 #include <cassert>
 
 #include <cannon/ray/film.hpp>
+#include <cannon/log/registry.hpp>
 
 using namespace cannon::ray;
+using namespace cannon::log;
 
 void cannon::ray::write_color(std::ostream& os, const Vector3d& pixel_color) {
   os << static_cast<int>(255.999 * pixel_color[0]) << " "

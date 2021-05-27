@@ -14,19 +14,22 @@
 #include <Eigen/Dense>
 
 #include <cannon/ray/write_ppm.hpp>
+#include <cannon/utils/class_forward.hpp>
 
 using namespace Eigen;
 
 namespace cannon {
   namespace ray {
 
+    CANNON_CLASS_FORWARD(Filter);
+
     /*!
      * \brief Struct representing a single tile in the image film. Accumulates
      * contributions from image samples.
      */
     struct FilmPixel {
-      Vector3d color_sum_; //!< Sum of color samples for this pixel
-      double filter_weight_sum_; //!< Sum of filter weights for this pixel
+      Vector3d color_sum_ = Vector3d::Zero(); //!< Sum of color samples for this pixel
+      double filter_weight_sum_ = 0.0; //!< Sum of filter weights for this pixel
     };
 
     /*!
@@ -34,8 +37,31 @@ namespace cannon {
      * independently processed.
      */
     struct FilmTile {
+
+      /*!
+       * \brief Add a sample to this film tile.
+       *
+       * \param p_film Point on film that sample hits.
+       * \param color Color of sample
+       */
+      void add_sample(const Vector2d& p_film, const Vector3d& color);
+
+      /*!
+       * \brief Get pixel in this tile at location (i, j)
+       *
+       * \param i Horizontal coordinate of pixel
+       * \param j Vertical coordinate of pixel
+       *
+       * \returns Reference to pixel.
+       */
+      FilmPixel& get_pixel(int i, int j);
+
       unsigned int origin_x_, origin_y_; //!< Origin of this tile
       unsigned int extent_x_, extent_y_; //!< Extent of this tile
+      Vector2d filter_radius_; //!< Filter radius for film
+      Vector2d inv_filter_radius_; //!< 1 / filter_radius
+      const double *filter_table_; //!< Filter table for film
+      int filter_table_width_;
       std::vector<FilmPixel> pixels_; //!< Pixels in this tile
     };
 
@@ -45,9 +71,11 @@ namespace cannon {
     class Film {
       public:
 
-        Film(int width, int height, int tile_size) : width_(width),
-        height_(height), tile_size_(tile_size),
-        pixels_(width*height) {}
+        /*!
+         * \brief Constructor.
+         */
+        Film(int width, int height, int tile_size, std::unique_ptr<Filter>
+            filter);
 
         /*!
          * Get tile (i, j) of this film.
@@ -74,7 +102,11 @@ namespace cannon {
         int tile_size_; //!< Size of each film tile
         std::mutex mut_; //!< Mutex controlling image data writing/reading
         std::vector<FilmPixel> pixels_; //!< Rendered image data
+        std::unique_ptr<Filter> filter_; //!< Image reconstruction filter
 
+        static constexpr int filter_table_width_ = 16; //!< Size of cached filter table
+        double filter_table_[filter_table_width_ * filter_table_width_]; //!< Cached filter table
+        
     };
 
   } // namespace ray

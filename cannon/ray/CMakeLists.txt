@@ -15,6 +15,7 @@ list(APPEND RAY_SOURCES
   constant_medium.cpp
   film.cpp
   mesh.cpp
+  filter.cpp
   )
 
 add_library(ray OBJECT ${RAY_SOURCES})

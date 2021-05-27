@@ -23,6 +23,7 @@ namespace cannon {
 
     CANNON_CLASS_FORWARD(Hittable);
     CANNON_CLASS_FORWARD(Ray);
+    CANNON_CLASS_FORWARD(Filter);
 
     /*!
      * \brief Struct containing Raytracer params that can be read from YAML config.
@@ -79,9 +80,10 @@ namespace cannon {
          * Render scene progressively, sample by sample, to the input file.
          *
          * \param out_filename File to write rendered image to.
-         * \param tile_size Side length of parallel rendered tiles
+         * \param filter Reconstruction filter to use for rendering.
+         * \param tile_size Side length of parallel rendered tiles.
          */
-        void render(const std::string& out_filename, int tile_size=50);
+        void render(const std::string& out_filename, std::unique_ptr<Filter> filter, int tile_size=50);
 
       private:
         template <typename T>
