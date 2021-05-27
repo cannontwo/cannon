@@ -50,11 +50,13 @@ namespace cannon {
         }
 
         void join() {
-          queue_.push(nullptr);
-          for (auto& thread : threads_)
-            thread.join();
+          if (!joined_) {
+            queue_.push(nullptr);
+            for (auto& thread : threads_)
+              thread.join();
 
-          joined_ = true;
+            joined_ = true;
+          }
         }
 
         void enqueue(std::shared_ptr<T> t) {

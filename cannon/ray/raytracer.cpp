@@ -108,7 +108,6 @@ void Raytracer::render(std::ostream& os) {
 void Raytracer::render(const std::string& out_filename, int tile_size) {
   Film film(params_.image_width, params_.image_height, tile_size);
 
-  // TODO This is fantastically slower than the single-threaded version somehow, and I have no idea why. Memory allocation?
   ThreadPool<std::pair<int, int>> pool([&](std::shared_ptr<std::pair<int, int>> tile_coord) {
       auto tile = film.get_film_tile(tile_coord->first, tile_coord->second);
 
@@ -121,7 +120,8 @@ void Raytracer::render(const std::string& out_filename, int tile_size) {
             Ray r = camera_.get_ray(u, v);
             Vector3d pixel_color = ray_color(r, params_.max_depth);
 
-            tile->data_.col(j * tile_size + i) += pixel_color;
+            tile->pixels_[j * tile->extent_x_ + i].color_sum_ += pixel_color;
+            tile->pixels_[j * tile->extent_x_ + i].filter_weight_sum_ += 1.0;
           }
         }
       }

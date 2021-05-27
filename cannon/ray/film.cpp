@@ -18,7 +18,7 @@ std::unique_ptr<FilmTile> Film::get_film_tile(int i, int j) const {
   if ((tile->origin_y_ + tile->extent_y_) >= height_)
     tile->extent_y_ = height_ - tile->origin_y_;
 
-  tile->data_ = MatrixXd::Zero(3, tile->extent_x_ * tile->extent_y_);
+  tile->pixels_ = std::vector<FilmPixel>(tile->extent_x_ * tile->extent_y_);
 
   return tile;
 }
@@ -31,7 +31,8 @@ void Film::merge_film_tile(std::unique_ptr<FilmTile> tile) {
       int pixel_x = tile->origin_x_ + i;
       int pixel_y = tile->origin_y_ + j;
 
-      image_data_.col((height_ - pixel_y - 1) * width_ + pixel_x) = tile->data_.col(j * tile_size_ + i);
+      pixels_[(height_ - pixel_y - 1) * width_ + pixel_x].color_sum_ += tile->pixels_[j * tile->extent_x_ + i].color_sum_;
+      pixels_[(height_ - pixel_y - 1) * width_ + pixel_x].filter_weight_sum_ += tile->pixels_[j * tile->extent_x_ + i].filter_weight_sum_;
     }
   }
 }
@@ -41,7 +42,7 @@ void Film::write_image(const std::string& filename, int samples) {
   std::ofstream image_file(filename);
 
   image_file << "P3\n" << width_ << ' ' << height_ << "\n255\n";
-  write_colors(image_file, image_data_, samples);
+  write_colors(image_file, pixels_);
   image_file.flush();
 }
 

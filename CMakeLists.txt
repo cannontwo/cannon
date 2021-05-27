@@ -113,7 +113,7 @@ if (CANNON_BUILD_LIBRARY)
   include_directories(${OMPL_INCLUDE_DIRS})
   link_directories(${OMPL_LIBRARY_DIRS})
   add_definitions(${OMPL_DEFINITIONS})
-  list(APPEND LIBRARIES ${OMPL_LIBRARIES})
+  #list(APPEND LIBRARIES ${OMPL_LIBRARIES})
 
   # Eigen
   find_package(Eigen3 3.3.4 REQUIRED)

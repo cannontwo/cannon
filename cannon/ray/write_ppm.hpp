@@ -11,10 +11,14 @@
 
 #include <Eigen/Dense>
 
+#include <cannon/utils/class_forward.hpp>
+
 using namespace Eigen;
 
 namespace cannon {
   namespace ray {
+
+    CANNON_CLASS_FORWARD(FilmPixel);
 
     /*!
      * Function to write a color in PPM format to the input stream.
@@ -29,9 +33,9 @@ namespace cannon {
      *
      * \param os The stream to write this color to.
      * \param pixel_color The RGB color to write in PPM format.
-     * \param samples_per_pixel Number of samples contributing to pixel color.
+     * \param filter_sum Total filter weight sum for input color
      */
-    void write_color(std::ostream& os, const Vector3d& pixel_color, unsigned int samples_per_pixel);
+    void write_color(std::ostream& os, const Vector3d& pixel_color, double filter_sum);
 
     /*!
      * Function to write a matrix of all colors in an image to the input stream.
@@ -41,6 +45,14 @@ namespace cannon {
      * \param samples_per_pixel Number of samples per pixel.
      */
     void write_colors(std::ostream& os, const MatrixXd& pixel_colors, unsigned int samples_per_pixel);
+
+    /*!
+     * Function to write a vector of film pixels to the input stream.
+     * 
+     * \param os The stream to write this image to.
+     * \param pixels Vector of pixels to write
+     */
+    void write_colors(std::ostream& os, const std::vector<FilmPixel>& pixels);
 
   }
 }
