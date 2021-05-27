@@ -7,6 +7,28 @@
 using namespace cannon::log;
 using namespace cannon::logic;
 
+
+void FormulaState::write_graph() {
+  std::ofstream os("tmp.dot");
+  os << "digraph dpll_state {" << std::endl;
+
+  // TODO Can write to a temp file and wait for user input to continue.
+  // Also, only write graph when a clause is learned, as that's the
+  // inflection point we care about.
+
+  // TODO Write graph (check assignment, level_open, etc.)
+  // Arrow back from conflict level to branch where backjumping will restore
+
+  os << "}" << std::endl;
+
+  do {
+    std::cout << "Press Enter to continue..." << std::endl;
+  } while (std::cin.get() != '\n');
+
+  return;
+}
+
+
 std::ostream& cannon::logic::operator<<(std::ostream& os, const DPLLResult& r) {
   if (r == DPLLResult::Satisfiable)
     os << "Satisfiable";
@@ -559,7 +581,6 @@ void DPLLState::do_backjump() {
 
 std::pair<DPLLResult, Assignment> DPLLState::iterate() {
   Assignment empty;
-
 
   if (frontier_.size() == 0) {
     return {DPLLResult::Unsatisfiable, empty};
