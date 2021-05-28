@@ -36,11 +36,13 @@ namespace cannon {
          *
          * This constructor is primarily for use with Framebuffer.
          */
-        Texture(int width=800, int height=600, GLint internal_format=GL_RGBA,
-            GLenum data_type=GL_UNSIGNED_BYTE, GLenum format=GL_RGBA, const
-            void *data=NULL, GLenum texture_unit=GL_TEXTURE0)
-          : internal_format(internal_format), format_(format),
-          data_type(data_type), width_(width), height_(height), gl_texture_unit_(texture_unit) {
+        Texture(int width = 800, int height = 600,
+                GLint internal_format = GL_RGBA,
+                GLenum data_type = GL_UNSIGNED_BYTE, GLenum format = GL_RGBA,
+                const void *data = NULL, GLenum texture_unit = GL_TEXTURE0)
+            : internal_format(internal_format), format_(format),
+              data_type(data_type), width_(width), height_(height),
+              gl_texture_unit_(texture_unit), data_((unsigned char *)data) {
 
           glGenTextures(1, &gl_texture_);
 
@@ -248,6 +250,11 @@ namespace cannon {
          * Does not affect OpenGL state.
          */
         void write_imgui();
+
+        /*!
+         * \brief Re-buffer data to GPU.
+         */
+        void buffer();
 
         std::string path; //!< Path that this texture was loaded from.
 

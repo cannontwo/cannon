@@ -96,7 +96,7 @@ void Film::merge_film_tile(std::unique_ptr<FilmTile> tile) {
   }
 }
 
-void Film::write_image(const std::string& filename, int samples) {
+void Film::write_image(const std::string& filename) {
   std::lock_guard<std::mutex> lock(mut_);
   std::ofstream image_file(filename);
 
@@ -105,3 +105,22 @@ void Film::write_image(const std::string& filename, int samples) {
   image_file.flush();
 }
 
+void Film::write_image(float *data) {
+  std::lock_guard<std::mutex> lock(mut_);
+
+  for (int i = 0; i < width_; i++) {
+    for (int j = 0; j < height_; j++) {
+      int offset = 3 * ((width_ - i) * height_  + j);
+
+      Vector3d normalized_color = pixels_[i * height_ + j].color_sum_ /
+                                  pixels_[i * height_ + j].filter_weight_sum_;
+
+      // Correct for gamma=2.0
+      data[offset] = std::min(0.999f, std::max(0.f, std::sqrt((float)normalized_color.x())));
+      data[offset+1] = std::min(0.999f, std::max(0.f, std::sqrt((float)normalized_color.y())));
+      data[offset+2] = std::min(0.999f, std::max(0.f, std::sqrt((float)normalized_color.z())));
+    }
+  }
+
+
+}

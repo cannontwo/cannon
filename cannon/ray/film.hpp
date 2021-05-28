@@ -78,24 +78,31 @@ namespace cannon {
             filter);
 
         /*!
-         * Get tile (i, j) of this film.
+         * \brief Get tile (i, j) of this film.
          */
         std::unique_ptr<FilmTile> get_film_tile(int i, int j) const;
 
         /*!
-         * Merge input film tile into the final image.
+         * \brief Merge input film tile into the final image.
          *
          * \param tile The tile to merge.
          */
         void merge_film_tile(std::unique_ptr<FilmTile> tile);
 
         /*!
-         * Write this film to the input file.
+         * \brief Write this film to the input file.
          *
          * \param filename The filename to write this film to in PPM format.
-         * \param samples The number of samples performed per pixel
          */
-        void write_image(const std::string& filename, int samples);
+        void write_image(const std::string& filename);
+
+        /*!
+         * \brief Write this film to the input data pointer. 
+         *
+         * \param data Array in which to write data as RGB triples. Should have
+         * size = 3 * width_ * height_.
+         */
+        void write_image(float *data);
 
       public:
         int width_, height_; //!< Width and height of film

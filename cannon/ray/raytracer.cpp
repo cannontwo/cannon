@@ -11,6 +11,14 @@
 #include <cannon/utils/statistics.hpp>
 #include <cannon/math/random_double.hpp>
 
+#ifdef CANNON_BUILD_GRAPHICS
+
+#include <cannon/graphics/window.hpp>
+#include <cannon/graphics/texture.hpp>
+#include <cannon/graphics/geometry/screen_quad.hpp>
+
+#endif
+
 using namespace cannon::ray;
 using namespace cannon::math;
 using namespace cannon::utils;
@@ -142,6 +150,59 @@ void Raytracer::render(const std::string& out_filename, std::unique_ptr<Filter> 
 
   pool.join();
 
-  film.write_image(out_filename, params_.samples_per_pixel);
+  film.write_image(out_filename);
 
 }
+
+#ifdef CANNON_BUILD_GRAPHICS
+void Raytracer::render_interactive(std::unique_ptr<Filter> filter, int tile_size) {
+  Film film(params_.image_width, params_.image_height, tile_size, std::move(filter));
+
+  float *data = new float[3 * params_.image_width * params_.image_height];
+
+  ThreadPool<std::pair<int, int>> pool([&](std::shared_ptr<std::pair<int, int>> tile_coord) {
+      auto tile = film.get_film_tile(tile_coord->first, tile_coord->second);
+
+      for (unsigned int i = 0; i < tile->extent_x_; i++) {
+        for (unsigned int j = 0; j < tile->extent_y_; j++) {
+          for (int s = 0; s < params_.samples_per_pixel; s++) {
+            auto u = (i + tile->origin_x_ + random_double()) / (params_.image_width - 1);
+            auto v = (j + tile->origin_y_ + random_double()) / (params_.image_height - 1);
+
+            Ray r = camera_.get_ray(u, v);
+            Vector3d pixel_color = ray_color(r, params_.max_depth);
+
+            tile->add_sample(Vector2d(u * (params_.image_width - 1), v * (params_.image_height - 1)), pixel_color);
+          }
+        }
+      }
+
+      std::cerr << "\rFinished tile (" << tile_coord->first << ", " << tile_coord->second << ")" << std::flush;
+
+      film.merge_film_tile(std::move(tile));
+      film.write_image(data);
+      
+      report_thread_stats();
+      });
+
+  // Enqueue work, one item per sample. Could alternatively be done by chunking portions of image
+  for (int i = 0; i < std::floor(params_.image_width / tile_size); i++) {
+    for (int j = 0; j < std::floor(params_.image_height / tile_size); j++) {
+      pool.enqueue(std::make_shared<std::pair<int, int>>(std::make_pair(i, j)));
+    }
+  }
+
+  graphics::Window w(params_.image_width, params_.image_height);
+  auto tex = std::make_shared<graphics::Texture>(params_.image_width,
+      params_.image_height, GL_RGB, GL_FLOAT, GL_RGB, data);
+  graphics::geometry::ScreenQuad quad(tex, params_.image_width, params_.image_height);
+
+  w.render_loop([&](){
+      tex->buffer();
+      quad.draw();
+      });
+
+  pool.join();
+  delete[] data;
+}
+#endif

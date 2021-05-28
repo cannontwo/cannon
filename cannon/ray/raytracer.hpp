@@ -70,20 +70,31 @@ namespace cannon {
         raytracer_params load_config(const std::string& filename);
 
         /*!
-         * Render scene via raytracing to the input stream.
+         * \brief Render scene one pixel at a time via raytracing to the input stream.
+         * Note this is a simplistic rendering method.
          *
          * \param os The stream to render to.
          */
         void render(std::ostream& os);
 
         /*!
-         * Render scene progressively, sample by sample, to the input file.
+         * \brief Render scene to input file.
          *
          * \param out_filename File to write rendered image to.
          * \param filter Reconstruction filter to use for rendering.
          * \param tile_size Side length of parallel rendered tiles.
          */
         void render(const std::string& out_filename, std::unique_ptr<Filter> filter, int tile_size=50);
+
+#ifdef CANNON_BUILD_GRAPHICS
+        /*!
+         * \brief Render scene interactively using OpenGL
+         *
+         * \param filter Reconstruction filter to use for rendering
+         * \param tile_size Side length of parallel rendered tiles.
+         */
+        void render_interactive(std::unique_ptr<Filter> filter, int tile_size=50);
+#endif
 
       private:
         template <typename T>

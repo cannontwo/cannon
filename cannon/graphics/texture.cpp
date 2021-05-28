@@ -91,3 +91,9 @@ void Texture::write_imgui() {
     }
   }
 }
+
+void Texture::buffer() {
+  bind();
+  glTexImage2D(GL_TEXTURE_2D, 0, internal_format, width_, height_, 0, format_, data_type, data_);
+  unbind();
+}

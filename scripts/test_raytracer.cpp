@@ -252,8 +252,8 @@ int main(int argc, char** argv) {
   //auto world = two_perlin_spheres_scene();
   //auto world = earth_scene();
   //auto world = simple_light_scene();
-  auto world = cornell_box();
-  //auto world = final_scene();
+  //auto world = cornell_box();
+  auto world = final_scene();
   //auto world = model_test();
 
   auto t = std::make_shared<Affine3d>(Affine3d::Identity());
@@ -264,8 +264,10 @@ int main(int argc, char** argv) {
   //log_info("Rendering");
   Raytracer raytracer(argv[1], bvh);
   //raytracer.render(std::cout);
-  raytracer.render("test.ppm", std::make_unique<GaussianFilter>(Vector2d::Ones() * 2.0, 1.0));
-  //raytracer.render("test.ppm", std::make_unique<MitchellFilter>(Vector2d::Ones() * 2.0, 1.0/3.0, 1.0/3.0));
+  //raytracer.render("test.ppm", std::make_unique<BoxFilter>(Vector2d::Ones() * 2.0));
+  //raytracer.render("test.ppm", std::make_unique<GaussianFilter>(Vector2d::Ones() * 2.0, 1.0));
+  raytracer.render("test.ppm", std::make_unique<MitchellFilter>(Vector2d::Ones() * 2.0, 1.0/3.0, 1.0/3.0));
+  //raytracer.render_interactive(std::make_unique<MitchellFilter>(Vector2d::Ones() * 2.0, 1.0/3.0, 1.0/3.0));
   
   // Report and write stats out
   report_thread_stats();
