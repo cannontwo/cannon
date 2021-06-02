@@ -2,6 +2,12 @@
 #ifndef CANNON_MATH_LATTICE_POINTS_H
 #define CANNON_MATH_LATTICE_POINTS_H 
 
+/*!
+ * \file cannon/math/lattice_points.hpp
+ * \brief File containing utilities for working with points making up a lattice
+ * in arbitrary real vector spaces.
+ */
+
 #include <queue>
 
 #include <Eigen/Dense>
