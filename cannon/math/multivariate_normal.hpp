@@ -33,7 +33,9 @@ namespace cannon {
         /*!
          * \brief Constructor taking a mean and covariance matrix.
          */
-        MultivariateNormal(const VectorXd& mean, const MatrixXd& covar) : mean_(mean) {
+        MultivariateNormal(const VectorXd &mean, const MatrixXd &covar)
+            : mean_(mean),
+              transform_(MatrixXd::Zero(mean.size(), mean.size())) {
           SelfAdjointEigenSolver<MatrixXd> eigen_solver(covar);
           transform_ = eigen_solver.eigenvectors() *
             eigen_solver.eigenvalues().cwiseSqrt().asDiagonal();

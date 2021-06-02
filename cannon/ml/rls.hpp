@@ -17,20 +17,17 @@ namespace cannon {
 
         RLSFilter() = delete;
 
-        RLSFilter(unsigned int in_dim, unsigned int out_dim, double alpha=1.0e6,
-            double forgetting=1.0) : in_dim_(in_dim), out_dim_(out_dim),
-        param_dim_(in_dim), alpha_(alpha), forgetting_(forgetting) {
-          intercept_ = VectorXd::Zero(out_dim_);
-
-          theta_ = MatrixXd::Zero(param_dim_, out_dim_);
-          corrected_theta_ = MatrixXd::Zero(param_dim_, out_dim_);
-
-          feat_mean_ = RowVectorXd::Zero(param_dim_);
-          output_mean_ = RowVectorXd::Zero(out_dim_);
-
-          covar_ = MatrixXd::Identity(param_dim_, param_dim_) * alpha_;
-          pred_error_covar_ = MatrixXd::Zero(out_dim_, out_dim_);
-        };
+        RLSFilter(unsigned int in_dim, unsigned int out_dim,
+                  double alpha = 1.0e6, double forgetting = 1.0)
+            : in_dim_(in_dim), out_dim_(out_dim), param_dim_(in_dim),
+              alpha_(alpha), forgetting_(forgetting),
+              intercept_(VectorXd::Zero(out_dim_)),
+              theta_(MatrixXd::Zero(param_dim_, out_dim_)),
+              corrected_theta_(MatrixXd::Zero(param_dim_, out_dim_)),
+              feat_mean_(RowVectorXd::Zero(param_dim_)),
+              output_mean_(RowVectorXd::Zero(out_dim_)),
+              covar_(MatrixXd::Identity(param_dim_, param_dim_) * alpha_),
+              pred_error_covar_(MatrixXd::Zero(out_dim_, out_dim_)) {}
 
         unsigned int get_num_data() const;
 
