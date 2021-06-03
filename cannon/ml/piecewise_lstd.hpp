@@ -12,14 +12,14 @@ namespace cannon {
       public:
         PiecewiseLSTDFilter() = delete;
 
-        PiecewiseLSTDFilter(unsigned int in_dim, unsigned int num_refs, double
-            discount_factor, double alpha=1.0) : in_dim_(in_dim + 1),
-        param_dim_(in_dim_ * num_refs), num_refs_(num_refs),
-        discount_factor_(discount_factor), alpha_(alpha) {
-          a_inv_ = MatrixXd::Identity(param_dim_, param_dim_) * alpha_;
-          b_ = VectorXd::Zero(param_dim_);
-          theta_ = VectorXd::Zero(param_dim_);
-        }
+        PiecewiseLSTDFilter(unsigned int in_dim, unsigned int num_refs,
+                            double discount_factor, double alpha = 1.0)
+            : in_dim_(in_dim + 1), param_dim_(in_dim_ * num_refs),
+              num_refs_(num_refs), discount_factor_(discount_factor),
+              alpha_(alpha),
+              a_inv_(MatrixXd::Identity(param_dim_, param_dim_) * alpha_),
+              b_(VectorXd::Zero(param_dim_)),
+              theta_(VectorXd::Zero(param_dim_)) {}
 
         void process_datum(const VectorXd& in_vec, const VectorXd& next_in_vec,
             unsigned int idx, unsigned int next_idx, double reward);

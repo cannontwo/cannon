@@ -12,12 +12,11 @@ namespace cannon {
       public:
         AdamOptimizer() = delete;
 
-        AdamOptimizer(unsigned int rows, unsigned int cols, double
-            learning_rate) : cols_(cols), rows_(rows),
-        learning_rate_(learning_rate) {
-          first_moments_ = MatrixXd::Zero(rows_, cols_);
-          second_moments_ = MatrixXd::Zero(rows_, cols_);
-        }
+        AdamOptimizer(unsigned int rows, unsigned int cols,
+                      double learning_rate)
+            : cols_(cols), rows_(rows), learning_rate_(learning_rate),
+              first_moments_(MatrixXd::Zero(rows_, cols_)),
+              second_moments_(MatrixXd::Zero(rows_, cols_)) {}
 
         MatrixXd apply_update(const MatrixXd& params, const MatrixXd& gradient);
 
