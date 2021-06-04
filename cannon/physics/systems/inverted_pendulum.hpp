@@ -7,7 +7,6 @@
 
 #include <Eigen/Dense>
 
-#include <ompl/control/ODESolver.h>
 #include <ompl/control/spaces/RealVectorControlSpace.h>
 
 #include <cannon/physics/systems/system.hpp>
