@@ -53,7 +53,7 @@ namespace cannon {
         }
 
         /*!
-         * \brief Set the seed for this distribution.
+         * \brief Set the seed for all normal distributions.
          *
          * \param seed The new seed to use.
          */ 

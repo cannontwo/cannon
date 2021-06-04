@@ -115,7 +115,7 @@ void RLSFilter::update_covar_(const MatrixX2d& u, const Matrix2d& c,
 
   Matrix2d inv_part = c.inverse() + (v * covar_ * u);
   MatrixXd update = covar_ * u * inv_part.inverse() * v * covar_;
-  covar_ = (1.0 / std::pow(forgetting_, 2.0)) * (covar_ - update);
+  covar_ = ((1.0 / std::pow(forgetting_, 2.0)) * (covar_ - update)).eval();
 }
 
 void RLSFilter::update_theta_(const MatrixXd& c_t, const RowVectorXd& feat, 
@@ -129,22 +129,22 @@ void RLSFilter::update_theta_(const MatrixXd& c_t, const RowVectorXd& feat,
 
   MatrixXd inner_term = (feat.transpose() * output.transpose()) - (c_t * theta_);
   MatrixXd update = covar_ * inner_term;
-  theta_ = theta_ + update;
+  theta_ = (theta_ + update).eval();
 }
 
 void RLSFilter::update_output_mean_(const VectorXd& output) {
   if (output.size() != out_dim_)
     throw std::runtime_error("Passed output has wrong size");
 
-  output_mean_ = (forgetting_ * output_mean_) + ((1.0 / t_) *
-      (output.transpose() - (forgetting_ * output_mean_)));
+  output_mean_ = ((forgetting_ * output_mean_) + ((1.0 / t_) *
+      (output.transpose() - (forgetting_ * output_mean_)))).eval();
 }
 
 void RLSFilter::update_feat_mean_(const RowVectorXd& feat) {
   if (feat.size() != param_dim_)
     throw std::runtime_error("Passed feat has wrong size");
 
-  feat_mean_ = (forgetting_ * feat_mean_) + ((1.0 / t_) * (feat - (forgetting_ * feat_mean_)));
+  feat_mean_ = ((forgetting_ * feat_mean_) + ((1.0 / t_) * (feat - (forgetting_ * feat_mean_)))).eval();
 }
 
 void RLSFilter::update_pred_error_covar_(const VectorXd& in_vec, const VectorXd& output) {
@@ -157,8 +157,8 @@ void RLSFilter::update_pred_error_covar_(const VectorXd& in_vec, const VectorXd&
   VectorXd err = output - pred;
   assert(err.size() == out_dim_);
 
-  pred_error_covar_ = (forgetting_ * pred_error_covar_) + ((1.0 / t_) * ((err *
-          err.transpose()) - (forgetting_ * pred_error_covar_)));
+  pred_error_covar_ = ((forgetting_ * pred_error_covar_) + ((1.0 / t_) * ((err *
+          err.transpose()) - (forgetting_ * pred_error_covar_)))).eval();
 }
 
 unsigned int RLSFilter::get_num_data() const {
