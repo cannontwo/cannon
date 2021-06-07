@@ -109,7 +109,9 @@ if (CANNON_BUILD_LIBRARY)
   list(APPEND LIBRARIES ${CMAKE_THREAD_LIBS_INIT})
 
   # OMPL
-  find_package(OMPL REQUIRED)
+  # TODO Fix this
+  set(OMPL_DIR "/home/cannon/Documents/ompl")
+  find_package(ompl REQUIRED)
   include_directories(${OMPL_INCLUDE_DIRS})
   link_directories(${OMPL_LIBRARY_DIRS})
   add_definitions(${OMPL_DEFINITIONS})
@@ -143,9 +145,6 @@ if (CANNON_BUILD_LIBRARY)
   if (GUROBI_FOUND)
     add_definitions( -DCANNON_HAVE_GUROBI=1 )
     include_directories(${GUROBI_INCLUDE_DIRS})
-    message("GUROBI")
-    message(${GUROBI_LIBRARY})
-    message(${GUROBI_CXX_LIBRARY})
     # A hack, for some reason findGUROBI isn't working
     list(APPEND LIBRARIES ${GUROBI_LIBRARY} ${GUROBI_CXX_LIBRARY})
   endif()
