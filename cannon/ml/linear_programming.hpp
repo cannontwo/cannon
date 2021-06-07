@@ -1,6 +1,11 @@
 #ifndef CANNON_ML_LINEAR_PROGRAMMING_H
 #define CANNON_ML_LINEAR_PROGRAMMING_H 
 
+/*!
+ * \file cannon/ml/linear_programming.hpp
+ * \brief File containing LPOptimizer class definition.
+ */
+
 #ifdef CANNON_HAVE_GUROBI
 #include <memory>
 
@@ -16,10 +21,20 @@ namespace cannon {
 
     CANNON_CLASS_FORWARD(OptimizationResult);
 
+    /*!
+     * \brief Class representing a linear programming problem. Solving this
+     * optimization problem is done using Gurobi.
+     */
     class LPOptimizer {
       public:
         LPOptimizer() = delete;
 
+        /*!
+         * \brief Constructor taking variable constraints and the linear
+         * objective function cooeficients for a linear programming problem.
+         * The number of variables in the linear program is implicitly defined
+         * by the size of these vectors.
+         */
         LPOptimizer(const VectorXd& lower, const VectorXd& upper, const
             VectorXd& objective_vec) : env_(true), num_vars_(lower.size()) {
           assert(lower.size() == upper.size());
@@ -52,25 +67,39 @@ namespace cannon {
           model_->setObjective(obj, GRB_MINIMIZE);
         }
 
+        /*!
+         * \brief Destructor.
+         */
         ~LPOptimizer() {
           // vars_ is allocated on the heap and has to be freed
           delete[] vars_;
         }
 
-        // Constraints are assumed to be of the form A * x <= b
+        /*!
+         * \brief Add a constraint of the form A * x <= b to this linear
+         * programming problem. 
+         *
+         * \param lhs_mat Matrix multiplying the variables of this problem in the new constraint.
+         * \param rhs Vector on the right hand side of the inequality for the new constraint.
+         */
         void add_constraint(const MatrixXd& lhs_mat, const VectorXd& rhs);
 
-        // Minimizes by default. Throws std::runtime_error and GRBException, as
-        // well as misc other exceptions
+        /*!
+         * \brief Minimize the linear program represented by this object.
+         * Throws std::runtime_error and GRBException, as well as misc other
+         * exceptions.
+         *
+         * \returns The result of attempting to solve the linear program.
+         */
         OptimizationResult optimize();
         
 
       private:
-        GRBEnv env_;
-        std::shared_ptr<GRBModel> model_;
+        GRBEnv env_; //!< Gurobi environment
+        std::shared_ptr<GRBModel> model_; //!< Gurobi model representing this LP
 
-        GRBVar* vars_;
-        unsigned int num_vars_;
+        GRBVar* vars_; //!< Gurobi variables for this problem
+        unsigned int num_vars_; //!< Number of variables in this problem
 
     };
 
