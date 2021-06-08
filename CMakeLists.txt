@@ -18,6 +18,8 @@ option(CANNON_BUILD_LIBRARY "Whether to build anything at all" ON)
 # Building Documentation
 option(CANNON_BUILD_DOC "Build documentation" OFF)
 
+option(CANNON_BUILD_SCRIPTS "Build scripts" ON)
+
 # Compilation configuration
 #ADD_DEFINITIONS(
 #  -Wall
@@ -247,14 +249,16 @@ if (CANNON_BUILD_LIBRARY)
   catch_discover_tests(unit_tests)
 
   # Find scripts
-  file( GLOB_RECURSE SCRIPT_SOURCES scripts/*.cpp )
-  foreach (script_source ${SCRIPT_SOURCES})
-    get_filename_component( scriptname ${script_source} NAME_WE)
-    add_executable( ${scriptname} ${script_source} )
-    target_link_libraries( ${scriptname} cannon)
-    target_include_directories( ${scriptname} PUBLIC "${PROJECT_SOURCE_DIR}")
-    set_target_properties(${scriptname} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/scripts")
-  endforeach (script_source ${SCRIPT_SOURCES})
+  if (CANNON_BUILD_SCRIPTS)
+    file( GLOB_RECURSE SCRIPT_SOURCES scripts/*.cpp )
+    foreach (script_source ${SCRIPT_SOURCES})
+      get_filename_component( scriptname ${script_source} NAME_WE)
+      add_executable( ${scriptname} ${script_source} )
+      target_link_libraries( ${scriptname} cannon)
+      target_include_directories( ${scriptname} PUBLIC "${PROJECT_SOURCE_DIR}")
+      set_target_properties(${scriptname} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/scripts")
+    endforeach (script_source ${SCRIPT_SOURCES})
+  endif()
 
   if (CANNON_BUILD_RESEARCH)
     # Find experiments
