@@ -5,6 +5,7 @@ list(APPEND MATH_SOURCES
   func/rosenbrock.cpp
   random_double.cpp
   perlin.cpp
+  primes.cpp
   )
 
 add_library(math OBJECT ${MATH_SOURCES})
