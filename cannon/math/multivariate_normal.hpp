@@ -27,13 +27,13 @@ namespace cannon {
          * \brief Constructor taking a covariance matrix. The distribution is
          * assumed to be centered at zero.
          */
-        MultivariateNormal(const MatrixXd& covar) :
+        MultivariateNormal(const Ref<const MatrixXd>& covar) :
           MultivariateNormal(VectorXd::Zero(covar.rows()), covar) {}
 
         /*!
          * \brief Constructor taking a mean and covariance matrix.
          */
-        MultivariateNormal(const VectorXd &mean, const MatrixXd &covar)
+        MultivariateNormal(const Ref<const VectorXd> &mean, const Ref<const MatrixXd> &covar)
             : mean_(mean),
               transform_(MatrixXd::Zero(mean.size(), mean.size())) {
           SelfAdjointEigenSolver<MatrixXd> eigen_solver(covar);

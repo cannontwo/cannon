@@ -107,6 +107,22 @@ namespace cannon {
           return std::make_tuple(A, B, c - A * x);
         }
 
+        virtual void
+        get_continuous_time_linearization(const oc::ODESolver::StateType &q,
+                                          Ref<MatrixXd> A, Ref<MatrixXd> B) override {
+          double c = cos(q[2]), s = sin(q[2]);
+          A = 1e-3 * Eigen::MatrixXd::Identity(5, 5);
+          A(0, 2) = -q[3] * s;
+          A(0, 3) = c;
+          A(1, 2) = q[3] * c;
+          A(1, 3) = s;
+          A(2, 3) = (1.0 / l_) * q[4];
+          A(2, 4) = q[3] * (1.0 / l_);
+
+          B = Eigen::MatrixXd::Zero(5, 2);
+          B(3, 0) = B(4, 1) = 1.;
+        }
+
         static void ompl_post_integration(const ob::State* /*state*/, const
             oc::Control* /*control*/, const double /*duration*/, ob::State *result) {
 

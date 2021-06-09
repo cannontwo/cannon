@@ -17,12 +17,20 @@ namespace cannon {
 
       class System {
         public:
-          virtual void operator()(const VectorXd& s, VectorXd& dsdt, const double t) = 0;
+          virtual void operator()(const VectorXd &s, VectorXd &dsdt,
+                                  const double t) = 0;
 
-          virtual void ompl_ode_adaptor(const oc::ODESolver::StateType& q, 
-              const oc::Control* control, oc::ODESolver::StateType& qdot) = 0;
+          virtual void ompl_ode_adaptor(const oc::ODESolver::StateType &q,
+                                        const oc::Control *control,
+                                        oc::ODESolver::StateType &qdot) = 0;
 
-          virtual std::tuple<MatrixXd, MatrixXd, VectorXd> get_linearization(const VectorXd& x) = 0;
+          virtual std::tuple<MatrixXd, MatrixXd, VectorXd>
+          get_linearization(const VectorXd &x) = 0;
+
+          virtual void
+          get_continuous_time_linearization(const oc::ODESolver::StateType &q,
+                                            Ref<MatrixXd> A,
+                                            Ref<MatrixXd> B) = 0;
       };
 
     } // namespace system

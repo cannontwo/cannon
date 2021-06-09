@@ -73,6 +73,13 @@ namespace cannon {
           return std::make_tuple(A, B, c);
         }
 
+        virtual void
+        get_continuous_time_linearization(const oc::ODESolver::StateType &q,
+                                          Ref<MatrixXd> A,
+                                          Ref<MatrixXd> B) override {
+          throw std::runtime_error("Not implemented yet");
+        }
+
         static void ompl_post_integration(const ob::State* /*state*/, const
             oc::Control* /*control*/, const double /*duration*/, ob::State *result) {
           // Nothing needed
