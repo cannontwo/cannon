@@ -1,10 +1,6 @@
 #include <iostream>
 #include <cmath>
 
-#include <cannon/log/registry.hpp>
-
-using namespace cannon::log;
-
 /*!
  * A palindromic number reads the same both ways. The largest palindrome made
  * from the product of two 2-digit numbers is 9009 = 91 x 99. 
@@ -54,6 +50,6 @@ unsigned int get_largest_palindrome_product() {
   return largest_palindrome;
 }
 
-int main(int argc, char** argv) {
+int main() {
   std::cout << get_largest_palindrome_product() << std::endl;
 }
