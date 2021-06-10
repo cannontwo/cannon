@@ -40,7 +40,7 @@ namespace cannon {
           dsdt.resize(7);
           dsdt[0] = v * std::cos(th);
           dsdt[1] = v * std::sin(th);
-          dsdt[2] = (v / l_) * dth;
+          dsdt[2] = (v / l_) * std::tan(dth);
           dsdt[3] = ua;
           dsdt[4] = uth;
           dsdt[5] = 0.0;
@@ -84,7 +84,7 @@ namespace cannon {
           MatrixXd A(5, 5);
           A << 1, 0, -v * std::sin(th) * timestep, std::cos(th) * timestep, 0,
                0, 1, v * std::cos(th) * timestep, std::sin(th) * timestep, 0,
-               0, 0, 1, (dth / l_) * timestep, (v / l_) * timestep,
+               0, 0, 1, (tan(dth) / l_) * timestep, (v / l_) * (1.0 / (cos(dth) * cos(dth))) * timestep,
                0, 0, 0, 1, 0,
                0, 0, 0, 0, 1;
 
@@ -99,7 +99,7 @@ namespace cannon {
           VectorXd c(5); 
           c << x[0] + v * std::cos(th) * timestep,
                x[1] + v * std::cos(th) * timestep,
-               th + (v / l_) * dth * timestep,
+               th + (v / l_) * tan(dth) * timestep,
                v,
                dth;
 
@@ -116,8 +116,8 @@ namespace cannon {
           A(0, 3) = c;
           A(1, 2) = q[3] * c;
           A(1, 3) = s;
-          A(2, 3) = (1.0 / l_) * q[4];
-          A(2, 4) = q[3] * (1.0 / l_);
+          A(2, 3) = (1.0 / l_) * tan(q[4]);
+          A(2, 4) = q[3] * (1.0 / l_) / (cos(q[4]) * cos(q[4]));
 
           B = Eigen::MatrixXd::Zero(5, 2);
           B(3, 0) = B(4, 1) = 1.;
@@ -152,7 +152,7 @@ namespace cannon {
           }
 
           std::pair<VectorXd, double> step(double ua, double uth) {
-            double clipped_ua = std::max(-1.0, std::min(ua, 1.0));
+            double clipped_ua = std::max(-M_PI * 2.0 / 180.0, std::min(ua, M_PI * 2.0 / 180.0));
             //double clipped_uth = std::max(-M_PI, std::min(uth, M_PI));
             
             state_[5] = clipped_ua;
