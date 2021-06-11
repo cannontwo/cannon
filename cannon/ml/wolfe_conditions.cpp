@@ -32,7 +32,7 @@ bool cannon::ml::curvature_condition(RealFunc f, MultiFunc f_grad, const
   return lhs <= rhs;
 }
 
-double cannon::ml::wolfe_conditions(RealFunc f, MultiFunc f_grad, const
+bool cannon::ml::wolfe_conditions(RealFunc f, MultiFunc f_grad, const
     VectorXd& x, double step, const VectorXd& direction, double c_1, 
     double c_2) {
 
