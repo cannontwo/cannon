@@ -30,4 +30,14 @@ TEST_CASE("Primes", "[math]") {
 
   factor = get_largest_prime_factor(4);
   REQUIRE(factor == 2);
+
+  auto prime_factors = get_prime_factorization(20);
+  REQUIRE(prime_factors.size() == 3);
+  REQUIRE(prime_factors.count(2) == 2);
+  REQUIRE(prime_factors.count(5) == 1);
+
+  prime_factors = get_prime_factorization(100);
+  REQUIRE(prime_factors.size() == 4);
+  REQUIRE(prime_factors.count(2) == 2);
+  REQUIRE(prime_factors.count(5) == 2);
 }

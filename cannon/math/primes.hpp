@@ -10,10 +10,10 @@
 #include <type_traits>
 #include <vector>
 #include <cmath>
+#include <set>
 
 namespace cannon {
   namespace math {
-
   
     /*!
      * \brief Get all primes up to and including the input number. Uses the
@@ -76,6 +76,28 @@ namespace cannon {
       else
         return largest_prime_factor;
     
+    }
+
+    template <typename T>
+    typename std::enable_if<std::is_integral<T>::value, std::multiset<T>>::type
+    get_prime_factorization(T n) {
+      std::multiset<T> factors;
+      std::vector<T> primes =
+          get_primes_up_to(static_cast<T>(std::floor(std::sqrt(n))));
+
+      T tmp = n;
+
+      for (auto p : primes) {
+        while (tmp % p == 0) {
+          factors.insert(p);
+          tmp /= p;
+        }
+      }
+
+      if (tmp != 1)
+        factors.insert(tmp);
+
+      return factors;
     }
 
   } // namespace math
