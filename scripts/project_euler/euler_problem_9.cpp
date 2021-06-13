@@ -20,7 +20,7 @@ unsigned long find_special_pythagorean_triplet_product(unsigned int sum) {
       unsigned int c = sum - a - b; 
 
       assert(c >= 1);
-      assert(a + b + c = sum);
+      assert(a + b + c == sum);
 
       if (std::pow(a, 2) + std::pow(b, 2) == std::pow(c, 2)) {
         return a * b * c;
