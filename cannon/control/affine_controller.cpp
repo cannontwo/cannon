@@ -41,3 +41,9 @@ void AffineController::set_k(const VectorXd& k) {
   assert(k.size() == action_dim_);
   k_ = k;
 }
+
+void AffineController::set_K(const MatrixXd& K) {
+  assert(K.rows() == action_dim_);
+  assert(K.cols() == state_dim_);
+  K_ = K;
+}

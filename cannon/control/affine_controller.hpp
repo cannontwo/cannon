@@ -85,9 +85,18 @@ namespace cannon {
         /*!
          * Set the control offset vector.
          *
-         * \param k New control offset vector, which should be of the correct dimension.
+         * \param k New control offset vector, which should be of the correct
+         * dimension.
          */
         void set_k(const VectorXd& k);
+
+        /*!
+         * Set the control gain matrix.
+         *
+         * \param K New control gain matrix, which should be of the correct
+         * dimension. 
+         */
+        void set_K(const MatrixXd& K);
 
       private:
         // Parameters

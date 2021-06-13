@@ -82,6 +82,18 @@ namespace cannon {
         VectorXd predict(const VectorXd& in_vec);
 
         /*!
+         * \brief Set the parameters of this RLS filter. Input and output mean
+         * are recovered from the intercept.
+         *
+         * \param theta Parameter matrix to set.
+         * \param intercept Intercept to set.
+         * \param in_mean Input mean. 
+         */
+        void set_params(const Ref<const MatrixXd> &theta,
+                        const Ref<const VectorXd> &intercept,
+                        const Ref<const VectorXd> &in_mean);
+
+        /*!
          * \brief Reset this filter.
          */
         void reset();

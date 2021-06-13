@@ -46,3 +46,4 @@ of the repository get built.
 * `-DCANNON_BUILD_RESEARCH=<ON/OFF>` --- Whether to build the `research` package. This option should always remain OFF (the default) unless you have access to my private research repository.
 * `-DCANNON_BUILD_DOC=<ON/OFF>` --- Whether to build Doxygen documentation for this repository.
 * `-DCANNON_BUILD_LIBRARY=<ON/OFF>` --- Whether to build the `cannon` library.
+* `-DCANNON_BUILD_SCRIPTS=<ON/OFF>` --- Whether to build script executables.

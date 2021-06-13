@@ -65,6 +65,28 @@ void RLSFilter::reset() {
   pred_error_covar_ = MatrixXd::Zero(out_dim_, out_dim_);
 }
 
+void RLSFilter::set_params(const Ref<const MatrixXd> &theta,
+                           const Ref<const VectorXd> &intercept,
+                           const Ref<const VectorXd> &in_mean) {
+  
+  if (theta.rows() != param_dim_ || theta.cols() != out_dim_)
+    throw std::runtime_error("Theta matrix has the wrong size");
+
+  if (intercept.size() == out_dim_)
+    throw std::runtime_error("Intercept has the wrong size");
+
+  if (intercept.size() == param_dim_)
+    throw std::runtime_error("Intercept has the wrong size");
+
+  reset();
+
+  theta_ = theta;
+  corrected_theta_ = theta_;
+  intercept_ = intercept;
+  feat_mean_ = in_mean.transpose();
+  output_mean_ = intercept_ + feat_mean_ * theta_;
+}
+
 // Private methods
 RowVectorXd RLSFilter::make_feature_vec_(const VectorXd& in_vec) const {
   if (in_vec.size() != in_dim_)
