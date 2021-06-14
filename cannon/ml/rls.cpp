@@ -72,11 +72,11 @@ void RLSFilter::set_params(const Ref<const MatrixXd> &theta,
   if (theta.rows() != param_dim_ || theta.cols() != out_dim_)
     throw std::runtime_error("Theta matrix has the wrong size");
 
-  if (intercept.size() == out_dim_)
-    throw std::runtime_error("Intercept has the wrong size");
+  if (intercept.size() != out_dim_)
+    throw std::runtime_error("Intercept has the wrong size: " + std::to_string(intercept.size()));
 
-  if (intercept.size() == param_dim_)
-    throw std::runtime_error("Intercept has the wrong size");
+  if (in_mean.size() != param_dim_)
+    throw std::runtime_error("In_mean has the wrong size");
 
   reset();
 

@@ -34,7 +34,8 @@ namespace cannon {
         double get_time();
 
       private:
-        using stepper_type = runge_kutta4<VectorXd, double, VectorXd, double, vector_space_algebra>;
+        //using stepper_type = runge_kutta4<VectorXd, double, VectorXd, double, vector_space_algebra>;
+        using stepper_type = runge_kutta_dopri5<VectorXd, double, VectorXd, double, vector_space_algebra>;
 
         system_type system_;
         stepper_type stepper_;
