@@ -6,6 +6,7 @@ list(APPEND MATH_SOURCES
   random_double.cpp
   perlin.cpp
   primes.cpp
+  bignum.cpp
   )
 
 add_library(math OBJECT ${MATH_SOURCES})
