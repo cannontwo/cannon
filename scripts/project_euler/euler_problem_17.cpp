@@ -120,5 +120,4 @@ unsigned int get_number_letters_under_thousand() {
 
 int main(int argc, char** argv) {
   std::cout << get_number_letters_under_thousand() << std::endl;
-  std::cout << get_number_letters(std::stoul(argv[1])) << std::endl;
 }
