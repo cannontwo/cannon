@@ -28,7 +28,7 @@ option(CANNON_BUILD_SCRIPTS "Build scripts" ON)
 #)
 
 set(CMAKE_CXX_FLAGS_DEBUG "-Wall -g -O0 -ftime-trace")
-set(CMAKE_CXX_FLAGS_RELEASE "-Wall -O0")
+set(CMAKE_CXX_FLAGS_RELEASE "-Wall -O3")
 
 set(CMAKE_FIND_LIBRARY_SUFFIXES ".so" ".a")
 

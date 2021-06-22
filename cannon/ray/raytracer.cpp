@@ -114,7 +114,9 @@ void Raytracer::render(std::ostream& os) {
   std::cerr << "\nDone.\n";
 }
 
-void Raytracer::render(const std::string& out_filename, std::unique_ptr<Filter> filter, int tile_size) {
+void Raytracer::render(const std::string &out_filename,
+                       std::unique_ptr<Filter> filter, int tile_size,
+                       unsigned int num_threads) {
   Film film(params_.image_width, params_.image_height, tile_size, std::move(filter));
 
   ThreadPool<std::pair<int, int>> pool([&](std::shared_ptr<std::pair<int, int>> tile_coord) {
@@ -139,7 +141,7 @@ void Raytracer::render(const std::string& out_filename, std::unique_ptr<Filter> 
       film.merge_film_tile(std::move(tile));
       
       report_thread_stats();
-      });
+      }, num_threads);
 
   // Enqueue work, one item per sample. Could alternatively be done by chunking portions of image
   for (int i = 0; i < std::floor(params_.image_width / tile_size); i++) {

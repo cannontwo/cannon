@@ -57,7 +57,7 @@ void LQRController::compute_lqr_gain_() {
 }
 
 void LQRController::set_target(const Ref<const VectorXd>& q) {
-  assert(q.size == q0_.size());
+  assert(q.size() == q0_.size());
   q0_ = q;
 
   compute_lqr_gain_();

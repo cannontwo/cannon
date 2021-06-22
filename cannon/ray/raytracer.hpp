@@ -83,8 +83,11 @@ namespace cannon {
          * \param out_filename File to write rendered image to.
          * \param filter Reconstruction filter to use for rendering.
          * \param tile_size Side length of parallel rendered tiles.
+         * \param num_threads Number of threads to use for parallel rendering
          */
-        void render(const std::string& out_filename, std::unique_ptr<Filter> filter, int tile_size=50);
+        void render(const std::string &out_filename,
+                    std::unique_ptr<Filter> filter, int tile_size = 50,
+                    unsigned int num_threads = 2);
 
 #ifdef CANNON_BUILD_GRAPHICS
         /*!
