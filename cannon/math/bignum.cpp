@@ -53,6 +53,18 @@ BigUnsigned BigUnsigned::operator+(const BigUnsigned& o) const {
   return BigUnsigned(ret_digits);
 }
 
+BigUnsigned BigUnsigned::operator*(unsigned int o) const {
+  // VERY SLOW - Implement cross products at some point
+  
+  BigUnsigned tmp(*this);
+
+  for (unsigned i = 1; i < o; ++i) {
+    tmp = tmp + *this;
+  }
+
+  return tmp;
+}
+
 std::vector<unsigned int> BigUnsigned::get_digits() const {
   return digits_;
 }

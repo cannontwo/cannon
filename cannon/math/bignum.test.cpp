@@ -41,4 +41,14 @@ TEST_CASE("Bignum", "[math]") {
   REQUIRE(two_powers.get_digits()[2] == 7);
   REQUIRE(two_powers.get_digits()[3] == 2);
   REQUIRE(two_powers.get_digits()[4] == 3);
+
+  BigUnsigned threes("3");
+  threes = threes * 3;
+  REQUIRE(threes.size() == 1);
+  REQUIRE(threes.get_digits()[0] == 9);
+
+  threes = threes * 3;
+  REQUIRE(threes.size() == 2);
+  REQUIRE(threes.get_digits()[0] == 7);
+  REQUIRE(threes.get_digits()[1] == 2);
 }

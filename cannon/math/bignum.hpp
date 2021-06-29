@@ -63,6 +63,11 @@ namespace cannon {
         BigUnsigned operator+(const BigUnsigned& o) const;
 
         /*!
+         * \brief Multiplication operator.
+         */
+        BigUnsigned operator*(unsigned int o) const;
+
+        /*!
          * \brief Get digits representing this number.
          *
          * \returns Digits making up arbitrary-precision unsigned int.
