@@ -78,6 +78,15 @@ namespace cannon {
     
     }
 
+    /*!
+     * \brief Get prime factorization of the input number.
+     *
+     * \param n The number to factorize.
+     *
+     * \returns A multiset of prime factors, where the number of entries for a
+     * particular prime is the number of times that the prime occurs in the
+     * prime factorization.
+     */
     template <typename T>
     typename std::enable_if<std::is_integral<T>::value, std::multiset<T>>::type
     get_prime_factorization(T n) {
