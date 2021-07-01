@@ -7,6 +7,7 @@ list(APPEND MATH_SOURCES
   perlin.cpp
   primes.cpp
   bignum.cpp
+  divisors.cpp
   )
 
 add_library(math OBJECT ${MATH_SOURCES})
