@@ -8,6 +8,7 @@ list(APPEND MATH_SOURCES
   primes.cpp
   bignum.cpp
   divisors.cpp
+  to_decimal.cpp
   )
 
 add_library(math OBJECT ${MATH_SOURCES})
