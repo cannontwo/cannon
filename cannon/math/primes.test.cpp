@@ -40,4 +40,9 @@ TEST_CASE("Primes", "[math]") {
   REQUIRE(prime_factors.size() == 4);
   REQUIRE(prime_factors.count(2) == 2);
   REQUIRE(prime_factors.count(5) == 2);
+
+  REQUIRE(is_prime(5));
+  REQUIRE(is_prime(1601));
+  REQUIRE(!is_prime(4));
+  REQUIRE(!is_prime(10));
 }

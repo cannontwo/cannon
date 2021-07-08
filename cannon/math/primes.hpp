@@ -12,6 +12,10 @@
 #include <cmath>
 #include <set>
 
+#include <cannon/log/registry.hpp>
+
+using namespace cannon::log;
+
 namespace cannon {
   namespace math {
   
@@ -29,15 +33,22 @@ namespace cannon {
     template <typename T>
     typename std::enable_if<std::is_integral<T>::value, std::vector<T>>::type
     get_primes_up_to(T upper) {
+      if (upper < 2) {
+        std::vector<T> empty;
+        return empty;
+      }
 
-      std::vector<bool> sieve(upper+1, true);
-      sieve[0] = false;
-      sieve[1] = false;
+      // 0 and 1 are not primes
+      static std::vector<bool> sieve(2, false);
 
-      for (T i = 0; i <= std::sqrt(upper); ++i) {
-        if (sieve[i]) {
-          for (T j = i*i; j <= upper; j += i) {
-            sieve[j] = false;
+      if (sieve.size() < upper + 1) {
+        sieve.resize(upper+1, true);
+        
+        for (T i = 0; i <= std::sqrt(upper); ++i) {
+          if (sieve[i]) {
+            for (T j = i*i; j <= upper; j += i) {
+              sieve[j] = false;
+            }
           }
         }
       }
@@ -49,6 +60,28 @@ namespace cannon {
       }
       
       return primes;
+    }
+
+    /*!
+     * \brief Check if the input number is prime. Note that this is not
+     * incredibly efficient, as the Sieve of Eratosthenes is re-run each time.
+     *
+     * \param x The number to check for primeness.
+     *
+     * \returns Whether @param x is prime
+     */
+    template <typename T>
+    typename std::enable_if<std::is_integral<T>::value, bool>::type
+    is_prime(T x) {
+      if (x == 1 || x == 0)
+        return false;
+
+      for (T i = 2; i <= std::sqrt(x); ++i) {
+        if ((x % i) == 0)
+          return false;
+      }
+      
+      return true;
     }
 
     /*!
