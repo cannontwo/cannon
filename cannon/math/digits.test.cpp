@@ -23,4 +23,7 @@ TEST_CASE("Digits", "[math]") {
   REQUIRE(bin_digits[1] == 0);
   REQUIRE(bin_digits[2] == 0);
   REQUIRE(bin_digits[3] == 1);
+  
+  REQUIRE(from_digits(get_digits(12345)) == 12345);
+  REQUIRE(from_digits(get_digits(12345, 2), 2) == 12345);
 }

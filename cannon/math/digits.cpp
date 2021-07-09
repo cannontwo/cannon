@@ -1,5 +1,6 @@
 #include <cannon/math/digits.hpp>
 
+#include <cmath>
 #include <stdexcept>
 
 std::vector<unsigned int> cannon::math::get_digits(unsigned int x,
@@ -15,4 +16,14 @@ std::vector<unsigned int> cannon::math::get_digits(unsigned int x,
   }
 
   return ret_vec;
+}
+
+unsigned int cannon::math::from_digits(const std::vector<unsigned int> &digits,
+                                       unsigned int base) {
+  unsigned int ret = 0;
+  for (unsigned int i = 0; i < digits.size(); ++i) {
+    ret += std::pow(base, i) * digits[i];
+  }
+
+  return ret;
 }

@@ -25,6 +25,16 @@ namespace cannon {
      */
     std::vector<unsigned int> get_digits(unsigned int x, unsigned int base = 10);
 
+    /*!
+     * \brief Convert a vector of digits in the input base into an unsigned int.
+     *
+     * \param digits The digits
+     * \param base The base that the digits are in
+     *
+     * \returns An equivalent unsigned int
+     */
+    unsigned int from_digits(const std::vector<unsigned int> &digits,
+                             unsigned int base = 10);
 
   } // namespace math
 } // namespace cannon
