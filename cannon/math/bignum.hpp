@@ -31,6 +31,12 @@ namespace cannon {
         }
 
         /*!
+         * \brief Constructor taking an unsigned int to initialize this object
+         * with.
+         */
+        BigUnsigned(unsigned int x);
+
+        /*!
          * \brief Constructor taking a string representing the number to
          * initialize.
          */
@@ -63,9 +69,24 @@ namespace cannon {
         BigUnsigned operator+(const BigUnsigned& o) const;
 
         /*!
+         * \brief Compound multiplication assignment operator.
+         */
+        BigUnsigned& operator+=(const BigUnsigned& o);
+
+        /*!
          * \brief Multiplication operator.
          */
         BigUnsigned operator*(unsigned int o) const;
+
+        /*!
+         * \brief Compound multiplication assignment operator.
+         */
+        BigUnsigned& operator*=(const BigUnsigned& o);
+
+        /*!
+         * \brief Comparison operator.
+         */
+        bool operator<(const BigUnsigned& o) const;
 
         /*!
          * \brief Get digits representing this number.

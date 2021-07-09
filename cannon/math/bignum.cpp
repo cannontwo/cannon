@@ -2,8 +2,21 @@
 
 #include <cassert>
 #include <cmath>
+#include <algorithm>
 
 using namespace cannon::math;
+
+BigUnsigned::BigUnsigned(unsigned int x) {
+  if (x == 0) {
+    digits_.push_back(0);
+    return;
+  }
+
+  while (x != 0) {
+    digits_.push_back(x % 10);
+    x /= 10;
+  }
+}
 
 BigUnsigned::BigUnsigned(const std::string& num) {
   for (unsigned int i = 0; i < num.size(); i++) {
@@ -29,7 +42,19 @@ BigUnsigned& BigUnsigned::operator=(const BigUnsigned& o) {
 }
 
 BigUnsigned BigUnsigned::operator+(const BigUnsigned& o) const {
-  std::vector<unsigned int> ret_digits;
+  BigUnsigned tmp(*this);
+  tmp += o;
+  return tmp;
+}
+
+BigUnsigned BigUnsigned::operator*(unsigned int o) const {
+  BigUnsigned tmp(*this);
+  tmp *= o;
+  return tmp;
+}
+
+BigUnsigned& BigUnsigned::operator+=(const BigUnsigned& o) {
+  std::vector<unsigned int> new_digits;
   unsigned int upper = std::max(size(), o.size());
   unsigned int carry = 0;
 
@@ -39,30 +64,60 @@ BigUnsigned BigUnsigned::operator+(const BigUnsigned& o) const {
     unsigned int tmp = l + r + carry;
 
     if (tmp > 9) {
-      ret_digits.push_back(tmp - 10);
+      new_digits.push_back(tmp - 10);
       carry = 1;
     } else {
-      ret_digits.push_back(tmp);
+      new_digits.push_back(tmp);
       carry = 0;
     }
   }
 
   if (carry != 0)
-    ret_digits.push_back(carry);
+    new_digits.push_back(carry);
 
-  return BigUnsigned(ret_digits);
+  digits_ = new_digits;
+  return *this;
 }
 
-BigUnsigned BigUnsigned::operator*(unsigned int o) const {
-  // VERY SLOW - Implement cross products at some point
-  
-  BigUnsigned tmp(*this);
+BigUnsigned& BigUnsigned::operator*=(const BigUnsigned& o) {
+  std::vector<unsigned int> new_digits;
+  unsigned int carry = 0;
 
-  for (unsigned i = 1; i < o; ++i) {
-    tmp = tmp + *this;
+  for (unsigned int i = 0; i <= size() + o.size() - 2; ++i) {
+    unsigned int digit_sum = carry;
+
+    for (unsigned int j = 0; j <= std::min(i, size()-1); ++j) {
+      if (i - j < o.size())
+        digit_sum += digits_[j] * o.digits_[i - j];
+    }
+
+    new_digits.push_back(digit_sum % 10);
+    carry = digit_sum / 10;
   }
 
-  return tmp;
+  while (carry != 0) {
+    new_digits.push_back(carry % 10);
+    carry /= 10;
+  }
+
+  digits_ = new_digits;
+
+  return *this;
+}
+
+bool BigUnsigned::operator<(const BigUnsigned& o) const {
+  if (size() != o.size())
+    return size() < o.size();
+  else {
+    for (int i = size()-1; i >=0; --i) {
+      if (digits_[i] == o.digits_[i])
+        continue;
+      else
+        return digits_[i] < o.digits_[i];
+    }
+
+    return false;
+  }
 }
 
 std::vector<unsigned int> BigUnsigned::get_digits() const {
