@@ -9,6 +9,8 @@ list(APPEND MATH_SOURCES
   bignum.cpp
   divisors.cpp
   to_decimal.cpp
+  digits.cpp
+  palindromes.cpp
   )
 
 add_library(math OBJECT ${MATH_SOURCES})
