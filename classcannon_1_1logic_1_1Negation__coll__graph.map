@@ -1,0 +1,4 @@
+<map id="cannon::logic::Negation" name="cannon::logic::Negation">
+<area shape="rect" id="node1" title="Class representing the negation of a contained formula." alt="" coords="5,80,180,107"/>
+<area shape="rect" id="node2" href="$classcannon_1_1logic_1_1Formula.html" title="Abstract base class representing a boolean formula." alt="" coords="8,5,177,32"/>
+</map>

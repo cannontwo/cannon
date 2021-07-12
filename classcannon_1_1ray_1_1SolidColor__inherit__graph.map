@@ -1,0 +1,4 @@
+<map id="cannon::ray::SolidColor" name="cannon::ray::SolidColor">
+<area shape="rect" id="node1" title="Class representing a texture of a single, fixed color." alt="" coords="5,80,176,107"/>
+<area shape="rect" id="node2" href="$classcannon_1_1ray_1_1Texture.html" title="Abstract class representing a texture on some geometry." alt="" coords="14,5,167,32"/>
+</map>

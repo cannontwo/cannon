@@ -1,0 +1,4 @@
+<map id="cannon::control::AffineController" name="cannon::control::AffineController">
+<area shape="rect" id="node1" title="Class representing an affine&#45;controller." alt="" coords="5,109,237,136"/>
+<area shape="rect" id="node2" href="$classcannon_1_1ml_1_1AdamOptimizer.html" title="Class representing an Adam optimizer. Adam is a stochastic optimization method which produces modifie..." alt="" coords="19,5,223,32"/>
+</map>

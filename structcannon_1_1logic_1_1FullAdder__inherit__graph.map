@@ -1,0 +1,4 @@
+<map id="cannon::logic::FullAdder" name="cannon::logic::FullAdder">
+<area shape="rect" id="node1" title="Class representing a full adder convertible to CNF. See https://en.wikipedia.org/wiki/Adder_(electron..." alt="" coords="5,80,183,107"/>
+<area shape="rect" id="node2" href="$structcannon_1_1logic_1_1Circuit.html" title="Abstract class serving as the basis for other circuits. Circuits can be composed by connecting input ..." alt="" coords="15,5,173,32"/>
+</map>

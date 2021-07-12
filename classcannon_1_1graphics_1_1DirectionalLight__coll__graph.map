@@ -1,0 +1,4 @@
+<map id="cannon::graphics::DirectionalLight" name="cannon::graphics::DirectionalLight">
+<area shape="rect" id="node1" title="Class representing a directional light source (e.g., the sun)" alt="" coords="5,80,216,121"/>
+<area shape="rect" id="node2" href="$classcannon_1_1graphics_1_1Light.html" title="Interface unifying all light classes currently implemented." alt="" coords="25,5,197,32"/>
+</map>

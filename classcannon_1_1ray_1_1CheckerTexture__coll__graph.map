@@ -1,0 +1,4 @@
+<map id="cannon::ray::CheckerTexture" name="cannon::ray::CheckerTexture">
+<area shape="rect" id="node1" title="Class representing a procedural checker texture." alt="" coords="5,80,211,107"/>
+<area shape="rect" id="node2" href="$classcannon_1_1ray_1_1Texture.html" title="Abstract class representing a texture on some geometry." alt="" coords="31,5,185,32"/>
+</map>

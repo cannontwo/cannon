@@ -1,0 +1,4 @@
+<map id="cannon::graphics::Spotlight" name="cannon::graphics::Spotlight">
+<area shape="rect" id="node1" title="Class representing a spotlight which casts light in only a prescribed cone." alt="" coords="5,80,204,107"/>
+<area shape="rect" id="node2" href="$classcannon_1_1graphics_1_1Light.html" title="Interface unifying all light classes currently implemented." alt="" coords="19,5,191,32"/>
+</map>

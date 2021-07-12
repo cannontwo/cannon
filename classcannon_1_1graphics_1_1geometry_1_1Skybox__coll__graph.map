@@ -1,0 +1,5 @@
+<map id="cannon::graphics::geometry::Skybox" name="cannon::graphics::geometry::Skybox">
+<area shape="rect" id="node1" title=" " alt="" coords="113,109,316,151"/>
+<area shape="rect" id="node2" href="$classcannon_1_1graphics_1_1Cubemap.html" title="Class representing an OpenGL cubemap." alt="" coords="5,13,208,39"/>
+<area shape="rect" id="node3" href="$classcannon_1_1graphics_1_1VertexBuffer.html" title="Class encapsulating an OpenGL vertex buffer object. Handles and represents state of the buffer." alt="" coords="233,5,415,47"/>
+</map>

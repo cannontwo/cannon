@@ -1,0 +1,4 @@
+<map id="cannon::ray::Sphere" name="cannon::ray::Sphere">
+<area shape="rect" id="node1" title="Class representing a raytraceable sphere." alt="" coords="9,80,159,107"/>
+<area shape="rect" id="node2" href="$classcannon_1_1ray_1_1Hittable.html" title="Abstract class representing a hittable geometry." alt="" coords="5,5,163,32"/>
+</map>

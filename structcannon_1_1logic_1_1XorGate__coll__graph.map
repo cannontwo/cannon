@@ -1,0 +1,4 @@
+<map id="cannon::logic::XorGate" name="cannon::logic::XorGate">
+<area shape="rect" id="node1" title="Class representing an XOR gate convertible to CNF." alt="" coords="5,80,175,107"/>
+<area shape="rect" id="node2" href="$structcannon_1_1logic_1_1Circuit.html" title="Abstract class serving as the basis for other circuits. Circuits can be composed by connecting input ..." alt="" coords="11,5,169,32"/>
+</map>

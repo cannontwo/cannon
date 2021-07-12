@@ -1,0 +1,9 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="node1" href="$classcannon_1_1logic_1_1Formula.html" title="Abstract base class representing a boolean formula." alt="" coords="5,132,175,159"/>
+<area shape="rect" id="node2" href="$classcannon_1_1logic_1_1And.html" title="Class representing the boolean AND operator." alt="" coords="239,5,381,32"/>
+<area shape="rect" id="node3" href="$classcannon_1_1logic_1_1Atomic.html" title="Class representing an atomic proposition." alt="" coords="229,56,391,83"/>
+<area shape="rect" id="node4" href="$classcannon_1_1logic_1_1Iff.html" title="Class representing a boolean if&#45;and&#45;only&#45;if operator." alt="" coords="245,107,375,133"/>
+<area shape="rect" id="node5" href="$classcannon_1_1logic_1_1Implies.html" title="Class representing a boolean implication operator." alt="" coords="228,157,392,184"/>
+<area shape="rect" id="node6" href="$classcannon_1_1logic_1_1Negation.html" title="Class representing the negation of a contained formula." alt="" coords="223,208,397,235"/>
+<area shape="rect" id="node7" href="$classcannon_1_1logic_1_1Or.html" title="Class representing a boolean OR operator." alt="" coords="245,259,375,285"/>
+</map>

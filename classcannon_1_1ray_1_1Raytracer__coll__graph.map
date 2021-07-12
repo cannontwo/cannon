@@ -1,0 +1,5 @@
+<map id="cannon::ray::Raytracer" name="cannon::ray::Raytracer">
+<area shape="rect" id="node1" title="Class representing core raytracer functionality." alt="" coords="91,109,259,136"/>
+<area shape="rect" id="node2" href="$classcannon_1_1ray_1_1Camera.html" title="Class representing a camera generating rays into a scene." alt="" coords="5,13,161,39"/>
+<area shape="rect" id="node3" href="$structcannon_1_1ray_1_1raytracer__params.html" title="Struct containing Raytracer params that can be read from YAML config." alt="" coords="185,5,349,47"/>
+</map>

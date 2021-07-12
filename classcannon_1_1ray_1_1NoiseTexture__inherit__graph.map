@@ -1,0 +1,4 @@
+<map id="cannon::ray::NoiseTexture" name="cannon::ray::NoiseTexture">
+<area shape="rect" id="node1" title="Class representing a Perlin noise texture." alt="" coords="5,80,196,107"/>
+<area shape="rect" id="node2" href="$classcannon_1_1ray_1_1Texture.html" title="Abstract class representing a texture on some geometry." alt="" coords="24,5,177,32"/>
+</map>
