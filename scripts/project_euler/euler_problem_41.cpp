@@ -56,7 +56,7 @@ std::vector<unsigned int> generate_pandigitals(unsigned int n) {
 
 unsigned int compute_largest_pandigital_prime() {
   unsigned int largest = 0;
-  for (int i = 9; i > 3; --i) {
+  for (int i = 7; i > 3; --i) {
     auto pans = generate_pandigitals(i);
 
     for (auto& x : pans) {
