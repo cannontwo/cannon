@@ -3,7 +3,7 @@
 using namespace cannon::physics;
 
 
-VectorXd RK4Integrator::step() {
+const VectorXd& RK4Integrator::step() {
   //stepper_.do_step(system_, state_, t_, dt_);
   auto solver = boost::numeric::odeint::make_controlled(1e-6, 1e-6, stepper_type());
   boost::numeric::odeint::integrate_adaptive(solver, system_, state_, 0.0, dt_, 1e-3);

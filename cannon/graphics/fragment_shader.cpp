@@ -12,7 +12,7 @@ FragmentShader cannon::graphics::load_fragment_shader(const std::string& path) {
 
     const char *c_str = str.c_str();
     return FragmentShader(&c_str);
-  } catch (std::ifstream::failure e) {
+  } catch (std::ifstream::failure& e) {
     throw std::runtime_error("Couldn't open file for fragment shader source");
   }
 }
@@ -28,7 +28,7 @@ FragmentShader cannon::graphics::load_fragment_shader(const std::string& main_pa
     program_src = std::string((std::istreambuf_iterator<char>(fs)),
         std::istreambuf_iterator<char>());
 
-  } catch (std::ifstream::failure e) {
+  } catch (std::ifstream::failure& e) {
     throw std::runtime_error("Couldn't open file for fragment shader source");
   }
 
@@ -48,7 +48,7 @@ FragmentShader cannon::graphics::load_fragment_shader(const std::string& main_pa
       lib_src = std::string((std::istreambuf_iterator<char>(fs)),
           std::istreambuf_iterator<char>());
 
-    } catch (std::ifstream::failure e) {
+    } catch (std::ifstream::failure& e) {
       throw std::runtime_error("Couldn't open file for fragment shader lib");
     }
 

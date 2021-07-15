@@ -88,7 +88,7 @@ void VertexBuffer::replace(MatrixX2f vertices) {
   int size;
   glGetBufferParameteriv(GL_ARRAY_BUFFER, GL_BUFFER_SIZE,  &size);
 
-  if (size == sizeof(float) * vertices.size()) {
+  if (static_cast<unsigned int>(size) == sizeof(float) * vertices.size()) {
     // Eigen stores matrices in column-major format, so we transpose because
     // OpenGL expects row-major
     Matrix2Xf tmp_vertices;
@@ -106,7 +106,7 @@ void VertexBuffer::replace(MatrixX3f vertices) {
   int size;
   glGetBufferParameteriv(GL_ARRAY_BUFFER, GL_BUFFER_SIZE,  &size);
 
-  if (size == sizeof(float) * vertices.size()) {
+  if (static_cast<unsigned int>(size) == sizeof(float) * vertices.size()) {
     // Eigen stores matrices in column-major format, so we transpose because
     // OpenGL expects row-major
     Matrix3Xf tmp_vertices;
@@ -124,7 +124,7 @@ void VertexBuffer::replace(MatrixX4f vertices) {
   int size;
   glGetBufferParameteriv(GL_ARRAY_BUFFER, GL_BUFFER_SIZE,  &size);
 
-  if (size == sizeof(float) * vertices.size()) {
+  if (static_cast<unsigned int>(size) == sizeof(float) * vertices.size()) {
     // Eigen stores matrices in column-major format, so we transpose because
     // OpenGL expects row-major
     Matrix4Xf tmp_vertices;

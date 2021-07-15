@@ -42,7 +42,7 @@ namespace cannon {
                 const void *data = NULL, GLenum texture_unit = GL_TEXTURE0)
             : internal_format(internal_format), format_(format),
               data_type(data_type), width_(width), height_(height),
-              gl_texture_unit_(texture_unit), data_((unsigned char *)data) {
+              data_((unsigned char *)data), gl_texture_unit_(texture_unit) {
 
           glGenTextures(1, &gl_texture_);
 

@@ -40,7 +40,7 @@ namespace cannon {
          *
          * \returns The new state, post-step.
          */
-        VectorXd step() {
+        const VectorXd& step() {
           stepper_.do_step(system_, state_, t_, dt_);
           t_ += dt_;
 

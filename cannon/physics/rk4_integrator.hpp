@@ -24,7 +24,7 @@ namespace cannon {
           state_ = VectorXd::Zero(state_dim_); 
         }
 
-        VectorXd step();
+        const VectorXd& step();
 
         // Getters and setters
         void set_state(const VectorXd& state);

@@ -44,7 +44,9 @@ namespace cannon {
      * \param pixel_colors Matrix of pixel colors. Should have three rows.
      * \param samples_per_pixel Number of samples per pixel.
      */
-    void write_colors(std::ostream& os, const MatrixXd& pixel_colors, unsigned int samples_per_pixel);
+    void write_colors(std::ostream &os,
+                      const Ref<const MatrixXd> &pixel_colors,
+                      unsigned int samples_per_pixel);
 
     /*!
      * Function to write a vector of film pixels to the input stream.
