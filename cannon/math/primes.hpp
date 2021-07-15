@@ -63,8 +63,9 @@ namespace cannon {
     }
 
     /*!
-     * \brief Check if the input number is prime. Note that this is not
-     * incredibly efficient, as the Sieve of Eratosthenes is re-run each time.
+     * \brief Check if the input number is prime. Note this is more efficient
+     * than simply running the Sieve of Eratosthenes and checking for
+     * inclusion.
      *
      * \param x The number to check for primeness.
      *
