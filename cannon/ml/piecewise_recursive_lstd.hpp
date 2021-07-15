@@ -2,7 +2,7 @@
 #define CANNON_ML_RECURSIVE_PIECEWISE_LSTD_H 
 
 /*!
- * \file cannon/ml/piecewise_lstd.hpp
+ * \file cannon/ml/piecewise_recursive_lstd.hpp
  * \brief File containing PiecewiseRecursiveLSTDFilter class definition.
  */
 
