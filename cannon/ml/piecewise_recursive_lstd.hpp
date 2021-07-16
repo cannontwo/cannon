@@ -7,6 +7,7 @@
  */
 
 #include <Eigen/Core>
+#include <Eigen/Sparse>
 
 using namespace Eigen;
 
@@ -58,7 +59,7 @@ namespace cannon {
          *
          * \returns Estimated local linear approximation parameter matrix.
          */
-        VectorXd get_mat(unsigned int idx);
+        VectorXd get_mat(unsigned int idx) const;
 
         /*!
          * \brief Predict the value of the input state using the estimated
@@ -69,7 +70,7 @@ namespace cannon {
          *
          * \returns Value function prediction.
          */
-        double predict(const VectorXd& in_vec, unsigned int idx);
+        double predict(const VectorXd& in_vec, unsigned int idx) const;
 
         /*!
          * \brief Reset this value function approximation.
@@ -87,7 +88,8 @@ namespace cannon {
          * \returns Internal feature representation leading to piecewise-affine
          * function.
          */
-        RowVectorXd make_feature_vec_(VectorXd in_vec, unsigned int idx) const;
+        SparseMatrix<double>
+        make_feature_vec_(VectorXd in_vec, unsigned int idx) const;
 
         /*!
          * \brief Update approximation of the linear portion of the LSTD filter
@@ -96,7 +98,8 @@ namespace cannon {
          * \param feat Internal feature vector of the first state.
          * \param next_feat Internal feature vector of the next state.
          */
-        void update_a_inv_(const RowVectorXd& feat, const RowVectorXd& next_feat);
+        void update_a_inv_(const SparseMatrix<double> &feat,
+                           const SparseMatrix<double> &next_feat);
 
         // Parameters
         unsigned int in_dim_; //!< Dimension of input
