@@ -24,9 +24,7 @@ void PiecewiseRecursiveLSTDFilter::process_datum(const VectorXd& in_vec, const V
   assert(tmp2.size() == 1);
   double e_t = reward - tmp2(0, 0);
 
-  // TODO Optimize this by only summing columns of a_inv_ where feat is nonzero
   VectorXd v = a_inv_ * feat.transpose();
-  log_info("v is", v);
   theta_ = theta_ + (e_t / a) * v;
 
   update_a_inv_(feat, next_feat);
@@ -81,22 +79,14 @@ void PiecewiseRecursiveLSTDFilter::update_a_inv_(
 
   SparseMatrix<double> diff = feat - (discount_factor_ * next_feat);
 
-  // TODO Optimize this in the same way as v above
   MatrixXd numerator = (a_inv_ * feat.transpose()) * (diff * a_inv_);
   assert(numerator.rows() == param_dim_);
   assert(numerator.cols() == param_dim_);
 
-  log_info("Numerator is", numerator);
-
-  // TODO Optimize this in the same way as v above
-  log_info("a_inv_ * feat.transpose() is", a_inv_ * feat.transpose());
   MatrixXd denom_expr = diff * (a_inv_ * feat.transpose());
   assert(denom_expr.size() == 1);
   double denom = denom_expr(0, 0) + 1.0;
 
   MatrixXd update = numerator / denom;
-
-  // TODO Optimize this; only need to update blocks of a_inv
-  log_info("update is", update);
   a_inv_ = (a_inv_ - update).eval();
 }
