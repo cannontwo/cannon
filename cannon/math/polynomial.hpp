@@ -7,6 +7,7 @@
  */
 
 #include <vector>
+#include <iostream>
 
 namespace cannon {
   namespace math {
@@ -17,7 +18,7 @@ namespace cannon {
     template <typename Basis>
     class Polynomial {
       public:
-        Polynomial() = delete;
+        Polynomial() : Polynomial(0) {}
 
         /*!
          * \brief Constructor taking number of coefficients for this polynomial.
@@ -32,7 +33,15 @@ namespace cannon {
         /*!
          * \brief Copy constructor.
          */
-        Polynomial(Polynomial& o) : coeffs_(o.coeffs_) {}
+        Polynomial(const Polynomial& o) : coeffs_(o.coeffs_) {}
+
+        /*!
+         * \brief Copy assignment operator.
+         */
+        Polynomial& operator=(const Polynomial& o) {
+          coeffs_ = o.coeffs_; 
+          return *this;
+        }
 
         /*!
          * \brief Move constructor.
@@ -46,14 +55,14 @@ namespace cannon {
          *
          * \returns A vector of coefficients for the Polynomial in its basis.
          */
-        const std::vector<double>& coefficients() {
+        const std::vector<double>& coefficients() const {
           return coeffs_;
         }
 
         /*!
          * \brief Evaluation operator.
          */
-        double operator()(double x) {
+        double operator()(double x) const {
           double ret_sum = 0;
           for (unsigned int i = 0; i < coeffs_.size(); ++i) {
             ret_sum += coeffs_[i] * Basis::evaluate(i, x);
@@ -81,10 +90,30 @@ namespace cannon {
         }
 
         /*!
+         * \brief Compound scalar addition operator.
+         */
+        Polynomial& operator+=(double x) {
+          if (coeffs_.size() == 0)
+            coeffs_.resize(1, 0);
+
+          coeffs_[0] += x;
+
+          return *this;
+        }
+
+        /*!
          * \brief Friend addition operator.
          */
         friend Polynomial operator+(Polynomial lhs, const Polynomial& rhs) {
           lhs += rhs;
+          return lhs;
+        }
+
+        /*!
+         * \brief Friend addition operator.
+         */
+        friend Polynomial operator+(Polynomial lhs, double x) {
+          lhs += x;
           return lhs;
         }
 
@@ -99,11 +128,34 @@ namespace cannon {
         }
 
         /*!
+         * \brief Compound multiplication operator.
+         */
+        Polynomial& operator*=(const Polynomial& o) {
+          // Different bases may have different, more efficient ways of doing
+          // multiplication. A default (inefficient) way would be to convert to
+          // MonomialBasis and use that multiplication.
+          *this = *this * o;
+          return *this;
+        }
+
+        /*!
          * \brief Friend scalar multiplication operator.
          */
         friend Polynomial operator*(Polynomial lhs, double a) {
           lhs *= a;
           return lhs;
+        }
+
+        /*!
+         * \brief Friend multiplication operator.
+         */
+        friend Polynomial operator*(Polynomial lhs, const Polynomial& rhs) {
+          return Basis::multiply(lhs, rhs);
+        }
+
+        friend std::ostream& operator<<(std::ostream& os, const Polynomial& p) {
+          Basis::print(os, p);
+          return os;
         }
 
       private:
@@ -117,7 +169,36 @@ namespace cannon {
      */
     class MonomialBasis {
       public:
+
+        /*!
+         * \brief Evaluate a monomial of the idx power at the point x.
+         *
+         * \param idx Power of monomial to evaluate.
+         * \param x Input point.
+         *
+         * \returns Monomial value at x.
+         */
         static double evaluate(unsigned int idx, double x);
+
+        /*!
+         * \brief Multiply two polynomials over the monomial basis.
+         *
+         * \param lhs First polynomial to multiply.
+         * \param rhs The other polynomial to multiply.
+         */
+        static Polynomial<MonomialBasis>
+        multiply(const Polynomial<MonomialBasis> &lhs,
+                 const Polynomial<MonomialBasis> &rhs);
+
+        /*!
+         * \brief Print the input polynomial to the input stream.
+         *
+         * \param os The stream to print to.
+         * \param p The polynomial to print.
+         */
+        static void print(std::ostream& os, const Polynomial<MonomialBasis>& p);
+
+        static Polynomial<MonomialBasis> x; //!< Basic monomial
     };
 
 

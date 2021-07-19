@@ -5,12 +5,34 @@
 #include <imgui.h>
 #include <imgui_stdlib.h>
 
+#include <glad/glad.h>
+#include <GLFW/glfw3.h>
+
 #include <cannon/graphics/vertex_shader.hpp>
 #include <cannon/graphics/fragment_shader.hpp>
 #include <cannon/log/registry.hpp>
 
 using namespace cannon::graphics;
 using namespace cannon::log;
+
+ShaderProgram::~ShaderProgram() {
+  if (glfwGetCurrentContext() != NULL) {
+    glDeleteProgram(gl_shader_program_);
+  }
+}
+
+void ShaderProgram::attach_shader(const VertexShader& shader) {
+  glAttachShader(gl_shader_program_, shader.gl_shader_);
+}
+
+void ShaderProgram::attach_shader(const FragmentShader& shader) {
+  glAttachShader(gl_shader_program_, shader.gl_shader_);
+}
+
+void ShaderProgram::init() {
+  gl_shader_program_ = glCreateProgram();
+  initialized_ = true;
+}
 
 void ShaderProgram::link() {
   glLinkProgram(gl_shader_program_);

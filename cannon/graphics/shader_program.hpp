@@ -7,14 +7,16 @@
  * \brief File containing ShaderProgram class definition.
  */
 
-#include <glad/glad.h>
 #include <Eigen/Dense>
-#include <GLFW/glfw3.h>
+#include <cannon/utils/class_forward.hpp>
 
 using namespace Eigen;
 
 namespace cannon {
   namespace graphics {
+
+    CANNON_CLASS_FORWARD(VertexShader);
+    CANNON_CLASS_FORWARD(FragmentShader);
 
     /*!
      * \brief Class representing a shader program.
@@ -53,22 +55,23 @@ namespace cannon {
         /*!
          * Destructor. Frees OpenGL resources.
          */
-        ~ShaderProgram() {
-          if (glfwGetCurrentContext() != NULL) {
-            glDeleteProgram(gl_shader_program_);
-          }
-        }
+        ~ShaderProgram();
+
+        // TODO Replace this with explicit overloads
+        
+        /*!
+         * Attach a vertex shader to this shader program.
+         *
+         * \param shader The shader to attach.
+         */
+        void attach_shader(const VertexShader& shader);
 
         /*!
-         * Attach an OpenGL shader to this shader program.
+         * Attach a fragment shader to this shader program.
          *
-         * \param shader The shader to attach, which must have a variable
-         * gl_shader_.
+         * \param shader The shader to attach.
          */
-        template <typename T>
-        void attach_shader(const T& shader) {
-          glAttachShader(gl_shader_program_, shader.gl_shader_);
-        }
+        void attach_shader(const FragmentShader& shader);
 
         /*!
          * Attach a vertex shader to this shader program, given its source and
@@ -99,10 +102,7 @@ namespace cannon {
          * 
          * Does not affect OpenGL state.
          */
-        void init() {
-          gl_shader_program_ = glCreateProgram();
-          initialized_ = true;
-        }
+        void init();
 
         /*!
          * Reload this shader program from sources. 

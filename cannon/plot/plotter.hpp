@@ -3,27 +3,32 @@
 
 #include <string>
 #include <vector>
+#include <functional>
+#include <thread>
 
 #include <CGAL/Exact_predicates_exact_constructions_kernel.h>
 #include <CGAL/Polygon_2.h>
+#include <Eigen/Dense>
 
 using K = CGAL::Exact_predicates_exact_constructions_kernel;
 using Polygon_2 = CGAL::Polygon_2<K>;
 
-#include <cannon/graphics/window.hpp>
-#include <cannon/plot/axes.hpp>
 #include <cannon/utils/class_forward.hpp>
 
-using namespace cannon::graphics;
+using namespace Eigen;
 
 namespace cannon {
-
   namespace graphics {
     CANNON_CLASS_FORWARD(ShaderProgram);
+    CANNON_CLASS_FORWARD(Window);
+    CANNON_CLASS_FORWARD(ImageData);
   }
+
+  using namespace cannon::graphics;
 
   namespace plot {
 
+    CANNON_CLASS_FORWARD(Axes);
     CANNON_CLASS_FORWARD(Scatter);
     CANNON_CLASS_FORWARD(Line);
     CANNON_CLASS_FORWARD(Polygon);
@@ -40,10 +45,9 @@ namespace cannon {
         void save_image(const std::string& path);
 
         // Variant for rendering an animated plot
-        template <typename F>
-        void render(F f) {
-          w_.render_loop([this, f] {draw_pass();f();});
-        }
+        void render(std::function<void()> f);
+
+        void clear();
 
         void set_xlim(float low, float high);
         void set_ylim(float low, float high);
@@ -58,12 +62,16 @@ namespace cannon {
         PolygonPtr plot_polygon(const Polygon_2& poly, const MatrixX4f& color);
         PolygonPtr plot_polygon(const Polygon_2& poly, const Vector4f& color);
 
+        LinePtr plot(std::function<double(double)> f,
+                     unsigned int samples = 100, double low = -1.0,
+                     double high = 1.0);
+
         void display_fps();
 
         void write_imgui();
 
-        Window w_;
-        Axes axes_;
+        WindowPtr w_;
+        AxesPtr axes_;
 
       private:
         void draw_pass();
