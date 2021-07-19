@@ -171,6 +171,7 @@ void Plotter::plot(std::function<double(const Vector2d &)> f,
   MatrixXd vals = MatrixXd::Zero(lattice_dim+1, lattice_dim+1);
 
   double max_val = -std::numeric_limits<double>::infinity();
+  double min_val = std::numeric_limits<double>::infinity();
   for (unsigned int i = 0; i < lattice_dim + 1; ++i) {
     for (unsigned int j = 0; j < lattice_dim + 1; ++j) {
       double x = low + (extent / lattice_dim) * i;
@@ -183,6 +184,8 @@ void Plotter::plot(std::function<double(const Vector2d &)> f,
 
       if (vals(i, j) > max_val)
         max_val = vals(i, j);
+      if (vals(i, j) < min_val)
+        min_val = vals(i, j);
     }
   }
 
@@ -191,16 +194,16 @@ void Plotter::plot(std::function<double(const Vector2d &)> f,
   for (unsigned int i = 0; i < lattice_dim; ++i) {
     for (unsigned int j = 0; j < lattice_dim; ++j) {
       Vector4f point_value_color = Vector4f::Ones();
-      point_value_color[0] = vals(i, j) / max_val;
+      point_value_color[0] = (vals(i, j) - min_val) / (max_val - min_val);
       colors.row(0) = point_value_color.transpose();
 
-      point_value_color[0] = vals(i + 1, j) / max_val;
+      point_value_color[0] = (vals(i + 1, j) - min_val) / (max_val - min_val);
       colors.row(1) = point_value_color.transpose();
 
-      point_value_color[0] = vals(i + 1, j + 1) / max_val;
+      point_value_color[0] = (vals(i + 1, j + 1) - min_val) / (max_val - min_val);
       colors.row(2) = point_value_color.transpose();
 
-      point_value_color[0] = vals(i, j + 1) / max_val;
+      point_value_color[0] = (vals(i, j + 1) - min_val) / (max_val - min_val);
       colors.row(3) = point_value_color.transpose();
 
       double x = low + (extent / lattice_dim) * i;
