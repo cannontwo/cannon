@@ -161,6 +161,66 @@ LinePtr Plotter::plot(std::function<double(double)> f, unsigned int samples,
   return l;
 }
 
+void Plotter::plot(std::function<double(const Vector2d &)> f,
+                   unsigned int lattice_dim, double low,
+                   double high) {
+  assert(high > low);
+
+  double extent = high - low;
+  double cell_side = extent / lattice_dim;
+  MatrixXd vals = MatrixXd::Zero(lattice_dim+1, lattice_dim+1);
+
+  double max_val = -std::numeric_limits<double>::infinity();
+  for (unsigned int i = 0; i < lattice_dim + 1; ++i) {
+    for (unsigned int j = 0; j < lattice_dim + 1; ++j) {
+      double x = low + (extent / lattice_dim) * i;
+      double y = low + (extent / lattice_dim) * j;
+
+      Vector2d vec;
+      vec << x, y;
+
+      vals(i, j) = f(vec);
+
+      if (vals(i, j) > max_val)
+        max_val = vals(i, j);
+    }
+  }
+
+  MatrixX4f colors = MatrixX4f::Zero(4, 4);
+
+  for (unsigned int i = 0; i < lattice_dim; ++i) {
+    for (unsigned int j = 0; j < lattice_dim; ++j) {
+      Vector4f point_value_color = Vector4f::Ones();
+      point_value_color[0] = vals(i, j) / max_val;
+      colors.row(0) = point_value_color.transpose();
+
+      point_value_color[0] = vals(i + 1, j) / max_val;
+      colors.row(1) = point_value_color.transpose();
+
+      point_value_color[0] = vals(i + 1, j + 1) / max_val;
+      colors.row(2) = point_value_color.transpose();
+
+      point_value_color[0] = vals(i, j + 1) / max_val;
+      colors.row(3) = point_value_color.transpose();
+
+      double x = low + (extent / lattice_dim) * i;
+      double y = low + (extent / lattice_dim) * j;
+
+      Polygon_2 polygon;
+      K::Point_2 cp1(x, y);
+      polygon.push_back(cp1);
+      K::Point_2 cp2(x + cell_side, y);
+      polygon.push_back(cp2);
+      K::Point_2 cp3(x + cell_side, y + cell_side);
+      polygon.push_back(cp3);
+      K::Point_2 cp4(x, y + cell_side);
+      polygon.push_back(cp4);
+
+      plot_polygon(polygon, colors);
+    }
+  }
+}
+
 void Plotter::set_xlim(float low, float high) {
   axes_->update_limits(low, high, 0.0, 0.0, w_->width, w_->height);
 }
@@ -171,7 +231,6 @@ void Plotter::set_ylim(float low, float high) {
 
 void Plotter::draw_pass() {
   axes_->update_scale(w_->width, w_->height);
-  axes_->draw();
 
   point_program_->set_uniform("matrix", axes_->make_scaling_matrix());
   for (auto& scatter : scatter_plots_) {
@@ -187,6 +246,8 @@ void Plotter::draw_pass() {
   for (auto& poly : polygon_plots_) {
     poly->draw();
   }
+
+  axes_->draw();
 
   write_imgui();
 }
