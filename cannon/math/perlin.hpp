@@ -15,14 +15,14 @@ namespace cannon {
     // Free Functions
 
     /*!
-     * Generate permutation of noise.
+     * \brief Generate permutation of noise.
      *
      * \returns Permutation of length Perlin::point_count_;
      */
     int* perlin_generate_perm();
 
     /*!
-     * Permute the input int array of length n.
+     * \brief Permute the input int array of length n.
      * 
      * \param p The array to permute.
      * \param n The length of the input array.
@@ -30,7 +30,7 @@ namespace cannon {
     void permute(int* p, int n);
 
     /*!
-     * Compute trilinear interpolation of the input array.
+     * \brief Compute trilinear interpolation of the input array.
      *
      * \param c Array to interpolate.
      * \param u First interpolation coefficient.
@@ -42,7 +42,7 @@ namespace cannon {
     double trilinear_interp(double c[2][2][2], double u, double v, double w);
 
     /*!
-     * Compute Perlin trilinear interpolation of the input array.
+     * \brief Compute Perlin trilinear interpolation of the input array.
      *
      * \param c Array to interpolate.
      * \param u First interpolation coefficient.
@@ -54,7 +54,7 @@ namespace cannon {
     double trilinear_interp(Vector3d c[2][2][2], double u, double v, double w);
 
     /*!
-     * Perform hermitian smoothing on the input.
+     * \brief Perform hermitian smoothing on the input.
      *
      * \param x Input number.
      *
@@ -69,7 +69,7 @@ namespace cannon {
       public:
 
         /*!
-         * Default constructor.
+         * \brief Default constructor.
          */
         Perlin() {
           ranvec_ = new Vector3d[point_count_];
@@ -83,7 +83,7 @@ namespace cannon {
         }
 
         /*!
-         * Destructor.
+         * \brief Destructor.
          */
         ~Perlin() {
           delete[] ranvec_;
@@ -93,7 +93,7 @@ namespace cannon {
         }
 
         /*!
-         * Get Perlin noise value for an input 3D point.
+         * \brief Get Perlin noise value for an input 3D point.
          *
          * \param p The point to evaluate.
          *
@@ -102,7 +102,7 @@ namespace cannon {
         double noise(const Vector3d& p) const;
 
         /*!
-         * Get Perlin noise turbulence.
+         * \brief Get Perlin noise turbulence.
          *
          * \param p The point to evaluate.
          * \param depth Depth of turbulence (via repeated noise application)

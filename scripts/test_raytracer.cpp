@@ -252,8 +252,8 @@ int main(int argc, char** argv) {
   //auto world = two_perlin_spheres_scene();
   //auto world = earth_scene();
   //auto world = simple_light_scene();
-  //auto world = cornell_box();
-  auto world = final_scene();
+  auto world = cornell_box();
+  //auto world = final_scene();
   //auto world = model_test();
 
   auto t = std::make_shared<Affine3d>(Affine3d::Identity());
