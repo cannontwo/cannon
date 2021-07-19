@@ -11,6 +11,7 @@ list(APPEND MATH_SOURCES
   to_decimal.cpp
   digits.cpp
   palindromes.cpp
+  polynomial.cpp
   )
 
 add_library(math OBJECT ${MATH_SOURCES})
