@@ -12,6 +12,7 @@ list(APPEND MATH_SOURCES
   digits.cpp
   palindromes.cpp
   polynomial.cpp
+  fft.cpp
   )
 
 add_library(math OBJECT ${MATH_SOURCES})
