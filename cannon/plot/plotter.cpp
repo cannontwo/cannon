@@ -162,20 +162,25 @@ LinePtr Plotter::plot(std::function<double(double)> f, unsigned int samples,
 }
 
 void Plotter::plot(std::function<double(const Vector2d &)> f,
-                   unsigned int lattice_dim, double low,
-                   double high) {
-  assert(high > low);
+                   unsigned int lattice_dim, double x_low, double x_high,
+                   double y_low, double y_high) {
+  assert(x_high > x_low);
+  assert(y_high > y_low);
 
-  double extent = high - low;
-  double cell_side = extent / lattice_dim;
+  double x_extent = x_high - x_low;
+  double x_cell_side = x_extent / lattice_dim;
+
+  double y_extent = y_high - y_low;
+  double y_cell_side = y_extent / lattice_dim;
+
   MatrixXd vals = MatrixXd::Zero(lattice_dim+1, lattice_dim+1);
 
   double max_val = -std::numeric_limits<double>::infinity();
   double min_val = std::numeric_limits<double>::infinity();
   for (unsigned int i = 0; i < lattice_dim + 1; ++i) {
     for (unsigned int j = 0; j < lattice_dim + 1; ++j) {
-      double x = low + (extent / lattice_dim) * i;
-      double y = low + (extent / lattice_dim) * j;
+      double x = x_low + (x_extent / lattice_dim) * i;
+      double y = y_low + (y_extent / lattice_dim) * j;
 
       Vector2d vec;
       vec << x, y;
@@ -206,17 +211,17 @@ void Plotter::plot(std::function<double(const Vector2d &)> f,
       point_value_color[0] = (vals(i, j + 1) - min_val) / (max_val - min_val);
       colors.row(3) = point_value_color.transpose();
 
-      double x = low + (extent / lattice_dim) * i;
-      double y = low + (extent / lattice_dim) * j;
+      double x = x_low + (x_extent / lattice_dim) * i;
+      double y = y_low + (y_extent / lattice_dim) * j;
 
       Polygon_2 polygon;
       K::Point_2 cp1(x, y);
       polygon.push_back(cp1);
-      K::Point_2 cp2(x + cell_side, y);
+      K::Point_2 cp2(x + x_cell_side, y);
       polygon.push_back(cp2);
-      K::Point_2 cp3(x + cell_side, y + cell_side);
+      K::Point_2 cp3(x + x_cell_side, y + y_cell_side);
       polygon.push_back(cp3);
-      K::Point_2 cp4(x, y + cell_side);
+      K::Point_2 cp4(x, y + y_cell_side);
       polygon.push_back(cp4);
 
       plot_polygon(polygon, colors);

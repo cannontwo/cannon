@@ -79,7 +79,7 @@ namespace cannon {
          *
          * \returns Prediction fit by this filter.
          */
-        VectorXd predict(const VectorXd& in_vec);
+        VectorXd predict(const VectorXd& in_vec) const;
 
         /*!
          * \brief Set the parameters of this RLS filter. Input and output mean

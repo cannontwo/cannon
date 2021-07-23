@@ -67,8 +67,9 @@ namespace cannon {
                      double high = 1.0);
 
         void plot(std::function<double(const Vector2d &)> f,
-                  unsigned int lattice_dim = 10, double low = -1.0,
-                  double high = 1.0);
+                  unsigned int lattice_dim = 10, double x_low = -1.0,
+                  double x_high = 1.0, double y_low = -1.0,
+                  double y_high = 1.0);
 
         void display_fps();
 

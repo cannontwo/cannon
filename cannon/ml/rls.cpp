@@ -44,7 +44,7 @@ MatrixXd RLSFilter::get_pred_error_covar() const {
   return pred_error_covar_;
 }
 
-VectorXd RLSFilter::predict(const VectorXd& in_vec) {
+VectorXd RLSFilter::predict(const VectorXd& in_vec) const {
   RowVectorXd feat = make_feature_vec_(in_vec);
   VectorXd prediction = (feat * corrected_theta_).transpose() + intercept_;
   assert(prediction.size() == out_dim_);

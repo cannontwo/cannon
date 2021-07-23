@@ -201,7 +201,6 @@ namespace cannon {
         static Polynomial<MonomialBasis> x; //!< Basic monomial
     };
 
-
   } // namespace math
 } // namespace cannon
 
