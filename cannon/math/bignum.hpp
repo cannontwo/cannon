@@ -93,7 +93,7 @@ namespace cannon {
          *
          * \returns Digits making up arbitrary-precision unsigned int.
          */
-        std::vector<unsigned int> get_digits() const;
+        const std::vector<unsigned int>& get_digits() const;
 
         /*!
          * \brief Get the size (number of digits) of this number.

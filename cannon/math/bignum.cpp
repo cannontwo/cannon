@@ -120,7 +120,7 @@ bool BigUnsigned::operator<(const BigUnsigned& o) const {
   }
 }
 
-std::vector<unsigned int> BigUnsigned::get_digits() const {
+const std::vector<unsigned int>& BigUnsigned::get_digits() const {
   return digits_;
 }
 
