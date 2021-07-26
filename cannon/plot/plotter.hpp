@@ -66,6 +66,7 @@ namespace cannon {
                      unsigned int samples = 100, double low = -1.0,
                      double high = 1.0);
         
+        LinePtr plot(std::vector<double> points);
         LinePtr plot(std::vector<Vector2d> points);
 
         void plot(std::function<double(const Vector2d &)> f,

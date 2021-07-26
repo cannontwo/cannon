@@ -176,6 +176,19 @@ LinePtr Plotter::plot(std::function<double(double)> f, unsigned int samples,
   return l;
 }
 
+LinePtr Plotter::plot(std::vector<double> points) {
+  MatrixX2f plot_points(points.size(), 2);
+  for (unsigned int i = 0; i < points.size(); ++i) {
+    plot_points(i, 0) = i;
+    plot_points(i, 1) = points[i];
+  }
+
+  auto color = LINE_COLORS[line_plots_.size() % LINE_COLORS.size()];
+
+  auto l = plot_line(plot_points, color);
+  return l;
+}
+
 LinePtr Plotter::plot(std::vector<Vector2d> points) {
   MatrixX2f plot_points(points.size(), 2);
   for (unsigned int i = 0; i < points.size(); ++i) {
@@ -187,6 +200,7 @@ LinePtr Plotter::plot(std::vector<Vector2d> points) {
   auto l = plot_line(plot_points, color);
   return l;
 }
+
 
 
 void Plotter::plot(std::function<double(const Vector2d &)> f,
