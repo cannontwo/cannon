@@ -29,15 +29,15 @@ LQRController::LQRController(const Ref<const VectorXd> &q0,
   compute_lqr_gain_();
 }
 
-VectorXd LQRController::compute_control(const Ref<const VectorXd>& q) {
+VectorXd LQRController::compute_control(const Ref<const VectorXd>& q) const {
   return -K_ * (q - q0_);
 }
 
-MatrixXd LQRController::get_linear_gain() {
+MatrixXd LQRController::get_linear_gain() const {
   return -K_;
 }
 
-VectorXd LQRController::get_control_offset() {
+VectorXd LQRController::get_control_offset() const {
   return K_ * q0_;
 }
 

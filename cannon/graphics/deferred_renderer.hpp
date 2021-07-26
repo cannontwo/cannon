@@ -47,7 +47,6 @@ namespace cannon {
          */
         ~DeferredRenderer() {}
 
-
         /*!
          * Method representing the main render loop of this renderer. Blocks
          * until the OpenGL window is closed. The passed function will be

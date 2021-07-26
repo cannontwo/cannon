@@ -65,6 +65,8 @@ namespace cannon {
         LinePtr plot(std::function<double(double)> f,
                      unsigned int samples = 100, double low = -1.0,
                      double high = 1.0);
+        
+        LinePtr plot(std::vector<Vector2d> points);
 
         void plot(std::function<double(const Vector2d &)> f,
                   unsigned int lattice_dim = 10, double x_low = -1.0,
@@ -93,10 +95,13 @@ namespace cannon {
 
         std::thread render_thread_;
 
+        static std::vector<Vector4f> LINE_COLORS;
+
         // TODO Make optional parameter for Plotter, remove individual scatter
         // point size setting. Alternatively, do differently-colored point
         // scatter plotting better.
         float scatter_point_size_ = 15.0;
+        float line_plot_size_ = 2.0;
     };
 
   } // namespace plot

@@ -57,7 +57,7 @@ namespace cannon {
          * 
          * \returns The computed control.
          */
-        VectorXd compute_control(const Ref<const VectorXd>& q);
+        VectorXd compute_control(const Ref<const VectorXd>& q) const;
 
         /*!
          * \brief Get the linear portion of the control law represented by this
@@ -65,7 +65,7 @@ namespace cannon {
          *
          * \returns Gain matrix.
          */
-        MatrixXd get_linear_gain();
+        MatrixXd get_linear_gain() const;
 
         /*!
          * \brief Get the constant offset portion of the control law
@@ -73,7 +73,7 @@ namespace cannon {
          *
          * \returns Offset vector.
          */
-        VectorXd get_control_offset();
+        VectorXd get_control_offset() const;
 
         /*!
          * \brief Set the state that this controller attempts to stabilize to.

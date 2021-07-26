@@ -9,16 +9,24 @@
 using namespace cannon::plot;
 
 Line::Line(Plotter &plotter, ShaderProgramPtr program, MatrixX2f points,
-    Vector4f color) : plotter_(plotter), points_(points), color_(color),
-  vao_(new VertexArrayObject), buf_(vao_), program_(program) {
-
+           Vector4f color, float line_width)
+    : plotter_(plotter), points_(points), color_(color),
+      vao_(new VertexArrayObject), buf_(vao_), program_(program),
+      line_width_(line_width) {
   buf_.buffer(points_);
-
 }
 
 void Line::add_points(MatrixX2f point) {
   points_.conservativeResize(points_.rows() + 1, NoChange);
   points_.row(points_.rows() - 1) = point;
+
+  buf_.buffer(points_);
+  update_plotter();
+}
+
+void Line::add_point(Vector2f point) {
+  points_.conservativeResize(points_.rows() + 1, NoChange);
+  points_.row(points_.rows() - 1) = point.transpose();
 
   buf_.buffer(points_);
   update_plotter();
@@ -35,7 +43,7 @@ void Line::draw() {
   program_->activate();
 
   buf_.bind();
-  glLineWidth(2.0);
+  glLineWidth(line_width_);
   glDrawArrays(GL_LINE_STRIP, 0, points_.rows());
   glLineWidth(1.0);
 }

@@ -25,7 +25,7 @@ namespace cannon {
         Line() = delete;
 
         Line(Plotter &plotter, ShaderProgramPtr program, MatrixX2f points,
-            Vector4f color);
+            Vector4f color, float line_width=2.0);
 
         Line(Line& s) = delete;
 
@@ -34,6 +34,7 @@ namespace cannon {
           program_(std::move(s.program_)) {}
 
         void add_points(MatrixX2f point);
+        void add_point(Vector2f point);
         void replace_points(MatrixX2f points);
 
         friend class Plotter;
@@ -48,6 +49,8 @@ namespace cannon {
         VertexArrayObjectPtr vao_;
         VertexBuffer buf_;
         ShaderProgramPtr program_;
+
+        float line_width_;
     };
 
   } // namespace plot

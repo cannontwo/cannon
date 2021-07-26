@@ -15,6 +15,19 @@
 
 using namespace cannon::plot;
 
+// Cribbed from Seaborn
+std::vector<Vector4f> Plotter::LINE_COLORS = std::vector<Vector4f>(
+    {{0.12156862745098039, 0.4666666666666667, 0.7058823529411765, 1.0},
+     {1.0, 0.4980392156862745, 0.054901960784313725, 1.0},
+     {0.17254901960784313, 0.6274509803921569, 0.17254901960784313, 1.0},
+     {0.8392156862745098, 0.15294117647058825, 0.1568627450980392, 1.0},
+     {0.5803921568627451, 0.403921568627451, 0.7411764705882353, 1.0},
+     {0.5490196078431373, 0.33725490196078434, 0.29411764705882354, 1.0},
+     {0.8901960784313725, 0.4666666666666667, 0.7607843137254902, 1.0},
+     {0.4980392156862745, 0.4980392156862745, 0.4980392156862745, 1.0},
+     {0.7372549019607844, 0.7411764705882353, 0.13333333333333333, 1.0},
+     {0.09019607843137255, 0.7450980392156863, 0.8117647058823529, 1.0}});
+
 Plotter::Plotter(bool axes_outside) : w_(new Window()), axes_(new Axes(1.0, axes_outside)),
   axes_outside_(axes_outside), point_program_(new ShaderProgram),
   line_program_(new ShaderProgram), poly_program_(new ShaderProgram)  {
@@ -157,9 +170,24 @@ LinePtr Plotter::plot(std::function<double(double)> f, unsigned int samples,
     points(i, 1) = f(xs[i]);
   }
 
-  auto l = plot_line(points);
+  auto color = LINE_COLORS[line_plots_.size() % LINE_COLORS.size()];
+
+  auto l = plot_line(points, color);
   return l;
 }
+
+LinePtr Plotter::plot(std::vector<Vector2d> points) {
+  MatrixX2f plot_points(points.size(), 2);
+  for (unsigned int i = 0; i < points.size(); ++i) {
+    plot_points.row(i) = points[i].transpose().cast<float>();
+  }
+
+  auto color = LINE_COLORS[line_plots_.size() % LINE_COLORS.size()];
+
+  auto l = plot_line(plot_points, color);
+  return l;
+}
+
 
 void Plotter::plot(std::function<double(const Vector2d &)> f,
                    unsigned int lattice_dim, double x_low, double x_high,
@@ -290,10 +318,17 @@ void Plotter::write_imgui() {
       if (ImGui::BeginMenu("Plots")) {
         bool point_changed = ImGui::SliderFloat("Scatter Plot Point Size",
             &scatter_point_size_, 1.0, 100.0);
+        point_changed =
+            point_changed ||
+            ImGui::SliderFloat("Line Plot Width", &line_plot_size_, 1.0, 100.0);
 
         if (point_changed) {
           for (auto& s : scatter_plots_) {
             s->point_size_ = scatter_point_size_;
+          }
+
+          for (auto& l : line_plots_) {
+            l->line_width_ = line_plot_size_;
           }
 
         }
