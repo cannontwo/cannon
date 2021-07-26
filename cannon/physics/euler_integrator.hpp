@@ -6,6 +6,11 @@
  * \brief File containing EulerIntegrator class definition.
  */
 
+/*!
+ * \namespace cannon::physics
+ * \brief Namespace containing physics utilities.
+ */
+
 #include <Eigen/Dense>
 #include <boost/numeric/odeint.hpp>
 #include <boost/numeric/odeint/external/eigen/eigen_algebra.hpp>

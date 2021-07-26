@@ -24,6 +24,6 @@ void RK4Integrator::set_time(double t) {
   t_ = t;
 }
 
-double RK4Integrator::get_time() {
+double RK4Integrator::get_time() const {
   return t_;
 }
