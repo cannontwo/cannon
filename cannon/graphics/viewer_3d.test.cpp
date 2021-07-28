@@ -5,15 +5,14 @@
 #include <cannon/graphics/viewer_3d.hpp>
 #include <cannon/graphics/window.hpp>
 #include <cannon/graphics/opengl_writer.hpp>
+#include <cannon/graphics/shader_program.hpp>
 
 using namespace cannon::graphics;
 using namespace ApprovalTests;
 
 TEST_CASE("Viewer3D", "[graphics]") {
-  GLFWwindow *gl_window;
   {
   Viewer3D v;
-  gl_window = v.w->get_gl_window();
   
   // Set up test render scene
   v.spawn_model("assets/test/test.obj");
@@ -30,6 +29,5 @@ TEST_CASE("Viewer3D", "[graphics]") {
         }
       });
   }
-  //terminate_opengl_context(gl_window);
 }
 #endif

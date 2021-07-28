@@ -18,10 +18,6 @@
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
 
-#include <cannon/graphics/font.hpp>
-#include <cannon/graphics/shader_program.hpp>
-#include <cannon/graphics/projection.hpp>
-#include <cannon/graphics/vertex_buffer.hpp>
 #include <cannon/utils/thread_pool.hpp>
 #include <cannon/utils/class_forward.hpp>
 
@@ -34,6 +30,9 @@ namespace cannon {
 
     CANNON_CLASS_FORWARD(VertexArrayObject);
     CANNON_CLASS_FORWARD(Framebuffer);
+    CANNON_CLASS_FORWARD(Font);
+    CANNON_CLASS_FORWARD(ShaderProgram);
+    CANNON_CLASS_FORWARD(VertexBuffer);
 
     /*!
      * \brief Utility struct for overlay text rendered at the top level of the
@@ -380,12 +379,12 @@ namespace cannon {
 
         GLFWwindow *window; //!< OpenGL window object
 
-        Font font_; //!< Font for overlay text
+        FontPtr font_; //!< Font for overlay text
         Vector4f text_color_; //!< Overlay text color
-        ShaderProgram text_program_; //!< Overlay text shader
+        ShaderProgramPtr text_program_; //!< Overlay text shader
         Vector4f clear_color_; //!< Display clear color
         VertexArrayObjectPtr vao_; //!< VAO for text 
-        VertexBuffer buf_; //!< Vertex buffer for text display
+        VertexBufferPtr buf_; //!< Vertex buffer for text display
         std::vector<OverlayText> overlays_; //!< Overlay text instances
 
         bool render_to_framebuffer_ = false; //!< Whether to render to framebuffer

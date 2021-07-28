@@ -14,6 +14,7 @@
 #include <cannon/graphics/geometry/axes_hint.hpp>
 #include <cannon/graphics/geometry/screen_quad.hpp>
 #include <cannon/graphics/window.hpp>
+#include <cannon/graphics/shader_program.hpp>
 
 using namespace cannon::graphics;
 using namespace cannon::log;

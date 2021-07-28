@@ -13,14 +13,19 @@
 #include <cannon/graphics/vertex_array_object.hpp>
 #include <cannon/graphics/framebuffer.hpp>
 #include <cannon/graphics/opengl_state.hpp>
+#include <cannon/graphics/shader_program.hpp>
+#include <cannon/graphics/font.hpp>
+#include <cannon/graphics/projection.hpp>
+#include <cannon/graphics/vertex_buffer.hpp>
 #include <cannon/log/registry.hpp>
 
 using namespace cannon::graphics;
 using namespace cannon::log;
 
-Window::Window(int w, int h, const std::string& name): width(w), height(h),
-  font_(false), text_program_("text_program", false), vao_(nullptr), buf_(),
-  save_pool_(save_image_func) {
+Window::Window(int w, int h, const std::string &name)
+    : width(w), height(h), font_(new Font(false)),
+      text_program_(new ShaderProgram("text_program", false)), vao_(nullptr),
+      buf_(new VertexBuffer), save_pool_(save_image_func) {
 
   init_glfw();
   window = glfwCreateWindow(width, height, name.c_str(), NULL, NULL); 
@@ -41,10 +46,10 @@ Window::Window(int w, int h, const std::string& name): width(w), height(h),
   register_callbacks();
   set_clear_color(Vector4f(0.02f, 0.07f, 0.09f, 1.0f));
   set_text_color(Vector4f(1.0, 0.0, 0.0, 1.0));
-  font_.init();
-  text_program_.init();
+  font_->init();
+  text_program_->init();
   vao_ = std::make_shared<VertexArrayObject>();
-  buf_.init(vao_);
+  buf_->init(vao_);
   init_text_shader();
 
   // Setting up ImGui
@@ -162,14 +167,14 @@ void Window::init_text_shader() {
   VertexShader v = load_vertex_shader("shaders/char_shader.vert");
   FragmentShader f = load_fragment_shader("shaders/char_shader.frag");
 
-  text_program_.attach_shader(v);
-  text_program_.attach_shader(f);
-  text_program_.link();
+  text_program_->attach_shader(v);
+  text_program_->attach_shader(f);
+  text_program_->link();
 
   // Reserve space for display quads
   MatrixX4f vertices(MatrixX4f::Zero(6, 4));
-  buf_.bind();
-  buf_.buffer(vertices);
+  buf_->bind();
+  buf_->buffer(vertices);
 }
 
 void Window::write_imgui() {
@@ -218,11 +223,11 @@ void Window::draw_overlays() {
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
   vao_->bind();
-  text_program_.set_uniform("projection", make_orthographic(0.0f, (float)width,
+  text_program_->set_uniform("projection", make_orthographic(0.0f, (float)width,
         0.0f, (float)height, -1.0, 1.0));
-  text_program_.set_uniform("textColor", text_color_);
-  text_program_.set_uniform("text", 0);
-  text_program_.activate();
+  text_program_->set_uniform("textColor", text_color_);
+  text_program_->set_uniform("text", 0);
+  text_program_->activate();
 
   for (auto& o : overlays_) {
     o.update(o);
@@ -239,7 +244,7 @@ void Window::draw_overlays() {
     std::string::const_iterator c;   
 
     for (c = o.text.begin(); c != o.text.end(); c++) {
-      std::shared_ptr<Character> ch = font_.get_char(*c);
+      std::shared_ptr<Character> ch = font_->get_char(*c);
 
       float xpos = x + ch->bearing[0] * o.scale;
       float ypos = y - (ch->size[1] - ch->bearing[1]) * o.scale;
@@ -254,8 +259,8 @@ void Window::draw_overlays() {
                   xpos + w, ypos,     1.0f, 1.0f,
                   xpos + w, ypos + h, 1.0f, 0.0f;
       ch->texture->bind();
-      buf_.replace(vertices);      
-      buf_.bind();
+      buf_->replace(vertices);      
+      buf_->bind();
       OpenGLState s;
       log_info(s);
 

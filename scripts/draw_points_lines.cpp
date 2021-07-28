@@ -8,6 +8,7 @@
 #include <cannon/graphics/vertex_array_object.hpp>
 #include <cannon/graphics/vertex_shader.hpp>
 #include <cannon/graphics/fragment_shader.hpp>
+#include <cannon/graphics/shader_program.hpp>
 
 using namespace Eigen;
 using namespace cannon::graphics;

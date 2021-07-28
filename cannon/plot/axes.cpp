@@ -3,22 +3,30 @@
 #include <cmath>
 #include <sstream>
 
+#include <imgui.h>
+
 #include <cannon/graphics/texture.hpp>
 #include <cannon/graphics/character.hpp>
 #include <cannon/graphics/vertex_array_object.hpp>
 #include <cannon/graphics/vertex_shader.hpp>
 #include <cannon/graphics/fragment_shader.hpp>
+#include <cannon/graphics/shader_program.hpp>
+#include <cannon/graphics/vertex_buffer.hpp>
+#include <cannon/graphics/font.hpp>
 #include <cannon/log/registry.hpp>
 
 using namespace cannon::plot;
 using namespace cannon::log;
+using namespace cannon::graphics;
 
-Axes::Axes(float text_scale, bool outside) : x_min_(-0.01), x_max_(0.01),
-    y_min_(-0.01), y_max_(0.01), outside_(outside), padding_(0.1),
-    text_scale_multiplier_(text_scale), text_scale_x_(0.1),
-    text_scale_y_(0.1),  vao_(new VertexArrayObject), buf_(vao_),
-    font_(true, 12), text_vao_(new VertexArrayObject),
-    text_quad_buf_(text_vao_)  {
+Axes::Axes(float text_scale, bool outside)
+    : x_min_(-0.01), x_max_(0.01), y_min_(-0.01), y_max_(0.01),
+      text_scale_x_(0.1), text_scale_y_(0.1), outside_(outside), padding_(0.1),
+      text_scale_multiplier_(text_scale), program_(new ShaderProgram),
+      vao_(new VertexArrayObject), buf_(new VertexBuffer(vao_)),
+      font_(new Font(true, 12)), text_program_(new ShaderProgram),
+      text_vao_(new VertexArrayObject),
+      text_quad_buf_(new VertexBuffer(text_vao_)) {
 
   MatrixX2f lines(4, 2);
 
@@ -34,7 +42,7 @@ Axes::Axes(float text_scale, bool outside) : x_min_(-0.01), x_max_(0.01),
              0.0, y_max_; 
   }
 
-  buf_.buffer(lines);
+  buf_->buffer(lines);
   log_info(buf_);
 
   x_ticks_.push_back(-1.0);
@@ -47,19 +55,19 @@ Axes::Axes(float text_scale, bool outside) : x_min_(-0.01), x_max_(0.01),
   VertexShader v(&v_src);
   FragmentShader f(&f_src);
 
-  program_.attach_shader(v);
-  program_.attach_shader(f);
-  program_.link();
+  program_->attach_shader(v);
+  program_->attach_shader(f);
+  program_->link();
 
   VertexShader tv = load_vertex_shader("shaders/char_shader.vert");
   FragmentShader tf = load_fragment_shader("shaders/char_shader.frag");
 
-  text_program_.attach_shader(tv);
-  text_program_.attach_shader(tf);
-  text_program_.link();
+  text_program_->attach_shader(tv);
+  text_program_->attach_shader(tf);
+  text_program_->link();
   
   MatrixX4f vertices(MatrixX4f::Zero(6, 4));
-  text_quad_buf_.buffer(vertices);
+  text_quad_buf_->buffer(vertices);
 }
 
 void Axes::draw() {
@@ -67,19 +75,19 @@ void Axes::draw() {
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   glLineWidth(axis_line_width_);
 
-  program_.set_uniform("uColor", Vector4f(0.0, 0.0, 0.0, 1.0));
-  program_.set_uniform("matrix", make_scaling_matrix());
-  program_.activate();
-  buf_.bind();
+  program_->set_uniform("uColor", Vector4f(0.0, 0.0, 0.0, 1.0));
+  program_->set_uniform("matrix", make_scaling_matrix());
+  program_->activate();
+  buf_->bind();
   
   glDrawArrays(GL_LINES, 0, 4);
 
   glLineWidth(1.0);
 
-  text_program_.set_uniform("textColor", Vector4f(0.0, 0.0, 0.0, 1.0));
-  text_program_.set_uniform("projection", make_scaling_matrix());
-  text_program_.set_uniform("text", 0);
-  text_program_.activate();
+  text_program_->set_uniform("textColor", Vector4f(0.0, 0.0, 0.0, 1.0));
+  text_program_->set_uniform("projection", make_scaling_matrix());
+  text_program_->set_uniform("text", 0);
+  text_program_->activate();
 
   for (auto& tick : x_ticks_) {
     float x = tick;
@@ -90,7 +98,7 @@ void Axes::draw() {
     std::string::const_iterator c;
 
     for (c = tick_s.begin(); c != tick_s.end(); c++) {
-      std::shared_ptr<Character> ch = font_.get_char(*c);
+      std::shared_ptr<Character> ch = font_->get_char(*c);
 
       float xpos = x + ch->bearing[0] * text_scale_x_;
       float ypos = y - (ch->size[1] - ch->bearing[1]) * text_scale_y_;
@@ -106,13 +114,13 @@ void Axes::draw() {
                   xpos + w, ypos + h, 1.0f, 0.0f;
 
       ch->texture->bind();
-      text_quad_buf_.replace(vertices);      
-      text_quad_buf_.bind();
+      text_quad_buf_->replace(vertices);      
+      text_quad_buf_->bind();
 
       glDrawArrays(GL_TRIANGLES, 0, 6);
 
       ch->texture->unbind();
-      text_quad_buf_.unbind();
+      text_quad_buf_->unbind();
       
       // Advance is stored in number of 1/64 pixels
       x += (ch->advance >> 6) * text_scale_x_;
@@ -128,7 +136,7 @@ void Axes::draw() {
     std::string::const_iterator c;
 
     for (c = tick_s.begin(); c != tick_s.end(); c++) {
-      std::shared_ptr<Character> ch = font_.get_char(*c);
+      std::shared_ptr<Character> ch = font_->get_char(*c);
 
       float xpos = x + ch->bearing[0] * text_scale_x_;
       float ypos = y - (ch->size[1] - ch->bearing[1]) * text_scale_y_;
@@ -143,13 +151,13 @@ void Axes::draw() {
                   xpos + w, ypos,     1.0f, 1.0f,
                   xpos + w, ypos + h, 1.0f, 0.0f;
       ch->texture->bind();
-      text_quad_buf_.replace(vertices);      
-      text_quad_buf_.bind();
+      text_quad_buf_->replace(vertices);      
+      text_quad_buf_->bind();
 
       glDrawArrays(GL_TRIANGLES, 0, 6);
       
       ch->texture->unbind();
-      text_quad_buf_.unbind();
+      text_quad_buf_->unbind();
 
       // Advance is stored in number of 1/64 pixels
       x += (ch->advance >> 6) * text_scale_x_;
@@ -159,12 +167,7 @@ void Axes::draw() {
   glDisable(GL_BLEND);
 }
 
-void Axes::update_limits(float x_min, float x_max, float y_min, float y_max, int window_width, int window_height) {
-  x_min_ = std::min(x_min, x_min_);
-  y_min_ = std::min(y_min, y_min_);
-  x_max_ = std::max(x_max, x_max_);
-  y_max_ = std::max(y_max, y_max_);
-
+void Axes::update_limits() {
   Vector2f scaled_padding = get_scaled_padding();
 
   MatrixX2f lines(4, 2);
@@ -180,12 +183,21 @@ void Axes::update_limits(float x_min, float x_max, float y_min, float y_max, int
              0.0, y_min_ - scaled_padding[1], 
              0.0, y_max_ + scaled_padding[1]; 
   }
-  buf_.buffer(lines);
-
-  update_scale(window_width, window_height);
+  buf_->buffer(lines);
 
   if (auto_ticks_)
     update_ticks();
+}
+
+void Axes::update_limits(float x_min, float x_max, float y_min, float y_max, int window_width, int window_height) {
+  x_min_ = std::min(x_min, x_min_);
+  y_min_ = std::min(y_min, y_min_);
+  x_max_ = std::max(x_max, x_max_);
+  y_max_ = std::max(y_max, y_max_);
+
+  update_limits();
+
+  update_scale(window_width, window_height);
 }
 
 void Axes::update_scale(int width, int height) {
@@ -244,6 +256,34 @@ void Axes::set_xticks(std::vector<float> ticks) {
 void Axes::set_yticks(std::vector<float> ticks) {
   auto_ticks_ = false;
   y_ticks_ = ticks;
+}
+
+void Axes::write_imgui() {
+  if (ImGui::BeginMainMenuBar()) {
+    if (ImGui::BeginMenu("Plotting")) {
+      ImGui::SliderFloat("Text Scale", &text_scale_multiplier_, 0.1, 5.0);
+      ImGui::SliderFloat("Padding", &padding_, 0.01, 1.0);
+
+      ImGui::SliderFloat("X Ticks Offset", &text_offset_y_, -1.0, 1.0);
+      ImGui::SliderFloat("Y Ticks Offset", &text_offset_x_, -1.0, 1.0);
+      ImGui::SliderFloat("Axis Width", &axis_line_width_, 0.1, 10.0);
+
+      bool changed = false;
+
+      changed = changed || ImGui::InputFloat("X Min", &x_min_);
+      changed = changed || ImGui::InputFloat("X Max", &x_max_);
+      changed = changed || ImGui::InputFloat("Y Min", &y_min_);
+      changed = changed || ImGui::InputFloat("Y Max", &y_max_);
+      changed = changed || ImGui::Checkbox("Axes Outside", &outside_);
+
+      if (changed)
+        update_limits();
+
+      ImGui::EndMenu();
+    }
+
+    ImGui::EndMainMenuBar();
+  }
 }
 
 Matrix4f Axes::make_scaling_matrix() {

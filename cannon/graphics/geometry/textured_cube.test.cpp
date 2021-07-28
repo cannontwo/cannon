@@ -4,6 +4,7 @@
 #include <cannon/graphics/geometry/textured_cube.hpp>
 #include <cannon/graphics/window.hpp>
 #include <cannon/graphics/opengl_state.hpp>
+#include <cannon/graphics/shader_program.hpp>
 
 using namespace cannon::graphics;
 

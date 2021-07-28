@@ -4,6 +4,7 @@
 #include <cannon/graphics/geometry/axes_hint.hpp>
 #include <cannon/graphics/window.hpp>
 #include <cannon/graphics/opengl_state.hpp>
+#include <cannon/graphics/shader_program.hpp>
 
 using namespace cannon::graphics;
 

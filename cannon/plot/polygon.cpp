@@ -31,29 +31,6 @@ Polygon::Polygon(ShaderProgramPtr program, const Polygon_2& cgal_poly, const
       points_(3*i + j, 0) = CGAL::to_double(triangles[i].vertex(j).x());
       points_(3*i + j, 1) = CGAL::to_double(triangles[i].vertex(j).y());
 
-      // TODO There's definitely a better way to do this, e.g. with a KDT
-
-      //intolor_idx = -1;
-      //int poly_idx = 0;
-      //for (auto it = cgal_poly.vertices_begin(); it < cgal_poly.vertices_end(); it++) {
-      //  double x = CGAL::to_double(it->x());
-      //  double y = CGAL::to_double(it->y());
-      //  double qx = points_(3*i + j, 0);
-      //  double qy = points_(3*i + j, 1);
-
-      //  log_info("Comparing query", points_.row(3*i + j), "to (", x, ",", y, ")");
-      //  if (nearly_equal(x, qx) && nearly_equal(y, qy)) {
-      //    color_idx = poly_idx;
-      //    break;
-      //  }
-
-      //  poly_idx++;
-      //}
-
-      //if (color_idx == -1) {
-      //  throw std::runtime_error("Could not find vertex of polygon corresponding to triangle vertex.");
-      //}
-
       int color_idx = tree.get_nearest_idx(points_.row(3*i + j).transpose().cast<double>());
       color_.row(3*i + j) = colors.row(color_idx);
     }
