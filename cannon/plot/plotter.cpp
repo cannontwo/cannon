@@ -4,12 +4,6 @@
 
 #include <stb_image/stb_image_write.h>
 
-#include <CGAL/Exact_predicates_exact_constructions_kernel.h>
-#include <CGAL/Polygon_2.h>
-
-using K = CGAL::Exact_predicates_exact_constructions_kernel;
-using Polygon_2 = CGAL::Polygon_2<K>;
-
 #include <cannon/graphics/shader_program.hpp>
 #include <cannon/graphics/vertex_shader.hpp>
 #include <cannon/graphics/fragment_shader.hpp>
