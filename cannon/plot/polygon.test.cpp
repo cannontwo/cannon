@@ -12,11 +12,12 @@ using namespace cannon::graphics;
 TEST_CASE("Polygon", "[plot]") {
   Plotter p;
 
-  Polygon_2 poly;
-  poly.push_back(CDT::Point(0, 0));
-  poly.push_back(CDT::Point(2, 0));
-  poly.push_back(CDT::Point(2, 2));
-  poly.push_back(CDT::Point(0, 2));
+  std::vector<Vector2d> poly;
+
+  poly.push_back(Vector2d(0, 0));
+  poly.push_back(Vector2d(2, 0));
+  poly.push_back(Vector2d(2, 2));
+  poly.push_back(Vector2d(0, 2));
 
   Vector4f color = Vector4f::Zero();
 

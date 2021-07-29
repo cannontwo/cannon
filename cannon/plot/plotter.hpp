@@ -4,14 +4,8 @@
 #include <string>
 #include <vector>
 #include <functional>
-#include <thread>
 
-#include <CGAL/Exact_predicates_exact_constructions_kernel.h>
-#include <CGAL/Polygon_2.h>
 #include <Eigen/Dense>
-
-using K = CGAL::Exact_predicates_exact_constructions_kernel;
-using Polygon_2 = CGAL::Polygon_2<K>;
 
 #include <cannon/utils/class_forward.hpp>
 
@@ -59,8 +53,8 @@ namespace cannon {
         // TODO We need two kinds of polygon plotting: contour plots that
         // should use the viridis shader and polygons that support arbitrary
         // colors
-        PolygonPtr plot_polygon(const Polygon_2& poly, const MatrixX4f& color);
-        PolygonPtr plot_polygon(const Polygon_2& poly, const Vector4f& color);
+        PolygonPtr plot_polygon(const std::vector<Vector2d>& poly, const MatrixX4f& color);
+        PolygonPtr plot_polygon(const std::vector<Vector2d>& poly, const Vector4f& color);
 
         LinePtr plot(std::function<double(double)> f,
                      unsigned int samples = 100, double low = -1.0,
@@ -93,8 +87,6 @@ namespace cannon {
         std::vector<ScatterPtr> scatter_plots_;
         std::vector<LinePtr> line_plots_;
         std::vector<PolygonPtr> polygon_plots_;
-
-        std::thread render_thread_;
 
         static std::vector<Vector4f> LINE_COLORS;
 

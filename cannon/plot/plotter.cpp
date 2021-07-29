@@ -4,6 +4,12 @@
 
 #include <stb_image/stb_image_write.h>
 
+#include <CGAL/Exact_predicates_exact_constructions_kernel.h>
+#include <CGAL/Polygon_2.h>
+
+using K = CGAL::Exact_predicates_exact_constructions_kernel;
+using Polygon_2 = CGAL::Polygon_2<K>;
+
 #include <cannon/graphics/shader_program.hpp>
 #include <cannon/graphics/vertex_shader.hpp>
 #include <cannon/graphics/fragment_shader.hpp>
@@ -138,7 +144,9 @@ std::shared_ptr<Line> Plotter::plot_line(MatrixX2f points, Vector4f color) {
   return l;
 }
 
-std::shared_ptr<Polygon> Plotter::plot_polygon(const Polygon_2& poly, const MatrixX4f& color) {
+std::shared_ptr<Polygon>
+Plotter::plot_polygon(const std::vector<Vector2d> &poly,
+                      const MatrixX4f &color) {
   auto p = std::make_shared<Polygon>(poly_program_, poly, color);
   polygon_plots_.push_back(p);
 
@@ -149,7 +157,9 @@ std::shared_ptr<Polygon> Plotter::plot_polygon(const Polygon_2& poly, const Matr
   return p;
 }
 
-std::shared_ptr<Polygon> Plotter::plot_polygon(const Polygon_2& poly, const Vector4f& color) {
+std::shared_ptr<Polygon>
+Plotter::plot_polygon(const std::vector<Vector2d> &poly,
+                      const Vector4f &color) {
   auto p = std::make_shared<Polygon>(poly_program_, poly, color);
   polygon_plots_.push_back(p);
 
@@ -256,14 +266,14 @@ void Plotter::plot(std::function<double(const Vector2d &)> f,
       double x = x_low + (x_extent / lattice_dim) * i;
       double y = y_low + (y_extent / lattice_dim) * j;
 
-      Polygon_2 polygon;
-      K::Point_2 cp1(x, y);
+      std::vector<Vector2d> polygon;
+      Vector2d cp1(x, y);
       polygon.push_back(cp1);
-      K::Point_2 cp2(x + x_cell_side, y);
+      Vector2d cp2(x + x_cell_side, y);
       polygon.push_back(cp2);
-      K::Point_2 cp3(x + x_cell_side, y + y_cell_side);
+      Vector2d cp3(x + x_cell_side, y + y_cell_side);
       polygon.push_back(cp3);
-      K::Point_2 cp4(x, y + y_cell_side);
+      Vector2d cp4(x, y + y_cell_side);
       polygon.push_back(cp4);
 
       plot_polygon(polygon, colors);
