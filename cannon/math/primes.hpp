@@ -12,10 +12,6 @@
 #include <cmath>
 #include <set>
 
-#include <cannon/log/registry.hpp>
-
-using namespace cannon::log;
-
 namespace cannon {
   namespace math {
   

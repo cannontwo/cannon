@@ -4,7 +4,6 @@
 /*!
  * \file cannon/geom/kd_tree.hpp
  * \brief File containing KDTree class definition.
- *
  */
 
 /*!
