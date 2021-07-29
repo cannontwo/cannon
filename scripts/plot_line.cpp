@@ -2,6 +2,8 @@
 
 #include <cmath>
 
+#include <GLFW/glfw3.h>
+
 #include <cannon/log/registry.hpp>
 
 #include <cannon/plot/plotter.hpp>

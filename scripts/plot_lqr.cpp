@@ -3,6 +3,7 @@
 #include <cmath>
 
 #include <imgui.h>
+#include <GLFW/glfw3.h>
 
 #include <cannon/log/registry.hpp>
 
