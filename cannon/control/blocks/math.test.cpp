@@ -3,6 +3,7 @@
 #include <cannon/control/blocks/math.hpp>
 #include <cannon/control/blocks/sources.hpp>
 #include <cannon/control/out_port.hpp>
+#include <cannon/control/in_port.hpp>
 #include <cannon/control/signal.hpp>
 
 using namespace cannon::control::blocks;
@@ -17,4 +18,10 @@ TEST_CASE("MathBlocks", "[control/blocks]") {
   Add add(s1, s2);
   add.update();
   REQUIRE(add.out_signal()->sample() == 3.0);
+
+  Gain g(10.0);
+  g.in_ports()[0]->connect(s2);
+  g.update();
+  REQUIRE(g.out_ports()[0]->value() == 20.0);
+
 }

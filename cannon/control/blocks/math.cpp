@@ -32,3 +32,27 @@ bool blocks::Add::is_valid() {
 const SignalPtr blocks::Add::out_signal() {
   return out_->signal();
 }
+
+blocks::Gain::Gain() : multiplier_(1.0), in_(new InPort), out_(new OutPort) {}
+
+blocks::Gain::Gain(double k)
+    : multiplier_(k), in_(new InPort), out_(new OutPort) {}
+
+std::vector<InPortPtr> blocks::Gain::in_ports() const {
+  return { in_ };
+}
+
+std::vector<OutPortPtr> blocks::Gain::out_ports() const {
+  return { out_};
+}
+
+void blocks::Gain::update() {
+  if (!is_valid())
+    throw std::runtime_error("'Gain' block not valid");
+
+  out_->set_value(in_->value() * multiplier_);
+}
+
+bool blocks::Gain::is_valid() {
+  return in_->is_valid();
+}

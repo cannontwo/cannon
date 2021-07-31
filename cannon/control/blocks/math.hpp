@@ -76,6 +76,52 @@ namespace cannon {
 
       };
 
+      /*!
+       * Class representing a gain block. Multiplies its input by the stored
+       * multiplier to produce output.
+       */
+      class Gain : public Block {
+        public:
+
+          /*!
+           * \brief Default constructor.
+           */
+          Gain();
+
+          /*!
+           * \brief Constructor taking multiplier for gain block.
+           */
+          Gain(double k);
+
+          /*!
+           * Inherited from Block.
+           */
+          virtual std::vector<InPortPtr> in_ports() const override;
+
+          /*!
+           * Inherited from Block.
+           */
+          virtual std::vector<OutPortPtr> out_ports() const override;
+
+          /*!
+           * Inherited from Block.
+           */
+          virtual void update() override;
+
+          /*!
+           * Inherited from Block.
+           */
+          virtual bool is_valid() override;
+
+        private:
+          double multiplier_;  //!< Multiplier for this gain block.
+
+          InPortPtr in_; //!< Input port
+          OutPortPtr out_; //!< Output port
+
+
+      };
+
     }
   }
 }
