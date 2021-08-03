@@ -1,5 +1,7 @@
 #ifdef CANNON_BUILD_GRAPHICS
 
+#include <GLFW/glfw3.h>
+
 #include <cannon/log/registry.hpp>
 
 #include <cannon/plot/plotter.hpp>

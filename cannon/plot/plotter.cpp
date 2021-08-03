@@ -14,6 +14,7 @@
 #include <cannon/plot/line.hpp>
 
 using namespace cannon::plot;
+using namespace cannon::graphics;
 
 // Cribbed from Seaborn
 std::vector<Vector4f> Plotter::LINE_COLORS = std::vector<Vector4f>(

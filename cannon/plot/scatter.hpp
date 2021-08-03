@@ -6,7 +6,6 @@
  * \brief File containing Scatter class definition.
  */
 
-#include <glad/glad.h>
 #include <Eigen/Dense>
 
 #include <cannon/utils/class_forward.hpp>
