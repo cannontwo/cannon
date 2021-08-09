@@ -2,7 +2,7 @@
 #define CANNON_CONTROL_BLOCKS_MATH_H 
 
 /*!
- * \file cannon/control/blocks/add.hpp
+ * \file cannon/control/blocks/math.hpp
  * \brief File containing math operations control block class definitions.
  */
 
