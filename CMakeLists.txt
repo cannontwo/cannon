@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.10)
 project(Cannon C CXX)
 enable_language(CXX)
 
+set(CMAKE_UNITY_BUILD OFF)
+
 # Options
 option(CANNON_BUILD_GRAPHICS "Whether to build graphics portions of the project" ON)
 if(CANNON_BUILD_GRAPHICS)

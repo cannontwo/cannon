@@ -1,3 +1,4 @@
+#ifdef CANNON_BUILD_GRAPHICS
 #include <cmath>
 
 #include <cannon/math/interp.hpp>
@@ -41,3 +42,6 @@ int main() {
   
   plotter.render();
 }
+#else
+int main() {}
+#endif

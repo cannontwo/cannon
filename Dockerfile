@@ -6,10 +6,8 @@ RUN apt-get update && apt-get install -y software-properties-common
 RUN add-apt-repository ppa:ubuntu-toolchain-r/test
 
 RUN apt-get update && apt-get install -y build-essential \ 
-        cmake \
         libeigen3-dev \
         clang-tidy \
-        libcgal-dev \  
         libglfw3-dev \
         libfreetype6 \
         libfreetype6-dev \
@@ -36,9 +34,17 @@ RUN apt-get update && apt-get install -y build-essential \
         fonts-open-sans \
         doxygen \
         libhdf5-dev \
-        ninja-build
+        ninja-build \
+        libgmp3-dev \ 
+        libmpfr-dev
 
 RUN update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 90 --slave /usr/bin/g++ g++ /usr/bin/g++-9
+
+# CMake (we need a newer version)
+WORKDIR /
+RUN wget https://github.com/Kitware/CMake/releases/download/v3.21.1/cmake-3.21.1-linux-x86_64.sh
+RUN chmod +x ./cmake-3.21.1-linux-x86_64.sh
+RUN ./cmake-3.21.1-linux-x86_64.sh --skip-license
 
 # YAML-Cpp
 WORKDIR /
@@ -81,6 +87,13 @@ WORKDIR /
 
 # CGAL 
 # TODO Download CGAL 5.2, uninstall libcgal-dev, install CGAL 5.2
+RUN git clone https://github.com/CGAL/cgal.git
+WORKDIR cgal
+RUN mkdir build
+WORKDIR build
+RUN cmake ..
+RUN make install
+WORKDIR /
 
 COPY . /cannon
 RUN mkdir -p /cannon/build
