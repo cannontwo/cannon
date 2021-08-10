@@ -40,8 +40,11 @@ namespace cannon {
         /*!
          * \brief Trigger an update on this block. The block should read from
          * its inputs and write to its outputs when triggered in this way.
+         *
+         * \param dt Time step for update.
+         * \param t Total elapsed time so far.
          */
-        virtual void update() = 0;
+        virtual void update(double dt, double t) = 0;
 
         /*!
          * \brief Check whether this block is valid for use in simulation,

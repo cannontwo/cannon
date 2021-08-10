@@ -16,12 +16,12 @@ TEST_CASE("MathBlocks", "[control/blocks]") {
   auto s2 = c2.out_signal();
 
   Add add(s1, s2);
-  add.update();
+  add.update(.01, 0.0);
   REQUIRE(add.out_signal()->sample() == 3.0);
 
   Gain g(10.0);
   g.in_ports()[0]->connect(s2);
-  g.update();
+  g.update(.01, 0.0);
   REQUIRE(g.out_ports()[0]->value() == 20.0);
 
 }

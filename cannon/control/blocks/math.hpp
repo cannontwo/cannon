@@ -54,7 +54,7 @@ namespace cannon {
           /*!
            * Inherited from Block.
            */
-          virtual void update() override;
+          virtual void update(double dt, double t) override;
 
           /*!
            * Inherited from Block.
@@ -106,7 +106,7 @@ namespace cannon {
           /*!
            * Inherited from Block.
            */
-          virtual void update() override;
+          virtual void update(double dt, double t) override;
 
           /*!
            * Inherited from Block.

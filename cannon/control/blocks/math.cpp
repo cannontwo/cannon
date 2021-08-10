@@ -18,7 +18,7 @@ std::vector<OutPortPtr> blocks::Add::out_ports() const {
   return {out_};
 }
 
-void blocks::Add::update() {
+void blocks::Add::update(double dt, double t) {
   if (!is_valid())
     throw std::runtime_error("'Add' block not valid");
 
@@ -46,7 +46,7 @@ std::vector<OutPortPtr> blocks::Gain::out_ports() const {
   return { out_};
 }
 
-void blocks::Gain::update() {
+void blocks::Gain::update(double dt, double t) {
   if (!is_valid())
     throw std::runtime_error("'Gain' block not valid");
 

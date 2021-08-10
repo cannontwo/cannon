@@ -17,6 +17,9 @@ namespace cannon {
 
     namespace blocks {
 
+      /*!
+       * \brief Class representing a constant-valued source.
+       */
       class Constant : public Block {
         public:
 
@@ -43,7 +46,7 @@ namespace cannon {
           /*!
            * \brief Inherited from Block.
            */
-          virtual void update() override;
+          virtual void update(double dt, double t) override;
 
           /*!
            * \brief Inherited from Block.
@@ -68,6 +71,58 @@ namespace cannon {
 
         private:
           double value_; //!< Value output by this constant block
+
+          OutPortPtr out_; //!< Out port for this block.
+      };
+
+      /*!
+       * \brief Class representing a step from one value to another at a specified time.
+       */
+      class Step : public Block {
+        public:
+
+          /*!
+           * \brief Default constructor.
+           */
+          Step();
+
+          /*!
+           * \brief Constructor taking an initial value, a final value, and the
+           * step time.
+           */
+          Step(double initial_value, double final_value, double step_time);
+
+          /*!
+           * \brief Inherited from Block.
+           */
+          virtual std::vector<InPortPtr> in_ports() const override;
+
+          /*!
+           * \brief Inherited from Block.
+           */
+          virtual std::vector<OutPortPtr> out_ports() const override;
+
+          /*!
+           * \brief Inherited from Block.
+           */
+          virtual void update(double dt, double t) override;
+
+          /*!
+           * \brief Inherited from Block.
+           */
+          virtual bool is_valid() override;
+
+          /*!
+           * \brief Get the single outgoing signal for this block.
+           *
+           * \returns Pointer to the signal output by this block.
+           */
+          const SignalPtr out_signal();
+
+        private:
+          double initial_value_; //!< Initial value for step
+          double final_value_; //!< Final value for step
+          double step_time_; //!< Step time
 
           OutPortPtr out_; //!< Out port for this block.
       };
