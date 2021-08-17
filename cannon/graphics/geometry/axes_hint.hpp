@@ -7,7 +7,6 @@
  */
 
 #include <cannon/graphics/geometry/drawable_geom.hpp>
-#include <cannon/graphics/vertex_buffer.hpp>
 
 namespace cannon {
   namespace graphics {

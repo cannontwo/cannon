@@ -79,11 +79,11 @@ namespace cannon {
         }
 
       public: 
-        std::function<void(ExperimentWriter&, int)> exp_func_;
-        unsigned int num_exps_;
-        std::string log_prefix_;
-        std::vector<int> seeds_;
-        std::string start_time_string_;
+        std::function<void(ExperimentWriter&, int)> exp_func_; //!< Function to call to run an experiment
+        unsigned int num_exps_; //!< Total number of experiments to run
+        std::string log_prefix_; //!< Prefix for log file
+        std::vector<int> seeds_; //!< Seeds to use for RNG in experiments
+        std::string start_time_string_; //!< String representing experiment start time.
 
     };
 
