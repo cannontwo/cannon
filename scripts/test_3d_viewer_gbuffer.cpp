@@ -15,6 +15,7 @@
 #include <cannon/graphics/geometry/screen_quad.hpp>
 #include <cannon/graphics/window.hpp>
 #include <cannon/graphics/shader_program.hpp>
+#include <cannon/graphics/projection.hpp>
 
 using namespace cannon::graphics;
 using namespace cannon::log;

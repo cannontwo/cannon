@@ -1,14 +1,16 @@
 #include <cannon/graphics/geometry/axes_hint.hpp>
 
+#include <cannon/graphics/vertex_buffer.hpp>
 #include <cannon/graphics/shader_program.hpp>
 #include <cannon/graphics/vertex_array_object.hpp>
 
 using namespace cannon::graphics::geometry;
 
-AxesHint::AxesHint() : vao_x_(new VertexArrayObject), vao_y_(new
-    VertexArrayObject), vao_z_(new VertexArrayObject),
-buf_x_(vao_x_), buf_y_(vao_y_), buf_z_(vao_z_), vertices_x_(2, 3),
-vertices_y_(2, 3), vertices_z_(2, 3) {
+AxesHint::AxesHint()
+    : vao_x_(new VertexArrayObject), vao_y_(new VertexArrayObject),
+      vao_z_(new VertexArrayObject), buf_x_(new VertexBuffer(vao_x_)),
+      buf_y_(new VertexBuffer(vao_y_)), buf_z_(new VertexBuffer(vao_z_)),
+      vertices_x_(2, 3), vertices_y_(2, 3), vertices_z_(2, 3) {
 
   populate_bufs_x_();
   populate_bufs_y_();
@@ -37,17 +39,17 @@ void AxesHint::draw(const Matrix4f& view, const Matrix4f& perspective) const {
   // Basically just draw three lines with different materials (red, green, blue) for (x, y, z)
   glEnable(GL_BLEND);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-  buf_x_.bind();
+  buf_x_->bind();
   program->set_uniform("uColor", Vector4f{1.0, 0.0, 0.0, 0.5});
   program->activate();
   glDrawArrays(GL_LINES, 0, vertices_x_.rows());
 
-  buf_y_.bind();
+  buf_y_->bind();
   program->set_uniform("uColor", Vector4f{0.0, 1.0, 0.0, 0.5});
   program->activate();
   glDrawArrays(GL_LINES, 0, vertices_y_.rows());
 
-  buf_z_.bind();
+  buf_z_->bind();
   program->set_uniform("uColor", Vector4f{0.0, 0.0, 1.0, 0.5});
   program->activate();
   glDrawArrays(GL_LINES, 0, vertices_z_.rows());
@@ -60,7 +62,7 @@ void AxesHint::draw(const Matrix4f& view, const Matrix4f& perspective) const {
   glBlendFunc(blend_src_rgb, blend_dst_rgb);
 
   program->deactivate();
-  buf_z_.unbind();
+  buf_z_->unbind();
 }
 
 void AxesHint::draw(std::shared_ptr<ShaderProgram> p, const Matrix4f& view, const
@@ -81,17 +83,17 @@ void AxesHint::draw(std::shared_ptr<ShaderProgram> p, const Matrix4f& view, cons
   // Basically just draw three lines with different materials (red, green, blue) for (x, y, z)
   glEnable(GL_BLEND);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-  buf_x_.bind();
+  buf_x_->bind();
   p->set_uniform("uColor", Vector4f{1.0, 0.0, 0.0, 0.5});
   p->activate();
   glDrawArrays(GL_LINES, 0, vertices_x_.rows());
 
-  buf_y_.bind();
+  buf_y_->bind();
   p->set_uniform("uColor", Vector4f{0.0, 1.0, 0.0, 0.5});
   p->activate();
   glDrawArrays(GL_LINES, 0, vertices_y_.rows());
 
-  buf_z_.bind();
+  buf_z_->bind();
   p->set_uniform("uColor", Vector4f{0.0, 0.0, 1.0, 0.5});
   p->activate();
   glDrawArrays(GL_LINES, 0, vertices_z_.rows());
@@ -104,26 +106,26 @@ void AxesHint::draw(std::shared_ptr<ShaderProgram> p, const Matrix4f& view, cons
   glBlendFunc(blend_src_rgb, blend_dst_rgb);
 
   p->deactivate();
-  buf_z_.unbind();
+  buf_z_->unbind();
 }
 
 void AxesHint::populate_bufs_x_() {
   vertices_x_ << 0.0f, 0.0f, 0.0f,
                 1.0f, 0.0f, 0.0f;
 
-  buf_x_.buffer(vertices_x_);
+  buf_x_->buffer(vertices_x_);
 }
 
 void AxesHint::populate_bufs_y_() {
   vertices_y_ <<  0.0f, 0.0f, 0.0f,
                 0.0f, 1.0f, 0.0f;
 
-  buf_y_.buffer(vertices_y_);
+  buf_y_->buffer(vertices_y_);
 }
 
 void AxesHint::populate_bufs_z_() {
   vertices_z_ <<  0.0f, 0.0f, 0.0f,
                 0.0f, 0.0f, 1.0f;
 
-  buf_z_.buffer(vertices_z_);
+  buf_z_->buffer(vertices_z_);
 }

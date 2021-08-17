@@ -1,14 +1,19 @@
 #ifndef CANNON_GRAPHICS_GEOMETRY_SDF_VOLUME_H
 #define CANNON_GRAPHICS_GEOMETRY_SDF_VOLUME_H 
 
+/*!
+ * \file cannon/graphics/geometry/sdf_volume.hpp
+ * \brief File containing SDFVolume class definition.
+ */
+
 #include <cannon/graphics/geometry/drawable_geom.hpp>
-#include <cannon/graphics/vertex_buffer.hpp>
 #include <cannon/utils/class_forward.hpp>
 
 namespace cannon {
   namespace graphics {
 
     CANNON_CLASS_FORWARD(VertexArrayObject);
+    CANNON_CLASS_FORWARD(VertexBuffer);
     CANNON_CLASS_FORWARD(ShaderProgram);
 
     namespace geometry {
@@ -44,7 +49,7 @@ namespace cannon {
           void populate_bufs_();
 
           VertexArrayObjectPtr vao_;
-          VertexBuffer buf_;
+          VertexBufferPtr buf_;
 
           MatrixX3f vertices_;
 

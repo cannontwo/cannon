@@ -3,13 +3,14 @@
 #include <cannon/graphics/texture.hpp>
 #include <cannon/graphics/vertex_array_object.hpp>
 #include <cannon/graphics/shader_program.hpp>
+#include <cannon/graphics/vertex_buffer.hpp>
 
 using namespace cannon::graphics::geometry;
 
-ScreenQuad::ScreenQuad(std::shared_ptr<Texture> tex, int width, int height) :
-  width(width), height(height), tex_(tex) , vao_(new VertexArrayObject),
-  buf_(vao_), texture_coord_buf_(vao_), vertices_(6, 2), texture_coords_(6, 2)
-{
+ScreenQuad::ScreenQuad(std::shared_ptr<Texture> tex, int width, int height)
+    : width(width), height(height), tex_(tex), vao_(new VertexArrayObject),
+      buf_(new VertexBuffer(vao_)), texture_coord_buf_(new VertexBuffer(vao_)),
+      vertices_(6, 2), texture_coords_(6, 2) {
   program = std::make_shared<ShaderProgram>("screen_quad_shader");
   program->attach_vertex_shader("shaders/pass_pos_tex.vert");
   program->attach_fragment_shader("shaders/tex_quad.frag");
@@ -29,8 +30,8 @@ void ScreenQuad::draw() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     tex_->bind();
-    buf_.bind();
-    texture_coord_buf_.bind();
+    buf_->bind();
+    texture_coord_buf_->bind();
 
     bool depth_enabled = glIsEnabled(GL_DEPTH_TEST);
     if (depth_enabled)
@@ -42,8 +43,8 @@ void ScreenQuad::draw() {
       glEnable(GL_DEPTH_TEST);
 
     tex_->unbind();
-    texture_coord_buf_.unbind();
-    buf_.unbind();
+    texture_coord_buf_->unbind();
+    buf_->unbind();
     program->deactivate();
 }
 
@@ -53,8 +54,8 @@ void ScreenQuad::draw(std::shared_ptr<ShaderProgram> p) {
     glClear(GL_COLOR_BUFFER_BIT);
 
     tex_->bind();
-    buf_.bind();
-    texture_coord_buf_.bind();
+    buf_->bind();
+    texture_coord_buf_->bind();
 
     bool depth_enabled = glIsEnabled(GL_DEPTH_TEST);
     if (depth_enabled)
@@ -66,8 +67,8 @@ void ScreenQuad::draw(std::shared_ptr<ShaderProgram> p) {
       glEnable(GL_DEPTH_TEST);
 
     tex_->unbind();
-    texture_coord_buf_.unbind();
-    buf_.unbind();
+    texture_coord_buf_->unbind();
+    buf_->unbind();
     p->deactivate();
 }
 
@@ -81,8 +82,8 @@ void ScreenQuad::draw(std::shared_ptr<ShaderProgram> p,
     textures[i]->bind(GL_TEXTURE0+i); 
   }
 
-  buf_.bind();
-  texture_coord_buf_.bind();
+  buf_->bind();
+  texture_coord_buf_->bind();
 
   bool depth_enabled = glIsEnabled(GL_DEPTH_TEST);
   if (depth_enabled)
@@ -97,8 +98,8 @@ void ScreenQuad::draw(std::shared_ptr<ShaderProgram> p,
     textures[i]->unbind(); 
   }
 
-  texture_coord_buf_.unbind();
-  buf_.unbind();
+  texture_coord_buf_->unbind();
+  buf_->unbind();
   p->deactivate();
 }
 
@@ -115,7 +116,7 @@ void ScreenQuad::populate_quad_buf_() {
                 1.0f, -1.0f,
                 1.0f,  1.0f;
 
-  buf_.buffer(vertices_);
+  buf_->buffer(vertices_);
 
   texture_coords_ << 0.0f, 1.0f,
                      0.0f, 0.0f,
@@ -125,5 +126,5 @@ void ScreenQuad::populate_quad_buf_() {
                      1.0f, 0.0f,
                      1.0f, 1.0f;
 
-  texture_coord_buf_.buffer(texture_coords_);
+  texture_coord_buf_->buffer(texture_coords_);
 }

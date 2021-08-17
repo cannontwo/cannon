@@ -9,6 +9,8 @@
 
 #include <memory>
 
+#include <imgui.h>
+
 #include <cannon/graphics/light.hpp>
 #include <cannon/graphics/geometry/drawable_geom.hpp>
 

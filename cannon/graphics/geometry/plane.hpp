@@ -1,15 +1,21 @@
 #ifndef CANNON_GRAPHICS_GEOMETRY_PLANE_H
 #define CANNON_GRAPHICS_GEOMETRY_PLANE_H 
 
+/*!
+ * \file cannon/graphics/geometry/plane.hpp
+ * \brief File containing Plane class definition.
+ */
+
+
 #include <cannon/graphics/geometry/drawable_geom.hpp>
 
-#include <cannon/graphics/vertex_buffer.hpp>
 #include <cannon/utils/class_forward.hpp>
 
 namespace cannon {
   namespace graphics {
 
     CANNON_CLASS_FORWARD(VertexArrayObject);
+    CANNON_CLASS_FORWARD(VertexBuffer);
 
     namespace geometry {
 
@@ -44,8 +50,8 @@ namespace cannon {
           void populate_bufs_();
 
           VertexArrayObjectPtr vao_;
-          VertexBuffer buf_;
-          VertexBuffer normal_buf_;
+          VertexBufferPtr buf_;
+          VertexBufferPtr normal_buf_;
 
           MatrixX3f vertices_;
           MatrixX3f normals_;

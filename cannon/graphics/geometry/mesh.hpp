@@ -1,11 +1,15 @@
 #ifndef CANNON_GRAPHICS_GEOMETRY_MESH_H
 #define CANNON_GRAPHICS_GEOMETRY_MESH_H 
 
+/*!
+ * \file cannon/graphics/geometry/mesh.hpp
+ * \brief File containing Mesh class definition.
+ */
+
 #include <vector>
+#include <glad/glad.h>
 
 #include <cannon/graphics/geometry/drawable_geom.hpp>
-#include <cannon/graphics/vertex_buffer.hpp>
-#include <cannon/graphics/element_buffer.hpp>
 
 #include <cannon/utils/class_forward.hpp>
 
@@ -13,6 +17,12 @@ namespace cannon {
   namespace graphics {
 
     CANNON_CLASS_FORWARD(Texture);
+    CANNON_CLASS_FORWARD(VertexBuffer);
+    CANNON_CLASS_FORWARD(ElementBuffer);
+    CANNON_CLASS_FORWARD(VertexArrayObject);
+
+    using MatrixX3u = Matrix<unsigned int, Dynamic, 3>;
+    using Matrix3Xu = Matrix<unsigned int, 3, Dynamic>;
 
     namespace geometry {
 
@@ -39,11 +49,11 @@ namespace cannon {
         private:
           void populate_bufs_();
 
-          std::shared_ptr<VertexArrayObject> vao_;
-          VertexBuffer buf_;
-          VertexBuffer normal_buf_;
-          VertexBuffer tex_coord_buf_;
-          ElementBuffer ebuf_;
+          VertexArrayObjectPtr vao_;
+          VertexBufferPtr buf_;
+          VertexBufferPtr normal_buf_;
+          VertexBufferPtr tex_coord_buf_;
+          ElementBufferPtr ebuf_;
 
           MatrixX3f vertices_;
           MatrixX3f normals_;

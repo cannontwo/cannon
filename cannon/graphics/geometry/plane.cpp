@@ -2,11 +2,13 @@
 
 #include <cannon/graphics/shader_program.hpp>
 #include <cannon/graphics/vertex_array_object.hpp>
+#include <cannon/graphics/vertex_buffer.hpp>
 
 using namespace cannon::graphics::geometry;
 
-Plane::Plane(std::shared_ptr<ShaderProgram> p) : vao_(new VertexArrayObject),
-  buf_(vao_), normal_buf_(vao_), vertices_(6, 3), normals_(6, 3) {
+Plane::Plane(std::shared_ptr<ShaderProgram> p)
+    : vao_(new VertexArrayObject), buf_(new VertexBuffer(vao_)),
+      normal_buf_(new VertexBuffer(vao_)), vertices_(6, 3), normals_(6, 3) {
 
   program = p;
 
@@ -19,11 +21,13 @@ Plane::Plane(std::shared_ptr<ShaderProgram> p) : vao_(new VertexArrayObject),
   material_.specular = {0.0, 0.0, 0.0, 1.0};
 }
 
-Plane::Plane(Plane& o) : vao_(new VertexArrayObject), buf_(vao_), normal_buf_(vao_),
-vertices_(o.vertices_), normals_(o.normals_) {
+Plane::Plane(Plane &o)
+    : vao_(new VertexArrayObject), buf_(new VertexBuffer(vao_)),
+      normal_buf_(new VertexBuffer(vao_)), vertices_(o.vertices_),
+      normals_(o.normals_) {
   program = o.program;
-  buf_.buffer(vertices_);
-  normal_buf_.buffer(normals_);
+  buf_->buffer(vertices_);
+  normal_buf_->buffer(normals_);
 
   name_ = o.name_;
 
@@ -45,16 +49,16 @@ void Plane::draw(const Matrix4f& view, const Matrix4f& perspective) const {
 
   program->activate();
 
-  buf_.bind();
-  normal_buf_.bind();
+  buf_->bind();
+  normal_buf_->bind();
 
   glBindTexture(GL_TEXTURE_2D, 0);
   glDrawArrays(GL_TRIANGLES, 0, vertices_.rows());
 
   program->deactivate();
 
-  normal_buf_.unbind();
-  buf_.unbind();
+  normal_buf_->unbind();
+  buf_->unbind();
 }
 
 void Plane::draw(std::shared_ptr<ShaderProgram> p, const Matrix4f& view, const
@@ -72,16 +76,16 @@ void Plane::draw(std::shared_ptr<ShaderProgram> p, const Matrix4f& view, const
 
   p->activate();
 
-  buf_.bind();
-  normal_buf_.bind();
+  buf_->bind();
+  normal_buf_->bind();
 
   glBindTexture(GL_TEXTURE_2D, 0);
   glDrawArrays(GL_TRIANGLES, 0, vertices_.rows());
 
   p->deactivate();
 
-  normal_buf_.unbind();
-  buf_.unbind();
+  normal_buf_->unbind();
+  buf_->unbind();
 }
 
 void Plane::populate_bufs_() {
@@ -101,7 +105,7 @@ void Plane::populate_bufs_() {
                //-0.5f, -0.5f, 0.0f;
 
     
-  buf_.buffer(vertices_);
+  buf_->buffer(vertices_);
   
   normals_ << 0.0f,  0.0f, 1.0f,
               0.0f,  0.0f, 1.0f,
@@ -118,5 +122,5 @@ void Plane::populate_bufs_() {
               //0.0f,  0.0f, 1.0f,
               //0.0f,  0.0f, 1.0f;
 
-  normal_buf_.buffer(normals_);
+  normal_buf_->buffer(normals_);
 }

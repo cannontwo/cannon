@@ -5,6 +5,7 @@
 #include <cannon/graphics/geometry/screen_quad.hpp>
 #include <cannon/graphics/window.hpp>
 #include <cannon/graphics/viewer_3d.hpp>
+#include <cannon/graphics/projection.hpp>
 
 using namespace cannon::graphics;
 

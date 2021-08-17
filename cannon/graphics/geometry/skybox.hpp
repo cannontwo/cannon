@@ -1,18 +1,27 @@
 #ifndef CANNON_GRAPHICS_GEOMETRY_SKYBOX_H
 #define CANNON_GRAPHICS_GEOMETRY_SKYBOX_H 
 
+/*!
+ * \file cannon/graphics/geometry/skybox.hpp
+ * \brief File containing Skybox class definition.
+ */
+
 #include <vector>
 #include <string>
 
-#include <cannon/graphics/cubemap.hpp>
-#include <cannon/graphics/vertex_buffer.hpp>
+#include <Eigen/Dense>
+
 #include <cannon/utils/class_forward.hpp>
+
+using namespace Eigen;
 
 namespace cannon {
   namespace graphics {
 
     CANNON_CLASS_FORWARD(ShaderProgram);
     CANNON_CLASS_FORWARD(VertexArrayObject);
+    CANNON_CLASS_FORWARD(VertexBuffer);
+    CANNON_CLASS_FORWARD(Cubemap);
 
     namespace geometry {
 
@@ -33,10 +42,10 @@ namespace cannon {
         private:
           void populate_bufs_();
 
-          Cubemap cubemap_;
+          CubemapPtr cubemap_;
 
           VertexArrayObjectPtr vao_;
-          VertexBuffer buf_;
+          VertexBufferPtr buf_;
 
           MatrixX3f vertices_;
 

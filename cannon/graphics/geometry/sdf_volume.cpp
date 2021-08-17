@@ -2,11 +2,13 @@
 
 #include <cannon/graphics/shader_program.hpp>
 #include <cannon/graphics/vertex_array_object.hpp>
+#include <cannon/graphics/vertex_buffer.hpp>
 
 using namespace cannon::graphics::geometry;
 
-SDFVolume::SDFVolume(std::shared_ptr<ShaderProgram> p) : vao_(new VertexArrayObject), buf_(vao_),
-vertices_(36, 3) {
+SDFVolume::SDFVolume(std::shared_ptr<ShaderProgram> p)
+    : vao_(new VertexArrayObject), buf_(new VertexBuffer(vao_)),
+      vertices_(36, 3) {
 
   program = p;
   populate_bufs_();
@@ -17,11 +19,12 @@ vertices_(36, 3) {
   material_.specular = {0.0, 0.0, 0.0, 1.0};
 }
 
-SDFVolume::SDFVolume(SDFVolume& o) : vao_(new VertexArrayObject), buf_(vao_),
-vertices_(o.vertices_) {
+SDFVolume::SDFVolume(SDFVolume &o)
+    : vao_(new VertexArrayObject), buf_(new VertexBuffer(vao_)),
+      vertices_(o.vertices_) {
 
   program = o.program;
-  buf_.buffer(vertices_);
+  buf_->buffer(vertices_);
 
   name_ = o.name_;
 
@@ -44,14 +47,14 @@ void SDFVolume::draw(const Matrix4f& view, const Matrix4f& perspective) const {
 
   program->activate();
 
-  buf_.bind();
+  buf_->bind();
 
   glBindTexture(GL_TEXTURE_2D, 0);
   glDrawArrays(GL_TRIANGLES, 0, vertices_.rows());
 
   program->deactivate();
 
-  buf_.unbind();
+  buf_->unbind();
 }
 
 void SDFVolume::draw(std::shared_ptr<ShaderProgram> p, const Matrix4f& view, const
@@ -71,14 +74,14 @@ void SDFVolume::draw(std::shared_ptr<ShaderProgram> p, const Matrix4f& view, con
 
   p->activate();
 
-  buf_.bind();
+  buf_->bind();
 
   glBindTexture(GL_TEXTURE_2D, 0);
   glDrawArrays(GL_TRIANGLES, 0, vertices_.rows());
 
   p->deactivate();
 
-  buf_.unbind();
+  buf_->unbind();
 }
 
 void SDFVolume::populate_bufs_() {
@@ -124,5 +127,5 @@ void SDFVolume::populate_bufs_() {
                -0.5f,  0.5f, -0.5f,
                -0.5f,  0.5f,  0.5f; 
     
-  buf_.buffer(vertices_);
+  buf_->buffer(vertices_);
 }

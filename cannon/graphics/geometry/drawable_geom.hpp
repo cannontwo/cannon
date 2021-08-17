@@ -1,11 +1,14 @@
 #ifndef CANNON_GRAPHICS_GEOMETRY_DRAWABLE_GEOM_H
 #define CANNON_GRAPHICS_GEOMETRY_DRAWABLE_GEOM_H 
 
+/*!
+ * \file cannon/graphics/geometry/drawable_geom.hpp
+ * \brief File containing DrawableGeom class definition.
+ */
+
 #include <Eigen/Dense>
 
-#include <cannon/graphics/projection.hpp>
 #include <cannon/utils/class_forward.hpp>
-#include <imgui.h>
 
 using namespace Eigen;
 
@@ -35,13 +38,7 @@ namespace cannon {
             material_ = material;
           }
 
-          virtual Matrix4f get_model_mat() const {
-            Affine3f trans;
-            trans = AngleAxisf(to_radians(0.0f), Vector3f::UnitX()) *
-              Translation3f(pos_) * rot_ * Scaling(scale_);
-
-            return trans.matrix();
-          }
+          virtual Matrix4f get_model_mat() const;
 
           Matrix4f get_normal_mat() const {
             Matrix4f model = get_model_mat();
@@ -71,19 +68,7 @@ namespace cannon {
             scale_ = scale;
           }
 
-          virtual void write_imgui(int idx) {
-            if (ImGui::TreeNode((name_ + " " + std::to_string(idx)).c_str())) {
-              ImGui::ColorEdit3("ambient", material_.ambient.data());
-              ImGui::ColorEdit3("diffuse", material_.diffuse.data());
-              ImGui::ColorEdit3("specular", material_.specular.data());
-              ImGui::SliderFloat3("position", pos_.data(), -10.0, 10.0);
-              ImGui::SliderFloat("scale", &scale_, 0.0, 10.0);
-              ImGui::SliderAngle("rotation", &rot_.angle());
-              ImGui::SliderFloat3("axis", rot_.axis().data(), -1.0, 1.0);
-              rot_.axis().normalize();
-              ImGui::TreePop();
-            }
-          }
+          virtual void write_imgui(int idx);
 
           ShaderProgramPtr program;
 

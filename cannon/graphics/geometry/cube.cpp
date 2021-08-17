@@ -1,5 +1,6 @@
 #include <cannon/graphics/geometry/cube.hpp>
 
+#include <cannon/graphics/vertex_buffer.hpp>
 #include <cannon/graphics/vertex_array_object.hpp>
 #include <cannon/graphics/vertex_shader.hpp>
 #include <cannon/graphics/shader_program.hpp>
@@ -8,9 +9,9 @@
 
 using namespace cannon::graphics::geometry;
 
-Cube::Cube(const std::string& v_src, const std::string& f_src) : vao_(new
-    VertexArrayObject), buf_(vao_), normal_buf_(vao_), vertices_(36, 3),
-  normals_(36, 3) {
+Cube::Cube(const std::string &v_src, const std::string &f_src)
+    : vao_(new VertexArrayObject), buf_(new VertexBuffer(vao_)),
+      normal_buf_(new VertexBuffer(vao_)), vertices_(36, 3), normals_(36, 3) {
 
   program = std::make_shared<ShaderProgram>();
 
@@ -30,9 +31,9 @@ Cube::Cube(const std::string& v_src, const std::string& f_src) : vao_(new
 }
 
 // Does not affect OpenGL state
-Cube::Cube (std::shared_ptr<ShaderProgram> p) : vao_(new
-    VertexArrayObject), buf_(vao_), normal_buf_(vao_),
-vertices_(36, 3), normals_(36, 3) {
+Cube::Cube(std::shared_ptr<ShaderProgram> p)
+    : vao_(new VertexArrayObject), buf_(new VertexBuffer(vao_)),
+      normal_buf_(new VertexBuffer(vao_)), vertices_(36, 3), normals_(36, 3) {
 
   program = p;
 
@@ -46,11 +47,13 @@ vertices_(36, 3), normals_(36, 3) {
 
 }
 
-Cube::Cube(Cube& c) : vao_(new VertexArrayObject), buf_(vao_), normal_buf_(vao_),
-vertices_(c.vertices_), normals_(c.normals_) {
+Cube::Cube(Cube &c)
+    : vao_(new VertexArrayObject), buf_(new VertexBuffer(vao_)),
+      normal_buf_(new VertexBuffer(vao_)), vertices_(c.vertices_),
+      normals_(c.normals_) {
   program = c.program;
-  buf_.buffer(vertices_);
-  normal_buf_.buffer(normals_);
+  buf_->buffer(vertices_);
+  normal_buf_->buffer(normals_);
 
   name_ = c.name_;
 
@@ -71,15 +74,15 @@ void Cube::draw(const Matrix4f& view, const Matrix4f& perspective) const {
 
   program->activate();
 
-  buf_.bind();
-  normal_buf_.bind();
+  buf_->bind();
+  normal_buf_->bind();
 
   glBindTexture(GL_TEXTURE_2D, 0);
   glDrawArrays(GL_TRIANGLES, 0, vertices_.rows());
 
   program->deactivate();
-  buf_.unbind();
-  normal_buf_.unbind();
+  buf_->unbind();
+  normal_buf_->unbind();
 }
 
 void Cube::draw(std::shared_ptr<ShaderProgram> p, const Matrix4f& view, const
@@ -97,15 +100,15 @@ void Cube::draw(std::shared_ptr<ShaderProgram> p, const Matrix4f& view, const
 
   p->activate();
 
-  buf_.bind();
-  normal_buf_.bind();
+  buf_->bind();
+  normal_buf_->bind();
 
   glBindTexture(GL_TEXTURE_2D, 0);
   glDrawArrays(GL_TRIANGLES, 0, vertices_.rows());
 
   p->deactivate();
-  buf_.unbind();
-  normal_buf_.unbind();
+  buf_->unbind();
+  normal_buf_->unbind();
 }
 
 void Cube::populate_bufs_() {
@@ -151,7 +154,7 @@ void Cube::populate_bufs_() {
                -0.5f,  0.5f, -0.5f,
                -0.5f,  0.5f,  0.5f; 
     
-  buf_.buffer(vertices_);
+  buf_->buffer(vertices_);
   
   normals_ << 0.0f,  0.0f, -1.0f,
               0.0f,  0.0f, -1.0f,
@@ -195,5 +198,5 @@ void Cube::populate_bufs_() {
               0.0f,  1.0f,  0.0f,
               0.0f,  1.0f,  0.0f;
 
-  normal_buf_.buffer(normals_);
+  normal_buf_->buffer(normals_);
 }

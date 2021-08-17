@@ -7,6 +7,8 @@
  * \brief File containing Spotlight class definition.
  */
 
+#include <imgui.h>
+
 #include <cannon/graphics/light.hpp>
 #include <cannon/graphics/projection.hpp>
 

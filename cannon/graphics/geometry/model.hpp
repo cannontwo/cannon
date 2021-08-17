@@ -1,6 +1,11 @@
 #ifndef CANNON_GRAPHICS_GEOMETRY_MODEL_H
 #define CANNON_GRAPHICS_GEOMETRY_MODEL_H 
 
+/*!
+ * \file cannon/graphics/geometry/model.hpp
+ * \brief File containing Model class definition.
+ */
+
 #include <vector>
 #include <string>
 

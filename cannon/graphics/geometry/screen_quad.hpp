@@ -1,8 +1,18 @@
 #ifndef CANNON_GRAPHICS_GEOMETRY_SCREEN_QUAD_H
 #define CANNON_GRAPHICS_GEOMETRY_SCREEN_QUAD_H 
 
-#include <cannon/graphics/vertex_buffer.hpp>
+/*!
+ * \file cannon/graphics/geometry/screen_quad.hpp
+ * \brief File containing ScreenQuad class definition.
+ */
+
+#include <vector>
+
+#include <Eigen/Dense>
+
 #include <cannon/utils/class_forward.hpp>
+
+using namespace Eigen;
 
 namespace cannon {
   namespace graphics {
@@ -10,6 +20,7 @@ namespace cannon {
     CANNON_CLASS_FORWARD(Texture);
     CANNON_CLASS_FORWARD(VertexArrayObject);
     CANNON_CLASS_FORWARD(ShaderProgram);
+    CANNON_CLASS_FORWARD(VertexBuffer);
 
     namespace geometry {
 
@@ -47,8 +58,8 @@ namespace cannon {
           TexturePtr tex_;
           VertexArrayObjectPtr vao_;
 
-          VertexBuffer buf_;
-          VertexBuffer texture_coord_buf_;
+          VertexBufferPtr buf_;
+          VertexBufferPtr texture_coord_buf_;
 
           MatrixX2f vertices_;
           MatrixX2f texture_coords_;

@@ -12,8 +12,8 @@ list(APPEND GRAPHICS_SOURCES
   character.cpp
   camera.cpp
   viewer_3d.cpp
+  geometry/drawable_geom.cpp
   geometry/cube.cpp
-  geometry/textured_cube.cpp
   geometry/mesh.cpp
   geometry/model.cpp
   geometry/plane.cpp
