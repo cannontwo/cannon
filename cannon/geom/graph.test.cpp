@@ -1,5 +1,6 @@
 #include <catch2/catch.hpp>
 
+#include <cannon/math/interp.hpp>
 #include <cannon/geom/graph.hpp>
 #include <cannon/log/registry.hpp>
 
@@ -11,6 +12,7 @@ using namespace cannon::plot;
 
 using namespace cannon::geom;
 using namespace cannon::log;
+using namespace cannon::math;
 
 unsigned int node_id(unsigned int cols, unsigned int i, unsigned int j) {
   return j * cols + i;
@@ -72,8 +74,16 @@ TEST_CASE("Graph", "[geom]") {
   Plotter plotter;
 
   std::vector<Vector2d> pts;
-  for (auto& v : path) {
-    pts.push_back({locs[v].first, locs[v].second});
+  std::vector<VectorXd> s_pts;
+  std::vector<double> times;
+  for (unsigned int i = 0; i < path.size(); ++i) {
+    pts.push_back({locs[path[i]].first, locs[path[i]].second});
+
+    VectorXd spt(2);
+    spt << locs[path[i]].first,
+           locs[path[i]].second;
+    s_pts.push_back(spt);
+    times.push_back(i);
   }
 
   plotter.plot(pts);
@@ -84,8 +94,11 @@ TEST_CASE("Graph", "[geom]") {
     plot_pts(i, 1) = locs[i].second;
   }
 
-  plotter.plot_points(plot_pts);
+  MultiSpline spline(times, s_pts);
 
-  //plotter.render();
+  plotter.plot_points(plot_pts);
+  plotter.plot(spline, 200, 0.0, times.size());
+
+  plotter.render();
 #endif
 }

@@ -181,6 +181,25 @@ LinePtr Plotter::plot(std::function<double(double)> f, unsigned int samples,
   return l;
 }
 
+LinePtr Plotter::plot(std::function<VectorXd(double)> f, unsigned int samples,
+                      double low, double high) {
+  VectorXd ts = VectorXd::LinSpaced(samples, low, high);
+  MatrixX2f points(samples, 2);
+
+  for (unsigned int i = 0; i < samples; ++i) {
+    VectorXd pt = f(ts[i]);
+    assert(pt.size() >= 2);
+
+    points(i, 0) = pt[0];
+    points(i, 1) = pt[1];
+  }
+
+  auto color = LINE_COLORS[line_plots_.size() % LINE_COLORS.size()];
+
+  auto l = plot_line(points, color);
+  return l;
+}
+
 LinePtr Plotter::plot(std::vector<double> points) {
   MatrixX2f plot_points(points.size(), 2);
   for (unsigned int i = 0; i < points.size(); ++i) {

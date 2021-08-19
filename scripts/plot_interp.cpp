@@ -3,9 +3,11 @@
 
 #include <cannon/math/interp.hpp>
 #include <cannon/plot/plotter.hpp>
+#include <cannon/log/registry.hpp>
 
 using namespace cannon::math;
 using namespace cannon::plot;
+using namespace cannon::log;
 
 double runge(double x) {
   return 1.0 / (1.0 + 25 * (x * x));
@@ -20,9 +22,11 @@ int main() {
   auto pts = cheb_points(num_pts);
   
   MatrixX2f plot_points = MatrixX2f::Zero(num_pts, 2);
+  std::vector<double> ys;
   for (unsigned int i = 0; i < num_pts; ++i) {
     plot_points(i, 0) = pts[i];
     plot_points(i, 1) = runge(pts[i]);
+    ys.push_back(runge(pts[i]));
   }
 
   std::vector<double> lin_pts;
@@ -32,10 +36,16 @@ int main() {
   auto lin_interp = lagrange_interp(runge, lin_pts);
   auto cheb_interp = lagrange_interp(runge, pts);
 
+  log_info("pts:");
+  for (auto& x : pts)
+    log_info("\t", x);
+  CubicSpline spline_interp(pts, ys);
+
   Plotter plotter;
   plotter.plot(runge, 200);
   plotter.plot(lin_interp, 200);
   plotter.plot(cheb_interp, 200);
+  plotter.plot(spline_interp, 200);
   plotter.plot_points(plot_points);
  
   //plotter.plot([&](double x){return std::abs(runge(x) - cheb_interp(x));}, 200); 

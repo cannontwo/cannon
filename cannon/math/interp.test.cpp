@@ -12,7 +12,4 @@ TEST_CASE("Interp", "[math]") {
   log_info("10 Cheb points on [-1, 1] are:");
   for (auto& x : pts)
     log_info("\t", x);
-
-
-
 }

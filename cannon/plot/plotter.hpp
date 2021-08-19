@@ -164,6 +164,21 @@ namespace cannon {
         LinePtr plot(std::function<double(double)> f,
                      unsigned int samples = 100, double low = -1.0,
                      double high = 1.0);
+
+        /*!
+         * \brief Plotting helper function which automatically samples the
+         * input real function.
+         *
+         * \param f The function to plot
+         * \param samples The number of samples from the function to plot
+         * \param low Lower limit of input to plot
+         * \param high Upper limit of input to plot
+         *
+         * \returns A pointer to the generated line plot.
+         */
+        LinePtr plot(std::function<VectorXd(double)> f,
+                     unsigned int samples = 100, double low = 0.0,
+                     double high = 1.0);
         
         /*!
          * \brief Plotting helper function which plots a series of points, as a
