@@ -185,6 +185,11 @@ if (CANNON_BUILD_LIBRARY)
     include_directories(${OPENGL_INCLUDE_DIRS})
     list(APPEND LIBRARIES ${OPENGL_LIBRARIES})
 
+    # X11
+    find_package(X11 REQUIRED)
+    include_directories(${X11_INCLUDE_DIR})
+    list(APPEND LIBRARIES ${X11_LIBRARIES})
+
     # GLAD
     add_library(GLAD "thirdparty/glad/src/glad.c")
     target_link_libraries(GLAD ${CMAKE_DL_LIBS})
