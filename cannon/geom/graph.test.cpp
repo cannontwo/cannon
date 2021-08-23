@@ -96,8 +96,13 @@ TEST_CASE("Graph", "[geom]") {
 
   MultiSpline spline(times, s_pts);
 
+  auto spline_deriv = [&](double t) {
+    return spline.deriv(t);
+  };
+
   plotter.plot_points(plot_pts);
   plotter.plot(spline, 200, 0.0, times.size());
+  plotter.plot(spline_deriv, 200, 0.0, times.size());
 
   plotter.render();
 #endif

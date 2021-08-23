@@ -56,6 +56,17 @@ namespace cannon {
         double operator()(double x) const;
 
         /*!
+         * \brief Get the derivative of this spline of input order at the input
+         * point.
+         *
+         * \param x The point to evaluate curve derivative at.
+         * \param order Derivative order to evaluate.
+         *
+         * \returns The derivative.
+         */
+        double deriv(double x, unsigned int order = 1) const;
+
+        /*!
          * \brief Get the number of polynomials defining this spline.
          *
          * \returns Number of polynomials.
@@ -138,6 +149,18 @@ namespace cannon {
          * \returns Value of spline at that time.
          */
         VectorXd operator()(double t) const;
+
+        /*!
+         * \brief Compute derivative with respect to time parameterization of
+         * this cubic spline.
+         *
+         * \param t The time to get derivative at.
+         * \param order The order of derivative to compute.
+         *
+         * \returns The derivative.
+         */
+        VectorXd deriv(double t, unsigned int order = 1) const;
+
 
       private:
         std::vector<std::shared_ptr<CubicSpline>> coord_splines_; //!< Coordinate spline functions

@@ -65,6 +65,30 @@ double CubicSpline::operator()(double x) const {
          d_coeffs_[idx];
 }
 
+double CubicSpline::deriv(double x, unsigned int order) const {
+  double df = 0.0;
+  unsigned int idx = find_closest_x_(x);
+
+  switch (order) {
+    case 0:
+      df = (*this)(x);
+      break;
+    case 1:
+      df = 3 * a_coeffs_[idx] * x * x + 2 * b_coeffs_[idx] * x + c_coeffs_[idx];
+      break;
+    case 2:
+      df = 6 * a_coeffs_[idx] * x + 2 * b_coeffs_[idx];
+      break;
+    case 3:
+      df = 6 * a_coeffs_[idx];
+      break;
+    default:
+      break;
+  }
+
+  return df;
+}
+
 void CubicSpline::compute_coeffs_() {
   SparseMatrix<double> A = construct_A_mat_();
   VectorXd b = construct_b_vec_();
@@ -258,6 +282,16 @@ VectorXd MultiSpline::operator()(double t) const {
 
   for (unsigned int i = 0; i < dim_; ++i) {
     ret_vec[i] = (*coord_splines_[i])(t);
+  }
+
+  return ret_vec;
+}
+
+VectorXd MultiSpline::deriv(double t, unsigned int order) const {
+  VectorXd ret_vec = VectorXd::Zero(dim_);
+
+  for (unsigned int i = 0; i < dim_; ++i) {
+    ret_vec[i] = coord_splines_[i]->deriv(t, order);
   }
 
   return ret_vec;
