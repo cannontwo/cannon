@@ -14,6 +14,7 @@ list(APPEND MATH_SOURCES
   polynomial.cpp
   fft.cpp
   interp.cpp
+  rootfinding.cpp
   )
 
 add_library(math OBJECT ${MATH_SOURCES})
