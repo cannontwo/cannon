@@ -3,6 +3,7 @@ list(APPEND GEOM_SOURCES
   kd_tree_indexed.cpp
   extract_triangles.cpp
   graph.cpp
+  trajectory.cpp
   )
 
 add_library(geom OBJECT ${GEOM_SOURCES})

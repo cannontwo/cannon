@@ -190,6 +190,18 @@ namespace cannon {
      */
     std::function<double(double)>
     lagrange_interp(std::function<double(double)> f, const std::vector<double>& pts);
+
+    /*!
+     * \brief Interpolate between the two input vectors.
+     *
+     * \param a First vector
+     * \param b Second vector
+     * \param t Interpolation amount. Should be between 0 and 1
+     *
+     * \returns Interpolated vector.
+     */
+    VectorXd lerp(const Ref<const VectorXd> &a, const Ref<const VectorXd> &b,
+                  double t);
   }
 } 
 

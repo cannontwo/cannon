@@ -352,3 +352,10 @@ cannon::math::lagrange_interp(std::function<double(double)> f,
     return sum;
   };
 }
+
+VectorXd cannon::math::lerp(const Ref<const VectorXd> &a,
+                            const Ref<const VectorXd> &b, double t) {
+  assert(0.0 <= t && t <= 1.0);
+
+  return (1.0 - t) * a + t * b;
+}

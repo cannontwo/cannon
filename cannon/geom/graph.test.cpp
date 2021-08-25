@@ -2,6 +2,7 @@
 
 #include <cannon/math/interp.hpp>
 #include <cannon/geom/graph.hpp>
+#include <cannon/geom/trajectory.hpp>
 #include <cannon/log/registry.hpp>
 
 #ifdef CANNON_BUILD_GRAPHICS
@@ -73,20 +74,13 @@ TEST_CASE("Graph", "[geom]") {
 #ifdef CANNON_BUILD_GRAPHICS
   Plotter plotter;
 
-  std::vector<Vector2d> pts;
-  std::vector<VectorXd> s_pts;
-  std::vector<double> times;
+  Trajectory traj;
   for (unsigned int i = 0; i < path.size(); ++i) {
-    pts.push_back({locs[path[i]].first, locs[path[i]].second});
-
     VectorXd spt(2);
     spt << locs[path[i]].first,
            locs[path[i]].second;
-    s_pts.push_back(spt);
-    times.push_back(i);
+    traj.push_back(spt, i);
   }
-
-  plotter.plot(pts);
 
   MatrixX2f plot_pts = MatrixX2f::Zero(cols * rows, 2);
   for (unsigned int i = 0; i < g.num_vertices(); ++i) {
@@ -94,15 +88,16 @@ TEST_CASE("Graph", "[geom]") {
     plot_pts(i, 1) = locs[i].second;
   }
 
-  MultiSpline spline(times, s_pts);
+  auto spline = traj.interp();
 
   auto spline_deriv = [&](double t) {
     return spline.deriv(t);
   };
 
   plotter.plot_points(plot_pts);
-  plotter.plot(spline, 200, 0.0, times.size());
-  plotter.plot(spline_deriv, 200, 0.0, times.size());
+  plotter.plot(traj, 200, 0.0, traj.length());
+  plotter.plot(spline, 200, 0.0, traj.length());
+  //plotter.plot(spline_deriv, 200, 0.0, traj.size());
 
   plotter.render();
 #endif

@@ -140,7 +140,7 @@ namespace cannon {
         public:
           DynamicCar() = delete;
 
-          DynamicCar(Vector3d s, Vector3d g) : e_(s_, 7, time_step), start_(s), goal_(g) {
+          DynamicCar(VectorXd s, VectorXd g) : e_(s_, 7, time_step), start_(s), goal_(g) {
             std::random_device rd;
             gen_ = std::mt19937(rd());  
 
