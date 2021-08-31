@@ -100,6 +100,80 @@ namespace cannon {
 
     };
 
+    /*!
+     * \brief Class representing a time-parameterized trajectory with controls. 
+     */
+    class ControlledTrajectory {
+      public:
+        
+        /*!
+         * \brief Default constructor.
+         */
+        ControlledTrajectory();
+
+        /*!
+         * \brief Constructor taking vector of states, vector of controls, and times.
+         */
+        ControlledTrajectory(const std::vector<VectorXd> &states,
+                             const std::vector<VectorXd> &controls,
+                             const std::vector<double> times);
+
+        /*!
+         * \brief Get the state and control of this controlled trajectory at the
+         * input time. This trajectory is treated as a piecewise-linear function
+         * over time.
+         *
+         * \param t The time to evaluate the trajectory at.
+         *
+         * \returns A pair containing the linearly interpolated state and
+         * control of this trajectory at the input time.
+         */
+        std::pair<VectorXd, VectorXd> operator()(double t) const;
+
+        /*!
+         * \brief Add a new state and control at the end of this trajectory, at
+         * the input time.
+         *
+         * \param state The state to add.
+         * \param control The control to add.
+         * \param time The time for the new state. Should be greater than any
+         * time in the trajectory so far.
+         */
+        void push_back(const Ref<const VectorXd> &state,
+                       const Ref<const VectorXd> &control, double time);
+
+        /*!
+         * \brief Get the length (total time) of this trajectory.
+         *
+         * \returns Length of trajectory.
+         */
+        double length() const;
+
+        /*!
+         * \brief Get the size (number of states) of this trajectory.
+         *
+         * \returns Trajectory size.
+         */
+        size_t size() const;
+
+      private:
+
+        /*!
+         * \brief Find the closest idx such that times_[idx] <= t
+         *
+         * \param t Input value to locate
+         *
+         * \returns Index of closest time
+         */
+        unsigned int find_closest_t_(double t) const;
+
+
+        std::vector<VectorXd> states_; //!< States in trajectory
+        std::vector<VectorXd> controls_; //!< Controls in trajectory
+        std::vector<double> times_; //!< Times for states in trajectory
+
+    };
+
   }
 }
 

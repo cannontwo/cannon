@@ -8,9 +8,19 @@
 
 #include <Eigen/Dense>
 
+#include <cannon/utils/class_forward.hpp>
+
 using namespace Eigen;
 
 namespace cannon {
+
+  namespace geom {
+    CANNON_CLASS_FORWARD(Trajectory);
+    CANNON_CLASS_FORWARD(ControlledTrajectory);  
+  }
+
+  using namespace cannon::geom;
+
   namespace control {
 
     /*!
@@ -100,6 +110,26 @@ namespace cannon {
 
     };
 
+    /*!
+     * \brief Construct a controlled trajectory tracking the input geometric
+     * path using the input PID controller and the input model.
+     *
+     * \param system Dynamic system simulator to compute controlled trajectory in. Note that there are no checks on the dimensions of the arguments to this system, so watch for dimension errors.
+     * \param traj Geometric trajectory to track.
+     * \param controller PID controller to track trajectory with.
+     * \param controlled_dims Number of state dimensions to feed to PID controller.
+     * \param total_dims Total number of state dimensions
+     * \param timestep Integration timestep of the input system.
+     *
+     * \returns The generated controlled trajectory in the input simulator.
+     */
+    ControlledTrajectory get_pid_controlled_trajectory(
+        std::function<VectorXd(const Ref<const VectorXd> &,
+                               const Ref<const VectorXd> &)>
+            system,
+        const Trajectory &traj, PidController &controller,
+        unsigned int controlled_dims, unsigned int total_dims,
+        double timestep = 0.01);
   }
 }
 

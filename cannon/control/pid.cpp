@@ -1,9 +1,13 @@
 #include <cannon/control/pid.hpp>
 
 #include <cannon/log/registry.hpp>
+#include <cannon/geom/trajectory.hpp>
+#include <cannon/math/interp.hpp>
 
 using namespace cannon::log;
 using namespace cannon::control;
+using namespace cannon::geom;
+using namespace cannon::math;
 
 PidController::PidController(unsigned int state_dim, unsigned int control_dim,
                              double timestep)
@@ -43,4 +47,35 @@ void PidController::reset() {
   penultimate_error_state_ = VectorXd::Zero(state_dim_);
   last_error_state_ = VectorXd::Zero(state_dim_);
   last_control_ = VectorXd::Zero(control_dim_);
+}
+
+ControlledTrajectory cannon::control::get_pid_controlled_trajectory(
+    std::function<VectorXd(const Ref<const VectorXd> &,
+                           const Ref<const VectorXd> &)>
+        system,
+    const Trajectory &traj, PidController &controller,
+    unsigned int controlled_dims, unsigned int total_dims, double timestep) {
+
+  controller.reset();
+
+  // Get smooth interpolated trajectory
+  auto plan = traj.interp();
+
+  double time = 0.0;
+  VectorXd state(total_dims);
+  state.head(controlled_dims) = traj(time);
+  ControlledTrajectory executed;
+
+  while (time < traj.length()) {
+    // Set tracking ref
+    controller.ref() = plan(time).head(controlled_dims);
+    auto pid_control = controller.get_control(state.head(controlled_dims));
+    executed.push_back(state, pid_control, time);
+
+    // Step system
+    state = system(state, pid_control);
+    time += timestep;
+  }
+
+  return executed;
 }
