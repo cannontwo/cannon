@@ -22,6 +22,16 @@ namespace cannon {
     CANNON_CLASS_FORWARD(Ray);
 
     /*!
+     * \brief Struct representing the sampled random values necessary for
+     * generating a camera ray.
+     */
+    struct CameraSample {
+      Vector2d p_film;
+      Vector2d p_lens;
+      double time;
+    };
+
+    /*!
      * \brief Class representing a camera generating rays into a scene.
      */
     class Camera {
