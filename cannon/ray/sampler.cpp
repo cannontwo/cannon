@@ -101,3 +101,63 @@ Vector2d PixelSampler::get_2d() {
     return ret_vec;
   }
 }
+
+GlobalSampler::GlobalSampler(unsigned int samples_per_pixel)
+    : Sampler(samples_per_pixel) {}
+
+void GlobalSampler::start_pixel(const Vector2i& p) {
+  Sampler::start_pixel(p);
+  dimension_ = 0;
+  interval_sample_index_ = get_index_for_sample(0);
+
+  array_end_dim_ = array_start_dim_ + sample_array_1d_.size() + 2 * sample_array_2d_.size();
+
+  for (size_t i = 0; i < samples_1d_array_sizes_.size(); ++i) {
+    int n_samples = samples_1d_array_sizes_[i] * samples_per_pixel_;
+    for (int j = 0; j < n_samples; ++j) {
+      unsigned int index = get_index_for_sample(j);
+      sample_array_1d_[i][j] = sample_dimension_(index, array_start_dim_ + i);
+    }
+  }
+
+  unsigned int dim = array_start_dim_ + samples_1d_array_sizes_.size();
+  for (size_t i = 0; i < samples_2d_array_sizes_.size(); ++i) {
+    int n_samples = samples_2d_array_sizes_[i] * samples_per_pixel_;
+    for (int j = 0; j < n_samples; ++j) {
+      unsigned int index = get_index_for_sample(j);
+      sample_array_2d_[i][j].x() = sample_dimension_(index, dim);
+      sample_array_2d_[i][j].y() = sample_dimension_(index, dim);
+    }
+    dim += 2;
+  }
+}
+
+bool GlobalSampler::start_next_sample() {
+  dimension_ = 0;
+  interval_sample_index_ = get_index_for_sample(current_pixel_sample_idx_ + 1);
+  return Sampler::start_next_sample();
+}
+
+bool GlobalSampler::set_sample_number(unsigned int sample_num) {
+  dimension_ = 0;
+  interval_sample_index_ = get_index_for_sample(sample_num);
+  return Sampler::set_sample_number(sample_num);
+}
+
+double GlobalSampler::get_1d() {
+  if (dimension_ >= array_start_dim_ && dimension_ < array_end_dim_)
+    dimension_ = array_end_dim_;
+
+  return sample_dimension_(interval_sample_index_, dimension_++);
+}
+
+Vector2d GlobalSampler::get_2d() {
+  if (dimension_ + 1 >= array_start_dim_ && dimension_ < array_end_dim_)
+    dimension_ = array_end_dim_;
+
+  Vector2d p(sample_dimension_(interval_sample_index_, dimension_),
+             sample_dimension_(interval_sample_index_, dimension_ + 1));
+
+  dimension_ += 2;
+  return p;
+}

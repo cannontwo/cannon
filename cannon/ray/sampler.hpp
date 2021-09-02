@@ -145,7 +145,7 @@ namespace cannon {
 
     /*!
      * \brief Sampler which generates samples for all sample vectors in a pixel
-     * at the same time.
+     * at the same time, on a per-pixel basis.
      */
     class PixelSampler : public Sampler {
       public:
@@ -182,6 +182,72 @@ namespace cannon {
         std::vector<std::vector<Vector2d>> samples_2d_; //!< Cached 2d samples for the current pixel
         unsigned int current_1d_dim_ = 0; //!< Current offset into 1d samples
         unsigned int current_2d_dim_ = 0; //!< Current offset into 2d samples
+
+    };
+
+    /*!
+     * \brief Sampler interface which is not pixel-based, but which rather
+     * generates samples across the entire image. 
+     */
+    class GlobalSampler : public Sampler {
+      public:
+
+        /*!
+         * \brief Constructor taking number of samples per pixel.
+         */
+        GlobalSampler(unsigned int samples_per_pixel);
+
+        /*!
+         * \brief Compute the inverse mapping between a sample number in the
+         * current pixel and a global sample index.
+         *
+         * \param sample_num Sample number in the current pixel.
+         *
+         * \returns Global sample index.
+         */
+        virtual unsigned int get_index_for_sample(unsigned int sample_num) const = 0;
+
+        /*!
+         * \brief Get the input dimension of the input sample index.
+         *
+         * \param index Global sample index.
+         * \param dimension Dimension of sample to return.
+         *
+         * \returns Sampled value.
+         */
+        virtual double sample_dimension_(unsigned int index, unsigned int dimension) const = 0;
+
+        /*!
+         * \brief Inherited from Sampler.
+         */
+        void start_pixel(const Vector2i& p) override;
+
+        /*!
+         * \brief Inherited from Sampler.
+         */
+        bool start_next_sample() override;
+
+        /*!
+         * \brief Inherited from Sampler.
+         */
+        bool set_sample_number(unsigned int sample_num) override;
+
+        /*!
+         * \brief Inherited from Sampler.
+         */
+        double get_1d() override;
+
+        /*!
+         * \brief Inherited from Sampler.
+         */
+        Vector2d get_2d() override;
+
+      private:
+        unsigned int dimension_; //!< Next dimension that sampler will be asked to generate
+        unsigned int interval_sample_index_; //!< Global index of the current sample in the current pixel
+
+        static const unsigned int array_start_dim_ = 5; //!< Start dimension for array samples
+        unsigned int array_end_dim_; //!< End dimension for array samples
 
     };
 
