@@ -7,6 +7,7 @@
 #include <cannon/ray/film.hpp>
 #include <cannon/ray/material.hpp>
 #include <cannon/ray/filter.hpp>
+#include <cannon/ray/sampler.hpp>
 #include <cannon/utils/thread_pool.hpp>
 #include <cannon/utils/statistics.hpp>
 #include <cannon/math/random_double.hpp>
@@ -94,17 +95,26 @@ Vector3d Raytracer::ray_color(const Ray& r, int depth) {
 void Raytracer::render(std::ostream& os) {
   os << "P3\n" << params_.image_width << ' ' << params_.image_height << "\n255\n";
 
+  unsigned int rounded_sqrt_samples = std::round(std::sqrt(params_.samples_per_pixel));
+  StratifiedSampler sampler(rounded_sqrt_samples, rounded_sqrt_samples, true, 5);
+
   for (int j = params_.image_height - 1; j >= 0; --j) {
     std::cerr << "\rScanlines remaining: " << j << " " << std::flush;
     for (int i = 0; i < params_.image_width; ++i) {
       Vector3d pixel_color = Vector3d::Zero();
 
+      Vector2i px(i, j);
+      sampler.start_pixel(px);
       for (int s = 0; s < params_.samples_per_pixel; s++) {
-        auto u = (i + random_double()) / (params_.image_width - 1);
-        auto v = (j + random_double()) / (params_.image_height - 1);
+        auto sample = sampler.get_camera_sample(px);
 
-        Ray r = camera_.get_ray(u, v);
+        auto u = sample.p_film.x() / (params_.image_width - 1);
+        auto v = sample.p_film.y() / (params_.image_height - 1);
+
+        Ray r = camera_.get_ray(u, v, sample);
         pixel_color += ray_color(r, params_.max_depth);
+
+        sampler.start_next_sample();
       }
 
       write_color(os, pixel_color, params_.samples_per_pixel);
@@ -121,17 +131,25 @@ void Raytracer::render(const std::string &out_filename,
 
   ThreadPool<std::pair<int, int>> pool([&](std::shared_ptr<std::pair<int, int>> tile_coord) {
       auto tile = film.get_film_tile(tile_coord->first, tile_coord->second);
+      unsigned int rounded_sqrt_samples = std::round(std::sqrt(params_.samples_per_pixel));
+      thread_local StratifiedSampler sampler(rounded_sqrt_samples, rounded_sqrt_samples, true, 5);
 
       for (unsigned int i = 0; i < tile->extent_x_; i++) {
         for (unsigned int j = 0; j < tile->extent_y_; j++) {
-          for (int s = 0; s < params_.samples_per_pixel; s++) {
-            auto u = (i + tile->origin_x_ + random_double()) / (params_.image_width - 1);
-            auto v = (j + tile->origin_y_ + random_double()) / (params_.image_height - 1);
+          Vector2i px(tile->origin_x_ + i, tile->origin_y_ + j);
+          sampler.start_pixel(px);
 
-            Ray r = camera_.get_ray(u, v);
+          for (int s = 0; s < params_.samples_per_pixel; s++) {
+            auto sample = sampler.get_camera_sample(px);
+
+            auto u = sample.p_film.x() / (params_.image_width - 1);
+            auto v = sample.p_film.y() / (params_.image_height - 1);
+
+            Ray r = camera_.get_ray(u, v, sample);
             Vector3d pixel_color = ray_color(r, params_.max_depth);
 
             tile->add_sample(Vector2d(u * (params_.image_width - 1), v * (params_.image_height - 1)), pixel_color);
+            sampler.start_next_sample();
           }
         }
       }

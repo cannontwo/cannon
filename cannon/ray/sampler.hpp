@@ -10,8 +10,11 @@
 #include <Eigen/Dense>
 
 #include <cannon/utils/class_forward.hpp>
+#include <cannon/math/random_double.hpp>
 
 using namespace Eigen;
+
+using namespace cannon::math;
 
 namespace cannon {
   namespace ray {
@@ -34,6 +37,11 @@ namespace cannon {
          * \brief Constructor taking number of samples to generate per pixel.
          */
         Sampler(unsigned int samples_per_pixel);
+
+        /*!
+         * \brief Destructor.
+         */
+        virtual ~Sampler();
 
         /*!
          * \brief Method to start sampling for the input pixel.
@@ -248,6 +256,76 @@ namespace cannon {
 
         static const unsigned int array_start_dim_ = 5; //!< Start dimension for array samples
         unsigned int array_end_dim_; //!< End dimension for array samples
+
+    };
+
+    class StratifiedSampler : public PixelSampler {
+      public:
+        /*!
+         * \brief Constructor taking number of x and y pixel samples, whether
+         * to jitter samples, and the number of sampled dimensions to be
+         * generated.
+         */
+        StratifiedSampler(unsigned int x_pixel_samples,
+                          unsigned int y_pixel_samples, bool jitter_samples,
+                          int n_sampled_dimensions);
+
+        /*!
+         * \brief Inherited from Sampler.
+         */
+        void start_pixel(const Vector2i& p) override;
+
+      private:
+
+        /*!
+         * \brief Compute 1D stratified samples and place them in the input array.
+         *
+         * \param sample_vec Vector in which to place samples
+         * \param n_samples Number of samples to generate
+         * \param jitter Whether to jitter samples
+         */
+        void stratified_sample_1d_(double *sample_vec, unsigned int n_samples, bool jitter);
+
+        /*!
+         * \brief Compute 2D stratified samples and place them in the input array.
+         *
+         * \param sample_vec Vector in which to place samples
+         * \param jitter Whether to jitter samples
+         */
+        void stratified_sample_2d_(std::vector<Vector2d> &sample_vec, bool jitter);
+
+        /*!
+         * \brief Randomly shuffle entries of the input vector, which contains the input
+         * count number of elements with the input number of dimensions.
+         *
+         * \param sample_vec The vector to shuffle
+         * \param count The number of elements to shuffle
+         * \param n_dims The number of dimensions in each shuffled element.
+         */
+        template <typename T>
+        void shuffle_(T *sample_vec, unsigned int count, unsigned int n_dims) {
+          for (size_t i = 0; i < count; ++i) {
+            unsigned int other = i + std::floor(random_double(0.0, count - i));
+            for (unsigned int j = 0; j < n_dims; ++j) {
+              std::swap(sample_vec[n_dims * i + j],
+                        sample_vec[n_dims * other + j]);
+            }
+          }
+        }
+
+        /*!
+         * \brief Generate Latin Hypercube samples for stratified array sampling.
+         *
+         * \param sample_vec Vector in which to place samples
+         * \param n_samples Number of samples
+         * \param n_dim Number of dimensions per sample
+         */
+        void latin_hypercube_(std::vector<double> &sample_vec,
+                              unsigned int n_samples, unsigned int n_dim);
+
+        const unsigned int x_pixel_samples_; //!< Number of X dimension pixel samples
+        const unsigned int y_pixel_samples_; //!< Number of Y dimension pixel samples
+        const bool jitter_samples_; //!< Whether stratified samples should be jittered
 
     };
 

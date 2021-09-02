@@ -263,10 +263,10 @@ int main(int argc, char** argv) {
   // Raytracer
   //log_info("Rendering");
   Raytracer raytracer(argv[1], bvh);
-  //raytracer.render(std::cout);
+  raytracer.render(std::cout);
   //raytracer.render("test.ppm", std::make_unique<BoxFilter>(Vector2d::Ones() * 2.0));
   //raytracer.render("test.ppm", std::make_unique<GaussianFilter>(Vector2d::Ones() * 2.0, 1.0));
-  raytracer.render("test.ppm", std::make_unique<MitchellFilter>(Vector2d::Ones() * 2.0, 1.0/3.0, 1.0/3.0));
+  //raytracer.render("test.ppm", std::make_unique<MitchellFilter>(Vector2d::Ones() * 2.0, 1.0/3.0, 1.0/3.0));
   //raytracer.render_interactive(std::make_unique<MitchellFilter>(Vector2d::Ones() * 2.0, 1.0/3.0, 1.0/3.0));
   
   // Report and write stats out

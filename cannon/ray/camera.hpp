@@ -73,6 +73,17 @@ namespace cannon {
          */
         Ray get_ray(double s, double t) const;
 
+        /*!
+         * Get a ray for a particular pixel using the input camera sample.
+         *
+         * \param s Horizontal component of ray direction along view.
+         * \param t Vertical component of ray direction along view.
+         * \param sample CameraSample to use for random samples
+         *
+         * \returns The sampled ray.
+         */
+        Ray get_ray(double s, double t, const CameraSample& sample) const;
+
       private:
         Vector3d origin_; //!< Camera origin
         Vector3d lower_left_corner_; //!< Lower-left corner of camera view plane
