@@ -1,6 +1,6 @@
 aspect_ratio: 1.0
-image_width: 100
-samples_per_pixel: 10
+image_width: 600
+samples_per_pixel: 1
 max_depth: 50
 dist_to_focus: 10.0
 aperture: 0.0

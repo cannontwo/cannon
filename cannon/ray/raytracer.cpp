@@ -96,7 +96,7 @@ void Raytracer::render(std::ostream& os) {
   os << "P3\n" << params_.image_width << ' ' << params_.image_height << "\n255\n";
 
   unsigned int rounded_sqrt_samples = std::round(std::sqrt(params_.samples_per_pixel));
-  StratifiedSampler sampler(rounded_sqrt_samples, rounded_sqrt_samples, true, 5);
+  StratifiedSampler sampler(rounded_sqrt_samples, rounded_sqrt_samples, true, 2);
 
   for (int j = params_.image_height - 1; j >= 0; --j) {
     std::cerr << "\rScanlines remaining: " << j << " " << std::flush;
@@ -132,7 +132,7 @@ void Raytracer::render(const std::string &out_filename,
   ThreadPool<std::pair<int, int>> pool([&](std::shared_ptr<std::pair<int, int>> tile_coord) {
       auto tile = film.get_film_tile(tile_coord->first, tile_coord->second);
       unsigned int rounded_sqrt_samples = std::round(std::sqrt(params_.samples_per_pixel));
-      thread_local StratifiedSampler sampler(rounded_sqrt_samples, rounded_sqrt_samples, true, 5);
+      thread_local StratifiedSampler sampler(rounded_sqrt_samples, rounded_sqrt_samples, true, 2);
 
       for (unsigned int i = 0; i < tile->extent_x_; i++) {
         for (unsigned int j = 0; j < tile->extent_y_; j++) {
