@@ -153,14 +153,16 @@ namespace cannon {
 
           std::pair<VectorXd, double> step(double ua, double uth) {
             //double clipped_uth = std::max(-M_PI * 2.0 / 180.0, std::min(uth, M_PI * 2.0 / 180.0));
-            double clipped_uth = std::max(-M_PI, std::min(uth, M_PI));
+            
+            //double clipped_uth = std::max(-M_PI, std::min(uth, M_PI));
            
             state_[5] = ua;
-            state_[6] = clipped_uth;
+            state_[6] = uth;
 
             double goal_r = -std::pow((state_.head(2) - goal_.head(2)).norm(), 2.0);
-            double control_r = -std::pow((std::abs(clipped_uth) + std::abs(ua)), 2.0);
+            double control_r = -std::pow((std::abs(uth) + std::abs(ua)), 2.0);
             double reward = goal_r + 0.001*control_r;
+
 
             e_.set_state(state_);
             state_ = e_.step();
