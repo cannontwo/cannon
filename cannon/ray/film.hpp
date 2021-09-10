@@ -74,8 +74,8 @@ namespace cannon {
         /*!
          * \brief Constructor.
          */
-        Film(int width, int height, int tile_size, std::unique_ptr<Filter>
-            filter);
+        Film(unsigned int width, unsigned int height, unsigned int tile_size,
+             std::unique_ptr<Filter> filter);
 
         /*!
          * \brief Get tile (i, j) of this film.
@@ -105,8 +105,8 @@ namespace cannon {
         void write_image(float *data);
 
       public:
-        int width_, height_; //!< Width and height of film
-        int tile_size_; //!< Size of each film tile
+        unsigned int width_, height_; //!< Width and height of film
+        unsigned int tile_size_; //!< Size of each film tile
         std::mutex mut_; //!< Mutex controlling image data writing/reading
         std::vector<FilmPixel> pixels_; //!< Rendered image data
         std::unique_ptr<Filter> filter_; //!< Image reconstruction filter

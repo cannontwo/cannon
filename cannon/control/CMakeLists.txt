@@ -9,3 +9,4 @@ list(APPEND CONTROL_SOURCES
   )
 
 add_library(control OBJECT ${CONTROL_SOURCES})
+target_compile_options(control PUBLIC -Wextra -Werror -Wno-error=deprecated-copy)

@@ -42,9 +42,10 @@ FilmPixel& FilmTile::get_pixel(int i, int j) {
   return pixels_[(j - origin_y_) * extent_x_ + (i - origin_x_)];
 }
 
-Film::Film(int width, int height, int tile_size, std::unique_ptr<Filter>
-    filter) : width_(width), height_(height), tile_size_(tile_size),
-  pixels_(width*height), filter_(std::move(filter)) {
+Film::Film(unsigned int width, unsigned int height, unsigned int tile_size,
+           std::unique_ptr<Filter> filter)
+    : width_(width), height_(height), tile_size_(tile_size),
+      pixels_(width * height), filter_(std::move(filter)) {
 
   // Precompute cached filter weights
   int offset = 0;
@@ -108,8 +109,8 @@ void Film::write_image(const std::string& filename) {
 void Film::write_image(float *data) {
   std::lock_guard<std::mutex> lock(mut_);
 
-  for (int i = 0; i < width_; i++) {
-    for (int j = 0; j < height_; j++) {
+  for (unsigned int i = 0; i < width_; i++) {
+    for (unsigned int j = 0; j < height_; j++) {
       int offset = 3 * ((width_ - i) * height_  + j);
 
       Vector3d normalized_color = pixels_[i * height_ + j].color_sum_ /

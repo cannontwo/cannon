@@ -53,7 +53,7 @@ namespace cannon {
          *
          * \returns Emitted color.
          */
-        virtual Vector3d emitted(double u, double v, const Vector3d& p) const {
+        virtual Vector3d emitted(double /*u*/, double /*v*/, const Vector3d& /*p*/) const {
           return Vector3d::Zero();
         }
     };
@@ -183,8 +183,8 @@ namespace cannon {
         /*!
          * Inherited from Material.
          */
-        virtual bool scatter(const Ray& r_in, const hit_record& rec, Vector3d&
-            attenuation, Ray& scattered) const override {
+        virtual bool scatter(const Ray& /*r_in*/, const hit_record& /*rec*/, Vector3d&
+            /*attenuation*/, Ray& /*scattered*/) const override {
           return false;
         }
 

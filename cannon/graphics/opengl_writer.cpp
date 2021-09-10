@@ -16,6 +16,6 @@ void OpenGLWriter::write(std::string path) const {
   }
 }
 
-void OpenGLWriter::cleanUpReceived(std::string receivedPath) const {
+void OpenGLWriter::cleanUpReceived(std::string /*receivedPath*/) const {
   close_func_();
 }

@@ -40,8 +40,9 @@ if (CANNON_BUILD_RESEARCH)
     )
 endif()
 
-add_library(cannon SHARED ${CANNON_SOURCES} ${CANNON_OBJS})
+add_library(cannon ${CANNON_SOURCES} ${CANNON_OBJS})
 target_link_libraries(cannon ${LIBRARIES})
+target_compile_options(cannon PRIVATE -Wextra -Werror)
 
 # Copy CNF formulas
 ADD_CUSTOM_COMMAND(

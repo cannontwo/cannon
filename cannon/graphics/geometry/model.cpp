@@ -96,38 +96,36 @@ std::shared_ptr<Mesh> Model::process_mesh_(aiMesh *mesh, const aiScene *scene) {
     indices.row(i)[2] = mesh->mFaces[i].mIndices[2];
   }
 
-  if (mesh->mMaterialIndex >= 0) {
-    log_info("Loading mesh material");
-    aiMaterial *material = scene->mMaterials[mesh->mMaterialIndex];
+  log_info("Loading mesh material");
+  aiMaterial *material = scene->mMaterials[mesh->mMaterialIndex];
 
-    aiColor3D ambient_color;
-    aiColor3D diffuse_color;
-    aiColor3D specular_color;
-    float shininess;
-    material->Get(AI_MATKEY_COLOR_AMBIENT, ambient_color);
-    material->Get(AI_MATKEY_COLOR_DIFFUSE, diffuse_color);
-    material->Get(AI_MATKEY_COLOR_SPECULAR, specular_color);
-    material->Get(AI_MATKEY_SHININESS, shininess);
+  aiColor3D ambient_color;
+  aiColor3D diffuse_color;
+  aiColor3D specular_color;
+  float shininess;
+  material->Get(AI_MATKEY_COLOR_AMBIENT, ambient_color);
+  material->Get(AI_MATKEY_COLOR_DIFFUSE, diffuse_color);
+  material->Get(AI_MATKEY_COLOR_SPECULAR, specular_color);
+  material->Get(AI_MATKEY_SHININESS, shininess);
 
-    m.shininess = shininess;
+  m.shininess = shininess;
 
-    diffuse = load_material_textures_(material, aiTextureType_DIFFUSE);
-    if (diffuse.size() == 0) {
-      m.ambient[0] = ambient_color[0];
-      m.ambient[1] = ambient_color[1];
-      m.ambient[2] = ambient_color[2];
+  diffuse = load_material_textures_(material, aiTextureType_DIFFUSE);
+  if (diffuse.size() == 0) {
+    m.ambient[0] = ambient_color[0];
+    m.ambient[1] = ambient_color[1];
+    m.ambient[2] = ambient_color[2];
 
-      m.diffuse[0] = diffuse_color[0];
-      m.diffuse[1] = diffuse_color[1];
-      m.diffuse[2] = diffuse_color[2];
-    }
+    m.diffuse[0] = diffuse_color[0];
+    m.diffuse[1] = diffuse_color[1];
+    m.diffuse[2] = diffuse_color[2];
+  }
 
-    specular = load_material_textures_(material, aiTextureType_SPECULAR);
-    if (specular.size() == 0) {
-      m.specular[0] = specular_color[0];
-      m.specular[1] = specular_color[1];
-      m.specular[2] = specular_color[2];
-    }
+  specular = load_material_textures_(material, aiTextureType_SPECULAR);
+  if (specular.size() == 0) {
+    m.specular[0] = specular_color[0];
+    m.specular[1] = specular_color[1];
+    m.specular[2] = specular_color[2];
   }
   
   return std::make_shared<Mesh>(program, vertices, normals, tex_coords,

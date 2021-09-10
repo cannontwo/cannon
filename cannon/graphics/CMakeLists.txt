@@ -36,3 +36,4 @@ list(APPEND GRAPHICS_SOURCES
   )
 
 add_library(graphics OBJECT ${GRAPHICS_SOURCES})
+target_compile_options(graphics PUBLIC -Wextra -Werror -Wno-error=deprecated-copy)

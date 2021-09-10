@@ -26,7 +26,7 @@ bool XYRect::object_space_hit(const Ray& r, double t_min, double t_max, hit_reco
   return true;
 }
 
-bool XYRect::object_space_bounding_box(double time_0, double time_1, Aabb& output_box) const {
+bool XYRect::object_space_bounding_box(double /*time_0*/, double /*time_1*/, Aabb& output_box) const {
   // Bounding box must be nonzero in each dimension
   output_box = Aabb(Vector3d(x0_, y0_, k_ - 1e-3), Vector3d(x1_, y1_, k_ + 1e-3));
   return true;
@@ -53,7 +53,7 @@ bool XZRect::object_space_hit(const Ray& r, double t_min, double t_max, hit_reco
   return true;
 }
 
-bool XZRect::object_space_bounding_box(double time_0, double time_1, Aabb& output_box) const {
+bool XZRect::object_space_bounding_box(double /*time_0*/, double /*time_1*/, Aabb& output_box) const {
   // Bounding box must be nonzero in each dimension
   output_box = Aabb(Vector3d(x0_, k_ - 1e-3, z0_), Vector3d(x1_, k_ + 1e-3, z1_));
   return true;
@@ -80,13 +80,13 @@ bool YZRect::object_space_hit(const Ray& r, double t_min, double t_max, hit_reco
   return true;
 }
 
-bool YZRect::object_space_bounding_box(double time_0, double time_1, Aabb& output_box) const {
+bool YZRect::object_space_bounding_box(double /*time_0*/, double /*time_1*/, Aabb& output_box) const {
   // Bounding box must be nonzero in each dimension
   output_box = Aabb(Vector3d(k_ - 1e-3, y0_, z0_), Vector3d(k_ + 1e-3, y1_, z1_));
   return true;
 }
 
-bool Box::object_space_bounding_box(double time_0, double time_1, Aabb& output_box) const {
+bool Box::object_space_bounding_box(double /*time_0*/, double /*time_1*/, Aabb& output_box) const {
   output_box = Aabb(box_min_, box_max_);
   return true;
 }

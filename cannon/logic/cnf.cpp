@@ -214,7 +214,7 @@ std::vector<std::tuple<unsigned int, bool, int>> CNFFormula::get_unit_clause_pro
 }
 
 std::vector<std::tuple<unsigned int, bool, int>> CNFFormula::get_unit_clause_props(const
-    Assignment& a, const Simplification& s, std::vector<unsigned int> unit_clauses) const {
+    Assignment& a, const Simplification& /*s*/, std::vector<unsigned int> unit_clauses) const {
   std::vector<std::tuple<unsigned int, bool, int>> idxs; 
 
   for (unsigned int c_num : unit_clauses) {
@@ -319,7 +319,7 @@ unsigned int CNFFormula::get_smallest_clause_size(const Assignment& a, const Sim
   return smallest_size;
 }
 
-std::vector<unsigned int> CNFFormula::get_props(const Assignment& a, const Simplification& s) {
+std::vector<unsigned int> CNFFormula::get_props(const Assignment& a, const Simplification& /*s*/) {
   // Way too inefficient
   //std::set<unsigned int> all_props;
   //for (unsigned int i = 0; i < get_num_clauses(); i++) {
@@ -381,7 +381,7 @@ std::multiset<unsigned int> CNFFormula::get_props_multiset(const Assignment& a, 
   return all_props;
 }
 
-PropAssignment CNFFormula::is_pure_literal(const Assignment& a, const Simplification& s,
+PropAssignment CNFFormula::is_pure_literal(const Assignment& /*a*/, const Simplification& s,
     unsigned int prop) {
   PropAssignment tmp = PropAssignment::Unassigned;
 

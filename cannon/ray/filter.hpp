@@ -69,7 +69,7 @@ namespace cannon {
         /*!
          * \brief Inherited from Filter.
          */
-        virtual double evaluate(const Vector2d& p) const override {
+        virtual double evaluate(const Vector2d& /*p*/) const override {
           return 1.0;
         }
     };

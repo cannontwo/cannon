@@ -7,3 +7,4 @@ list(APPEND PLOT_SOURCES
   )
 
 add_library(plot OBJECT ${PLOT_SOURCES})
+target_compile_options(plot PUBLIC -Wextra -Werror -Wno-error=deprecated-copy)

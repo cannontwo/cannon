@@ -597,8 +597,9 @@ void cannon::graphics::viewer3d_framebuffer_size_callback(GLFWwindow* window, in
   viewer->w->draw([&]() {viewer->draw();});
 }
 
-void cannon::graphics::viewer_key_callback(GLFWwindow* window, int key, int
-    scancode, int action, int mods) {
+void cannon::graphics::viewer_key_callback(GLFWwindow *window, int key,
+                                           int /*scancode*/,
+                                           int action, int /*mods*/) {
   Viewer3D *viewer = (Viewer3D*)glfwGetWindowUserPointer(window);
 
   if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
@@ -631,7 +632,7 @@ void cannon::graphics::viewer_key_callback(GLFWwindow* window, int key, int
 }
 
 void cannon::graphics::mouse_button_callback(GLFWwindow* window, int button,
-    int action, int mods) {
+    int action, int /*mods*/) {
   Viewer3D *viewer = (Viewer3D*)glfwGetWindowUserPointer(window);
 
   if (button == GLFW_MOUSE_BUTTON_MIDDLE && action == GLFW_PRESS) {

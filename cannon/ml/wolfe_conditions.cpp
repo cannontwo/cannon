@@ -19,7 +19,7 @@ bool cannon::ml::sufficient_decrease_condition(RealFunc f, MultiFunc f_grad, con
 }
 
 // *Strong* Wolfe conditions
-bool cannon::ml::curvature_condition(RealFunc f, MultiFunc f_grad, const
+bool cannon::ml::curvature_condition(RealFunc /*f*/, MultiFunc f_grad, const
     VectorXd& x, double step, const VectorXd& direction, double c_2) {
 
   assert(x.size() == direction.size());

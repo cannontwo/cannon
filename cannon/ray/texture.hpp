@@ -66,7 +66,7 @@ namespace cannon {
         /*!
          * Inherited from Texture.
          */
-        virtual Vector3d value(double u, double v, const Vector3d& p) const override {
+        virtual Vector3d value(double /*u*/, double /*v*/, const Vector3d& /*p*/) const override {
           return color_;
         }
 
@@ -138,7 +138,7 @@ namespace cannon {
         /*!
          * Inherited from Texture.
          */
-        virtual Vector3d value(double u, double v, const Vector3d& p) const override {
+        virtual Vector3d value(double /*u*/, double /*v*/, const Vector3d& p) const override {
           return Vector3d(1, 1, 1) * 0.5 * (1.0 + 
               std::sin(scale_ * p.z() + 10*noise_.turbulence(p)));
         }

@@ -100,7 +100,7 @@ void CubicSpline::compute_coeffs_() {
   solver.factorize(A);
   auto x = solver.solve(b);
 
-  assert(x.size() == 4 * a_coeffs_.size());
+  assert(x.size() == static_cast<long int>(4 * a_coeffs_.size()));
 
   for (unsigned int i = 0; 4*i < x.size(); ++i) {
     a_coeffs_[i] = x[4*i];

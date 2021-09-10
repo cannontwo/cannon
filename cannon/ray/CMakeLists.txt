@@ -20,3 +20,4 @@ list(APPEND RAY_SOURCES
   )
 
 add_library(ray OBJECT ${RAY_SOURCES})
+target_compile_options(ray PUBLIC -Wextra -Werror -Wno-error=deprecated-copy)

@@ -387,14 +387,14 @@ void cannon::graphics::framebuffer_size_callback(GLFWwindow* window, int width, 
   w->draw([](){});
 }
 
-void cannon::graphics::debug_message_callback(GLenum source, GLenum type, GLuint id, GLenum
-    severity, GLsizei length, const GLchar *message, 
-    const void *userParam) {
+void cannon::graphics::debug_message_callback(GLenum /*source*/, GLenum /*type*/, GLuint /*id*/, GLenum
+    severity, GLsizei /*length*/, const GLchar *message, 
+    const void * /*userParam*/) {
   if (severity != GL_DEBUG_SEVERITY_NOTIFICATION) 
     log_warning(message);
 }
 
-void cannon::graphics::key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
+void cannon::graphics::key_callback(GLFWwindow* window, int key, int /*scancode*/, int action, int /*mods*/) {
   if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
     glfwSetWindowShouldClose(window, true);
 }

@@ -29,7 +29,7 @@ option(CANNON_BUILD_SCRIPTS "Build scripts" ON)
 #  -O0
 #)
 
-set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall -g -O0")
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall -O2")
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -Wall -O3")
 
 set(CMAKE_FIND_LIBRARY_SUFFIXES ".so" ".a")
@@ -67,9 +67,8 @@ set(CGAL_EIGEN3_ENABLED ON)
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17")
 
 # Profiling
-#SET(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -pg")
-#SET(CMAKE_EXE_LINKER_FLAGS_DEBUG "${CMAKE_EXE_LINKER_FLAGS} -pg")
-#SET(CMAKE_SHARED_LINKER_FLAGS_DEBUG "${CMAKE_SHARED_LINKER_FLAGS} -pg")
+SET(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -pg")
+SET(CMAKE_EXE_LINKER_FLAGS_DEBUG "${CMAKE_EXE_LINKER_FLAGS} -pg")
 
 # check if Doxygen is installed
 if (CANNON_BUILD_DOC)
@@ -122,7 +121,7 @@ if (CANNON_BUILD_LIBRARY)
   list(APPEND LIBRARIES ${OMPL_LIBRARIES})
 
   # Eigen
-  find_package(Eigen3 3.3.4 REQUIRED)
+  find_package(Eigen3 3.4.0 REQUIRED)
   include_directories(${EIGEN3_INCLUDE_DIR})
 
   # CGAL
@@ -145,13 +144,13 @@ if (CANNON_BUILD_LIBRARY)
   include(Catch)
 
   # Gurobi
-  find_package(GUROBI)
-  if (GUROBI_FOUND)
-    add_definitions( -DCANNON_HAVE_GUROBI=1 )
-    include_directories(${GUROBI_INCLUDE_DIRS})
-    # A hack, for some reason findGUROBI isn't working
-    list(APPEND LIBRARIES ${GUROBI_LIBRARY} ${GUROBI_CXX_LIBRARY})
-  endif()
+  #find_package(GUROBI)
+  #if (GUROBI_FOUND)
+  #  add_definitions( -DCANNON_HAVE_GUROBI=1 )
+  #  include_directories(${GUROBI_INCLUDE_DIRS})
+  #  # A hack, for some reason findGUROBI isn't working
+  #  list(APPEND LIBRARIES ${GUROBI_LIBRARY} ${GUROBI_CXX_LIBRARY})
+  #endif()
 
   # HDF5
   find_package(HDF5 REQUIRED)

@@ -11,7 +11,7 @@ Vector3d CheckerTexture::value(double u, double v, const Vector3d& p) const {
     return even_->value(u, v, p);
 }
 
-Vector3d ImageTexture::value(double u, double v, const Vector3d& p) const {
+Vector3d ImageTexture::value(double u, double v, const Vector3d& /*p*/) const {
   // Return cyan if no data
   if (data_ == nullptr)
     return Vector3d(0, 1, 1);

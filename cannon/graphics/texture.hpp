@@ -19,6 +19,10 @@
 #include <ft2build.h>
 #include FT_FREETYPE_H
 
+#include <cannon/log/registry.hpp>
+
+using namespace cannon::log;
+
 namespace cannon {
   namespace graphics {
 
@@ -70,6 +74,8 @@ namespace cannon {
 
           glGenTextures(1, &gl_texture_);
           bind(texture_unit);
+
+          log_info(use_alpha);
 
           GLenum format;
           GLenum pix_format;

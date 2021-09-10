@@ -743,7 +743,7 @@ unsigned int cannon::logic::default_prop(const DPLLState& ds, const Assignment&
   return props[props.size() - 1];
 }
 
-bool cannon::logic::default_assign(const CNFFormula& form, const Assignment& a, const
+bool cannon::logic::default_assign(const CNFFormula& form, const Assignment& /*a*/, const
     Simplification& s, unsigned int prop, const std::vector<std::vector<unsigned int>>& watched) {
   std::random_device rd;
   static std::default_random_engine gen(rd());

@@ -25,7 +25,7 @@ bool BvhNode::object_space_hit(const Ray& r, double t_min, double t_max, hit_rec
   return hit_left || hit_right;
 }
 
-bool BvhNode::object_space_bounding_box(double time_0, double time_1, Aabb& output_box) const {
+bool BvhNode::object_space_bounding_box(double /*time_0*/, double /*time_1*/, Aabb& output_box) const {
   output_box = box_;
   return true;
 }

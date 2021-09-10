@@ -5,3 +5,4 @@ list(APPEND LOG_SOURCES
   )
 
 add_library(log OBJECT ${LOG_SOURCES})
+target_compile_options(log PUBLIC -Wextra -Werror)

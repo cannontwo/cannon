@@ -35,7 +35,7 @@ bool Sphere::object_space_hit(const Ray& r, double t_min, double t_max, hit_reco
   return true;
 }
 
-bool Sphere::object_space_bounding_box(double time_0, double time_1, Aabb& output_box) const {
+bool Sphere::object_space_bounding_box(double /*time_0*/, double /*time_1*/, Aabb& output_box) const {
   output_box = Aabb(center_ - Vector3d(radius_, radius_, radius_), center_ +
       Vector3d(radius_, radius_, radius_));
   return true;

@@ -87,7 +87,7 @@ namespace cannon {
          */
         void render(const std::string &out_filename,
                     std::unique_ptr<Filter> filter, int tile_size = 50,
-                    unsigned int num_threads = 4);
+                    unsigned int num_threads = 2);
 
 #ifdef CANNON_BUILD_GRAPHICS
         /*!

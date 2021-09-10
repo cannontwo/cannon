@@ -7,3 +7,4 @@ list(APPEND GEOM_SOURCES
   )
 
 add_library(geom OBJECT ${GEOM_SOURCES})
+target_compile_options(geom PUBLIC -Wextra -Werror -Wno-error=deprecated-copy)

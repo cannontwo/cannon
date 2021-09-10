@@ -102,7 +102,7 @@ namespace cannon {
     /*!
      * \brief Solve the continuous-time algebraic riccati equation for
      * the input state and control derivative matrices A and B, and
-     * return the resulting LQR gain.
+     * return the resulting steady-state LQR gain.
      *
      * \param A Partial derivatives of ode with respect to state.
      * \param B Partial derivatives of ode with respect to control.

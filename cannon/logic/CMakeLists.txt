@@ -8,3 +8,4 @@ list(APPEND LOGIC_SOURCES
   )
 
 add_library(logic OBJECT ${LOGIC_SOURCES})
+target_compile_options(logic PUBLIC -Wextra -Werror)

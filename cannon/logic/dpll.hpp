@@ -438,7 +438,7 @@ namespace cannon {
      * \brief Struct representing a comparison function that always returns false.
      */
     struct FalseComparator {
-      bool operator()(const unsigned int& idx1, const unsigned int& idx2) {
+      bool operator()(const unsigned int& /*idx1*/, const unsigned int& /*idx2*/) {
         return false;
       }
     };

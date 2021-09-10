@@ -20,7 +20,7 @@ std::vector<OutPortPtr> blocks::Constant::out_ports() const {
   return {out_};
 }
 
-void blocks::Constant::update(double dt, double t) {
+void blocks::Constant::update(double /*dt*/, double /*t*/) {
   out_->set_value(value_);
 }
 
@@ -48,7 +48,7 @@ std::vector<OutPortPtr> blocks::Step::out_ports() const {
   return {out_};
 }
 
-void blocks::Step::update(double dt, double t) {
+void blocks::Step::update(double /*dt*/, double t) {
   out_->set_value(t < step_time_ ? initial_value_ : final_value_);
 }
 

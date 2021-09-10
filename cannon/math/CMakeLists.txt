@@ -18,3 +18,4 @@ list(APPEND MATH_SOURCES
   )
 
 add_library(math OBJECT ${MATH_SOURCES})
+target_compile_options(math PUBLIC -Wextra -Werror -Wno-error=deprecated-copy)

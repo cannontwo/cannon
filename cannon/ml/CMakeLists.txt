@@ -11,3 +11,4 @@ list(APPEND ML_SOURCES
   )
 
 add_library(ml OBJECT ${ML_SOURCES})
+target_compile_options(ml PUBLIC -Wextra -Werror -Wno-error=deprecated-copy)

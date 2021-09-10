@@ -6,7 +6,7 @@
 
 using namespace cannon::ray;
 
-bool Triangle::bounding_box(double time_0, double time_1, Aabb& output_box) const {
+bool Triangle::bounding_box(double /*time_0*/, double /*time_1*/, Aabb& output_box) const {
   Vector3u verts = parent_mesh_->indices_.row(mesh_index_).transpose();
 
   Vector3d p0 = parent_mesh_->vertices_.row(verts[0]).transpose();
@@ -17,7 +17,7 @@ bool Triangle::bounding_box(double time_0, double time_1, Aabb& output_box) cons
   return true;
 }
 
-bool Triangle::object_space_bounding_box(double time_0, double time_1, Aabb& output_box) const {
+bool Triangle::object_space_bounding_box(double /*time_0*/, double /*time_1*/, Aabb& output_box) const {
   Vector3u verts = parent_mesh_->indices_.row(mesh_index_).transpose();
 
   // Transform back to object space
@@ -32,7 +32,7 @@ bool Triangle::object_space_bounding_box(double time_0, double time_1, Aabb& out
 STAT_COUNTER("Integrator/Triangle hit tests", nTriangleHitTests);
 STAT_COUNTER("Integrator/Triangle intersections", nTriangleHits);
 
-bool Triangle::hit(const Ray& r, double t_min, double t_max, hit_record& rec) const {
+bool Triangle::hit(const Ray& r, double /*t_min*/, double t_max, hit_record& rec) const {
   // This implementation from Chapter 3 of PBRT
   
   ++nTriangleHitTests;
@@ -155,7 +155,8 @@ bool Triangle::hit(const Ray& r, double t_min, double t_max, hit_record& rec) co
   return true;
 }
 
-bool Triangle::object_space_hit(const Ray& r, double t_min, double t_max, hit_record& rec) const {
+bool Triangle::object_space_hit(const Ray & /*r*/, double /*t_min*/,
+                                double /*t_max*/, hit_record & /*rec*/) const {
   throw std::runtime_error("Triangle object-space intersection should not be called");
 
   return false;
@@ -199,7 +200,7 @@ cannon::ray::process_model_node(std::shared_ptr<Affine3d> t,
 
 std::shared_ptr<TriangleMesh>
 cannon::ray::process_model_mesh(std::shared_ptr<Affine3d> t, std::shared_ptr<Material> m, aiMesh *mesh,
-    const aiScene *scene) {
+    const aiScene * /*scene*/) {
   MatrixX3d vertices = MatrixX3d::Zero(mesh->mNumVertices, 3);
   MatrixX3d normals = MatrixX3d::Zero(mesh->mNumVertices, 3);
   MatrixX2d tex_coords = MatrixX2d::Zero(mesh->mNumVertices, 2);

@@ -5,3 +5,4 @@ list(APPEND PHYSICS_SOURCES
   )
 
 add_library(physics OBJECT ${PHYSICS_SOURCES})
+target_compile_options(physics PUBLIC -Wextra -Werror -Wno-error=deprecated-copy)

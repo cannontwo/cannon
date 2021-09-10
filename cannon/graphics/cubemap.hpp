@@ -37,7 +37,7 @@ namespace cannon {
          * \param height The height of the faces of the cubemap.
          * \param num_channels The number of channels in each face of the cubemap.
          */
-        Cubemap(int width=800, int height=600, int num_channels=3) {
+        Cubemap(int width=800, int height=600) {
 
           glGenTextures(1, &gl_cubemap_);
           glBindTexture(GL_TEXTURE_CUBE_MAP, gl_cubemap_);

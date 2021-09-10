@@ -65,7 +65,7 @@ CNFFormula cannon::logic::load_cnf(const std::string& path) {
         std::istreambuf_iterator<char>());
 
     return parse_cnf(str);
-  } catch (std::ifstream::failure e) {
+  } catch (std::ifstream::failure& e) {
     throw std::runtime_error("Couldn't open file for CNF formula");
   }
 }

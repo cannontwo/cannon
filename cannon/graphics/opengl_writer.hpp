@@ -88,7 +88,7 @@ namespace cannon {
       private:
         ImageData data_; //!< Actual image data to be written to a file
 
-        std::function<const void()> close_func_; //!< Function to be called once writing is complete
+        std::function<void()> close_func_; //!< Function to be called once writing is complete
 
     };
 
