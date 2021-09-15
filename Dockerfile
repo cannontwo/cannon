@@ -6,7 +6,6 @@ RUN apt-get update && apt-get install -y software-properties-common
 RUN add-apt-repository ppa:ubuntu-toolchain-r/test
 
 RUN apt-get update && apt-get install -y build-essential \ 
-        libeigen3-dev \
         clang-tidy \
         libglfw3-dev \
         libfreetype6 \
@@ -45,6 +44,16 @@ WORKDIR /
 RUN wget https://github.com/Kitware/CMake/releases/download/v3.21.1/cmake-3.21.1-linux-x86_64.sh
 RUN chmod +x ./cmake-3.21.1-linux-x86_64.sh
 RUN ./cmake-3.21.1-linux-x86_64.sh --skip-license
+
+# Eigen
+WORKDIR /
+RUN wget https://gitlab.com/libeigen/eigen/-/archive/3.4.0/eigen-3.4.0.tar.gz
+RUN tar xzvf eigen-3.4.0.tar.gz
+WORKDIR eigen-3.4.0
+RUN mkdir build
+WORKDIR build
+RUN cmake ..
+RUN make && make install
 
 # YAML-Cpp
 WORKDIR /
@@ -98,7 +107,7 @@ WORKDIR /
 COPY . /cannon
 RUN mkdir -p /cannon/build
 WORKDIR /cannon/build
-RUN cmake .. -DCANNON_BUILD_GRAPHICS=OFF -DCANNON_BUILD_DOC=OFF -DCMAKE_BUILD_TYPE=Release -G "Ninja" -DCMAKE_UNITY_BUILD=yes -DCMAKE_CXX_FLAGS_INIT=-DAPPROVAL_TESTS_DISABLE_FILE_MACRO_CHECK
+RUN cmake .. -DCANNON_BUILD_GRAPHICS=OFF -DCANNON_BUILD_DOC=OFF -DCMAKE_BUILD_TYPE=Debug -G "Ninja" -DCMAKE_UNITY_BUILD=yes -DCMAKE_CXX_FLAGS_INIT=-DAPPROVAL_TESTS_DISABLE_FILE_MACRO_CHECK
 RUN ninja
 
 

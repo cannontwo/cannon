@@ -14,20 +14,21 @@ void PiecewiseRecursiveLSTDFilter::process_datum(const VectorXd& in_vec, const V
   auto next_feat = make_feature_vec_(next_in_vec, next_idx);
   SparseMatrix<double> diff = feat - (discount_factor_ * next_feat);
 
-  auto g = diff * a_inv_;
+  auto v = a_inv_ * feat.transpose();
   
-  MatrixXd tmp = g * feat.transpose();
+  MatrixXd tmp = diff * v;
+  //MatrixXd tmp = g * feat.transpose();
   assert(tmp.size() == 1);
   double a = tmp(0, 0) + 1.0;
+  double inv_a = 1.0 / a;
 
   MatrixXd tmp2 = diff * theta_;
   assert(tmp2.size() == 1);
   double e_t = reward - tmp2(0, 0);
 
-  VectorXd v = a_inv_ * feat.transpose();
-  theta_ = theta_ + (e_t / a) * v;
+  theta_ += inv_a * (e_t * v);
 
-  update_a_inv_(feat, next_feat);
+  update_a_inv_(v, diff, inv_a);
 }
 
 VectorXd PiecewiseRecursiveLSTDFilter::get_mat(unsigned int idx) const {
@@ -70,23 +71,14 @@ PiecewiseRecursiveLSTDFilter::make_feature_vec_(VectorXd in_vec,
 }
 
 void PiecewiseRecursiveLSTDFilter::update_a_inv_(
-    const SparseMatrix<double> &feat,
-    const SparseMatrix<double> &next_feat) {
-  assert(feat.rows() == 1);
-  assert(feat.cols() == param_dim_);
-  assert(next_feat.rows() == 1);
-  assert(next_feat.cols() == param_dim_);
+    const Ref<const VectorXd> &a_inv_feat_t,
+    const Ref<const SparseMatrix<double>> &diff, double inv_denom) {
 
-  SparseMatrix<double> diff = feat - (discount_factor_ * next_feat);
-
-  MatrixXd numerator = (a_inv_ * feat.transpose()) * (diff * a_inv_);
+  // Numerator = a_inv_ * feat.transpose() * diff * a_inv_
+  auto numerator = a_inv_feat_t * (diff * a_inv_);
   assert(numerator.rows() == param_dim_);
   assert(numerator.cols() == param_dim_);
 
-  MatrixXd denom_expr = diff * (a_inv_ * feat.transpose());
-  assert(denom_expr.size() == 1);
-  double denom = denom_expr(0, 0) + 1.0;
-
-  MatrixXd update = numerator / denom;
-  a_inv_ = (a_inv_ - update).eval();
+  auto update = numerator * inv_denom;
+  a_inv_ -= update;
 }

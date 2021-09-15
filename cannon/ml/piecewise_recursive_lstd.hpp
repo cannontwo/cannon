@@ -95,11 +95,13 @@ namespace cannon {
          * \brief Update approximation of the linear portion of the LSTD filter
          * given a particular state transition.
          *
-         * \param feat Internal feature vector of the first state.
-         * \param next_feat Internal feature vector of the next state.
+         * \param a_inv_feat_t A^-1 * feat.transpose()
+         * \param diff feat - (discount_factor_ * next_feat)
+         * \param inv_denom 1.0 / (diff * A^-1 * feat^T)
          */
-        void update_a_inv_(const SparseMatrix<double> &feat,
-                           const SparseMatrix<double> &next_feat);
+        void update_a_inv_(const Ref<const VectorXd> &a_inv_feat_t,
+                           const Ref<const SparseMatrix<double>> &diff,
+                           double inv_denom);
 
         // Parameters
         unsigned int in_dim_; //!< Dimension of input

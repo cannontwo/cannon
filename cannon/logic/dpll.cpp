@@ -256,7 +256,6 @@ int DPLLState::learn_clause(std::shared_ptr<FormulaState> fs, unsigned int c, un
       found_unsat_ = true;
     }
 
-    int num_learned_watched = 0;
     int max_decision_level = -1;
     int min_closed_level = formula_.get_num_props();
     for (auto &l : learned_c.literals_) {
@@ -298,14 +297,10 @@ int DPLLState::learn_clause(std::shared_ptr<FormulaState> fs, unsigned int c, un
         clause_watched[new_clause_num][w1] = true;
         clause_watched[new_clause_num][w2] = true;
 
-        num_learned_watched = 2;
       } else if (learned_c.size() == 1) {
         watched[(*learned_c.literals_.begin()).prop_].push_back(new_clause_num);
         clause_watched[new_clause_num][(*learned_c.literals_.begin()).prop_] = true;
-        num_learned_watched = 1;
       }
-
-      assert(learned_c.size() == 0 || learned_c.size() == 1 || num_learned_watched == 2);
     }
 
     // Backjump by unwinding the stack of formulas states
