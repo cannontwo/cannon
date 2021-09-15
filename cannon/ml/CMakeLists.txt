@@ -8,6 +8,7 @@ list(APPEND ML_SOURCES
   optimization_result.cpp
   pattern_search.cpp
   linear_programming.cpp
+  lloyd.cpp
   )
 
 add_library(ml OBJECT ${ML_SOURCES})
