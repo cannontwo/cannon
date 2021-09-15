@@ -144,13 +144,13 @@ if (CANNON_BUILD_LIBRARY)
   include(Catch)
 
   # Gurobi
-  #find_package(GUROBI)
-  #if (GUROBI_FOUND)
-  #  add_definitions( -DCANNON_HAVE_GUROBI=1 )
-  #  include_directories(${GUROBI_INCLUDE_DIRS})
-  #  # A hack, for some reason findGUROBI isn't working
-  #  list(APPEND LIBRARIES ${GUROBI_LIBRARY} ${GUROBI_CXX_LIBRARY})
-  #endif()
+  find_package(GUROBI)
+  if (GUROBI_FOUND)
+    add_definitions( -DCANNON_HAVE_GUROBI=1 )
+    include_directories(${GUROBI_INCLUDE_DIRS})
+    # A hack, for some reason findGUROBI isn't working
+    list(APPEND LIBRARIES ${GUROBI_CXX_LIBRARY} ${GUROBI_LIBRARY} )
+  endif()
 
   # HDF5
   find_package(HDF5 REQUIRED)
