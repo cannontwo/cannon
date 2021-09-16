@@ -306,6 +306,11 @@ void Plotter::set_ylim(float low, float high) {
 void Plotter::draw_pass() {
   axes_->update_scale(w_->width, w_->height);
 
+  poly_program_->set_uniform("matrix", axes_->make_scaling_matrix());
+  for (auto& poly : polygon_plots_) {
+    poly->draw();
+  }
+
   point_program_->set_uniform("matrix", axes_->make_scaling_matrix());
   for (auto& scatter : scatter_plots_) {
     scatter->draw();
@@ -314,11 +319,6 @@ void Plotter::draw_pass() {
   line_program_->set_uniform("matrix", axes_->make_scaling_matrix());
   for (auto& line : line_plots_) {
     line->draw();
-  }
-
-  poly_program_->set_uniform("matrix", axes_->make_scaling_matrix());
-  for (auto& poly : polygon_plots_) {
-    poly->draw();
   }
 
   axes_->draw();

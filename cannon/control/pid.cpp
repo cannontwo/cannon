@@ -62,7 +62,7 @@ ControlledTrajectory cannon::control::get_pid_controlled_trajectory(
   auto plan = traj.interp();
 
   double time = 0.0;
-  VectorXd state(total_dims);
+  VectorXd state = VectorXd::Zero(total_dims);
   state.head(controlled_dims) = traj(time);
   ControlledTrajectory executed;
 
