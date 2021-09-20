@@ -33,6 +33,7 @@ namespace cannon {
     CANNON_CLASS_FORWARD(Font);
     CANNON_CLASS_FORWARD(ShaderProgram);
     CANNON_CLASS_FORWARD(VertexBuffer);
+    CANNON_CLASS_FORWARD(TextRenderer);
 
     /*!
      * \brief Utility struct for overlay text rendered at the top level of the
@@ -363,11 +364,6 @@ namespace cannon {
         void register_callbacks();
         
         /*!
-         * \brief Initialize overlay text shader for this window.
-         */
-        void init_text_shader();
-        
-        /*!
          * \brief Draw overlay text for this window.
          */
         void draw_overlays();
@@ -379,12 +375,8 @@ namespace cannon {
 
         GLFWwindow *window; //!< OpenGL window object
 
-        FontPtr font_; //!< Font for overlay text
-        Vector4f text_color_; //!< Overlay text color
-        ShaderProgramPtr text_program_; //!< Overlay text shader
+        TextRendererPtr text_renderer_; //!< Renderer for overlay text
         Vector4f clear_color_; //!< Display clear color
-        VertexArrayObjectPtr vao_; //!< VAO for text 
-        VertexBufferPtr buf_; //!< Vertex buffer for text display
         std::vector<OverlayText> overlays_; //!< Overlay text instances
 
         bool render_to_framebuffer_ = false; //!< Whether to render to framebuffer

@@ -33,6 +33,7 @@ list(APPEND GRAPHICS_SOURCES
   directional_light.cpp
   light.cpp
   light_collection.cpp
+  text_renderer.cpp
   )
 
 add_library(graphics OBJECT ${GRAPHICS_SOURCES})

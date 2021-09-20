@@ -17,15 +17,15 @@
 #include <cannon/graphics/font.hpp>
 #include <cannon/graphics/projection.hpp>
 #include <cannon/graphics/vertex_buffer.hpp>
+#include <cannon/graphics/text_renderer.hpp>
 #include <cannon/log/registry.hpp>
 
 using namespace cannon::graphics;
 using namespace cannon::log;
 
 Window::Window(int w, int h, const std::string &name)
-    : width(w), height(h), font_(new Font(false)),
-      text_program_(new ShaderProgram("text_program", false)), vao_(nullptr),
-      buf_(new VertexBuffer), save_pool_(save_image_func) {
+    : width(w), height(h), text_renderer_(nullptr),
+      save_pool_(save_image_func) {
 
   init_glfw();
   window = glfwCreateWindow(width, height, name.c_str(), NULL, NULL); 
@@ -45,12 +45,12 @@ Window::Window(int w, int h, const std::string &name)
 
   register_callbacks();
   set_clear_color(Vector4f(0.02f, 0.07f, 0.09f, 1.0f));
+
+  // Setting up overlay text rendering
+  auto font = std::make_shared<Font>(false);
+  font->init();
+  text_renderer_ = std::make_shared<TextRenderer>(width, height, font);
   set_text_color(Vector4f(1.0, 0.0, 0.0, 1.0));
-  font_->init();
-  text_program_->init();
-  vao_ = std::make_shared<VertexArrayObject>();
-  buf_->init(vao_);
-  init_text_shader();
 
   // Setting up ImGui
   IMGUI_CHECKVERSION();
@@ -115,6 +115,11 @@ void Window::make_current() {
 
 void Window::set_viewport(unsigned x, unsigned y, unsigned width, unsigned height) {
   glViewport(x, y, width, height);
+
+  if (text_renderer_ != nullptr) {
+    text_renderer_->width() = static_cast<unsigned int>(width);
+    text_renderer_->height() = static_cast<unsigned int>(height);
+  }
 }
 
 void Window::register_callbacks() {
@@ -129,7 +134,7 @@ void Window::set_clear_color(Vector4f color) {
 }
 
 void Window::set_text_color(Vector4f color) {
-  text_color_ = color;
+  text_renderer_->text_color() = color;
 }
 
 void Window::set_wireframe_mode() {
@@ -161,20 +166,6 @@ void Window::display_fps(float x, float y, float scale) {
 
       last_time = glfwGetTime();
       }});
-}
-
-void Window::init_text_shader() {
-  VertexShader v = load_vertex_shader("shaders/char_shader.vert");
-  FragmentShader f = load_fragment_shader("shaders/char_shader.frag");
-
-  text_program_->attach_shader(v);
-  text_program_->attach_shader(f);
-  text_program_->link();
-
-  // Reserve space for display quads
-  MatrixX4f vertices(MatrixX4f::Zero(6, 4));
-  buf_->bind();
-  buf_->buffer(vertices);
 }
 
 void Window::write_imgui() {
@@ -219,59 +210,10 @@ void Window::write_imgui() {
 }
 
 void Window::draw_overlays() {
-  glEnable(GL_BLEND);
-  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-  vao_->bind();
-  text_program_->set_uniform("projection", make_orthographic(0.0f, (float)width,
-        0.0f, (float)height, -1.0, 1.0));
-  text_program_->set_uniform("textColor", text_color_);
-  text_program_->set_uniform("text", 0);
-  text_program_->activate();
-
   for (auto& o : overlays_) {
     o.update(o);
-
-    // Using negative overlay position to mean relative to top-right
-    float x = o.x;
-    if (x < 0.0)
-      x = width + x;
-
-    float y = o.y;
-    if (y < 0.0)
-      y = height + y;
-
-    std::string::const_iterator c;   
-
-    for (c = o.text.begin(); c != o.text.end(); c++) {
-      std::shared_ptr<Character> ch = font_->get_char(*c);
-
-      float xpos = x + ch->bearing[0] * o.scale;
-      float ypos = y - (ch->size[1] - ch->bearing[1]) * o.scale;
-      float w = ch->size[0] * o.scale;
-      float h = ch->size[1] * o.scale;
-
-      MatrixX4f vertices(6, 4);
-      vertices << xpos, ypos + h,     0.0f, 0.0f,
-                  xpos, ypos,         0.0f, 1.0f,
-                  xpos + w, ypos,     1.0f, 1.0f,
-                  xpos, ypos + h,     0.0f, 0.0f,
-                  xpos + w, ypos,     1.0f, 1.0f,
-                  xpos + w, ypos + h, 1.0f, 0.0f;
-      ch->texture->bind();
-      buf_->replace(vertices);      
-      buf_->bind();
-      OpenGLState s;
-      log_info(s);
-
-      glDrawArrays(GL_TRIANGLES, 0, 6);
-      
-      // Advance is stored in number of 1/64 pixels
-      x += (ch->advance >> 6) * o.scale;
-    }
+    text_renderer_->draw(o.text, o.x, o.y, o.scale);
   }
-
-  glDisable(GL_BLEND);
 }
 
 // Free functions
@@ -380,6 +322,7 @@ void cannon::graphics::framebuffer_size_callback(GLFWwindow* window, int width, 
   w->width = width;
   w->height = height;
   w->set_viewport(0, 0, width, height);
+
 
   log_info("Resize drawing");
 
