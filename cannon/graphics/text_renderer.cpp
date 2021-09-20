@@ -51,9 +51,7 @@ void TextRenderer::draw(const std::string &text, double start_x, double start_y,
   float x = start_x;
   float y = start_y;
 
-  std::string::const_iterator c;   
-
-  for (c = text.begin(); c != text.end(); c++) {
+  for (auto c = text.begin(); c != text.end(); c++) {
     std::shared_ptr<Character> ch = font_->get_char(*c);
 
     float xpos = x + ch->bearing[0] * scale;
@@ -81,6 +79,34 @@ void TextRenderer::draw(const std::string &text, double start_x, double start_y,
   glDisable(GL_BLEND);
 }
 
+void TextRenderer::draw(const std::string &text, const TextBoundingBox& box) {
+  auto source_box = compute_bounding_box(text, box.x, box.y);
+  auto scale = get_box_scale(source_box, box);
+  draw(text, box.x, box.y, scale);
+}
+
+TextBoundingBox TextRenderer::compute_bounding_box(const std::string &text,
+                                                   double x, double y,
+                                                   double scale) {
+  TextBoundingBox ret_box;
+  ret_box.x = x;
+  ret_box.y = y;
+  ret_box.width = 0.0;
+  ret_box.height = 0.0;
+
+  for (auto c = text.begin(); c != text.end(); c++) {
+    std::shared_ptr<Character> ch = font_->get_char(*c);
+
+    double ypos = y - (ch->size[1] - ch->bearing[1]) * scale;
+    ret_box.y = std::min(ypos, ret_box.y);
+    ret_box.height = std::max(ch->size[1] * scale, ret_box.height);
+
+    ret_box.width += (ch->advance >> 6) * scale;
+  }
+
+  return ret_box;
+}
+
 Vector4f& TextRenderer::text_color() {
   return text_color_;
 }
@@ -91,4 +117,12 @@ unsigned int& TextRenderer::width() {
 
 unsigned int& TextRenderer::height() {
   return height_;
+}
+
+double cannon::graphics::get_box_scale(const TextBoundingBox &source,
+                                       const TextBoundingBox &target) {
+  double x_scale = target.width / source.width;
+  double y_scale = target.height / source.height;
+
+  return std::min(x_scale, y_scale);
 }
