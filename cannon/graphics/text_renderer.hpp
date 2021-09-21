@@ -31,6 +31,16 @@ namespace cannon {
     };
 
     /*!
+     * \brief Enum representing the different ways that text can be aligned for
+     * rendering, affecting how bounding box position is interpreted.
+     */
+    enum class TextAlignment {
+      Left,
+      Center,
+      Right
+    };
+
+    /*!
      * \brief Class handling the rendering of strings in a font to specific
      * regions of screen-space.
      */
@@ -58,8 +68,10 @@ namespace cannon {
          *
          * \param text The string to draw
          * \param box The box to draw text within.
+         * \param alignment Text alignment for bounding box positioning.
          */
-        void draw(const std::string &text, const TextBoundingBox& box);
+        void draw(const std::string &text, const TextBoundingBox &box,
+                  TextAlignment alignment = TextAlignment::Left);
 
         /*!
          * \brief Compute bounding box for the input text to be rendered. Does

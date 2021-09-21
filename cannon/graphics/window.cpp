@@ -149,10 +149,6 @@ void Window::display_text(float x, float y, float scale, const std::string
     &text, std::function<void(OverlayText&)> update) {
   overlays_.push_back({x, y, scale, text, update});
   overlays_.back().update(overlays_.back());
-
-  auto box = text_renderer_->compute_bounding_box(text, x, y, scale);
-  log_info("Overlay will be draw at (", box.x, ",", box.y, ") with width",
-           box.width, "and height", box.height);
 }
 
 void Window::display_fps(float x, float y, float scale) {

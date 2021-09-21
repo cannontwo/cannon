@@ -79,10 +79,25 @@ void TextRenderer::draw(const std::string &text, double start_x, double start_y,
   glDisable(GL_BLEND);
 }
 
-void TextRenderer::draw(const std::string &text, const TextBoundingBox& box) {
+void TextRenderer::draw(const std::string &text, const TextBoundingBox &box,
+                        TextAlignment alignment) {
   auto source_box = compute_bounding_box(text, box.x, box.y);
   auto scale = get_box_scale(source_box, box);
-  draw(text, box.x, box.y, scale);
+
+  auto scaled_box = compute_bounding_box(text, box.x, box.y, scale);
+
+  switch (alignment) {
+    case TextAlignment::Left:
+      draw(text, box.x, box.y, scale);
+      break;
+    case TextAlignment::Right:
+      draw(text, box.x + box.width - scaled_box.width, box.y, scale);
+      break;
+    case TextAlignment::Center:
+      draw(text, box.x + (box.width / 2.0) - (scaled_box.width / 2.0), box.y,
+           scale);
+      break;
+  }
 }
 
 TextBoundingBox TextRenderer::compute_bounding_box(const std::string &text,
