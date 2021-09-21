@@ -83,6 +83,21 @@ namespace cannon {
          */
         MultiSpline interp() const;
 
+        /*!
+         * \brief Save this trajectory to a file.
+         *
+         * \param path The path to save this trajectory to.
+         */
+        void save(const std::string& path);
+
+        /*!
+         * \brief Load a trajectory from a file. Overwrites any existing points
+         * in this trajectory.
+         *
+         * \param path The path to load a trajectory from.
+         */
+        void load(const std::string& path);
+
       private:
 
         /*!
@@ -155,6 +170,21 @@ namespace cannon {
          * \returns Trajectory size.
          */
         size_t size() const;
+
+        /*!
+         * \brief Save this trajectory to a file.
+         *
+         * \param path The path to save this trajectory to.
+         */
+        void save(const std::string& path);
+
+        /*!
+         * \brief Load a trajectory from a file. Overwrites any existing points
+         * in this trajectory.
+         *
+         * \param path The path to load a trajectory from.
+         */
+        void load(const std::string& path);
 
       private:
 

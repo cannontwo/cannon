@@ -287,6 +287,7 @@ void Axes::write_imgui() {
 }
 
 Matrix4f Axes::make_scaling_matrix() {
+  // TODO Extract as Layout system
   Matrix2f extent = get_padded_extent(); 
 
   Vector3f center = {(extent(0,0) + extent(0, 1))/2.0f, (extent(1, 0) + extent(1, 1))/2.0f, 0.0f};

@@ -2,6 +2,8 @@
 
 #include <stdexcept>
 
+#include <thirdparty/HighFive/include/highfive/H5Easy.hpp>
+
 #include <cannon/math/interp.hpp>
 #include <cannon/log/registry.hpp>
 
@@ -92,6 +94,41 @@ unsigned int Trajectory::find_closest_t_(double t) const {
   }
 }
 
+void Trajectory::save(const std::string& path) {
+  H5Easy::File file(path, H5Easy::File::Overwrite);  
+  std::string states_path("/states/");
+  std::string times_path("/times/");
+
+  log_info("Saving trajectory of size", size());
+  for (unsigned int i = 0; i < size(); ++i) {
+    H5Easy::dump(file, states_path + std::to_string(i), states_[i]);
+    H5Easy::dump(file, times_path + std::to_string(i), times_[i]);
+  }
+}
+
+void Trajectory::load(const std::string& path) {
+  H5Easy::File file(path, H5Easy::File::ReadOnly);
+
+  auto states_group = file.getGroup("/states");
+  auto times_group = file.getGroup("/times");
+  log_info("/states group has", states_group.getNumberObjects(), "objects");
+
+  assert(states_group.getNumberObjects() == times_group.getNumberObjects());
+
+  states_.clear();
+  times_.clear();
+
+  std::string states_path("/states/");
+  std::string times_path("/times/");
+
+  for (unsigned int i = 0; i < states_group.getNumberObjects(); ++i) {
+    VectorXd state = H5Easy::load<VectorXd>(file, states_path + std::to_string(i));
+    double time = H5Easy::load<double>(file, times_path + std::to_string(i));
+
+    push_back(state, time);
+  }
+}
+
 ControlledTrajectory::ControlledTrajectory() {}
 
 ControlledTrajectory::ControlledTrajectory(
@@ -175,5 +212,47 @@ unsigned int ControlledTrajectory::find_closest_t_(double t) const {
   else {
     unsigned int idx = std::max(int(it - times_.begin()) - 1, 0);
     return idx;
+  }
+}
+
+void ControlledTrajectory::save(const std::string& path) {
+  H5Easy::File file(path, H5Easy::File::Overwrite);  
+  std::string states_path("/states/");
+  std::string controls_path("/controls/");
+  std::string times_path("/times/");
+
+  log_info("Saving controlled trajectory of size", size());
+  for (unsigned int i = 0; i < size(); ++i) {
+    H5Easy::dump(file, states_path + std::to_string(i), states_[i]);
+    H5Easy::dump(file, controls_path + std::to_string(i), controls_[i]);
+    H5Easy::dump(file, times_path + std::to_string(i), times_[i]);
+  }
+}
+
+void ControlledTrajectory::load(const std::string& path) {
+  H5Easy::File file(path, H5Easy::File::ReadOnly);
+
+  auto states_group = file.getGroup("/states");
+  auto controls_group = file.getGroup("/controls");
+  auto times_group = file.getGroup("/times");
+  log_info("/states group has", states_group.getNumberObjects(), "objects");
+
+  assert(states_group.getNumberObjects() == times_group.getNumberObjects());
+  assert(states_group.getNumberObjects() == controls_group.getNumberObjects());
+
+  states_.clear();
+  controls_.clear();
+  times_.clear();
+
+  std::string states_path("/states/");
+  std::string controls_path("/controls/");
+  std::string times_path("/times/");
+
+  for (unsigned int i = 0; i < states_group.getNumberObjects(); ++i) {
+    VectorXd state = H5Easy::load<VectorXd>(file, states_path + std::to_string(i));
+    VectorXd control = H5Easy::load<VectorXd>(file, controls_path + std::to_string(i));
+    double time = H5Easy::load<double>(file, times_path + std::to_string(i));
+
+    push_back(state, control, time);
   }
 }
