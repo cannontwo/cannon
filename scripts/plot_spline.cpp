@@ -36,7 +36,7 @@ int main() {
   plotter.plot(spline_first_deriv, 200, -1.0, 5.5);
   plotter.plot(spline_not_knot, 200, -1.0, 5.5);
   plotter.plot_points(plot_points);
- 
+
   plotter.render();
 }
 #else

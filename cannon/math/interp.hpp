@@ -161,6 +161,15 @@ namespace cannon {
          */
         VectorXd deriv(double t, unsigned int order = 1) const;
 
+        /*!
+         * \brief Compute a normal vector for this spline at the input time.
+         *
+         * \param t The time to compute a normal for.
+         *
+         * \returns The computed normal. 
+         */
+        VectorXd normal(double t) const;
+
 
       private:
         std::vector<std::shared_ptr<CubicSpline>> coord_splines_; //!< Coordinate spline functions
@@ -202,6 +211,29 @@ namespace cannon {
      */
     VectorXd lerp(const Ref<const VectorXd> &a, const Ref<const VectorXd> &b,
                   double t);
+
+    /*!
+     * \brief Compute the projection of the first vector onto the second.
+     *
+     * \param a The vector to be projected
+     * \param b The vector that projection is computed with respect to.
+     *
+     * \returns The projected vector.
+     */
+    VectorXd projection(const Ref<const VectorXd> &a,
+                        const Ref<const VectorXd> &b);
+
+    /*!
+     * \brief Compute the complementary projection of the first vector with
+     * respect to the second.
+     *
+     * \param a The vector to be projected
+     * \param b The vector that projection is computed with respect to.
+     *
+     * \returns The complementary projection.
+     */
+    VectorXd complementary_projection(const Ref<const VectorXd> &a,
+                                      const Ref<const VectorXd> &b);
   }
 } 
 

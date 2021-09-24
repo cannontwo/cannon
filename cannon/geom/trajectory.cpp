@@ -26,6 +26,7 @@ Trajectory::Trajectory(const std::vector<VectorXd> &states,
   }
 }
 
+
 VectorXd Trajectory::operator()(double t) const {
 
   if (times_.empty())
@@ -147,6 +148,11 @@ ControlledTrajectory::ControlledTrajectory(
     if (t < 0.0)
       throw std::runtime_error("Trajectory times should be >= 0");
   }
+}
+
+Trajectory ControlledTrajectory::state_traj() const {
+  Trajectory ret_traj(states_, times_);
+  return ret_traj;
 }
 
 std::pair<VectorXd, VectorXd> ControlledTrajectory::operator()(double t) const {

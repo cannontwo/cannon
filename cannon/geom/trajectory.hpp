@@ -109,7 +109,6 @@ namespace cannon {
          */
         unsigned int find_closest_t_(double t) const;
 
-
         std::vector<VectorXd> states_; //!< States in trajectory
         std::vector<double> times_; //!< Times for states in trajectory
 
@@ -132,6 +131,13 @@ namespace cannon {
         ControlledTrajectory(const std::vector<VectorXd> &states,
                              const std::vector<VectorXd> &controls,
                              const std::vector<double> times);
+
+        /*!
+         * \brief Get the trajectory of states from this controlled trajectory.
+         *
+         * \returns A trajectory of the states making up this controlled trajectory.
+         */
+        Trajectory state_traj() const;
 
         /*!
          * \brief Get the state and control of this controlled trajectory at the

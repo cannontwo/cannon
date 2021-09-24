@@ -297,6 +297,10 @@ VectorXd MultiSpline::deriv(double t, unsigned int order) const {
   return ret_vec;
 }
 
+VectorXd MultiSpline::normal(double t) const {
+  return complementary_projection(deriv(t, 2), deriv(t, 1)).normalized();
+}
+
 // Free Functions
 
 std::vector<double> cannon::math::cheb_points(unsigned int num, double low, double high) {
@@ -358,4 +362,14 @@ VectorXd cannon::math::lerp(const Ref<const VectorXd> &a,
   assert(0.0 <= t && t <= 1.0);
 
   return (1.0 - t) * a + t * b;
+}
+
+VectorXd cannon::math::projection(const Ref<const VectorXd> &a,
+                                  const Ref<const VectorXd> &b) {
+  return a.dot(b.normalized()) * b.normalized();
+}
+
+VectorXd cannon::math::complementary_projection(const Ref<const VectorXd> &a,
+                                                const Ref<const VectorXd> &b) {
+  return a - projection(a, b);
 }
