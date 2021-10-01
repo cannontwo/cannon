@@ -163,7 +163,7 @@ std::pair<VectorXd, VectorXd> ControlledTrajectory::operator()(double t) const {
   if (t <= times_[0])
     return std::make_pair(states_[0], controls_[0]);
   else if (t >= times_.back()) 
-    return std::make_pair(states_.back(), controls_.back());
+    return std::make_pair(states_.back(), VectorXd::Zero(controls_[0].size()));
   else {
     unsigned int idx = find_closest_t_(t);
 

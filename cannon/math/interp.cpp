@@ -262,9 +262,6 @@ MultiSpline::MultiSpline(const std::vector<double> &times,
   assert(times.size() == coords.size());
 
   dim_ = coords[0].size();
-  for (auto& c : coords) {
-    assert(c.size() == dim_);
-  }
 
   for (unsigned int i = 0; i < dim_; ++i) {
     std::vector<double> coord_vec;

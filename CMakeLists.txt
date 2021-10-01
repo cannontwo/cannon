@@ -29,8 +29,8 @@ option(CANNON_BUILD_SCRIPTS "Build scripts" ON)
 #  -O0
 #)
 
-set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall -O2")
-set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -Wall -O3")
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall -O2 -march=native -fopenmp")
+set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -Wall -O3 -march=native -fopenmp")
 
 set(CMAKE_FIND_LIBRARY_SUFFIXES ".so" ".a")
 
