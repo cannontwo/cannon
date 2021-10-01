@@ -23,7 +23,7 @@ TEST_CASE("Trajectory", "[geom]") {
   REQUIRE(ctraj(-1.0).second == VectorXd::Zero(2));
 
   REQUIRE(ctraj(2.0).first == VectorXd::Ones(2));
-  REQUIRE(ctraj(2.0).second == VectorXd::Ones(2));
+  REQUIRE(ctraj(2.0).second == VectorXd::Zero(2));
 
   REQUIRE(ctraj(0.5).first == VectorXd::Ones(2) * 0.5);
   REQUIRE(ctraj(0.5).second == VectorXd::Zero(2));
