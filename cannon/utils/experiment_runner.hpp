@@ -64,7 +64,7 @@ namespace cannon {
 
           for (unsigned int i = 0; i < num_exps_; i++) {
             ExperimentWriter writer(log_prefix_ + "/" + start_time_string_ +
-                "/run_" + std::to_string(i) + "/");
+                "/run_" + std::to_string(i));
 
             if (seeds_.empty()) {
               int seed = rd();
