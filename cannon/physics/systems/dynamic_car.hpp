@@ -37,6 +37,7 @@ namespace cannon {
           double ua = s[5];
           double uth = s[6];
 
+          // From http://planning.cs.uiuc.edu/node658.html
           dsdt.resize(7);
           dsdt[0] = v * std::cos(th);
           dsdt[1] = v * std::sin(th);
