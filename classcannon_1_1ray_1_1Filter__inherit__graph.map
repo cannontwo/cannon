@@ -1,0 +1,7 @@
+<map id="cannon::ray::Filter" name="cannon::ray::Filter">
+<area shape="rect" id="node1" title="Abstract base class representing a reconstruction filter for integrating image samples." alt="" coords="5,81,144,108"/>
+<area shape="rect" id="node2" href="$classcannon_1_1ray_1_1BoxFilter.html" title="Class representing the most basic image reconstruction filter, the Box Filter." alt="" coords="210,5,373,32"/>
+<area shape="rect" id="node3" href="$classcannon_1_1ray_1_1GaussianFilter.html" title="Class representing a Gaussian filter. Reasonable for image reconstruction." alt="" coords="192,56,391,83"/>
+<area shape="rect" id="node4" href="$classcannon_1_1ray_1_1MitchellFilter.html" title="Class representing a Mitchell&#45;Netravali filter. Reasonable for image reconstruction." alt="" coords="196,107,387,133"/>
+<area shape="rect" id="node5" href="$classcannon_1_1ray_1_1TriangleFilter.html" title="Class representing a triangle filter, which is not much better than a box filter." alt="" coords="197,157,386,184"/>
+</map>

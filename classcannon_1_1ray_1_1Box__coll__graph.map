@@ -1,0 +1,5 @@
+<map id="cannon::ray::Box" name="cannon::ray::Box">
+<area shape="rect" id="node1" title="Class representing a box with axis&#45;aligned sides." alt="" coords="24,171,155,197"/>
+<area shape="rect" id="node2" href="$classcannon_1_1ray_1_1Hittable.html" title="Abstract class representing a hittable geometry." alt="" coords="5,5,163,32"/>
+<area shape="rect" id="node3" href="$classcannon_1_1ray_1_1HittableList.html" title="Class representing a list of Hittables, which is itself Hittable." alt="" coords="106,81,286,108"/>
+</map>

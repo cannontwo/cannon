@@ -1,0 +1,6 @@
+<map id="cannon::logic::DPLLState" name="cannon::logic::DPLLState">
+<area shape="rect" id="node1" title="Class representing the state of the DPLL/CDCL algorithm. Manages a frontier of formula states in orde..." alt="" coords="312,64,495,91"/>
+<area shape="rect" id="node2" href="$classcannon_1_1logic_1_1CNFFormula.html" title="Class representing a Conjunctive Normal Form formula, which is a conjunction of Clauses." alt="" coords="5,5,201,32"/>
+<area shape="rect" id="node3" href="$classcannon_1_1logic_1_1AssignmentHeuristic.html" title="Functor representing an assignment choice heuristic." alt="" coords="7,57,200,98"/>
+<area shape="rect" id="node4" href="$classcannon_1_1logic_1_1PropositionHeuristic.html" title="Functor representing a proposition choice heuristic." alt="" coords="9,122,198,163"/>
+</map>

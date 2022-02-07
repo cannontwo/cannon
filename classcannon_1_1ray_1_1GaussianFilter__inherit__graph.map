@@ -1,0 +1,4 @@
+<map id="cannon::ray::GaussianFilter" name="cannon::ray::GaussianFilter">
+<area shape="rect" id="node1" title="Class representing a Gaussian filter. Reasonable for image reconstruction." alt="" coords="5,80,204,107"/>
+<area shape="rect" id="node2" href="$classcannon_1_1ray_1_1Filter.html" title="Abstract base class representing a reconstruction filter for integrating image samples." alt="" coords="35,5,174,32"/>
+</map>

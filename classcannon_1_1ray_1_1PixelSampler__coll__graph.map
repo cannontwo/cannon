@@ -1,0 +1,4 @@
+<map id="cannon::ray::PixelSampler" name="cannon::ray::PixelSampler">
+<area shape="rect" id="node1" title="Sampler which generates samples for all sample vectors in a pixel at the same time,..." alt="" coords="5,80,196,107"/>
+<area shape="rect" id="node2" href="$classcannon_1_1ray_1_1Sampler.html" title="Class representing the interface for a sampler used in raytracing. Adapted from PBRT...." alt="" coords="21,5,180,32"/>
+</map>

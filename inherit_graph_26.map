@@ -1,0 +1,6 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="node1" href="$classcannon_1_1graphics_1_1Light.html" title="Interface unifying all light classes currently implemented." alt="" coords="5,71,177,98"/>
+<area shape="rect" id="node2" href="$classcannon_1_1graphics_1_1DirectionalLight.html" title="Class representing a directional light source (e.g., the sun)" alt="" coords="225,5,436,47"/>
+<area shape="rect" id="node3" href="$classcannon_1_1graphics_1_1PointLight.html" title="Class representing a point light." alt="" coords="228,71,433,98"/>
+<area shape="rect" id="node4" href="$classcannon_1_1graphics_1_1Spotlight.html" title="Class representing a spotlight which casts light in only a prescribed cone." alt="" coords="231,122,430,149"/>
+</map>

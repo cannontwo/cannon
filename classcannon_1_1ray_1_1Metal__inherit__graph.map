@@ -1,0 +1,4 @@
+<map id="cannon::ray::Metal" name="cannon::ray::Metal">
+<area shape="rect" id="node1" title="Class representing a simple reflective metal material." alt="" coords="13,80,156,107"/>
+<area shape="rect" id="node2" href="$classcannon_1_1ray_1_1Material.html" title="Abstract class representing a hittable geometry&#39;s material." alt="" coords="5,5,164,32"/>
+</map>

@@ -1,0 +1,7 @@
+<map id="/home/runner/work/cannon/cannon/cannon/graphics/light.hpp" name="/home/runner/work/cannon/cannon/cannon/graphics/light.hpp">
+<area shape="rect" id="node1" title="File containing Light interface definition." alt="" coords="225,5,421,61"/>
+<area shape="rect" id="node2" href="$directional__light_8hpp.html" title="File containing DirectionalLight class definition." alt="" coords="5,109,201,165"/>
+<area shape="rect" id="node4" href="$point__light_8hpp.html" title="File containing PointLight class definition." alt="" coords="225,109,421,165"/>
+<area shape="rect" id="node5" href="$spotlight_8hpp.html" title="File containing Spotlight class definition." alt="" coords="445,109,641,165"/>
+<area shape="rect" id="node3" href="$light__collection_8hpp.html" title="File containing LightCollection class definition." alt="" coords="225,213,421,269"/>
+</map>

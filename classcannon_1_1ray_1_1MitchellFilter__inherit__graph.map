@@ -1,0 +1,4 @@
+<map id="cannon::ray::MitchellFilter" name="cannon::ray::MitchellFilter">
+<area shape="rect" id="node1" title="Class representing a Mitchell&#45;Netravali filter. Reasonable for image reconstruction." alt="" coords="5,80,196,107"/>
+<area shape="rect" id="node2" href="$classcannon_1_1ray_1_1Filter.html" title="Abstract base class representing a reconstruction filter for integrating image samples." alt="" coords="31,5,170,32"/>
+</map>

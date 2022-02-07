@@ -1,0 +1,10 @@
+<map id="/home/runner/work/cannon/cannon/cannon/ray/hittable.hpp" name="/home/runner/work/cannon/cannon/cannon/ray/hittable.hpp">
+<area shape="rect" id="node1" title="File containing useful classes for geometry hittable by rays." alt="" coords="482,5,713,47"/>
+<area shape="rect" id="node2" href="$aa__rect_8hpp.html" title="File containing axis&#45;aligned rectangle class definitions." alt="" coords="181,199,411,240"/>
+<area shape="rect" id="node3" href="$bvh_8hpp.html" title="File containing BvhNode class definition." alt="" coords="32,102,237,143"/>
+<area shape="rect" id="node4" href="$constant__medium_8hpp.html" title="File containing ConstantMedium class definition." alt="" coords="262,95,471,151"/>
+<area shape="rect" id="node5" href="$hittable__list_8hpp.html" title="File containing HittableList class definition." alt="" coords="496,95,699,151"/>
+<area shape="rect" id="node6" href="$ray_2mesh_8hpp.html" title="File containing TriangleMesh and Triangle class definitions." alt="" coords="723,102,941,143"/>
+<area shape="rect" id="node7" href="$moving__sphere_8hpp.html" title="File containing MovingSphere class definition." alt="" coords="965,95,1168,151"/>
+<area shape="rect" id="node8" href="$sphere_8hpp.html" title="File containing Sphere class definition." alt="" coords="1193,102,1418,143"/>
+</map>

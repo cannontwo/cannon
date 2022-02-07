@@ -1,0 +1,4 @@
+<map id="cannon::ray::XYRect" name="cannon::ray::XYRect">
+<area shape="rect" id="node1" title="Class representing a Z&#45;axis aligned rectangle." alt="" coords="9,80,159,107"/>
+<area shape="rect" id="node2" href="$classcannon_1_1ray_1_1Hittable.html" title="Abstract class representing a hittable geometry." alt="" coords="5,5,163,32"/>
+</map>

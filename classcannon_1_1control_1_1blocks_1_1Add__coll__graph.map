@@ -1,0 +1,4 @@
+<map id="cannon::control::blocks::Add" name="cannon::control::blocks::Add">
+<area shape="rect" id="node1" title="Class representing an addition operator block. Adds its two inputs and writes their sum to its output..." alt="" coords="5,80,211,107"/>
+<area shape="rect" id="node2" href="$classcannon_1_1control_1_1Block.html" title="Class representing a block in a control block diagram. Loose metaphor to Matlab Simulink blocks." alt="" coords="25,5,191,32"/>
+</map>

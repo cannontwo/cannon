@@ -1,0 +1,4 @@
+<map id="cannon::graphics::PointLight" name="cannon::graphics::PointLight">
+<area shape="rect" id="node1" title="Class representing a point light." alt="" coords="5,80,211,107"/>
+<area shape="rect" id="node2" href="$classcannon_1_1graphics_1_1Light.html" title="Interface unifying all light classes currently implemented." alt="" coords="22,5,194,32"/>
+</map>

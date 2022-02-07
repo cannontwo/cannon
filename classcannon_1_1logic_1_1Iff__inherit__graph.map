@@ -1,0 +1,4 @@
+<map id="cannon::logic::Iff" name="cannon::logic::Iff">
+<area shape="rect" id="node1" title="Class representing a boolean if&#45;and&#45;only&#45;if operator." alt="" coords="25,80,155,107"/>
+<area shape="rect" id="node2" href="$classcannon_1_1logic_1_1Formula.html" title="Abstract base class representing a boolean formula." alt="" coords="5,5,175,32"/>
+</map>

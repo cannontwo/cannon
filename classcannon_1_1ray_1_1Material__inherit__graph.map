@@ -1,0 +1,9 @@
+<map id="cannon::ray::Material" name="cannon::ray::Material">
+<area shape="rect" id="node1" title="Abstract class representing a hittable geometry&#39;s material." alt="" coords="5,132,164,159"/>
+<area shape="rect" id="node2" href="$classcannon_1_1ray_1_1Dielectric.html" title="Class representing a dielectric material (such as glass)" alt="" coords="226,5,393,32"/>
+<area shape="rect" id="node3" href="$classcannon_1_1ray_1_1DiffuseLight.html" title=" " alt="" coords="218,56,401,83"/>
+<area shape="rect" id="node4" href="$classcannon_1_1ray_1_1Isotropic.html" title=" " alt="" coords="229,107,390,133"/>
+<area shape="rect" id="node5" href="$classcannon_1_1ray_1_1Lambertian.html" title="Class representing a Lambertian diffuse material." alt="" coords="220,157,399,184"/>
+<area shape="rect" id="node6" href="$classcannon_1_1ray_1_1Metal.html" title="Class representing a simple reflective metal material." alt="" coords="238,208,381,235"/>
+<area shape="rect" id="node7" href="$classcannon_1_1ray_1_1NormalDebug.html" title="Class representing a debugging material displaying normal direction." alt="" coords="212,259,407,285"/>
+</map>

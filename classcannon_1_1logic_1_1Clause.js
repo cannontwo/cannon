@@ -1,0 +1,26 @@
+var classcannon_1_1logic_1_1Clause =
+[
+    [ "Clause", "classcannon_1_1logic_1_1Clause.html#a15c7c3e97805b9bc7a645b400aac3c17", null ],
+    [ "Clause", "classcannon_1_1logic_1_1Clause.html#a29621e983dc7437eccbe81e7291283cf", null ],
+    [ "Clause", "classcannon_1_1logic_1_1Clause.html#af03f291c5b8cfe273886ab54f9e52361", null ],
+    [ "~Clause", "classcannon_1_1logic_1_1Clause.html#a85d69ef03f858b46eee4b3cd82adaabb", null ],
+    [ "add_literal", "classcannon_1_1logic_1_1Clause.html#ae83bb5244af427cfce0922c041c3c1bd", null ],
+    [ "add_literal", "classcannon_1_1logic_1_1Clause.html#ae5c077495d58c283c5f0cc1c0127361f", null ],
+    [ "contains_prop", "classcannon_1_1logic_1_1Clause.html#acb174ed4f54d9dd7b604f0a6963a815b", null ],
+    [ "eval", "classcannon_1_1logic_1_1Clause.html#a7443302c01c8cbbb69cc09ed2f40675a", null ],
+    [ "get_assignment_for_literal", "classcannon_1_1logic_1_1Clause.html#a319172ba838d7eb1e7bbfbad67648211", null ],
+    [ "get_props", "classcannon_1_1logic_1_1Clause.html#a3807fe6a9cadeb8664a10df74d6ed3da", null ],
+    [ "get_unit_negated", "classcannon_1_1logic_1_1Clause.html#a3072b6f5a2ec96a35b3912d95a8d4670", null ],
+    [ "get_unit_prop", "classcannon_1_1logic_1_1Clause.html#ab06f9c51c1147b873b9ecec0ddf1f5b7", null ],
+    [ "has_pos_literal", "classcannon_1_1logic_1_1Clause.html#a6ee9914f6651da87bcef09de50b6c5cf", null ],
+    [ "is_unit", "classcannon_1_1logic_1_1Clause.html#ac9dbbc849e53058a781a119d7c3f1660", null ],
+    [ "is_unit", "classcannon_1_1logic_1_1Clause.html#a79d9ad7c67a98fafab35149587bbe995", null ],
+    [ "operator=", "classcannon_1_1logic_1_1Clause.html#ae86c23982af94b7388446bdcdcfbeb72", null ],
+    [ "operator==", "classcannon_1_1logic_1_1Clause.html#a0671be737c83b4af71ef5c7a711f1f18", null ],
+    [ "size", "classcannon_1_1logic_1_1Clause.html#a8832cbe3007e5849de441349b886b373", null ],
+    [ "size", "classcannon_1_1logic_1_1Clause.html#ad62f7b7c623f21bc235f6793c1961dcd", null ],
+    [ "CNFFormula", "classcannon_1_1logic_1_1Clause.html#ad6a20c09661b41252b5d3ac1c29afbd7", null ],
+    [ "operator<<", "classcannon_1_1logic_1_1Clause.html#ac9926dca26ee870cb35ae18cfd4f40d4", null ],
+    [ "literals_", "classcannon_1_1logic_1_1Clause.html#ae8cc96940ae3e8de5d76102f876223fd", null ],
+    [ "num_props_", "classcannon_1_1logic_1_1Clause.html#ac377e47b3c5ffc8284a7188c286f4040", null ]
+];

@@ -1,0 +1,4 @@
+<map id="cannon::control::blocks::Step" name="cannon::control::blocks::Step">
+<area shape="rect" id="node1" title="Class representing a step from one value to another at a specified time." alt="" coords="5,80,177,121"/>
+<area shape="rect" id="node2" href="$classcannon_1_1control_1_1Block.html" title="Class representing a block in a control block diagram. Loose metaphor to Matlab Simulink blocks." alt="" coords="8,5,175,32"/>
+</map>

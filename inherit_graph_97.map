@@ -1,0 +1,13 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="node1" href="$classcannon_1_1ray_1_1Hittable.html" title="Abstract class representing a hittable geometry." alt="" coords="5,233,163,260"/>
+<area shape="rect" id="node2" href="$classcannon_1_1ray_1_1Box.html" title="Class representing a box with axis&#45;aligned sides." alt="" coords="253,5,384,32"/>
+<area shape="rect" id="node3" href="$classcannon_1_1ray_1_1BvhNode.html" title="Class representing a node in a bounding volume hierarchy." alt="" coords="237,56,401,83"/>
+<area shape="rect" id="node4" href="$classcannon_1_1ray_1_1ConstantMedium.html" title=" " alt="" coords="211,107,427,133"/>
+<area shape="rect" id="node5" href="$classcannon_1_1ray_1_1HittableList.html" title="Class representing a list of Hittables, which is itself Hittable." alt="" coords="229,157,409,184"/>
+<area shape="rect" id="node6" href="$classcannon_1_1ray_1_1MovingSphere.html" title="Class representing a sphere that moves over time." alt="" coords="219,208,418,235"/>
+<area shape="rect" id="node7" href="$classcannon_1_1ray_1_1Sphere.html" title="Class representing a raytraceable sphere." alt="" coords="243,259,394,285"/>
+<area shape="rect" id="node8" href="$classcannon_1_1ray_1_1Triangle.html" title="Class representing a single triangle hittable." alt="" coords="241,309,397,336"/>
+<area shape="rect" id="node9" href="$classcannon_1_1ray_1_1XYRect.html" title="Class representing a Z&#45;axis aligned rectangle." alt="" coords="243,360,394,387"/>
+<area shape="rect" id="node10" href="$classcannon_1_1ray_1_1XZRect.html" title="Class representing a Y&#45;axis aligned rectangle." alt="" coords="243,411,395,437"/>
+<area shape="rect" id="node11" href="$classcannon_1_1ray_1_1YZRect.html" title="Class representing a X&#45;axis aligned rectangle." alt="" coords="243,461,394,488"/>
+</map>

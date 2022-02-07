@@ -1,0 +1,7 @@
+<map id="cannon::ray::Texture" name="cannon::ray::Texture">
+<area shape="rect" id="node1" title="Abstract class representing a texture on some geometry." alt="" coords="5,81,159,108"/>
+<area shape="rect" id="node2" href="$classcannon_1_1ray_1_1CheckerTexture.html" title="Class representing a procedural checker texture." alt="" coords="207,5,412,32"/>
+<area shape="rect" id="node3" href="$classcannon_1_1ray_1_1ImageTexture.html" title="Class representing a texture derived from an image." alt="" coords="212,56,407,83"/>
+<area shape="rect" id="node4" href="$classcannon_1_1ray_1_1NoiseTexture.html" title="Class representing a Perlin noise texture." alt="" coords="214,107,405,133"/>
+<area shape="rect" id="node5" href="$classcannon_1_1ray_1_1SolidColor.html" title="Class representing a texture of a single, fixed color." alt="" coords="224,157,395,184"/>
+</map>

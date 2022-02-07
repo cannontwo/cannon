@@ -1,0 +1,9 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="node1" href="$structcannon_1_1logic_1_1Circuit.html" title="Abstract class serving as the basis for other circuits. Circuits can be composed by connecting input ..." alt="" coords="5,132,164,159"/>
+<area shape="rect" id="node2" href="$structcannon_1_1logic_1_1AndGate.html" title="Class representing an AND gate covertable to CNF." alt="" coords="217,5,389,32"/>
+<area shape="rect" id="node3" href="$structcannon_1_1logic_1_1FullAdder.html" title="Class representing a full adder convertible to CNF. See https://en.wikipedia.org/wiki/Adder_(electron..." alt="" coords="215,56,392,83"/>
+<area shape="rect" id="node4" href="$structcannon_1_1logic_1_1NandGate.html" title="Class representing a NAND gate convertible to CNF." alt="" coords="213,107,394,133"/>
+<area shape="rect" id="node5" href="$structcannon_1_1logic_1_1NBitAdder.html" title="Class representing an Adder for an arbitrary number of bits, convertible to CNF." alt="" coords="212,157,395,184"/>
+<area shape="rect" id="node6" href="$structcannon_1_1logic_1_1OrGate.html" title="Class representing an OR gate convertible to CNF." alt="" coords="222,208,385,235"/>
+<area shape="rect" id="node7" href="$structcannon_1_1logic_1_1XorGate.html" title="Class representing an XOR gate convertible to CNF." alt="" coords="219,259,388,285"/>
+</map>

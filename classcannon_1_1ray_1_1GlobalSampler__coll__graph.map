@@ -1,0 +1,4 @@
+<map id="cannon::ray::GlobalSampler" name="cannon::ray::GlobalSampler">
+<area shape="rect" id="node1" title="Sampler interface which is not pixel&#45;based, but which rather generates samples across the entire imag..." alt="" coords="5,80,207,107"/>
+<area shape="rect" id="node2" href="$classcannon_1_1ray_1_1Sampler.html" title="Class representing the interface for a sampler used in raytracing. Adapted from PBRT...." alt="" coords="27,5,185,32"/>
+</map>

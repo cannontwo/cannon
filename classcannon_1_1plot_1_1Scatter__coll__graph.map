@@ -1,0 +1,4 @@
+<map id="cannon::plot::Scatter" name="cannon::plot::Scatter">
+<area shape="rect" id="node1" title="Class representing a scatter plot which can be drawn by a Plotter." alt="" coords="5,95,161,121"/>
+<area shape="rect" id="node2" href="$classcannon_1_1plot_1_1Plotter.html" title="Class representing a 2D plotter which can be used to make scientific charts. Can also be used for Ope..." alt="" coords="7,5,160,32"/>
+</map>

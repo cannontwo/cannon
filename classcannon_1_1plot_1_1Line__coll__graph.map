@@ -1,0 +1,4 @@
+<map id="cannon::plot::Line" name="cannon::plot::Line">
+<area shape="rect" id="node1" title="Class representing a line plot in the context of a Plotter. A line plot is a sequence of points which..." alt="" coords="13,95,151,121"/>
+<area shape="rect" id="node2" href="$classcannon_1_1plot_1_1Plotter.html" title="Class representing a 2D plotter which can be used to make scientific charts. Can also be used for Ope..." alt="" coords="5,5,159,32"/>
+</map>

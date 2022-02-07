@@ -1,0 +1,6 @@
+<map id="cannon::graphics::DeferredRenderer" name="cannon::graphics::DeferredRenderer">
+<area shape="rect" id="node1" title="Class representing a deferred renderer for OpenGL." alt="" coords="8,304,205,345"/>
+<area shape="rect" id="node2" href="$classcannon_1_1graphics_1_1geometry_1_1AxesHint.html" title=" " alt="" coords="5,200,208,241"/>
+<area shape="rect" id="node3" href="$classcannon_1_1graphics_1_1geometry_1_1DrawableGeom.html" title=" " alt="" coords="5,109,208,151"/>
+<area shape="rect" id="node4" href="$structcannon_1_1graphics_1_1geometry_1_1Material.html" title=" " alt="" coords="5,5,208,47"/>
+</map>

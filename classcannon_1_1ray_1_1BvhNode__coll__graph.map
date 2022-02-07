@@ -1,0 +1,5 @@
+<map id="cannon::ray::BvhNode" name="cannon::ray::BvhNode">
+<area shape="rect" id="node1" title="Class representing a node in a bounding volume hierarchy." alt="" coords="87,95,251,121"/>
+<area shape="rect" id="node2" href="$classcannon_1_1ray_1_1Hittable.html" title="Abstract class representing a hittable geometry." alt="" coords="5,5,163,32"/>
+<area shape="rect" id="node3" href="$classcannon_1_1ray_1_1Aabb.html" title="Class representing an axis&#45;aligned bounding box." alt="" coords="187,5,325,32"/>
+</map>

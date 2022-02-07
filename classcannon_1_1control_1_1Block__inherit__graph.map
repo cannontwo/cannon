@@ -1,0 +1,7 @@
+<map id="cannon::control::Block" name="cannon::control::Block">
+<area shape="rect" id="node1" title="Class representing a block in a control block diagram. Loose metaphor to Matlab Simulink blocks." alt="" coords="5,97,172,124"/>
+<area shape="rect" id="node2" href="$classcannon_1_1control_1_1blocks_1_1Add.html" title="Class representing an addition operator block. Adds its two inputs and writes their sum to its output..." alt="" coords="220,5,425,32"/>
+<area shape="rect" id="node3" href="$classcannon_1_1control_1_1blocks_1_1Constant.html" title="Class representing a constant&#45;valued source." alt="" coords="237,57,409,98"/>
+<area shape="rect" id="node4" href="$classcannon_1_1control_1_1blocks_1_1Gain.html" title=" " alt="" coords="237,122,409,163"/>
+<area shape="rect" id="node5" href="$classcannon_1_1control_1_1blocks_1_1Step.html" title="Class representing a step from one value to another at a specified time." alt="" coords="237,187,409,229"/>
+</map>
