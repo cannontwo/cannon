@@ -45,7 +45,7 @@ double PiecewiseRecursiveLSTDFilter::predict(const VectorXd& in_vec, unsigned in
 
 void PiecewiseRecursiveLSTDFilter::reset() {
   a_inv_ = MatrixXd::Identity(param_dim_, param_dim_) * alpha_;
-  theta_ = VectorXd::Zero(param_dim_);
+  //theta_ = VectorXd::Zero(param_dim_);
 }
 
 // Private
